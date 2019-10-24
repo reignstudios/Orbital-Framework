@@ -8,11 +8,12 @@ Simply put, the goal is to have a robust set of core frameworks that can be used
 
 ### Platform target overview
 This list will be adjusted and more specific as things progress.<br>
-* Win10, 8, 7, Vista, XP, 2000, 98, 95, 3.1
+* Win10, 8, 7, Vista, XP, 2000, 98, 95, 3.1, WinCE
 * macOSX, macOS9, 8, 7, 6, etc...
 * Linux, BSD
+* Android, iOS, Tizen, BB10, WP7, WP8, WP10
 * WASM, asm.js, PNACL, JSIL
-* N64, Xbox, Xbox 360, Xbox One, PS2, PS3, PS4, etc...
+* N64, Xbox, Xbox 360, Xbox One, PS2, PS3, PS4, Dreamcast, etc...
 * Others legacy...
 
 ### Video / Graphics
