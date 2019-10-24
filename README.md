@@ -7,7 +7,7 @@ This project will focus on an extremely portable, fast and powerful yet simple t
 Simply put, the goal is to have a robust set of core frameworks that can be used as the building blocks for C# UI / XAML like systems, Game Engines and more... running on platforms ranging from Desktop, Mobile, TV, IoT, Web to embedded or legacy devices.
 
 ### Platform target overview
-This list will be adjusted and more specific and things progress.<br>
+This list will be adjusted and more specific as things progress.<br>
 * Win10, 8, 7, Vista, XP, 2000, 98, 95, 3.1
 * macOSX, macOS9, 8, 7, 6, etc...
 * Linux, BSD
