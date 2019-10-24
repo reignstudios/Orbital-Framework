@@ -29,7 +29,8 @@ API Agnostic DSP effects can be written in C#<br>
 * MS: DirectSound
 * MS: XAudio2
 * POSIX: OpenAL
-* Apple: Core Audio Kit
+* Apple: Cocoa
+* Apple: Carbon
 
 ### Input
 * MS: DirectInput
@@ -42,3 +43,4 @@ API Agnostic DSP effects can be written in C#<br>
 * POSIX: Mir
 * Apple: HID
 * Apple: Cocoa
+* Apple: Carbon
