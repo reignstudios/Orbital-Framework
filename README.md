@@ -6,7 +6,7 @@ Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powe
 * "Platforms/Shared": <b>Code shared accross platforms</b>
 * "Platforms/\<Platform\>/\<Runtime\>": <b>C# projects specifically setup for different host enviroments</b>
 * "Platforms/\<Platform\>/\<Runtime\>/NetCore": <b>.NET Core runtime targets</b>
-* "Platforms/\<Platform\>/\<Runtime\>/NetFramework": <b>.NET Framework runtime targets</b>
+* "Platforms/\<Platform\>/\<Runtime\>/NetFramework": <b>.NET/Mono Framework runtime targets</b>
 * "Platforms/\<Platform\>/\<Runtime\>/CS2X": <b>CS2X runtime targets</b>
 
 ## Goals
