@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{638A7529-EFFF-4FEC-8F73-7A65D2972E0D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Orbital.Numerics</RootNamespace>
+    <AssemblyName>Orbital.Numerics</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\AffineTransform3.cs">
+      <Link>AffineTransform3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound2.cs">
+      <Link>Bound2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound3.cs">
+      <Link>Bound3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4.cs">
+      <Link>Color4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Frustum3.cs">
+      <Link>Frustum3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line2.cs">
+      <Link>Line2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line3.cs">
+      <Link>Line3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2.cs">
+      <Link>Mat2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2x3.cs">
+      <Link>Mat2x3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3.cs">
+      <Link>Mat3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3x2.cs">
+      <Link>Mat3x2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat4.cs">
+      <Link>Mat4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathUtilities.cs">
+      <Link>MathUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Plane3.cs">
+      <Link>Plane3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point2.cs">
+      <Link>Point2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point3.cs">
+      <Link>Point3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Quat.cs">
+      <Link>Quat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray2.cs">
+      <Link>Ray2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray3.cs">
+      <Link>Ray3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect2.cs">
+      <Link>Rect2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect3.cs">
+      <Link>Rect3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\RigidTransform3.cs">
+      <Link>RigidTransform3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size2.cs">
+      <Link>Size2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size3.cs">
+      <Link>Size3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size4.cs">
+      <Link>Size4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere2.cs">
+      <Link>Sphere2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere3.cs">
+      <Link>Sphere3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Triangle3.cs">
+      <Link>Triangle3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec2.cs">
+      <Link>Vec2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec3.cs">
+      <Link>Vec3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec4.cs">
+      <Link>Vec4.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

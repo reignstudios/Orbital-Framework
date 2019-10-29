@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.Host.WPF\Window.cs" Link="Window.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
   </ItemGroup>
 
