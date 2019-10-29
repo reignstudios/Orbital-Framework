@@ -2,12 +2,12 @@
 Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powerful / Fast)
 
 ## Project structure layout
-* "Platforms": OS / API targets
-* "Platforms/Shared": Code shared accross platforms
-* "Platforms/\<Platform\>/\<Runtime\>": C# projects specifically setup for different host enviroments
-* "Platforms/\<Platform\>/\<Runtime\>/NetCore": .NET Core runtime targets
-* "Platforms/\<Platform\>/\<Runtime\>/NetFramework": .NET Framework runtime targets
-* "Platforms/\<Platform\>/\<Runtime\>/CS2X": CS2X runtime targets
+* "Platforms": <b>OS / API targets</b>
+* "Platforms/Shared": <b>Code shared accross platforms</b>
+* "Platforms/\<Platform\>/\<Runtime\>": <b>C# projects specifically setup for different host enviroments</b>
+* "Platforms/\<Platform\>/\<Runtime\>/NetCore": <b>.NET Core runtime targets</b>
+* "Platforms/\<Platform\>/\<Runtime\>/NetFramework": <b>.NET Framework runtime targets</b>
+* "Platforms/\<Platform\>/\<Runtime\>/CS2X": <b>CS2X runtime targets</b>
 
 ## Goals
 This project will focus on an extremely portable, fast and powerful yet simple to understand agnostic set of frameworks for use in C# / .NET or CS2X runtimes.<br>
