@@ -1,6 +1,14 @@
 # Orbital-Framework (Prototyping faze)
 Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powerful / Fast)
 
+## Cloning source
+### Clone new repo
+* git clone --recursive https://github.com/reignstudios/Orbital-Framework.git<br>
+
+### Updating existing cloned repos:
+* git pull
+* git submodule update --init --recursive
+
 ## Project structure layout
 * "Platforms": <b>OS / API targets</b>
 * "Platforms/Shared": <b>Code shared accross platforms</b>
