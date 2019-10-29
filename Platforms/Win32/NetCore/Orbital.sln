@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{51EF7356-1961-4A05-A6FB-8F293A55FF4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.WinForms", "Orbital.Host.WinForms\Orbital.Host.WinForms.csproj", "{5C1F418A-9D5B-44C1-A07C-B7B29359799D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.WinForms", "Orbital.Demo.WinForms\Orbital.Demo.WinForms.csproj", "{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.WPF", "Orbital.Host.WPF\Orbital.Host.WPF.csproj", "{A96C9D43-DA89-4397-AB46-3C590F34713E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.WPF", "Orbital.Demo.WPF\Orbital.Demo.WPF.csproj", "{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51EF7356-1961-4A05-A6FB-8F293A55FF4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51EF7356-1961-4A05-A6FB-8F293A55FF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51EF7356-1961-4A05-A6FB-8F293A55FF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51EF7356-1961-4A05-A6FB-8F293A55FF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1F418A-9D5B-44C1-A07C-B7B29359799D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1F418A-9D5B-44C1-A07C-B7B29359799D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1F418A-9D5B-44C1-A07C-B7B29359799D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1F418A-9D5B-44C1-A07C-B7B29359799D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A96C9D43-DA89-4397-AB46-3C590F34713E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A96C9D43-DA89-4397-AB46-3C590F34713E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A96C9D43-DA89-4397-AB46-3C590F34713E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A96C9D43-DA89-4397-AB46-3C590F34713E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A4DF150-EA74-484F-8970-746EEBA9083F}
+	EndGlobalSection
+EndGlobal
