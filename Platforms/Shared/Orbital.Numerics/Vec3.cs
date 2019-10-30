@@ -187,21 +187,6 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Vec3)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}, {2}>", x, y, z);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public Vec3 DegToRad()
 		{
 			return new Vec3(MathUtilities.DegToRad(x), MathUtilities.DegToRad(y), MathUtilities.DegToRad(z));

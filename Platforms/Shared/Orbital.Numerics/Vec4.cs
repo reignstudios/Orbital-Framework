@@ -240,21 +240,6 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Vec4)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}, {2}, {3}>", x, y, z, w);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public Vec4 Max(float value)
 		{
 			return new Vec4(Math.Max(x, value), Math.Max(y, value), Math.Max(z, value), Math.Max(w, value));

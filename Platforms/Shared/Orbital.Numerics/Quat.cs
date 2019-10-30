@@ -250,21 +250,6 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Quat)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}, {2}, {3}>", x, y, z, w);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public float Length()
 		{
 			return (float)Math.Sqrt((x*x) + (y*y) + (z*z) + (w*w));

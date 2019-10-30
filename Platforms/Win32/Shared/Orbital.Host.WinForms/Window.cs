@@ -60,6 +60,11 @@ namespace Orbital.Host.WinForms
 			}
 		}
 
+		public override void SetTitle(string title)
+		{
+			form.Text = title;
+		}
+
 		public override void Show()
 		{
 			form.Show();

@@ -18,6 +18,7 @@ namespace Orbital.Demo.WPF
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			var window = new Host.WPF.Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
+			window.SetTitle("Demo");
 			window.Show();
 
 			MainWindow = window.window;// ensure MainWindow is set just in case

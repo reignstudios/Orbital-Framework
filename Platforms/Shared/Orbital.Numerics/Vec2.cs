@@ -131,21 +131,6 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Vec2)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}>", x, y);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public float SlopeXY()
 		{
 			return x / y;

@@ -15,6 +15,7 @@ namespace Orbital.Demo.WinForms
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
+			window.SetTitle("Demo");
 			Application.Run(window.form);
 		}
 	}

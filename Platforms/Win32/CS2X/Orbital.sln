@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29424.173
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{8291B006-CED2-4E09-BAB8-DB3A0443D45A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS2X.CoreLib", "..\..\..\Submodules\CS2X\CS2X.CoreLib\CS2X.CoreLib.csproj", "{9616134A-8431-4B39-9833-FEB97886A76A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8291B006-CED2-4E09-BAB8-DB3A0443D45A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8291B006-CED2-4E09-BAB8-DB3A0443D45A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8291B006-CED2-4E09-BAB8-DB3A0443D45A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8291B006-CED2-4E09-BAB8-DB3A0443D45A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9616134A-8431-4B39-9833-FEB97886A76A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9616134A-8431-4B39-9833-FEB97886A76A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9616134A-8431-4B39-9833-FEB97886A76A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9616134A-8431-4B39-9833-FEB97886A76A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {66EDF288-33EE-4BAB-8B3D-71AC2521D7B8}
+	EndGlobalSection
+EndGlobal

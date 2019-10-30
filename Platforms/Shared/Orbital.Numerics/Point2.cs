@@ -113,21 +113,6 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Point2)obj == this;
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}>", x, y);
-		}
-		
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-		
 		public bool Intersects(Rect2 rect)
 		{
 			return x >= rect.left && x <= rect.right && y >= rect.bottom && y <= rect.top;

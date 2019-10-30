@@ -58,7 +58,7 @@ namespace Orbital.Numerics
             this.max = max;
         }
 
-		public static Bound2 FromPoints(IList<Vec2> points)
+		public static Bound2 FromPoints(List<Vec2> points)
         {
             Bound2 boundingBox;
             boundingBox.min = points[0];

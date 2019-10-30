@@ -296,21 +296,6 @@ namespace Orbital.Numerics
 		#endregion
 		
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Mat3)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("{0} : {1} : {2}", x, y, z);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public Vec3 Euler()
 		{
 			if (z.x < 1)

@@ -102,20 +102,6 @@ namespace Orbital.Numerics
 		#endregion
 		
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Size3)obj == this;
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}, {2}>", width, height, depth);
-		}
-		
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
 		#endregion
 	}
 }

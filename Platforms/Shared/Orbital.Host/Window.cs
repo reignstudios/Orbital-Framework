@@ -62,9 +62,10 @@ namespace Orbital.Host
 
 	public abstract class WindowBase
 	{
-		public abstract void Show();
-		public abstract void Hide();
-		public abstract Point2 GetPosition();
+		public virtual void SetTitle(string title) { }
+		public virtual void Show() { }
+		public virtual void Hide() { }
+		public virtual Point2 GetPosition() => Point2.zero;
 		public abstract void SetPosition(Point2 position);
 		public abstract void SetPosition(int x, int y);
 		public abstract Size2 GetSize(WindowSizeType type);

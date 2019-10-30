@@ -285,21 +285,6 @@ namespace Orbital.Numerics
 		#endregion
 		
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Mat4)obj == this;
-		}
-
-		public override string ToString()
-		{
-			return string.Format("{0} : {1} : {2} : {3}", x, y, z, w);
-		}
-
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public Mat4 Abs()
 		{
 			return new Mat4(x.Abs(), y.Abs(), z.Abs(), w.Abs());

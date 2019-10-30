@@ -59,6 +59,11 @@ namespace Orbital.Host.WPF
 			}
 		}
 
+		public override void SetTitle(string title)
+		{
+			window.Title = title;
+		}
+
 		public override void Show()
 		{
 			window.Show();

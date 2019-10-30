@@ -101,21 +101,6 @@ namespace Orbital.Numerics
 		#endregion
 		
 		#region Methods
-		public override bool Equals(object obj)
-		{
-			return obj != null && (Size2)obj == this;
-		}
-		
-		public override string ToString()
-		{
-			return string.Format("<{0}, {1}>", width, height);
-		}
-		
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-
 		public float FitWithinFrameScale(Size2 frame)
 		{
 			float frameSlope = frame.width / (float)frame.height;
