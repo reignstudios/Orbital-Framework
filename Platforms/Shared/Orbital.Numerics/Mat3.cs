@@ -80,12 +80,12 @@ namespace Orbital.Numerics
 
 		public static Mat3 FromEuler(Vec3 euler)
 		{
-			float cx = (float)System.Math.Cos(euler.x);
-			float sx = (float)System.Math.Sin(euler.x);
-			float cy = (float)System.Math.Cos(euler.y);
-			float sy = (float)System.Math.Sin(euler.y);
-			float cz = (float)System.Math.Cos(euler.z);
-			float sz = (float)System.Math.Sin(euler.z);
+			float cx = (float)Math.Cos(euler.x);
+			float sx = (float)Math.Sin(euler.x);
+			float cy = (float)Math.Cos(euler.y);
+			float sy = (float)Math.Sin(euler.y);
+			float cz = (float)Math.Cos(euler.z);
+			float sz = (float)Math.Sin(euler.z);
 
 			// multiply ZYX
 			return new Mat3
@@ -98,12 +98,12 @@ namespace Orbital.Numerics
 
 		public static Mat3 FromEuler(float eulerX, float eulerY, float eulerZ)
 		{
-			float cx = (float)System.Math.Cos(eulerX);
-			float sx = (float)System.Math.Sin(eulerX);
-			float cy = (float)System.Math.Cos(eulerY);
-			float sy = (float)System.Math.Sin(eulerY);
-			float cz = (float)System.Math.Cos(eulerZ);
-			float sz = (float)System.Math.Sin(eulerZ);
+			float cx = (float)Math.Cos(eulerX);
+			float sx = (float)Math.Sin(eulerX);
+			float cy = (float)Math.Cos(eulerY);
+			float sy = (float)Math.Sin(eulerY);
+			float cz = (float)Math.Cos(eulerZ);
+			float sz = (float)Math.Sin(eulerZ);
 
 			// multiply ZYX
 			return new Mat3
@@ -500,25 +500,10 @@ namespace Orbital.Numerics
 
 			// rotate back to matrix space
 			quaternion = Quat.FromRotationAxis(axis, angle);
-			var qMat = Mat3.FromQuaternion(quaternion);
+			var qMat = FromQuaternion(quaternion);
 			worldSpaceMatrix = worldSpaceMatrix.Multiply(qMat);
 			return worldSpaceMatrix;
 		}
 		#endregion
 	}
-
-	#if MATH_UNITY_HELPER
-	public static class Mat3Ext
-	{
-		public static Mat3 ToMat3(this UnityEngine.Matrix4x4 self)
-		{
-			return new Mat3
-			(
-				new Vec3(self.m00, self.m01, self.m02),
-				new Vec3(self.m10, self.m11, self.m12),
-				new Vec3(self.m20, self.m21, self.m22)
-			);
-		}
-	}
-	#endif
 }

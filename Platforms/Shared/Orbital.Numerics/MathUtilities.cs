@@ -89,67 +89,6 @@ namespace Orbital.Numerics
 
 			return value;
 		}
-
-		public static float WrapAngle(float angle)
-		{
-			angle = (float)Math.IEEERemainder(angle, pi2);
-			if (angle < -pi)
-			{
-				angle += pi2;
-				return angle;
-			}
-
-			if (angle >= pi)
-			{
-				angle -= pi2;
-			}
-
-			return angle;
-		}
-		#endregion
-
-		#region Extention Methods
-		#if MATH_UNITY_HELPER
-		public static UnityEngine.Vector2[] ToVector2(this Vec2[] vectors)
-		{
-			var result = new UnityEngine.Vector2[vectors.Length];
-			for (int i = 0; i != result.Length; ++i)
-			{
-				result[i] = vectors[i].ToVector2();
-			}
-
-			return result;
-		}
-
-		public static UnityEngine.Vector3[] ToVector3(this Vec3[] vectors)
-		{
-			var result = new UnityEngine.Vector3[vectors.Length];
-			for (int i = 0; i != result.Length; ++i)
-			{
-				result[i] = vectors[i].ToVector3();
-			}
-
-			return result;
-		}
-
-		public static void CopyToVector2(this Vec2[] vectors, UnityEngine.Vector2[] unityVectors)
-		{
-			if (vectors.Length != unityVectors.Length) throw new Exception("Array sizes don't match");
-			for (int i = 0; i != unityVectors.Length; ++i)
-			{
-				unityVectors[i] = vectors[i].ToVector2();
-			}
-		}
-
-		public static void CopyToVector3(this Vec3[] vectors, UnityEngine.Vector3[] unityVectors)
-		{
-			if (vectors.Length != unityVectors.Length) throw new Exception("Array sizes don't match");
-			for (int i = 0; i != unityVectors.Length; ++i)
-			{
-				unityVectors[i] = vectors[i].ToVector3();
-			}
-		}
-		#endif
 		#endregion
 	}
 }

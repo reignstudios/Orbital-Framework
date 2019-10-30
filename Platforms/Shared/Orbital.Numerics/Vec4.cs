@@ -211,18 +211,6 @@ namespace Orbital.Numerics
 		public static bool operator!=(Vec4 p1, Vec4 p2) {return p1.x!=p2.x || p1.y!=p2.y || p1.z!=p2.z || p1.w!=p2.w;}
 
 		// convert
-		#if MATH_UNITY_HELPER
-		public static implicit operator Vec4(UnityEngine.Vector4 vec)
-		{
-			return new Vec4(vec.x, vec.y, vec.z, vec.w);
-		}
-
-		public UnityEngine.Vector4 ToVector4()
-		{
-			return new UnityEngine.Vector4(x, y, z);
-		}
-		#endif
-
 		public Vec2 ToVec2()
 		{
 			return new Vec2(x, y);
@@ -423,14 +411,4 @@ namespace Orbital.Numerics
 		}
 		#endregion
 	}
-
-	#if MATH_UNITY_HELPER
-	public static class Vec4Ext
-	{
-		public static Vec4 ToVec4(this UnityEngine.Vector4 self)
-		{
-			return new Vec4(self.x, self.y, self.z, self.w);
-		}
-	}
-	#endif
 }

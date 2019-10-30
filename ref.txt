@@ -1,2 +1,5 @@
 <<< Update git submodules >>>
 git submodule update --remote --merge
+
+<<< Push git submodule changes >>>
+git push --recurse-submodules=on-demand

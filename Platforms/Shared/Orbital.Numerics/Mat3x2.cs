@@ -157,19 +157,4 @@ namespace Orbital.Numerics
         }
 		#endregion
 	}
-
-	#if MATH_UNITY_HELPER
-	public static class Mat3x2Ext
-	{
-		public static Mat3x2 ToMat3x2(this UnityEngine.Matrix4x4 self)
-		{
-			return new Mat3x2
-			(
-				new Vec2(self.m00, self.m01),
-				new Vec2(self.m10, self.m11),
-				new Vec2(self.m20, self.m21)
-			);
-		}
-	}
-	#endif
 }
