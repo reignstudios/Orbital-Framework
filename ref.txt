@@ -1,3 +1,6 @@
+<<< NuGet package cache location >>>
+%userprofile%\.nuget\packages
+
 <<< Update git submodules >>>
 git submodule update --remote --merge
 

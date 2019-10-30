@@ -71,3 +71,9 @@ API Agnostic DSP effects can be written in C#<br>
 * Apple: HID
 * Apple: Cocoa
 * Apple: Carbon
+
+## Building
+* Prerequisites
+	* Visual Studios 2019 (VS for Mac / MonoDevelop or VSCode have not yet been tested)
+	* .NET Core, .NET Framework or CS2X. Depends on what you're targeting.
+* Debugging CS2X Analyzer errors: Open projects after running "CS2X.Ayalizer.Vsix"
