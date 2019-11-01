@@ -1,4 +1,6 @@
-﻿namespace Orbital.Host.WPF
+﻿using System;
+
+namespace Orbital.Host.WPF
 {
 	public sealed class Application : ApplicationBase
 	{
@@ -18,6 +20,16 @@
 		{
 			var windowAbstraction = (Window)window;
 			application.Run(windowAbstraction.window);
+		}
+
+		public override void RunEvents()
+		{
+			throw new NotSupportedException("WPF doesn't support manual event pumping");
+		}
+
+		public override void Exit()
+		{
+			application.Shutdown();
 		}
 	}
 }

@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.WPF", "Orbital
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.WPF", "Orbital.Demo.WPF\Orbital.Demo.WPF.csproj", "{551868B4-18ED-4FFB-85AA-8A1A5AB6F4C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{E7880791-82BF-4581-8897-BB461E209365}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{D8062D19-9C29-47BF-AA77-F134AAD9C785}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{551868B4-18ED-4FFB-85AA-8A1A5AB6F4C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{551868B4-18ED-4FFB-85AA-8A1A5AB6F4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{551868B4-18ED-4FFB-85AA-8A1A5AB6F4C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7880791-82BF-4581-8897-BB461E209365}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7880791-82BF-4581-8897-BB461E209365}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7880791-82BF-4581-8897-BB461E209365}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7880791-82BF-4581-8897-BB461E209365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8062D19-9C29-47BF-AA77-F134AAD9C785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8062D19-9C29-47BF-AA77-F134AAD9C785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8062D19-9C29-47BF-AA77-F134AAD9C785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8062D19-9C29-47BF-AA77-F134AAD9C785}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Runtime.InteropServices;
 
 using BOOL = System.Int32;
@@ -19,6 +20,7 @@ namespace Orbital.Host.Win32
 	{
 		public static HINSTANCE hInstance { get; private set; }
 		public static int nCmdShow { get; private set; }
+		private bool exit;
 
 		static Application()
 		{
@@ -40,10 +42,15 @@ namespace Orbital.Host.Win32
 		public override void Run()
 		{
 			var msg = new MSG();
-			while (GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
+			while (exit)
 			{
-				TranslateMessage(&msg);
-				DispatchMessageA(&msg);
+				while (GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
+				{
+					TranslateMessage(&msg);
+					DispatchMessageA(&msg);
+				}
+
+				Thread.Sleep(1);
 			}
 		}
 
@@ -51,11 +58,27 @@ namespace Orbital.Host.Win32
 		{
 			var windowAbstraction = (Window)window;
 			var msg = new MSG();
-			while (GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
+			while (GetMessageA(&msg, windowAbstraction.hWnd, 0, 0) != 0)
 			{
 				TranslateMessage(&msg);
 				DispatchMessageA(&msg);
 			}
+		}
+
+		public override void RunEvents()
+		{
+			const uint PM_REMOVE = 0x0001;
+			var msg = new MSG();
+			while (PeekMessageA(&msg, HANDLE.Zero, 0, 0, PM_REMOVE) != 0)
+			{
+				TranslateMessage(&msg);
+				DispatchMessageA(&msg);
+			}
+		}
+
+		public override void Exit()
+		{
+			exit = true;
 		}
 
 		#region Native Helpers
@@ -110,6 +133,9 @@ namespace Orbital.Host.Win32
 
 		[DllImport(user32Lib, EntryPoint = "GetMessageA")]
 		private static extern BOOL GetMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
+
+		[DllImport(user32Lib, EntryPoint = "PeekMessageA")]
+		private static extern BOOL PeekMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 
 		[DllImport(user32Lib, EntryPoint = "TranslateMessage")]
 		private static extern BOOL TranslateMessage(MSG* lpMsg);

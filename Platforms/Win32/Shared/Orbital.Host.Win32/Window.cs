@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Orbital.Numerics;
 
@@ -27,6 +28,8 @@ namespace Orbital.Host.Win32
 {
 	public unsafe sealed class Window : WindowBase
 	{
+		private static List<Window> windows = new List<Window>();
+
 		public ATOM atom { get; private set; }
 		public HWND hWnd { get; private set; }
 
@@ -42,19 +45,6 @@ namespace Orbital.Host.Win32
 
 		private void Init(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
-			const int CS_VREDRAW = 0x0001;
-			const int CS_HREDRAW = 0x0002;
-			const int COLOR_WINDOW = 5;
-			const int CW_USEDEFAULT = unchecked((int)0x80000000);
-			const int WS_OVERLAPPED = 0x00000000;
-			const int WS_CAPTION = 0x00C00000;
-			const int WS_SYSMENU = 0x00080000;
-			const int WS_THICKFRAME = 0x00040000;
-			const int WS_MINIMIZEBOX = 0x00020000;
-			const int WS_MAXIMIZEBOX = 0x00010000;
-			const int WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
-			const int SWP_NOMOVE = 0x0002;
-
 			// register window class
 			var wcex = new WNDCLASSEXA();
 			wcex.cbSize = (UINT)Marshal.SizeOf<WNDCLASSEXA>();
@@ -87,21 +77,30 @@ namespace Orbital.Host.Win32
 			}
 			else if (startupPosition == WindowStartupPosition.Default)
 			{
-				x = CW_USEDEFAULT;
-				y = CW_USEDEFAULT;
+				x = unchecked((int)CW_USEDEFAULT);
+				y = unchecked((int)CW_USEDEFAULT);
 			}
 
 			DWORD windowStyle = WS_OVERLAPPEDWINDOW;
-			windowStyle ^= WS_MAXIMIZEBOX;
-			windowStyle ^= WS_MINIMIZEBOX;
-			windowStyle ^= WS_THICKFRAME;// disable window resize
+			switch (type)
+			{
+				case WindowType.Tool:
+					windowStyle ^= WS_MAXIMIZEBOX;
+					windowStyle ^= WS_MINIMIZEBOX;
+					windowStyle ^= WS_THICKFRAME;// disable window resize
+					break;
+
+				case WindowType.Popup:
+					windowStyle = WS_POPUPWINDOW;
+					break;
+			}
 
 			byte* title = stackalloc byte[1];
 			title[0] = 0;
 			hWnd = CreateWindowExA(0, (LPCSTR)atom, (LPCSTR)title, windowStyle, x, y, width, height, HWND.Zero, HMENU.Zero, Application.hInstance, IntPtr.Zero);
 			if (hWnd == HWND.Zero) throw new Exception("CreateWindowExA failed");
 
-			// set working area / client size
+			// adjust working area / client size and position
 			if (sizeType == WindowSizeType.WorkingArea)
 			{
 				if (GetWindowRect(hWnd, &rect) == 0) throw new Exception("GetWindowRect failed");
@@ -128,6 +127,9 @@ namespace Orbital.Host.Win32
 
 				if (SetWindowPos(hWnd, HWND.Zero, x, y, width, height, flags) == 0) throw new Exception("SetWindowPos failed");
 			}
+
+			// track window
+			windows.Add(this);
 		}
 
 		public override void SetTitle(string title)
@@ -162,7 +164,9 @@ namespace Orbital.Host.Win32
 
 		public override Point2 GetPosition()
 		{
-			return new Point2();
+			var rect = new RECT();
+			if (GetWindowRect(hWnd, &rect) == 0) throw new Exception("GetWindowRect failed");
+			return new Point2(rect.left, rect.top);
 		}
 
 		public override void SetPosition(Point2 position)
@@ -172,19 +176,21 @@ namespace Orbital.Host.Win32
 
 		public override void SetPosition(int x, int y)
 		{
-			
+			SetWindowPos(hWnd, HWND.Zero, x, y, 0, 0, SWP_NOSIZE);
 		}
 
 		public override Size2 GetSize(WindowSizeType type)
 		{
+			var rect = new RECT();
 			if (type == WindowSizeType.WorkingArea)
 			{
-				return new Size2();
+				if (GetClientRect(hWnd, &rect) == 0) throw new Exception("GetClientRect failed");
 			}
 			else
 			{
-				return new Size2();
+				if (GetWindowRect(hWnd, &rect) == 0) throw new Exception("GetWindowRect failed");
 			}
+			return new Size2(rect.right - rect.left, rect.bottom - rect.top);
 		}
 
 		public override void SetSize(Size2 size, WindowSizeType type)
@@ -194,7 +200,23 @@ namespace Orbital.Host.Win32
 
 		public override void SetSize(int width, int height, WindowSizeType type)
 		{
-			
+			if (type == WindowSizeType.WorkingArea)
+			{
+				var rect = new RECT();
+				if (GetWindowRect(hWnd, &rect) == 0) return;
+				int rectWidth = rect.right - rect.left;
+				int rectHeight = rect.bottom - rect.top;
+
+				var clientRect = new RECT();
+				if (GetClientRect(hWnd, &clientRect) == 0) return;
+				int clientRectWidth = clientRect.right - clientRect.left;
+				int clientRectHeight = clientRect.bottom - clientRect.top;
+
+				width += (rectWidth - clientRectWidth);
+				height += (rectHeight - clientRectHeight);
+			}
+
+			SetWindowPos(hWnd, HWND.Zero, 0, 0, width, height, SWP_NOMOVE);
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
@@ -217,6 +239,17 @@ namespace Orbital.Host.Win32
 
 				case WM_DESTROY:
 					PostQuitMessage(0);
+					for (int i = windows.Count - 1; i >= 0; --i)
+					{
+						var window = windows[i];
+						if (window.hWnd == hWnd)
+						{
+							window.hWnd = HWND.Zero;
+							window.Close();
+							windows.Remove(window);
+							break;
+						}
+					}
 					break;
 
 				default:
@@ -226,9 +259,27 @@ namespace Orbital.Host.Win32
 		}
 
 		#region Native Helpers
-		private const UINT WM_COMMAND = 0x0111;
-		private const UINT WM_PAINT = 0x000F;
-		private const UINT WM_DESTROY = 0x0002;
+		private const uint CS_VREDRAW = 0x0001;
+		private const uint CS_HREDRAW = 0x0002;
+		private const uint COLOR_WINDOW = 5;
+		private const uint CW_USEDEFAULT = 0x80000000;
+		private const uint WS_OVERLAPPED = 0x00000000;
+		private const uint WS_CAPTION = 0x00C00000;
+		private const uint WS_SYSMENU = 0x00080000;
+		private const uint WS_THICKFRAME = 0x00040000;
+		private const uint WS_MINIMIZEBOX = 0x00020000;
+		private const uint WS_MAXIMIZEBOX = 0x00010000;
+		private const uint WS_POPUP = 0x80000000;
+		private const uint WS_BORDER = 0x00800000;
+		private const uint WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+		private const uint WS_POPUPWINDOW = WS_POPUP | WS_BORDER | WS_SYSMENU;
+
+		private const uint SWP_NOSIZE = 0x0001;
+		private const uint SWP_NOMOVE = 0x0002;
+
+		private const uint WM_COMMAND = 0x0111;
+		private const uint WM_PAINT = 0x000F;
+		private const uint WM_DESTROY = 0x0002;
 
 		[StructLayout(LayoutKind.Sequential)]
 		struct RECT
