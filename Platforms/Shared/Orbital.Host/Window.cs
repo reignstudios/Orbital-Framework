@@ -65,6 +65,7 @@ namespace Orbital.Host
 		public virtual void SetTitle(string title) { }
 		public virtual void Show() { }
 		public virtual void Hide() { }
+		public virtual void Close() { }
 		public virtual Point2 GetPosition() => Point2.zero;
 		public abstract void SetPosition(Point2 position);
 		public abstract void SetPosition(int x, int y);

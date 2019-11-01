@@ -44,6 +44,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.Host.WPF\Application.cs">
+      <Link>Application.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Orbital.Host.WPF\Window.cs">
       <Link>Window.cs</Link>
     </Compile>

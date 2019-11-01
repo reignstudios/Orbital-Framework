@@ -74,6 +74,11 @@ namespace Orbital.Host.WPF
 			window.Hide();
 		}
 
+		public override void Close()
+		{
+			window.Close();
+		}
+
 		public override Point2 GetPosition()
 		{
 			return new Point2((int)window.Left, (int)window.Top);
@@ -138,7 +143,7 @@ namespace Orbital.Host.WPF
 			}
 		}
 
-		#region SetSize native Helpers
+		#region Native Helpers
 		[StructLayout(LayoutKind.Sequential)]
 		struct RECT
 		{

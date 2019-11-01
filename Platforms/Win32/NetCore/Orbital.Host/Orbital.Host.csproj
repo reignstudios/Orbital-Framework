@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Host\Application.cs" Link="Application.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Host\Window.cs" Link="Window.cs" />
   </ItemGroup>
 

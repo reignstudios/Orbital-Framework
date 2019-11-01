@@ -5,15 +5,19 @@ VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{51EF7356-1961-4A05-A6FB-8F293A55FF4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.WinForms", "Orbital.Host.WinForms\Orbital.Host.WinForms.csproj", "{5C1F418A-9D5B-44C1-A07C-B7B29359799D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.WinForms", "Orbital.Host.WinForms\Orbital.Host.WinForms.csproj", "{5C1F418A-9D5B-44C1-A07C-B7B29359799D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.WinForms", "Orbital.Demo.WinForms\Orbital.Demo.WinForms.csproj", "{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.WinForms", "Orbital.Demo.WinForms\Orbital.Demo.WinForms.csproj", "{AAD35AD6-25F5-432D-8D1A-8733997F9C6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.WPF", "Orbital.Host.WPF\Orbital.Host.WPF.csproj", "{A96C9D43-DA89-4397-AB46-3C590F34713E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.WPF", "Orbital.Host.WPF\Orbital.Host.WPF.csproj", "{A96C9D43-DA89-4397-AB46-3C590F34713E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.WPF", "Orbital.Demo.WPF\Orbital.Demo.WPF.csproj", "{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.WPF", "Orbital.Demo.WPF\Orbital.Demo.WPF.csproj", "{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{4078532F-866C-4A62-907D-34BC7B2983DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,14 @@ Global
 		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5510F983-07B5-4C6B-AA40-07A6BAC1DA9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4078532F-866C-4A62-907D-34BC7B2983DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4078532F-866C-4A62-907D-34BC7B2983DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4078532F-866C-4A62-907D-34BC7B2983DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4078532F-866C-4A62-907D-34BC7B2983DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.Demo.WinForms\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Orbital.Host.WinForms\Orbital.Host.WinForms.csproj" />
   </ItemGroup>
 

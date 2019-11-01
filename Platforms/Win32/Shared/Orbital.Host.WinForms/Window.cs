@@ -75,6 +75,11 @@ namespace Orbital.Host.WinForms
 			form.Hide();
 		}
 
+		public override void Close()
+		{
+			form.Close();
+		}
+
 		public override Point2 GetPosition()
 		{
 			var position = form.Location;

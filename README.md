@@ -62,7 +62,7 @@ API Agnostic DSP effects can be written in C#<br>
 ### Input
 * MS: DirectInput
 * MS: XInput
-* MS: Win32 / WinForms / WPF Input
+* MS: Win16 / Win32 / WinForms / WPF Input
 * MS: WinRT XAML Input
 * POSIX: HID
 * POSIX: X11
