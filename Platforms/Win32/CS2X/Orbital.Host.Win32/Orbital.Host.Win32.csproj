@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+
+    <!-- Prevent .NET Core 3+ from generating exe -->
+    <UseAppHost>false</UseAppHost>
+
+    <!--Disable .NET Core SDK libs-->
+    <NoStdLib>true</NoStdLib>
+    <NoStandardLibraries>true</NoStandardLibraries>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;CS2X</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;CS2X</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.Host.Win32\Application.cs" Link="Application.cs" />
+    <Compile Include="..\..\Shared\Orbital.Host.Win32\Window.cs" Link="Window.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+  </ItemGroup>
+
+</Project>

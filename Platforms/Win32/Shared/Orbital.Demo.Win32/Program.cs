@@ -6,7 +6,6 @@ namespace Orbital.Demo.Win32
 {
 	static class Program
 	{
-		[STAThread]
 		static void Main(string[] args)
 		{
 			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);

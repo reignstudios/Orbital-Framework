@@ -25,7 +25,14 @@ namespace Orbital.Host.Win32
 		static Application()
 		{
 			// get hInstance
-			if (hInstance == HINSTANCE.Zero) hInstance = Marshal.GetHINSTANCE(typeof(Window).Module);
+			if (hInstance == HINSTANCE.Zero)
+			{
+				#if CS2X
+				hInstance = Marshal.GetHINSTANCE();
+				#else
+				hInstance = Marshal.GetHINSTANCE(typeof(Window).Module);
+				#endif
+			}
 
 			// get nCmdShow
 			if (nCmdShow == 0)

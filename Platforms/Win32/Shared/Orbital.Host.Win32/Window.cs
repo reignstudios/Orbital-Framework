@@ -50,7 +50,11 @@ namespace Orbital.Host.Win32
 			wcex.cbSize = (UINT)Marshal.SizeOf<WNDCLASSEXA>();
 			wcex.style = CS_HREDRAW | CS_VREDRAW;
 			var WndProcDelegate = new WndProcDelegate(WndProc);
+			#if CS2X
+			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate, out _);
+			#else
 			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate);
+			#endif
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = 0;
 			wcex.hInstance = Application.hInstance;

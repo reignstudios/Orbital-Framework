@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS2X.CoreLib", "..\..\..\Su
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{031AE43E-86F3-432B-89F8-1DD07CB79090}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{20043219-CF16-4846-8E37-2391FFB16F17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{031AE43E-86F3-432B-89F8-1DD07CB79090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{031AE43E-86F3-432B-89F8-1DD07CB79090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{031AE43E-86F3-432B-89F8-1DD07CB79090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{031AE43E-86F3-432B-89F8-1DD07CB79090}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20043219-CF16-4846-8E37-2391FFB16F17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20043219-CF16-4846-8E37-2391FFB16F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20043219-CF16-4846-8E37-2391FFB16F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20043219-CF16-4846-8E37-2391FFB16F17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
