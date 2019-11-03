@@ -51,7 +51,7 @@ namespace Orbital.Host.Win32
 			wcex.style = CS_HREDRAW | CS_VREDRAW;
 			var WndProcDelegate = new WndProcDelegate(WndProc);
 			#if CS2X
-			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate, out _);
+			Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate, out _, out wcex.lpfnWndProc);
 			#else
 			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate);
 			#endif
