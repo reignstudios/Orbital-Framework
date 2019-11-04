@@ -27,6 +27,9 @@
     <ClInclude Include="Device.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="D3D12_Extern.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

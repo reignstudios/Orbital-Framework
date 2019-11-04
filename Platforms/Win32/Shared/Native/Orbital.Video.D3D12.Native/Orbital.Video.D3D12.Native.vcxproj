@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="D3D12_Extern.h" />
     <ClInclude Include="Device.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
