@@ -1,4 +1,6 @@
-﻿namespace Orbital.Host
+﻿using System;
+
+namespace Orbital.Host
 {
 	public abstract class ApplicationBase
 	{

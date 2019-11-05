@@ -136,6 +136,11 @@ namespace Orbital.Host.Win32
 			windows.Add(this);
 		}
 
+		public override void Dispose()
+		{
+			Close();
+		}
+
 		public override void SetTitle(string title)
 		{
 			byte[] encodedTitle = Encoding.Default.GetBytes(title + '\0');

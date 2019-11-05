@@ -8,10 +8,10 @@ namespace Orbital.Demo.Win32
 	{
 		static void Main(string[] args)
 		{
+			var application = new Application();
 			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: Win32");
 			window.Show();
-			var application = new Application();
 			application.Run(window);
 		}
 	}

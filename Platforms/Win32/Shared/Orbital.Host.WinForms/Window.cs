@@ -60,6 +60,11 @@ namespace Orbital.Host.WinForms
 			}
 		}
 
+		public override void Dispose()
+		{
+			Close();
+		}
+
 		public override void SetTitle(string title)
 		{
 			form.Text = title;
@@ -78,6 +83,16 @@ namespace Orbital.Host.WinForms
 		public override void Close()
 		{
 			form.Close();
+		}
+
+		public override bool IsVisible()
+		{
+			return form.Visible;
+		}
+
+		public override bool IsClosed()
+		{
+			return form.IsDisposed;
 		}
 
 		public override Point2 GetPosition()

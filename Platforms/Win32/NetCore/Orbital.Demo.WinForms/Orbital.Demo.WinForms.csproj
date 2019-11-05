@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Host.WinForms\Orbital.Host.WinForms.csproj" />
+    <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace Orbital.Video
+﻿using System;
+
+namespace Orbital.Video
 {
 	public enum DeviceType
 	{
@@ -13,7 +15,7 @@
 		Background
 	}
 
-	public abstract class DeviceBase
+	public abstract class DeviceBase : IDisposable
 	{
 		public readonly DeviceType type;
 
@@ -21,6 +23,8 @@
 		{
 			this.type = type;
 		}
+
+		public abstract void Dispose();
 
 		/// <summary>
 		/// Do any prep work needed before new presentation frame

@@ -1,4 +1,5 @@
-﻿using Orbital.Numerics;
+﻿using System;
+using Orbital.Numerics;
 
 namespace Orbital.Host
 {
@@ -60,12 +61,15 @@ namespace Orbital.Host
 		CenterScreen
 	}
 
-	public abstract class WindowBase
+	public abstract class WindowBase : IDisposable
 	{
+		public abstract void Dispose();
 		public virtual void SetTitle(string title) { }
 		public virtual void Show() { }
 		public virtual void Hide() { }
 		public virtual void Close() { }
+		public virtual bool IsVisible() => true;
+		public virtual bool IsClosed() => false;
 		public virtual Point2 GetPosition() => Point2.zero;
 		public abstract void SetPosition(Point2 position);
 		public abstract void SetPosition(int x, int y);
