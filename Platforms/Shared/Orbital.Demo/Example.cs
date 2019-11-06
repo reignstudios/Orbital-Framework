@@ -13,15 +13,17 @@ namespace Orbital.Demo
 	{
 		private ApplicationBase application;
 		private WindowBase window;
+		private IntPtr hWnd;
 		private DeviceBase device;
 
 		[DllImport("Kernel32.dll", EntryPoint = "LoadLibraryA")]
 		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
 
-		public Example(ApplicationBase application, WindowBase window)
+		public Example(ApplicationBase application, WindowBase window, IntPtr hWnd)
 		{
 			this.application = application;
 			this.window = window;
+			this.hWnd = hWnd;
 		}
 
 		private unsafe void LoadLib(string libPath)
@@ -55,7 +57,9 @@ namespace Orbital.Demo
 
 			// load api abstraction
 			var deviceD3D12 = new Device(DeviceType.Presentation);
-			if (!deviceD3D12.Init(-1, FeatureLevel.Level_11_0, false)) throw new Exception("Failed to init D3D12");
+			var size = window.GetSize(WindowSizeType.WorkingArea);
+			if (!deviceD3D12.Init(-1, FeatureLevel.Level_11_0, false, hWnd, size.width, size.height, 2, false)) throw new Exception("Failed to init D3D12");
+			device = deviceD3D12;
 		}
 
 		public void Dispose()
@@ -72,6 +76,9 @@ namespace Orbital.Demo
 			while (!window.IsClosed())
 			{
 				application.RunEvents();
+				device.BeginFrame();
+				// TODO
+				device.EndFrame();
 				Thread.Sleep(1000 / 60);
 			}
 		}

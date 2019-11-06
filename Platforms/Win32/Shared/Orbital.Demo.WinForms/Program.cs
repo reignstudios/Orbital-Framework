@@ -18,7 +18,7 @@ namespace Orbital.Demo.WinForms
 			window.Show();
 
 			// run example
-			using (var example = new Example(application, window))
+			using (var example = new Example(application, window, window.form.Handle))
 			{
 				example.Init(@"..\..\..\..\..");
 				example.Run();
