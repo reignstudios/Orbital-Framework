@@ -25,7 +25,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create();
 
 		[DllImport(lib)]
-		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr device, int softwareRasterizer, FeatureLevel featureLevel);
+		private static extern byte Orbital_Video_D3D12_Device_Init(IntPtr device, int adapterIndex, FeatureLevel minimumFeatureLevel, byte softwareRasterizer);
 
 		[DllImport(lib)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr device);
@@ -36,9 +36,9 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_Device_Create();
 		}
 
-		public bool Init(FeatureLevel featureLevel)
+		public bool Init(int adapterIndex, FeatureLevel minimumFeatureLevel, bool softwareRasterizer)
 		{
-			return Orbital_Video_D3D12_Device_Init(handle, 0, featureLevel) != 0;
+			return Orbital_Video_D3D12_Device_Init(handle, adapterIndex, minimumFeatureLevel, (byte)(softwareRasterizer ? 1 : 0)) != 0;
 		}
 
 		public override void Dispose()

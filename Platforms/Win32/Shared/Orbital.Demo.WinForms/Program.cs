@@ -1,8 +1,8 @@
 using System;
 using Orbital.Host;
 using Orbital.Host.WinForms;
-using Orbital.Video;
-using Orbital.Video.D3D12;
+
+using Forms = System.Windows.Forms;
 
 namespace Orbital.Demo.WinForms
 {
@@ -17,18 +17,11 @@ namespace Orbital.Demo.WinForms
 			window.SetTitle("Demo: WinForms");
 			window.Show();
 
-			// init video
-			using (var device = new Device(DeviceType.Presentation))// TODO: put this logic in shared game demo cs file
+			// run example
+			using (var example = new Example(application, window))
 			{
-				device.Init(FeatureLevel.Level_12_0);
-
-				// run main loop
-				//application.Run(window);
-				while (!window.IsClosed())
-				{
-					application.RunEvents();
-					System.Threading.Thread.Sleep(1000 / 60);
-				}
+				example.Init(@"..\..\..\..\..");
+				example.Run();
 			}
 		}
 	}

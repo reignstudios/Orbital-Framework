@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Orbital.Demo.WinForms": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

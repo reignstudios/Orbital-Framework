@@ -17,15 +17,12 @@ enum FeatureLevel
 
 struct Device
 {
-#if defined(_DEBUG)
+	#if defined(_DEBUG)
 	ID3D12Debug* debugController;
-#endif
+	#endif
 
 	IDXGIFactory4* factory;
 	IDXGIAdapter* adapter;
 	ID3D12Device* device;
 	ID3D12CommandQueue* commandQueue;
-
-	bool Init(FeatureLevel featureLevel, bool softwareRasterizer);
-	void Dispose();
 };

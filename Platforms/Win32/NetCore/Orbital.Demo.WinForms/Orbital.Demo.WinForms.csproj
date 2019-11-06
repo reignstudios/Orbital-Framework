@@ -6,7 +6,18 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;WIN32</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Demo\Example.cs" Link="Example.cs" />
     <Compile Include="..\..\Shared\Orbital.Demo.WinForms\Program.cs" Link="Program.cs" />
   </ItemGroup>
 
