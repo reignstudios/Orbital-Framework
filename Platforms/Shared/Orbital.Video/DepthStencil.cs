@@ -1,7 +1,9 @@
-﻿namespace Orbital.Video
+﻿using System;
+
+namespace Orbital.Video
 {
-	public abstract class DepthStencilBase
+	public abstract class DepthStencilBase : IDisposable
 	{
-		
+		public abstract void Dispose();
 	}
 }

@@ -15,11 +15,6 @@ extern "C"
 		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
 		switch (minimumFeatureLevel)
 		{
-			case FeatureLevel::Level_9_1: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_9_1; break;
-			case FeatureLevel::Level_9_2: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_9_2; break;
-			case FeatureLevel::Level_9_3: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_9_3; break;
-			case FeatureLevel::Level_10_0: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_10_0; break;
-			case FeatureLevel::Level_10_1: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_10_1; break;
 			case FeatureLevel::Level_11_0: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0; break;
 			case FeatureLevel::Level_11_1: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_1; break;
 			case FeatureLevel::Level_12_0: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0; break;

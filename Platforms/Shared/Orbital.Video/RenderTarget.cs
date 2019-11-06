@@ -1,7 +1,9 @@
-﻿namespace Orbital.Video
+﻿using System;
+
+namespace Orbital.Video
 {
-	public abstract class RenderTargetBase
+	public abstract class RenderTargetBase : IDisposable
 	{
-		
+		public abstract void Dispose();
 	}
 }

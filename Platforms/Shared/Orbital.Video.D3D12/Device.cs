@@ -5,11 +5,6 @@ namespace Orbital.Video.D3D12
 {
 	public enum FeatureLevel
 	{
-		Level_9_1,
-		Level_9_2,
-		Level_9_3,
-		Level_10_0,
-		Level_10_1,
 		Level_11_0,
 		Level_11_1,
 		Level_12_0,

@@ -1,7 +1,11 @@
-﻿namespace Orbital.Video
+﻿using System;
+
+namespace Orbital.Video
 {
-	public abstract class CommandBufferBase
+	public abstract class CommandBufferBase : IDisposable
 	{
+		public abstract void Dispose();
+
 		/// <summary>
 		/// Enables render-target to draw to
 		/// </summary>
