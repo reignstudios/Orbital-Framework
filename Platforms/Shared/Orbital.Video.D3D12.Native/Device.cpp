@@ -3,6 +3,76 @@
 
 extern "C"
 {
+	bool FeatureLevelToNative(FeatureLevel featureLevel, D3D_FEATURE_LEVEL* nativeMinFeatureLevel)
+	{
+		switch (featureLevel)
+		{
+			case FeatureLevel::Level_11_0: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0; break;
+			case FeatureLevel::Level_11_1: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_1; break;
+			case FeatureLevel::Level_12_0: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0; break;
+			case FeatureLevel::Level_12_1: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1; break;
+			default: return false;
+		}
+		return true;
+	}
+
+	ORBITAL_EXPORT bool Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, bool allowSoftwareAdapters, WCHAR** adapterNames, UINT* adapterNameCount, UINT adapterNameMaxLength)
+	{
+		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
+		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return false;
+
+		IDXGIFactory4* factory = NULL;
+		if (FAILED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) return false;
+
+		IDXGIAdapter1* adapter1 = NULL;
+		UINT maxAdapterCount = *adapterNameCount;
+		*adapterNameCount = 0;
+		for (UINT i = 0; DXGI_ERROR_NOT_FOUND != factory->EnumAdapters1(i, &adapter1); ++i)
+		{
+			// early out if we reached max adapter count
+			if (i >= maxAdapterCount)
+			{
+				adapter1->Release();
+				factory->Release();
+				return true;
+			}
+
+			// get adapter desc
+			DXGI_ADAPTER_DESC1 desc;
+			if (FAILED(adapter1->GetDesc1(&desc)))
+			{
+				adapter1->Release();
+				factory->Release();
+				return false;
+			}
+
+			// check if software adapter
+			if (!allowSoftwareAdapters && desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+			{
+				adapter1->Release();
+				continue;
+			}
+
+			// make sure adapter can be used
+			if (FAILED(D3D12CreateDevice(adapter1, nativeMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
+			{
+				adapter1->Release();
+				continue;
+			}
+
+			// add name and increase count
+			UINT maxLength = min(sizeof(WCHAR) * adapterNameMaxLength, sizeof(desc.Description));
+			memcpy(adapterNames[i], desc.Description, maxLength);
+			++(*adapterNameCount);
+
+			// finish
+			adapter1->Release();
+		}
+
+		factory->Release();
+		return true;
+	}
+
 	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create()
 	{
 		return (Device*)calloc(1, sizeof(Device));
@@ -12,14 +82,7 @@ extern "C"
 	{
 		// get native feature level
 		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
-		switch (minimumFeatureLevel)
-		{
-			case FeatureLevel::Level_11_0: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0; break;
-			case FeatureLevel::Level_11_1: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_1; break;
-			case FeatureLevel::Level_12_0: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0; break;
-			case FeatureLevel::Level_12_1: nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1; break;
-			default: return false;
-		}
+		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return false;
 
 		// enable debugging
 		UINT factoryFlags = 0;
@@ -38,37 +101,11 @@ extern "C"
 		{
 			if (FAILED(handle->factory->EnumWarpAdapter(IID_PPV_ARGS(&handle->adapter)))) return false;
 		}
-		else
+		else if (adapterIndex != -1)
 		{
 			IDXGIAdapter1* adapter1 = NULL;
-			if (adapterIndex != -1)
-			{
-				for (UINT adapterIndex = 0; DXGI_ERROR_NOT_FOUND != handle->factory->EnumAdapters1(adapterIndex, &adapter1); ++adapterIndex)
-				{
-					DXGI_ADAPTER_DESC1 desc;
-					if (FAILED(adapter1->GetDesc1(&desc)))
-					{
-						adapter1->Release();
-						return false;
-					}
-
-					if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-					{
-						adapter1->Release();
-						continue;
-					}
-
-					if (SUCCEEDED(D3D12CreateDevice(adapter1, nativeMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
-					{
-						handle->adapter = adapter1;
-						break;
-					}
-
-					adapter1->Release();
-				}
-
-				if (handle->adapter == NULL) return false;
-			}
+			if (FAILED(handle->factory->EnumAdapters1(adapterIndex, &adapter1))) return false;
+			handle->adapter = adapter1;
 		}
 
 		// create device

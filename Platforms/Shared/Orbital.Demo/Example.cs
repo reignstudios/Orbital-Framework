@@ -56,6 +56,9 @@ namespace Orbital.Demo
 			LoadLib(libPath);
 			#endif
 
+			// query avaliable adapters
+			//if (!Device.QuerySupportedAdapters(FeatureLevel.Level_11_0, false, out var adapterNames)) throw new Exception("Failed to get D3D12 Adapter names");
+
 			// load api abstraction
 			var deviceD3D12 = new Device(DeviceType.Presentation);
 			var size = window.GetSize(WindowSizeType.WorkingArea);

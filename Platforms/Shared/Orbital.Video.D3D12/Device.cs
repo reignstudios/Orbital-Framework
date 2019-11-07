@@ -19,6 +19,9 @@ namespace Orbital.Video.D3D12
 		internal const string lib = "Orbital.Video.D3D12.Native.dll";
 
 		[DllImport(lib)]
+		private static unsafe extern byte Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, byte allowSoftwareAdapters, char** adapterNames, uint* adapterNameCount, uint adapterNameMaxLength);
+
+		[DllImport(lib)]
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create();
 
 		[DllImport(lib)]
@@ -35,6 +38,31 @@ namespace Orbital.Video.D3D12
 
 		[DllImport(lib)]
 		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
+
+		public static unsafe bool QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, bool allowSoftwareAdapters, out string[] adapterNames)
+		{
+			const int maxNameLength = 128, maxNames = 32;
+			uint adapterNameCount = maxNames;
+			char** adapterNamesPtr = stackalloc char*[maxNames];
+			for (int i = 0; i != maxNames; ++i)
+			{
+				char* adapterNamePtr = stackalloc char[maxNameLength];
+				adapterNamesPtr[i] = adapterNamePtr;
+			}
+
+			if (Orbital_Video_D3D12_Device_QuerySupportedAdapters(minimumFeatureLevel, (byte)(allowSoftwareAdapters ? 1 : 0), adapterNamesPtr, &adapterNameCount, maxNameLength) == 0)
+			{
+				adapterNames = null;
+				return false;
+			}
+
+			adapterNames = new string[adapterNameCount];
+			for (int i = 0; i != adapterNameCount; ++i)
+			{
+				adapterNames[i] = Marshal.PtrToStringUni((IntPtr)adapterNamesPtr[i]);
+			}
+			return true;
+		}
 
 		public Device(DeviceType type)
 		: base(type)
