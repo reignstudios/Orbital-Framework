@@ -100,11 +100,29 @@ extern "C"
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return false;
 
+		// create fence
+		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return false;
+		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (handle->fenceEvent == NULL) return false;
+		handle->fenceValue = 1;
+
 		return true;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_Dispose(Device* handle)
 	{
+		if (handle->fenceEvent != NULL)
+		{
+			CloseHandle(handle->fenceEvent);
+			handle->fenceEvent = NULL;
+		}
+
+		if (handle->fence != NULL)
+		{
+			handle->fence->Release();
+			handle->fence = NULL;
+		}
+
 		if (handle->commandQueue != NULL)
 		{
 			handle->commandQueue->Release();
@@ -136,5 +154,20 @@ extern "C"
 		}
 
 		free(handle);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_WaitForFrameCompletion(Device* handle)
+	{
+		// signal and increment the fence value.
+		const UINT64 fence = handle->fenceValue;
+		if (FAILED(handle->commandQueue->Signal(handle->fence, fence))) return;
+		++handle->fenceValue;
+
+		// wait until the previous frame is finished.
+		if (handle->fence->GetCompletedValue() < fence)
+		{
+			if (FAILED(handle->fence->SetEventOnCompletion(fence, handle->fenceEvent))) return;
+			WaitForSingleObject(handle->fenceEvent, INFINITE);
+		}
 	}
 }

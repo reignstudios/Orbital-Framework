@@ -27,6 +27,9 @@ namespace Orbital.Video.D3D12
 		[DllImport(lib)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
 
+		[DllImport(lib)]
+		private static extern void Orbital_Video_D3D12_Device_WaitForFrameCompletion(IntPtr handle);
+
 		public Device(DeviceType type)
 		: base(type)
 		{
@@ -62,7 +65,11 @@ namespace Orbital.Video.D3D12
 
 		public override void EndFrame()
 		{
-			if (type == DeviceType.Presentation) swapChain.Present();
+			if (type == DeviceType.Presentation)
+			{
+				swapChain.Present();
+				Orbital_Video_D3D12_Device_WaitForFrameCompletion(handle);
+			}
 		}
 	}
 }
