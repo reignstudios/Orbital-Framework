@@ -14,7 +14,7 @@ namespace Orbital.Video.D3D12
 	public sealed class Device : DeviceBase
 	{
 		internal IntPtr handle;
-		private SwapChain swapChain;
+		internal SwapChain swapChain;
 
 		internal const string lib = "Orbital.Video.D3D12.Native.dll";
 
@@ -28,7 +28,13 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
 
 		[DllImport(lib)]
-		private static extern void Orbital_Video_D3D12_Device_WaitForFrameCompletion(IntPtr handle);
+		private static extern void Orbital_Video_D3D12_Device_BeginFrame(IntPtr handle);
+
+		[DllImport(lib)]
+		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
+
+		[DllImport(lib)]
+		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
 
 		public Device(DeviceType type)
 		: base(type)
@@ -60,7 +66,9 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
+			swapChain.BeginFrame();
 			// TODO: check if window size changed and resize swapchain back-buffer if so to match
+			Orbital_Video_D3D12_Device_BeginFrame(handle);
 		}
 
 		public override void EndFrame()
@@ -68,8 +76,14 @@ namespace Orbital.Video.D3D12
 			if (type == DeviceType.Presentation)
 			{
 				swapChain.Present();
-				Orbital_Video_D3D12_Device_WaitForFrameCompletion(handle);
+				Orbital_Video_D3D12_Device_EndFrame(handle);
 			}
+		}
+
+		public override void ExecuteCommandBuffer(CommandBufferBase commandBuffer)
+		{
+			var commandBufferD3D12 = (CommandBuffer)commandBuffer;
+			Orbital_Video_D3D12_Device_ExecuteCommandBuffer(handle, commandBufferD3D12.handle);
 		}
 	}
 }

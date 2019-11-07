@@ -3,8 +3,9 @@
 
 struct SwapChain
 {
-	UINT bufferCount;
-	IDXGISwapChain1* swapChain;
+	UINT bufferCount, currentRenderTargetIndex;
+	IDXGISwapChain3* swapChain;
 	ID3D12DescriptorHeap* renderTargetViewHeap;
-	ID3D12Resource** renderTargetResources;
+	D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetDescHandles;
+	ID3D12Resource** renderTargetViews;
 };

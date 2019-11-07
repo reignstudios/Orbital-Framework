@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "CommandBuffer.h"
 
 extern "C"
 {
@@ -100,6 +101,9 @@ extern "C"
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return false;
 
+		// create command allocator
+		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return false;
+
 		// create fence
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return false;
 		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -121,6 +125,12 @@ extern "C"
 		{
 			handle->fence->Release();
 			handle->fence = NULL;
+		}
+
+		if (handle->commandAllocator != NULL)
+		{
+			handle->commandAllocator->Release();
+			handle->commandAllocator = NULL;
 		}
 
 		if (handle->commandQueue != NULL)
@@ -156,7 +166,12 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_WaitForFrameCompletion(Device* handle)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_BeginFrame(Device* handle)
+	{
+		handle->commandAllocator->Reset();
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
 	{
 		// signal and increment the fence value.
 		const UINT64 fence = handle->fenceValue;
@@ -169,5 +184,11 @@ extern "C"
 			if (FAILED(handle->fence->SetEventOnCompletion(fence, handle->fenceEvent))) return;
 			WaitForSingleObject(handle->fenceEvent, INFINITE);
 		}
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(Device* handle, CommandBuffer* commandBuffer)
+	{
+		ID3D12CommandList* commandLists[1] = { commandBuffer->commandList };
+		handle->commandQueue->ExecuteCommandLists(1, commandLists);
 	}
 }

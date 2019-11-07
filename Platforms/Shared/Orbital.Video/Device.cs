@@ -35,5 +35,10 @@ namespace Orbital.Video
 		/// Finish and present frame to physical screen
 		/// </summary>
 		public abstract void EndFrame();
+
+		/// <summary>
+		/// Executes command-buffer operations
+		/// </summary>
+		public abstract void ExecuteCommandBuffer(CommandBufferBase commandBuffer);
 	}
 }

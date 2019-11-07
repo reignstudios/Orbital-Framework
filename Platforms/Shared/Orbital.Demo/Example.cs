@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -14,7 +13,9 @@ namespace Orbital.Demo
 		private ApplicationBase application;
 		private WindowBase window;
 		private IntPtr hWnd;
+
 		private DeviceBase device;
+		private CommandBufferBase commandBuffer;
 
 		[DllImport("Kernel32.dll", EntryPoint = "LoadLibraryA")]
 		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
@@ -58,12 +59,22 @@ namespace Orbital.Demo
 			// load api abstraction
 			var deviceD3D12 = new Device(DeviceType.Presentation);
 			var size = window.GetSize(WindowSizeType.WorkingArea);
-			if (!deviceD3D12.Init(-1, FeatureLevel.Level_11_0, false, hWnd, size.width, size.height, 2, false)) throw new Exception("Failed to init D3D12");
+			if (!deviceD3D12.Init(-1, FeatureLevel.Level_11_0, false, hWnd, size.width, size.height, 2, false)) throw new Exception("Failed to init D3D12 Device");
 			device = deviceD3D12;
+
+			var commandBufferD3D12 = new CommandBuffer(deviceD3D12);
+			if (!commandBufferD3D12.Init()) throw new Exception("Failed to init D3D12 CommandBuffer");
+			commandBuffer = commandBufferD3D12;
 		}
 
 		public void Dispose()
 		{
+			if (commandBuffer != null)
+			{
+				commandBuffer.Dispose();
+				commandBuffer = null;
+			}
+
 			if (device != null)
 			{
 				device.Dispose();
@@ -76,10 +87,15 @@ namespace Orbital.Demo
 			while (!window.IsClosed())
 			{
 				application.RunEvents();
+
 				device.BeginFrame();
-				// TODO
+				commandBuffer.Start();
+				commandBuffer.EnabledRenderTarget();
+				commandBuffer.ClearRenderTarget(1, 0, 0, 1);
+				commandBuffer.EnabledPresent();
+				commandBuffer.Finish();
+				device.ExecuteCommandBuffer(commandBuffer);
 				device.EndFrame();
-				Thread.Sleep(1000 / 60);
 			}
 		}
 	}
