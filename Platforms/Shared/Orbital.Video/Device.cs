@@ -1,4 +1,5 @@
 ﻿using System;
+using Orbital.Host;
 
 namespace Orbital.Video
 {
@@ -10,7 +11,7 @@ namespace Orbital.Video
 		Presentation,
 
 		/// <summary>
-		/// Device will only be used for background processing (such as Compute-Shaders, etc)
+		/// Device will only be used for background processing (such as Compute-Shaders, UI-Embedding, etc)
 		/// </summary>
 		Background
 	}
@@ -40,5 +41,10 @@ namespace Orbital.Video
 		/// Executes command-buffer operations
 		/// </summary>
 		public abstract void ExecuteCommandBuffer(CommandBufferBase commandBuffer);
+
+		#region Create Methods
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen);
+		public abstract CommandBufferBase CreateCommandBuffer();
+		#endregion
 	}
 }

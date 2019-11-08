@@ -12,4 +12,8 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+  </ItemGroup>
+
 </Project>

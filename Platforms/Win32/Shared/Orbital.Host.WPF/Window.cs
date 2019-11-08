@@ -10,6 +10,7 @@ namespace Orbital.Host.WPF
 	public sealed class Window : WindowBase
 	{
 		public readonly WPFWindow window;
+		private IntPtr handle;
 
 		public Window(WPFWindow window)
 		{
@@ -30,6 +31,10 @@ namespace Orbital.Host.WPF
 
 		private void Init(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
+			// get native HWND handle
+			handle = new WindowInteropHelper(window).EnsureHandle();
+			if (handle == IntPtr.Zero) throw new Exception("WindowInteropHelper HWND failed");
+
 			// set form type
 			switch (type)
 			{
@@ -62,6 +67,11 @@ namespace Orbital.Host.WPF
 		public override void Dispose()
 		{
 			Close();
+		}
+
+		public override IntPtr GetHandle()
+		{
+			return handle;
 		}
 
 		public override void SetTitle(string title)
@@ -115,10 +125,6 @@ namespace Orbital.Host.WPF
 		{
 			if (type == WindowSizeType.WorkingArea)
 			{
-				// get native HWND handle
-				IntPtr handle = new WindowInteropHelper(window).EnsureHandle();
-				if (handle == IntPtr.Zero) throw new Exception("WindowInteropHelper HWND failed");
-
 				// get window rect and size
 				RECT rect = new RECT();
 				int result = GetWindowRect(handle, ref rect);

@@ -35,7 +35,7 @@ namespace Orbital.Video.D3D12
 		public CommandBuffer(Device device)
 		: base(device)
 		{
-			deviceD3D12 = (Device)device;
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_CommandBuffer_Create();
 		}
 

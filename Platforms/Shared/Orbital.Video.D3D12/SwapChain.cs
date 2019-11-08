@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Orbital.Host;
 
 namespace Orbital.Video.D3D12
 {
 	public sealed class SwapChain : SwapChainBase
 	{
 		internal IntPtr handle;
+		public readonly Device deviceD3D12;
 
 		[DllImport(Device.lib)]
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create();
@@ -22,14 +24,18 @@ namespace Orbital.Video.D3D12
 		[DllImport(Device.lib)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
-		public SwapChain()
+		public SwapChain(Device device)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_SwapChain_Create();
 		}
 
-		public bool Init(Device device, IntPtr hWnd, int width, int height, int bufferCount, bool fullscreen)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
 		{
-			if (Orbital_Video_D3D12_SwapChain_Init(handle, device.handle, hWnd, (uint)width, (uint)height, (uint)bufferCount, (byte)(fullscreen ? 1 : 0)) == 0) return false;
+			var size = window.GetSize(WindowSizeType.WorkingArea);
+			IntPtr hWnd = window.GetHandle();
+			if (Orbital_Video_D3D12_SwapChain_Init(handle, deviceD3D12.handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (byte)(fullscreen ? 1 : 0)) == 0) return false;
 			return true;
 		}
 

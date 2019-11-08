@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Orbital.Host;
 
 namespace Orbital.Video.D3D12
 {
@@ -11,10 +12,23 @@ namespace Orbital.Video.D3D12
 		Level_12_1
 	}
 
+	public struct DeviceDesc
+	{
+		public int adapterIndex;
+		public bool softwareRasterizer;
+		public FeatureLevel minimumFeatureLevel;
+		public WindowBase window;
+		public bool ensureSwapChainMatchesWindowSize;
+		public int swapChainBufferCount;
+		public bool fullscreen;
+	}
+
 	public sealed class Device : DeviceBase
 	{
 		internal IntPtr handle;
 		internal SwapChain swapChain;
+		private WindowBase window;
+		private bool ensureSwapChainMatchesWindowSize;
 
 		internal const string lib = "Orbital.Video.D3D12.Native.dll";
 
@@ -68,13 +82,23 @@ namespace Orbital.Video.D3D12
 		: base(type)
 		{
 			handle = Orbital_Video_D3D12_Device_Create();
-			if (type == DeviceType.Presentation) swapChain = new SwapChain();
 		}
 
-		public bool Init(int adapterIndex, FeatureLevel minimumFeatureLevel, bool softwareRasterizer, IntPtr hWnd, int width, int height, int bufferCount, bool fullscreen)
+		public bool Init(DeviceDesc desc)
 		{
-			if (Orbital_Video_D3D12_Device_Init(handle, adapterIndex, minimumFeatureLevel, (byte)(softwareRasterizer ? 1 : 0)) == 0) return false;
-			return swapChain.Init(this, hWnd, width, height, bufferCount, fullscreen);
+			window = desc.window;
+			ensureSwapChainMatchesWindowSize = desc.ensureSwapChainMatchesWindowSize;
+
+			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.minimumFeatureLevel, (byte)(desc.softwareRasterizer ? 1 : 0)) == 0) return false;
+			if (type == DeviceType.Presentation)
+			{
+				swapChain = new SwapChain(this);
+				return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		public override void Dispose()
@@ -95,7 +119,10 @@ namespace Orbital.Video.D3D12
 		public override void BeginFrame()
 		{
 			swapChain.BeginFrame();
-			// TODO: check if window size changed and resize swapchain back-buffer if so to match
+			if (ensureSwapChainMatchesWindowSize)
+			{
+				// TODO: check if window size changed and resize swapchain back-buffer if so to match
+			}
 			Orbital_Video_D3D12_Device_BeginFrame(handle);
 		}
 
@@ -113,5 +140,29 @@ namespace Orbital.Video.D3D12
 			var commandBufferD3D12 = (CommandBuffer)commandBuffer;
 			Orbital_Video_D3D12_Device_ExecuteCommandBuffer(handle, commandBufferD3D12.handle);
 		}
+
+		#region Create Methods
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen)
+		{
+			var abstraction = new SwapChain(this);
+			if (!abstraction.Init(window, bufferCount, fullscreen))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create SwapChain");
+			}
+			return abstraction;
+		}
+
+		public override CommandBufferBase CreateCommandBuffer()
+		{
+			var abstraction = new CommandBuffer(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create CommandBuffer");
+			}
+			return abstraction;
+		}
+		#endregion
 	}
 }

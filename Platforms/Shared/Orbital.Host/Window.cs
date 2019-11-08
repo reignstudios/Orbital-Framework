@@ -64,6 +64,12 @@ namespace Orbital.Host
 	public abstract class WindowBase : IDisposable
 	{
 		public abstract void Dispose();
+
+		/// <summary>
+		/// Returns pointer to platform specific native handle
+		/// </summary>
+		public abstract IntPtr GetHandle();
+
 		public virtual void SetTitle(string title) { }
 		public virtual void Show() { }
 		public virtual void Hide() { }

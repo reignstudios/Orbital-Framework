@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.IO;
-using System.Runtime.InteropServices;
 using Orbital.Host;
 using Orbital.Video;
-using Orbital.Video.D3D12;
+using Orbital.Video.API;
 
 namespace Orbital.Demo
 {
@@ -12,29 +10,14 @@ namespace Orbital.Demo
 	{
 		private ApplicationBase application;
 		private WindowBase window;
-		private IntPtr hWnd;
 
 		private DeviceBase device;
 		private CommandBufferBase commandBuffer;
 
-		[DllImport("Kernel32.dll", EntryPoint = "LoadLibraryA")]
-		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
-
-		public Example(ApplicationBase application, WindowBase window, IntPtr hWnd)
+		public Example(ApplicationBase application, WindowBase window)
 		{
 			this.application = application;
 			this.window = window;
-			this.hWnd = hWnd;
-		}
-
-		private unsafe void LoadLib(string libPath)
-		{
-			byte[] libNameEncoded = Encoding.Default.GetBytes(libPath);
-			fixed (byte* libNameEncodedPtr = libNameEncoded)
-			{
-				IntPtr lib = LoadLibraryA(libNameEncodedPtr);
-				if (lib == IntPtr.Zero) throw new Exception("Failed to load lib: " + libPath);
-			}
 		}
 
 		public unsafe void Init(string platformPath)
@@ -51,23 +34,12 @@ namespace Orbital.Demo
 			const string config = "Debug";
 			#endif
 
-			#if WIN32
-			string libPath = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config, "Orbital.Video.D3D12.Native.dll");
-			LoadLib(libPath);
-			#endif
-
-			// query avaliable adapters
-			//if (!Device.QuerySupportedAdapters(FeatureLevel.Level_11_0, false, out var adapterNames)) throw new Exception("Failed to get D3D12 Adapter names");
-
 			// load api abstraction
-			var deviceD3D12 = new Device(DeviceType.Presentation);
-			var size = window.GetSize(WindowSizeType.WorkingArea);
-			if (!deviceD3D12.Init(-1, FeatureLevel.Level_11_0, false, hWnd, size.width, size.height, 2, false)) throw new Exception("Failed to init D3D12 Device");
-			device = deviceD3D12;
-
-			var commandBufferD3D12 = new CommandBuffer(deviceD3D12);
-			if (!commandBufferD3D12.Init()) throw new Exception("Failed to init D3D12 CommandBuffer");
-			commandBuffer = commandBufferD3D12;
+			var deviceDesc = new DeviceDesc();
+			deviceDesc.descD3D12.window = window;
+			deviceDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
+			device = Device.Init(deviceDesc);
+			commandBuffer = device.CreateCommandBuffer();
 		}
 
 		public void Dispose()

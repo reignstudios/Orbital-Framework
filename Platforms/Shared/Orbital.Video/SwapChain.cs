@@ -4,6 +4,13 @@ namespace Orbital.Video
 {
 	public abstract class SwapChainBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public SwapChainBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
 
 		/// <summary>

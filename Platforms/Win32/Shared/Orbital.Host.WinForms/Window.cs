@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using System.Drawing;
 using Orbital.Numerics;
 
@@ -63,6 +64,11 @@ namespace Orbital.Host.WinForms
 		public override void Dispose()
 		{
 			Close();
+		}
+
+		public override IntPtr GetHandle()
+		{
+			return form.Handle;
 		}
 
 		public override void SetTitle(string title)

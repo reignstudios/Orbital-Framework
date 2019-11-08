@@ -5,23 +5,21 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;WIN32</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;WIN32</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandBuffer.cs" Link="CommandBuffer.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs" Link="Device.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\Device.cs" Link="Device.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj" />
+    <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj" />
   </ItemGroup>
 
 </Project>

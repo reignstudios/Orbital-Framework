@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Win32", "Orbit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{453ECD81-1052-4784-A99A-01C5B135ED49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{453ECD81-1052-4784-A99A-01C5B135ED49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{FB06F31C-A293-4512-92CC-0DC4FC7510B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{FB06F31C-A293-4512-92CC-0DC4FC7510B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.API", "Orbital.Video.API\Orbital.Video.API.csproj", "{B1D5674B-A773-44C1-B062-F899A85541EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{FB06F31C-A293-4512-92CC-0DC4FC7510B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB06F31C-A293-4512-92CC-0DC4FC7510B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB06F31C-A293-4512-92CC-0DC4FC7510B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1D5674B-A773-44C1-B062-F899A85541EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1D5674B-A773-44C1-B062-F899A85541EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1D5674B-A773-44C1-B062-F899A85541EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1D5674B-A773-44C1-B062-F899A85541EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
