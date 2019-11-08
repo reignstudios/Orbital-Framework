@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_FRAMEWORK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_FRAMEWORK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Demo\Example.cs">
+      <Link>Example.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Orbital.Demo.WinForms\Program.cs">
       <Link>Program.cs</Link>
     </Compile>
@@ -84,6 +87,18 @@
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
       <Name>Orbital.Numerics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Video.API\Orbital.Video.API.csproj">
+      <Project>{2b6881b1-f428-42c2-a297-5613a8c362d6}</Project>
+      <Name>Orbital.Video.API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj">
+      <Project>{098862ac-00ba-4734-a5d4-9f5d3e0e7aa9}</Project>
+      <Name>Orbital.Video.D3D12</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
+      <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
+      <Name>Orbital.Video</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -16,13 +16,13 @@ extern "C"
 		return true;
 	}
 
-	ORBITAL_EXPORT bool Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, bool allowSoftwareAdapters, WCHAR** adapterNames, UINT* adapterNameCount, UINT adapterNameMaxLength)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, int allowSoftwareAdapters, WCHAR** adapterNames, UINT* adapterNameCount, UINT adapterNameMaxLength)
 	{
 		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
-		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return false;
+		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
 
 		IDXGIFactory4* factory = NULL;
-		if (FAILED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) return false;
+		if (FAILED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) return 0;
 
 		IDXGIAdapter1* adapter1 = NULL;
 		UINT maxAdapterCount = *adapterNameCount;
@@ -34,7 +34,7 @@ extern "C"
 			{
 				adapter1->Release();
 				factory->Release();
-				return true;
+				return 1;
 			}
 
 			// get adapter desc
@@ -43,7 +43,7 @@ extern "C"
 			{
 				adapter1->Release();
 				factory->Release();
-				return false;
+				return 0;
 			}
 
 			// check if software adapter
@@ -70,7 +70,7 @@ extern "C"
 		}
 
 		factory->Release();
-		return true;
+		return 1;
 	}
 
 	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create()
@@ -78,11 +78,11 @@ extern "C"
 		return (Device*)calloc(1, sizeof(Device));
 	}
 
-	ORBITAL_EXPORT bool Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, bool softwareRasterizer)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer)
 	{
 		// get native feature level
 		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
-		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return false;
+		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
 
 		// enable debugging
 		UINT factoryFlags = 0;
@@ -94,22 +94,22 @@ extern "C"
 		}
 		#endif
 
-		if (FAILED(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&handle->factory)))) return false;
+		if (FAILED(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&handle->factory)))) return 0;
 
 		// get adapter
 		if (softwareRasterizer)
 		{
-			if (FAILED(handle->factory->EnumWarpAdapter(IID_PPV_ARGS(&handle->adapter)))) return false;
+			if (FAILED(handle->factory->EnumWarpAdapter(IID_PPV_ARGS(&handle->adapter)))) return 0;
 		}
 		else if (adapterIndex != -1)
 		{
 			IDXGIAdapter1* adapter1 = NULL;
-			if (FAILED(handle->factory->EnumAdapters1(adapterIndex, &adapter1))) return false;
+			if (FAILED(handle->factory->EnumAdapters1(adapterIndex, &adapter1))) return 0;
 			handle->adapter = adapter1;
 		}
 
 		// create device
-		if (FAILED(D3D12CreateDevice(handle->adapter, nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return false;
+		if (FAILED(D3D12CreateDevice(handle->adapter, nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
 
 		// get max feature level
 		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
@@ -127,27 +127,27 @@ extern "C"
 		D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelInfo = {};
 		featureLevelInfo.NumFeatureLevels = 9;
 		featureLevelInfo.pFeatureLevelsRequested = supportedFeatureLevels;
-		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return false;
+		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return 0;
 
 		// validate max isn't less than min
-		if (featureLevelInfo.MaxSupportedFeatureLevel < nativeMinFeatureLevel) return false;
+		if (featureLevelInfo.MaxSupportedFeatureLevel < nativeMinFeatureLevel) return 0;
 
 		// create command queue
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return false;
+		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
 
 		// create command allocator
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return false;
+		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
 
 		// create fence
-		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return false;
+		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
 		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		if (handle->fenceEvent == NULL) return false;
+		if (handle->fenceEvent == NULL) return 0;
 		handle->fenceValue = 1;
 
-		return true;
+		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_Dispose(Device* handle)

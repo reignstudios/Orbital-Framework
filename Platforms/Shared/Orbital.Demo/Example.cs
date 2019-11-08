@@ -20,12 +20,12 @@ namespace Orbital.Demo
 			this.window = window;
 		}
 
-		public unsafe void Init(string platformPath)
+		public void Init(string platformPath, string folder64Bit, string folder32Bit)
 		{
 			// pre-load native libs
 			string libFolderBit;
-			if (IntPtr.Size == 8) libFolderBit = "x64";
-			else if (IntPtr.Size == 4) libFolderBit = "x86";
+			if (IntPtr.Size == 8) libFolderBit = folder64Bit;
+			else if (IntPtr.Size == 4) libFolderBit = folder32Bit;
 			else throw new NotSupportedException("Unsupported bit size: " + IntPtr.Size.ToString());
 
 			#if RELEASE

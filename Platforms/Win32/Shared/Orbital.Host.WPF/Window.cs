@@ -11,6 +11,7 @@ namespace Orbital.Host.WPF
 	{
 		public readonly WPFWindow window;
 		private IntPtr handle;
+		private bool isClosed;
 
 		public Window(WPFWindow window)
 		{
@@ -62,6 +63,14 @@ namespace Orbital.Host.WPF
 					window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
 					break;
 			}
+
+			// watch for close event
+			window.Closed += Window_Closed;
+		}
+
+		private void Window_Closed(object sender, EventArgs e)
+		{
+			isClosed = true;
 		}
 
 		public override void Dispose()
@@ -92,6 +101,16 @@ namespace Orbital.Host.WPF
 		public override void Close()
 		{
 			window.Close();
+		}
+
+		public override bool IsVisible()
+		{
+			return window.IsVisible;
+		}
+
+		public override bool IsClosed()
+		{
+			return isClosed;
 		}
 
 		public override Point2 GetPosition()

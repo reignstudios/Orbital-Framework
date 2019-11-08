@@ -4,36 +4,31 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E7880791-82BF-4581-8897-BB461E209365}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>Orbital.Demo.Win32</RootNamespace>
-    <AssemblyName>Orbital.Demo.Win32</AssemblyName>
+    <ProjectGuid>{ADC7CA61-0DC3-4A17-960E-086F36E06F39}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Orbital.Video</RootNamespace>
+    <AssemblyName>Orbital.Video</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_FRAMEWORK</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;NET_FRAMEWORK</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -46,41 +41,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Demo\Example.cs">
-      <Link>Example.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Video\CommandBuffer.cs">
+      <Link>CommandBuffer.cs</Link>
     </Compile>
-    <Compile Include="..\..\Shared\Orbital.Demo.Win32\Program.cs">
-      <Link>Program.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs">
+      <Link>DepthStencil.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs">
+      <Link>Device.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs">
+      <Link>RenderTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs">
+      <Link>SwapChain.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Orbital.Host.Win32\Orbital.Host.Win32.csproj">
-      <Project>{d8062d19-9c29-47bf-aa77-f134aad9c785}</Project>
-      <Name>Orbital.Host.Win32</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
-      <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
-      <Name>Orbital.Numerics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Orbital.Video.API\Orbital.Video.API.csproj">
-      <Project>{2b6881b1-f428-42c2-a297-5613a8c362d6}</Project>
-      <Name>Orbital.Video.API</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj">
-      <Project>{098862ac-00ba-4734-a5d4-9f5d3e0e7aa9}</Project>
-      <Name>Orbital.Video.D3D12</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
-      <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
-      <Name>Orbital.Video</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

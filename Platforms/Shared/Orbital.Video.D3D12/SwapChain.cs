@@ -9,19 +9,19 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 		public readonly Device deviceD3D12;
 
-		[DllImport(Device.lib)]
+		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create();
 
-		[DllImport(Device.lib)]
-		private static extern byte Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr device, IntPtr hWnd, uint width, uint height, uint bufferCount, byte fullscreen);
+		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr device, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen);
 
-		[DllImport(Device.lib)]
+		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
 
-		[DllImport(Device.lib)]
+		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle);
 
-		[DllImport(Device.lib)]
+		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
 		public SwapChain(Device device)
@@ -35,7 +35,7 @@ namespace Orbital.Video.D3D12
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			IntPtr hWnd = window.GetHandle();
-			if (Orbital_Video_D3D12_SwapChain_Init(handle, deviceD3D12.handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (byte)(fullscreen ? 1 : 0)) == 0) return false;
+			if (Orbital_Video_D3D12_SwapChain_Init(handle, deviceD3D12.handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0)) == 0) return false;
 			return true;
 		}
 

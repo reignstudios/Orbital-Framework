@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Orbital.Demo.Win32": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

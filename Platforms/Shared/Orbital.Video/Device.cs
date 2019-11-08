@@ -3,6 +3,9 @@ using Orbital.Host;
 
 namespace Orbital.Video
 {
+	/// <summary>
+	/// How a device will be used
+	/// </summary>
 	public enum DeviceType
 	{
 		/// <summary>

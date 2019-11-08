@@ -8,7 +8,7 @@ extern "C"
 		return (SwapChain*)calloc(1, sizeof(SwapChain));
 	}
 
-	ORBITAL_EXPORT bool Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, Device* device, HWND hWnd, UINT width, UINT height, UINT bufferCount, bool fullscreen)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, Device* device, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen)
 	{
 		handle->bufferCount = bufferCount;
 
@@ -23,23 +23,23 @@ extern "C"
 		swapChainDesc.SampleDesc.Count = 1;
 
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDesc = {};
-		fullscreenDesc.Windowed = !fullscreen;
+		fullscreenDesc.Windowed = fullscreen != 0;
 		fullscreenDesc.RefreshRate.Numerator = 60;
 		fullscreenDesc.RefreshRate.Denominator = 0;
 		fullscreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER::DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		fullscreenDesc.Scaling = DXGI_MODE_SCALING::DXGI_MODE_SCALING_UNSPECIFIED;
 
 		IDXGISwapChain1* swapChain = NULL;
-		if (FAILED(device->factory->CreateSwapChainForHwnd(device->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return false;
+		if (FAILED(device->factory->CreateSwapChainForHwnd(device->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return 0;
 		handle->swapChain = (IDXGISwapChain3*)swapChain;
-		if (FAILED(device->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return false;
+		if (FAILED(device->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
 
 		// create render targets views
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 		rtvHeapDesc.NumDescriptors = bufferCount;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		if (FAILED(device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return false;
+		if (FAILED(device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
 		UINT renderTargetViewHeapSize = device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
@@ -47,13 +47,13 @@ extern "C"
 		handle->renderTargetViews = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
 		for (UINT i = 0; i != bufferCount; ++i)
         {
-            if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return false;
+            if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
             device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
 			handle->renderTargetDescHandles[i] = renderTargetDescHandle;
             renderTargetDescHandle.ptr += renderTargetViewHeapSize;
         }
 
-		return true;
+		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_Dispose(SwapChain* handle)

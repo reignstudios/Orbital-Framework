@@ -32,25 +32,25 @@ namespace Orbital.Video.D3D12
 
 		internal const string lib = "Orbital.Video.D3D12.Native.dll";
 
-		[DllImport(lib)]
-		private static unsafe extern byte Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, byte allowSoftwareAdapters, char** adapterNames, uint* adapterNameCount, uint adapterNameMaxLength);
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		private static unsafe extern int Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, int allowSoftwareAdapters, char** adapterNames, uint* adapterNameCount, uint adapterNameMaxLength);
 
-		[DllImport(lib)]
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create();
 
-		[DllImport(lib)]
-		private static extern byte Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, FeatureLevel minimumFeatureLevel, byte softwareRasterizer);
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer);
 
-		[DllImport(lib)]
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
 
-		[DllImport(lib)]
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_Device_BeginFrame(IntPtr handle);
 
-		[DllImport(lib)]
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
 
-		[DllImport(lib)]
+		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
 		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
 
 		public static unsafe bool QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, bool allowSoftwareAdapters, out string[] adapterNames)
@@ -89,7 +89,7 @@ namespace Orbital.Video.D3D12
 			window = desc.window;
 			ensureSwapChainMatchesWindowSize = desc.ensureSwapChainMatchesWindowSize;
 
-			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.minimumFeatureLevel, (byte)(desc.softwareRasterizer ? 1 : 0)) == 0) return false;
+			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.minimumFeatureLevel, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
 				swapChain = new SwapChain(this);

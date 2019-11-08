@@ -32,6 +32,7 @@ namespace Orbital.Host.Win32
 
 		public ATOM atom { get; private set; }
 		public HWND hWnd { get; private set; }
+		private bool isClosed;
 
 		public Window(Point2 position, Size2 size, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -168,12 +169,23 @@ namespace Orbital.Host.Win32
 
 		public override void Close()
 		{
+			isClosed = true;
 			if (hWnd != HWND.Zero)
 			{
 				DestroyWindow(hWnd);
 				hWnd = HWND.Zero;
 			}
 			atom = 0;
+		}
+
+		public override bool IsVisible()
+		{
+			return IsWindowVisible(hWnd) != 0;
+		}
+
+		public override bool IsClosed()
+		{
+			return isClosed;
 		}
 
 		public override Point2 GetPosition()
@@ -362,6 +374,9 @@ namespace Orbital.Host.Win32
 
 		[DllImport(user32Lib, EntryPoint = "CloseWindow")]
 		private static extern BOOL CloseWindow(HWND hWnd);
+
+		[DllImport(user32Lib, EntryPoint = "IsWindowVisible")]
+		private static extern BOOL IsWindowVisible(HWND hWnd);
 
 		[DllImport(user32Lib, EntryPoint = "DestroyWindow")]
 		private static extern BOOL DestroyWindow(HWND hWnd);

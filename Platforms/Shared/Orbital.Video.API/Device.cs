@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Orbital.Video.API
 {
+	/// <summary>
+	/// Native device APIs
+	/// </summary>
 	public enum DeviceAPI
 	{
 		#if WIN32 || WINRT
@@ -55,7 +58,7 @@ namespace Orbital.Video.API
 		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
 		#endif
 
-		private unsafe static void PreLoadLibBit(string libPath)
+		private unsafe static void LoadNativeLib(string libPath)
 		{
 			byte[] libNameEncoded = Encoding.Default.GetBytes(libPath);
 			fixed (byte* libNameEncodedPtr = libNameEncoded)
@@ -78,7 +81,7 @@ namespace Orbital.Video.API
 					#if WIN32 || WIN32
 					case DeviceAPI.D3D12:
 					{
-						PreLoadLibBit(Path.Combine(desc.nativeLibPathD3D12, "Orbital.Video.D3D12.Native.dll"));
+						LoadNativeLib(Path.Combine(desc.nativeLibPathD3D12, "Orbital.Video.D3D12.Native.dll"));
 						var deviceD3D12 = new D3D12.Device(desc.type);
 						if (deviceD3D12.Init(desc.descD3D12))
 						{
