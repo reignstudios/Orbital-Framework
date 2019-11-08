@@ -35,7 +35,7 @@ namespace Orbital.Demo
 			#endif
 
 			// load api abstraction
-			var deviceDesc = new DeviceDesc();
+			var deviceDesc = new DeviceDesc(true);
 			deviceDesc.descD3D12.window = window;
 			deviceDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 			device = Device.Init(deviceDesc);

@@ -32,8 +32,10 @@ namespace Orbital.Video.API
 		public string nativeLibPathD3D12;
 		#endif
 
-		public DeviceDesc()
+		public DeviceDesc(bool initDefaults)
 		{
+			if (!initDefaults) return;
+
 			// set default apis
 			supportedAPIs = new DeviceAPI[]
 			{
