@@ -138,6 +138,9 @@
     <ClInclude Include="..\bin\C\Orbital.Host.h" />
     <ClInclude Include="..\bin\C\Orbital.Host.Win32.h" />
     <ClInclude Include="..\bin\C\Orbital.Numerics.h" />
+    <ClInclude Include="..\bin\C\Orbital.Video.API.h" />
+    <ClInclude Include="..\bin\C\Orbital.Video.D3D12.h" />
+    <ClInclude Include="..\bin\C\Orbital.Video.h" />
     <ClInclude Include="..\bin\C\_StringLiterals.h" />
   </ItemGroup>
   <ItemGroup>

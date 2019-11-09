@@ -21,6 +21,15 @@
     <ClInclude Include="..\bin\C\Orbital.Numerics.h">
       <Filter>CODE</Filter>
     </ClInclude>
+    <ClInclude Include="..\bin\C\Orbital.Video.API.h">
+      <Filter>CODE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bin\C\Orbital.Video.D3D12.h">
+      <Filter>CODE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bin\C\Orbital.Video.h">
+      <Filter>CODE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bin\C\Orbital.Demo.Win32.c">

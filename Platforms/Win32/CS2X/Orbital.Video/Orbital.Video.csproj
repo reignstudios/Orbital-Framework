@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+
+		<!-- Prevent .NET Core 3+ from generating exe -->
+		<UseAppHost>false</UseAppHost>
+
+		<!--Disable .NET Core SDK libs-->
+		<NoStdLib>true</NoStdLib>
+		<NoStandardLibraries>true</NoStandardLibraries>
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Video\CommandBuffer.cs" Link="CommandBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs" Link="DepthStencil.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs" Link="RenderTarget.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -7,11 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CS2X.CoreLib", "..\..\..\Submodules\CS2X\CS2X.CoreLib\CS2X.CoreLib.csproj", "{9616134A-8431-4B39-9833-FEB97886A76A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{9DE8FB6B-914E-4F4A-BA1F-7BDC6A84A3BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{031AE43E-86F3-432B-89F8-1DD07CB79090}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{031AE43E-86F3-432B-89F8-1DD07CB79090}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{20043219-CF16-4846-8E37-2391FFB16F17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{20043219-CF16-4846-8E37-2391FFB16F17}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{23DEBC89-0A19-4D31-9B17-831883D7385E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.API", "Orbital.Video.API\Orbital.Video.API.csproj", "{BE55FFBD-E3D4-4710-9F35-22BD808250BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +45,18 @@ Global
 		{20043219-CF16-4846-8E37-2391FFB16F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20043219-CF16-4846-8E37-2391FFB16F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20043219-CF16-4846-8E37-2391FFB16F17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23DEBC89-0A19-4D31-9B17-831883D7385E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23DEBC89-0A19-4D31-9B17-831883D7385E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23DEBC89-0A19-4D31-9B17-831883D7385E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23DEBC89-0A19-4D31-9B17-831883D7385E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

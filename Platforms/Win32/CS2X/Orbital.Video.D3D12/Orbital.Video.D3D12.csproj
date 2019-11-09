@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+
+		<!-- Prevent .NET Core 3+ from generating exe -->
+		<UseAppHost>false</UseAppHost>
+
+		<!--Disable .NET Core SDK libs-->
+		<NoStdLib>true</NoStdLib>
+		<NoStandardLibraries>true</NoStandardLibraries>
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandBuffer.cs" Link="CommandBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs" Link="SwapChain.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj" />
+  </ItemGroup>
+
+</Project>

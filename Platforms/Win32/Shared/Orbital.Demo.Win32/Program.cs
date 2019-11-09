@@ -23,7 +23,7 @@ namespace Orbital.Demo.Win32
 				#elif NET_FRAMEWORK
 				example.Init(@"..\..\..\..", "x64", "Win32");
 				#elif CS2X
-				example.Init(@"..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..\..", "x64", "Win32");
 				#else
 				throw new NotImplementedException();
 				#endif
