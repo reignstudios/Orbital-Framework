@@ -20,7 +20,7 @@ Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powe
 ## Goals
 This project will focus on an extremely portable, fast and powerful yet simple to understand agnostic set of frameworks for use in C# / .NET or CS2X runtimes.<br>
 
-Simply put, the goal is to have a robust set of core frameworks that can be used as the building blocks for C# UI / XAML like systems, Game Engines and more... running on platforms ranging from Desktop, Mobile, TV, IoT, Web to embedded or legacy devices.
+Simply put, the goal is to have a robust set of core frameworks that can be used as the building blocks for C# UI / XAML like systems, Game Engines and more... running on platforms ranging from Desktop, Mobile, TV, IoT, Web to other embedded or legacy devices.
 
 ### Platform target overview
 This list will be adjusted and more specific as things progress.<br>
