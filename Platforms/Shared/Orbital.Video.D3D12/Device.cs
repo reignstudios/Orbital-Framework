@@ -31,26 +31,27 @@ namespace Orbital.Video.D3D12
 		private bool ensureSwapChainMatchesWindowSize;
 
 		internal const string lib = "Orbital.Video.D3D12.Native.dll";
+		internal const CallingConvention callingConvention = CallingConvention.Cdecl;
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static unsafe extern int Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, int allowSoftwareAdapters, char** adapterNames, uint* adapterNameCount, uint adapterNameMaxLength);
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create();
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer);
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_BeginFrame(IntPtr handle);
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
 
-		[DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
 
 		public static unsafe bool QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, bool allowSoftwareAdapters, out string[] adapterNames)

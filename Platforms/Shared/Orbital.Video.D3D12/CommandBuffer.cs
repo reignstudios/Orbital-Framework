@@ -8,28 +8,28 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 		public readonly Device deviceD3D12;
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_CommandBuffer_Create();
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern int Orbital_Video_D3D12_CommandBuffer_Init(IntPtr handle, IntPtr device);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Dispose(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Start(IntPtr handle, IntPtr device);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Finish(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_EnableSwapChainRenderTarget(IntPtr handle, IntPtr swapChain);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_EnableSwapChainPresent(IntPtr handle, IntPtr swapChain);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
 
 		public CommandBuffer(Device device)

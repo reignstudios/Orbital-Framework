@@ -9,19 +9,19 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 		public readonly Device deviceD3D12;
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create();
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr device, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = CallingConvention.Cdecl)]
+		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
 		public SwapChain(Device device)

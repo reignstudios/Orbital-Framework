@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Code">
+      <UniqueIdentifier>{9264ef92-1962-4488-bfad-6191491230d5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Common.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Device.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Device.c">
+      <Filter>Code</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
