@@ -3,7 +3,9 @@
 
 ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance)
 {
-	return (Device*)calloc(1, sizeof(Device));
+	Device* handle = (Device*)calloc(1, sizeof(Device));
+	handle->instance = instance;
+	return handle;
 }
 
 ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterIndex)

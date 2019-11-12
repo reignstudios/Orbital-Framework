@@ -13,7 +13,8 @@ char FeatureLevelToNative(FeatureLevel featureLevel, uint32_t* nativeMinFeatureL
 
 ORBITAL_EXPORT Instance* Orbital_Video_Vulkan_Instance_Create()
 {
-	return (Instance*)calloc(1, sizeof(Instance));
+	Instance* result = (Instance*)calloc(1, sizeof(Instance));
+	return result;
 }
 
 #ifdef _DEBUG

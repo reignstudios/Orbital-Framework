@@ -9,10 +9,6 @@ typedef enum FeatureLevel
 
 typedef struct Instance
 {
-	#if defined(_DEBUG)
-	
-	#endif
-
 	VkInstance instance;
 	uint32_t nativeMinFeatureLevel, nativeMaxFeatureLevel;
 } Instance;

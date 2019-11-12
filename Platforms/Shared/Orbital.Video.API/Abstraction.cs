@@ -128,6 +128,7 @@ namespace Orbital.Video.API
 
 					case AbstractionAPI.Vulkan:
 					{
+						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, "vulkan-1.dll"))) continue;
 						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
 						var instanceVulkan = new Vulkan.Instance();
 						if (instanceVulkan.Init(desc.instanceDescVulkan))
