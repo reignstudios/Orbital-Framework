@@ -6,31 +6,85 @@ namespace Orbital.Video.Vulkan
 {
 	public struct DeviceDesc
 	{
+		/// <summary>
+		/// Represents physical device index
+		/// </summary>
 		public int adapterIndex;
-		public bool softwareRasterizer;
-		public FeatureLevel minimumFeatureLevel;
+
+		/// <summary>
+		/// Window to the device will present to. Can be null for background devices
+		/// </summary>
 		public WindowBase window;
-		public bool ensureSwapChainMatchesWindowSize;
+
+		/// <summary>
+		/// Double/Tripple buffering etc
+		/// </summary>
 		public int swapChainBufferCount;
+
+		/// <summary>
+		/// True to launch in fullscreen
+		/// </summary>
 		public bool fullscreen;
 	}
 
 	public sealed class Device : DeviceBase
 	{
+		public readonly Instance instanceVulkan;
+		internal IntPtr handle;
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern IntPtr Orbital_Video_Vulkan_Device_Create(IntPtr Instance);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern int Orbital_Video_Vulkan_Device_Init(IntPtr handle, int adapterIndex);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_Vulkan_Device_Dispose(IntPtr handle);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_Vulkan_Device_BeginFrame(IntPtr handle);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_Vulkan_Device_EndFrame(IntPtr handle);
+
+		//[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		//private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
+
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
 		{
-			
+			instanceVulkan = instance;
+			handle = Orbital_Video_Vulkan_Device_Create(instance.handle);
 		}
 
 		public bool Init(DeviceDesc desc)
 		{
-			return false;
+			if (Orbital_Video_Vulkan_Device_Init(handle, desc.adapterIndex) == 0) return false;
+			if (type == DeviceType.Presentation)
+			{
+				//swapChain = new SwapChain(this);
+				//return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
+				return true;
+			}
+			else
+			{
+				return true;
+			}
 		}
 
 		public override void Dispose()
 		{
-			
+			/*if (swapChain != null)
+			{
+				swapChain.Dispose();
+				swapChain = null;
+			}*/
+
+			if (handle != IntPtr.Zero)
+			{
+				Orbital_Video_Vulkan_Device_Dispose(handle);
+				handle = IntPtr.Zero;
+			}
 		}
 
 		public override void BeginFrame()

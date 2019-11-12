@@ -1,126 +1,107 @@
 #include "Device.h"
-//#include "CommandBuffer.h"
 #include <malloc.h>
 
-char FeatureLevelToNative(FeatureLevel featureLevel, uint32_t* nativeMinFeatureLevel)
-{
-	switch (featureLevel)
-	{
-		case FeatureLevel_Level_1_0: *nativeMinFeatureLevel = VK_API_VERSION_1_0; break;
-		case FeatureLevel_Level_1_1: *nativeMinFeatureLevel = VK_API_VERSION_1_1; break;
-		default: return 0;
-	}
-	return 1;
-}
-
-/*ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, int allowSoftwareAdapters, WCHAR** adapterNames, UINT* adapterNameCount, UINT adapterNameMaxLength)
-{
-		
-	return 1;
-}*/
-
-ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create()
+ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance)
 {
 	return (Device*)calloc(1, sizeof(Device));
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
-{
-	// TODO: log message
-	return 1;
-}
-
-ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer)
+ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterIndex)
 {
 	// -1 adapter defaults to 0
 	if (adapterIndex == -1) adapterIndex = 0;
 
-	// get native feature level
-	FeatureLevel nativeMinFeatureLevel;
-	if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
-	
-	// set max feature level
-	FeatureLevel nativeMaxFeatureLevel = nativeMinFeatureLevel;
-	RE_INIT_WITH_FEATURE_MAX:;// if the device we
-
-	// setup info objects
-	VkApplicationInfo appInfo = {0};
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	appInfo.pNext = NULL;
-	appInfo.pApplicationName = "Orbital";
-	appInfo.applicationVersion = 0;
-	appInfo.pEngineName = "Orbital.Video.Vulkan";
-	appInfo.engineVersion = 0;
-	appInfo.apiVersion = nativeMaxFeatureLevel;
-
-	uint32_t extCount = 0;
-	char* extension_names[1] = {0};
-	//extension_names[0] = VK_KHR_SURFACE_EXTENSION_NAME;
-
-	VkInstanceCreateInfo createInfo = {0};
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pNext = NULL;
-	createInfo.pApplicationInfo = &appInfo;
-	createInfo.enabledLayerCount = 0;
-	createInfo.ppEnabledLayerNames = NULL;
-	createInfo.enabledExtensionCount = extCount;
-	createInfo.ppEnabledExtensionNames = extension_names;
-
-	// enable debugging
-    #ifdef _DEBUG
-	VkDebugUtilsMessengerCreateInfoEXT dbg_messenger_create_info = {0};
-    dbg_messenger_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    dbg_messenger_create_info.pNext = NULL;
-    dbg_messenger_create_info.flags = 0;
-    dbg_messenger_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    dbg_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    dbg_messenger_create_info.pfnUserCallback = debug_messenger_callback;
-    //dbg_messenger_create_info.pUserData = demo;
-    createInfo.pNext = &dbg_messenger_create_info;
-    #endif
-
-	// init
-    VkResult result = vkCreateInstance(&createInfo, NULL, &handle->instance);
-    if (result == VK_ERROR_INCOMPATIBLE_DRIVER) return 0;
-	else if (result == VK_ERROR_EXTENSION_NOT_PRESENT) return 0;
-	else if (result != VK_SUCCESS) return 0;
-
-	if (nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
+	// create device at max feature/sdk level
+	if (handle->instance->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 	{
-		uint32_t adapterCount;
-		result = vkEnumeratePhysicalDeviceGroups(handle->instance, &adapterCount, NULL);
-		if (result != VK_SUCCESS) return 0;
-		if (adapterIndex >= adapterCount) return 0;
+		uint32_t deviceGroupCount;
+		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, NULL) != VK_SUCCESS) return 0;
+		if (adapterIndex >= deviceGroupCount) return 0;
 
-		VkPhysicalDeviceGroupProperties* adapters = alloca(sizeof(VkPhysicalDeviceGroupProperties) * adapterCount);
-        result = vkEnumeratePhysicalDeviceGroups(handle->instance, &adapterCount, adapters);
-		if (result != VK_SUCCESS) return 0;
-		if (adapters[adapterIndex].physicalDeviceCount <= 0) return 0;
-		handle->adapter = adapters[adapterIndex];
-		handle->device = handle->adapter.physicalDevices[0];
+		VkPhysicalDeviceGroupProperties* deviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
+		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, deviceGroups) != VK_SUCCESS) return 0;
+		if (deviceGroups[adapterIndex].physicalDeviceCount <= 0) return 0;
+		handle->physicalDeviceGroup = deviceGroups[adapterIndex];
+		handle->physicalDevice = handle->physicalDeviceGroup.physicalDevices[0];
 	}
 	else
 	{
 		uint32_t deviceCount;
-		result = vkEnumeratePhysicalDevices(handle->instance, &deviceCount, NULL);
-		if (result != VK_SUCCESS) return 0;
+		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
 		if (adapterIndex >= deviceCount) return 0;
 
 		VkPhysicalDevice* devices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
-        result = vkEnumeratePhysicalDevices(handle->instance, &deviceCount, devices);
-		if (result != VK_SUCCESS) return 0;
-		handle->device = devices[adapterIndex];
+		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, devices) != VK_SUCCESS) return 0;
+		handle->physicalDevice = devices[adapterIndex];
 	}
 
+	// get max feature level
+	VkPhysicalDeviceProperties deviceProperties = {0};
+	vkGetPhysicalDeviceProperties(handle->physicalDevice, &deviceProperties);
+	handle->nativeFeatureLevel = deviceProperties.apiVersion;
 
+	// validate max isn't less than min
+	if (handle->nativeFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
+	for (int i = 0; i != handle->physicalDeviceGroup.physicalDeviceCount; ++i)
+	{
+		VkPhysicalDeviceProperties deviceProperties = {0};
+		vkGetPhysicalDeviceProperties(handle->physicalDeviceGroup.physicalDevices[i], &deviceProperties);
+		if (deviceProperties.apiVersion < handle->instance->nativeMinFeatureLevel) return 0;
+		if (deviceProperties.apiVersion != handle->nativeFeatureLevel) return 0;// make sure all devices support the same api version
+	}
+
+	// TODO?: check extensions
+	//vkEnumerateDeviceExtensionProperties(demo->gpu, NULL, &device_extension_count, NULL);
+
+	// TODO?: check device features
+	//VkPhysicalDeviceFeatures physDevFeatures;
+    //vkGetPhysicalDeviceFeatures(demo->gpu, &physDevFeatures);
+
+	// create device
+    float queue_priorities[1] = {0};
+    VkDeviceQueueCreateInfo queueCreateInfo[2] = {0};
+    queueCreateInfo[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo[0].pNext = NULL;
+    queueCreateInfo[0].queueFamilyIndex = 0;//demo->graphics_queue_family_index;
+    queueCreateInfo[0].queueCount = 1;
+    queueCreateInfo[0].pQueuePriorities = queue_priorities;
+    queueCreateInfo[0].flags = 0;
+
+    VkDeviceCreateInfo deviceInfo = {0};
+    deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceInfo.pNext = NULL;
+    deviceInfo.queueCreateInfoCount = 1;
+    deviceInfo.pQueueCreateInfos = queueCreateInfo;
+    deviceInfo.enabledLayerCount = 0;
+    deviceInfo.ppEnabledLayerNames = NULL;
+    deviceInfo.enabledExtensionCount = 0;//demo->enabled_extension_count,
+    deviceInfo.ppEnabledExtensionNames = NULL;//(const char *const *)demo->extension_names,
+    deviceInfo.pEnabledFeatures = NULL;// If specific features are required, pass them in here
+
+    /*if (demo->separate_present_queue)
+	{
+        queueCreateInfo[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo[1].pNext = NULL;
+        queueCreateInfo[1].queueFamilyIndex = demo->present_queue_family_index;
+        queueCreateInfo[1].queueCount = 1;
+        queueCreateInfo[1].pQueuePriorities = queue_priorities;
+        queueCreateInfo[1].flags = 0;
+        device.queueCreateInfoCount = 2;
+    }*/
+	if (vkCreateDevice(handle->physicalDevice, &deviceInfo, NULL, &handle->device) != VK_SUCCESS) return 0;
 
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 {
-		
-
+	if (handle->device != NULL)
+	{
+		vkDeviceWaitIdle(handle->device);
+		vkDestroyDevice(handle->device, NULL);
+		handle->device = NULL;
+	}
+	
 	free(handle);
 }
 
@@ -133,8 +114,3 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_EndFrame(Device* handle)
 {
 		
 }
-
-/*ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_ExecuteCommandBuffer(Device* handle, CommandBuffer* commandBuffer)
-{
-		
-}*/

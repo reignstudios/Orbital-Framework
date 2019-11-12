@@ -16,6 +16,5 @@ struct Instance
 	#endif
 
 	IDXGIFactory4* factory;
-	FeatureLevel minimumFeatureLevel;
 	D3D_FEATURE_LEVEL nativeMinFeatureLevel;
 };

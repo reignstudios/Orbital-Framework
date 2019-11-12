@@ -22,10 +22,6 @@ namespace Orbital.Video.D3D12
 		public const CallingConvention callingConvention = CallingConvention.Cdecl;
 
 		internal IntPtr handle;
-		public FeatureLevel minimumFeatureLevel;
-
-		[DllImport(lib, CallingConvention = callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, char** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
 
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_Instance_Create();
@@ -35,6 +31,28 @@ namespace Orbital.Video.D3D12
 
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Instance_Dispose(IntPtr handle);
+
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static unsafe extern int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, char** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
+
+		public Instance()
+		{
+			handle = Orbital_Video_D3D12_Instance_Create();
+		}
+
+		public bool Init(InstanceDesc desc)
+		{
+			return Orbital_Video_D3D12_Instance_Init(handle, desc.minimumFeatureLevel) != 0;
+		}
+
+		public override void Dispose()
+		{
+			if (handle != IntPtr.Zero)
+			{
+				Orbital_Video_D3D12_Instance_Dispose(handle);
+				handle = IntPtr.Zero;
+			}
+		}
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
 		{
@@ -60,26 +78,6 @@ namespace Orbital.Video.D3D12
 				adapters[i] = new AdapterInfo((int)adapterIndices[i], name);
 			}
 			return true;
-		}
-
-		public Instance()
-		{
-			handle = Orbital_Video_D3D12_Instance_Create();
-		}
-
-		public bool Init(InstanceDesc desc)
-		{
-			minimumFeatureLevel = desc.minimumFeatureLevel;
-			return Orbital_Video_D3D12_Instance_Init(handle, desc.minimumFeatureLevel) != 0;
-		}
-
-		public override void Dispose()
-		{
-			if (handle != IntPtr.Zero)
-			{
-				Orbital_Video_D3D12_Instance_Dispose(handle);
-				handle = IntPtr.Zero;
-			}
 		}
 	}
 }

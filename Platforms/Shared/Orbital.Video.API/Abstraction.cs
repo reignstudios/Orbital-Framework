@@ -12,7 +12,8 @@ namespace Orbital.Video.API
 	public enum AbstractionAPI
 	{
 		#if WIN32 || WINRT
-		D3D12
+		D3D12,
+		Vulkan
 		#endif
 	}
 
@@ -32,6 +33,10 @@ namespace Orbital.Video.API
 		public D3D12.InstanceDesc instanceDescD3D12;
 		public D3D12.DeviceDesc deviceDescD3D12;
 		public string nativeLibPathD3D12;
+
+		public Vulkan.InstanceDesc instanceDescVulkan;
+		public Vulkan.DeviceDesc deviceDescVulkan;
+		public string nativeLibPathVulkan;
 		#endif
 
 		public AbstractionDesc(bool initDefaults)
@@ -42,7 +47,8 @@ namespace Orbital.Video.API
 			supportedAPIs = new AbstractionAPI[]
 			{
 				#if WIN32 || WINRT
-				AbstractionAPI.D3D12
+				AbstractionAPI.D3D12,
+				AbstractionAPI.Vulkan
 				#endif
 			};
 
@@ -52,6 +58,13 @@ namespace Orbital.Video.API
 			deviceDescD3D12.adapterIndex = -1;
 			deviceDescD3D12.ensureSwapChainMatchesWindowSize = true;
 			deviceDescD3D12.swapChainBufferCount = 2;
+			#endif
+
+			// set Vulkan defualts
+			#if WIN32 || WINRT
+			instanceDescVulkan.minimumFeatureLevel = Vulkan.FeatureLevel.Level_1_0;
+			deviceDescVulkan.adapterIndex = -1;
+			deviceDescVulkan.swapChainBufferCount = 2;
 			#endif
 		}
 	}
@@ -112,6 +125,30 @@ namespace Orbital.Video.API
 						}
 					}
 					break;
+
+					case AbstractionAPI.Vulkan:
+					{
+						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
+						var instanceVulkan = new Vulkan.Instance();
+						if (instanceVulkan.Init(desc.instanceDescVulkan))
+						{
+							var deviceVulkan = new Vulkan.Device(instanceVulkan, desc.type);
+							if (deviceVulkan.Init(desc.deviceDescVulkan))
+							{
+								instance = instanceVulkan;
+								device = deviceVulkan;
+								return true;
+							}
+
+							deviceVulkan.Dispose();
+							instanceVulkan.Dispose();
+						}
+						else
+						{
+							instanceVulkan.Dispose();
+						}
+					}
+					break;
 					#endif
 				}
 			}
@@ -137,6 +174,15 @@ namespace Orbital.Video.API
 						var instanceD3D12 = new D3D12.Instance();
 						if (instanceD3D12.Init(desc.instanceDescD3D12)) instances.Add(instanceD3D12);
 						else instanceD3D12.Dispose();
+					}
+					break;
+
+					case AbstractionAPI.Vulkan:
+					{
+						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
+						var instanceVulkan = new Vulkan.Instance();
+						if (instanceVulkan.Init(desc.instanceDescVulkan)) instances.Add(instanceVulkan);
+						else instanceVulkan.Dispose();
 					}
 					break;
 					#endif

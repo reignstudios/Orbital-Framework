@@ -10,7 +10,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, int softwareRasterizer)
 	{
 		// get adapter
 		if (softwareRasterizer)
@@ -25,7 +25,7 @@ extern "C"
 		}
 
 		// create device
-		if (FAILED(D3D12CreateDevice(handle->adapter, handle->instance->nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
+		if (FAILED(D3D12CreateDevice(handle->adapter, handle->instance->nativeMinFeatureLevel, IID_PPV_ARGS(&handle->physicalDevice)))) return 0;
 
 		// get max feature level
 		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
@@ -43,22 +43,23 @@ extern "C"
 		D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelInfo = {};
 		featureLevelInfo.NumFeatureLevels = 9;
 		featureLevelInfo.pFeatureLevelsRequested = supportedFeatureLevels;
-		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return 0;
+		if (FAILED(handle->physicalDevice->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return 0;
+		handle->nativeFeatureLevel = featureLevelInfo.MaxSupportedFeatureLevel;
 
 		// validate max isn't less than min
-		if (featureLevelInfo.MaxSupportedFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
+		if (handle->nativeFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
 
 		// create command queue
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
+		if (FAILED(handle->physicalDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
 
 		// create command allocator
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
+		if (FAILED(handle->physicalDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
 
 		// create fence
-		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
+		if (FAILED(handle->physicalDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
 		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		if (handle->fenceEvent == NULL) return 0;
 		handle->fenceValue = 1;
@@ -94,8 +95,8 @@ extern "C"
 
 		if (handle != NULL)
 		{
-			handle->device->Release();
-			handle->device = NULL;
+			handle->physicalDevice->Release();
+			handle->physicalDevice = NULL;
 		}
 
 		if (handle->adapter != NULL)

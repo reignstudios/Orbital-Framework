@@ -24,8 +24,8 @@ extern "C"
 		swapChainDesc.SampleDesc.Count = 1;
 
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDesc = {};
-		fullscreenDesc.Windowed = fullscreen != 0;
-		fullscreenDesc.RefreshRate.Numerator = 60;
+		fullscreenDesc.Windowed = fullscreen == 0;
+		fullscreenDesc.RefreshRate.Numerator = 0;
 		fullscreenDesc.RefreshRate.Denominator = 0;
 		fullscreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER::DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		fullscreenDesc.Scaling = DXGI_MODE_SCALING::DXGI_MODE_SCALING_UNSPECIFIED;
@@ -40,8 +40,8 @@ extern "C"
 		rtvHeapDesc.NumDescriptors = bufferCount;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
-		UINT renderTargetViewHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		if (FAILED(handle->device->physicalDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
+		UINT renderTargetViewHeapSize = handle->device->physicalDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
 		handle->renderTargetDescHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
@@ -49,7 +49,7 @@ extern "C"
 		for (UINT i = 0; i != bufferCount; ++i)
         {
             if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
-            handle->device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
+            handle->device->physicalDevice->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
 			handle->renderTargetDescHandles[i] = renderTargetDescHandle;
             renderTargetDescHandle.ptr += renderTargetViewHeapSize;
         }

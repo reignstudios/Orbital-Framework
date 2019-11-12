@@ -6,11 +6,34 @@ namespace Orbital.Video.D3D12
 {
 	public struct DeviceDesc
 	{
+		/// <summary>
+		/// Represents physical device index
+		/// </summary>
 		public int adapterIndex;
+
+		/// <summary>
+		/// True if you want to create a WARP device
+		/// </summary>
 		public bool softwareRasterizer;
+
+		/// <summary>
+		/// Window to the device will present to. Can be null for background devices
+		/// </summary>
 		public WindowBase window;
+
+		/// <summary>
+		/// If the window size changes, auto resize the swap-chain to match
+		/// </summary>
 		public bool ensureSwapChainMatchesWindowSize;
+
+		/// <summary>
+		/// Double/Tripple buffering etc
+		/// </summary>
 		public int swapChainBufferCount;
+
+		/// <summary>
+		/// True to launch in fullscreen
+		/// </summary>
 		public bool fullscreen;
 	}
 
@@ -26,7 +49,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer);
+		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, int softwareRasterizer);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
@@ -52,7 +75,7 @@ namespace Orbital.Video.D3D12
 			window = desc.window;
 			ensureSwapChainMatchesWindowSize = desc.ensureSwapChainMatchesWindowSize;
 
-			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, instanceD3D12.minimumFeatureLevel, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
+			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
 				swapChain = new SwapChain(this);

@@ -12,7 +12,7 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandBuffer_Init(CommandBuffer* handle)
 	{
-		if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
+		if (FAILED(handle->device->physicalDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
 		if (FAILED(handle->commandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
 		return 1;

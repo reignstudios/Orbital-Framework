@@ -37,8 +37,14 @@ namespace Orbital.Demo
 
 			// load api abstraction
 			var abstractionDesc = new AbstractionDesc(true);
+			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.Vulkan};
+
 			abstractionDesc.deviceDescD3D12.window = window;
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
+
+			abstractionDesc.deviceDescVulkan.window = window;
+			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
+
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
 			commandBuffer = device.CreateCommandBuffer();
 		}

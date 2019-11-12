@@ -9,6 +9,11 @@ namespace Orbital.Video.Vulkan
 		Level_1_1
 	}
 
+	public struct InstanceDesc
+	{
+		public FeatureLevel minimumFeatureLevel;
+	}
+
 	public sealed class Instance : InstanceBase
 	{
 		public const string lib = "Orbital.Video.Vulkan.Native.dll";
@@ -16,9 +21,35 @@ namespace Orbital.Video.Vulkan
 
 		internal IntPtr handle;
 
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static extern IntPtr Orbital_Video_Vulkan_Instance_Create();
+
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static extern int Orbital_Video_Vulkan_Instance_Init(IntPtr handle, FeatureLevel minimumFeatureLevel);
+
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static extern void Orbital_Video_Vulkan_Instance_Dispose(IntPtr handle);
+
+		//[DllImport(lib, CallingConvention = callingConvention)]
+		//private static unsafe extern int Orbital_Video_Vulkan_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, char** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
+
+		public Instance()
+		{
+			handle = Orbital_Video_Vulkan_Instance_Create();
+		}
+
+		public bool Init(InstanceDesc desc)
+		{
+			return Orbital_Video_Vulkan_Instance_Init(handle, desc.minimumFeatureLevel) != 0;
+		}
+
 		public override void Dispose()
 		{
-			throw new NotImplementedException();
+			if (handle != IntPtr.Zero)
+			{
+				Orbital_Video_Vulkan_Instance_Dispose(handle);
+				handle = IntPtr.Zero;
+			}
 		}
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
