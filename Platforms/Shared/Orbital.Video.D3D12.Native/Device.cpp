@@ -3,113 +3,29 @@
 
 extern "C"
 {
-	bool FeatureLevelToNative(FeatureLevel featureLevel, D3D_FEATURE_LEVEL* nativeMinFeatureLevel)
+	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create(Instance* instance)
 	{
-		switch (featureLevel)
-		{
-			case FeatureLevel::Level_11_0: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0; break;
-			case FeatureLevel::Level_11_1: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_1; break;
-			case FeatureLevel::Level_12_0: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_0; break;
-			case FeatureLevel::Level_12_1: *nativeMinFeatureLevel = D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_QuerySupportedAdapters(FeatureLevel minimumFeatureLevel, int allowSoftwareAdapters, WCHAR** adapterNames, UINT* adapterNameCount, UINT adapterNameMaxLength)
-	{
-		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
-		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
-
-		IDXGIFactory4* factory = NULL;
-		if (FAILED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) return 0;
-
-		IDXGIAdapter1* adapter1 = NULL;
-		UINT maxAdapterCount = *adapterNameCount;
-		*adapterNameCount = 0;
-		for (UINT i = 0; DXGI_ERROR_NOT_FOUND != factory->EnumAdapters1(i, &adapter1); ++i)
-		{
-			// early out if we reached max adapter count
-			if (i >= maxAdapterCount)
-			{
-				adapter1->Release();
-				factory->Release();
-				return 1;
-			}
-
-			// get adapter desc
-			DXGI_ADAPTER_DESC1 desc;
-			if (FAILED(adapter1->GetDesc1(&desc)))
-			{
-				adapter1->Release();
-				factory->Release();
-				return 0;
-			}
-
-			// check if software adapter
-			if (!allowSoftwareAdapters && desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
-			{
-				adapter1->Release();
-				continue;
-			}
-
-			// make sure adapter can be used
-			if (FAILED(D3D12CreateDevice(adapter1, nativeMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
-			{
-				adapter1->Release();
-				continue;
-			}
-
-			// add name and increase count
-			UINT maxLength = min(sizeof(WCHAR) * adapterNameMaxLength, sizeof(desc.Description));
-			memcpy(adapterNames[i], desc.Description, maxLength);
-			++(*adapterNameCount);
-
-			// finish
-			adapter1->Release();
-		}
-
-		factory->Release();
-		return 1;
-	}
-
-	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create()
-	{
-		return (Device*)calloc(1, sizeof(Device));
+		Device* handle = (Device*)calloc(1, sizeof(Device));
+		handle->instance = instance;
+		return handle;
 	}
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer)
 	{
-		// get native feature level
-		D3D_FEATURE_LEVEL nativeMinFeatureLevel;
-		if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
-
-		// enable debugging
-		UINT factoryFlags = 0;
-		#if defined(_DEBUG)
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
-		{
-			handle->debugController->EnableDebugLayer();
-			factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-		}
-		#endif
-
-		if (FAILED(CreateDXGIFactory2(factoryFlags, IID_PPV_ARGS(&handle->factory)))) return 0;
-
 		// get adapter
 		if (softwareRasterizer)
 		{
-			if (FAILED(handle->factory->EnumWarpAdapter(IID_PPV_ARGS(&handle->adapter)))) return 0;
+			if (FAILED(handle->instance->factory->EnumWarpAdapter(IID_PPV_ARGS(&handle->adapter)))) return 0;
 		}
 		else if (adapterIndex != -1)
 		{
 			IDXGIAdapter1* adapter1 = NULL;
-			if (FAILED(handle->factory->EnumAdapters1(adapterIndex, &adapter1))) return 0;
+			if (FAILED(handle->instance->factory->EnumAdapters1(adapterIndex, &adapter1))) return 0;
 			handle->adapter = adapter1;
 		}
 
 		// create device
-		if (FAILED(D3D12CreateDevice(handle->adapter, nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
+		if (FAILED(D3D12CreateDevice(handle->adapter, handle->instance->nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
 
 		// get max feature level
 		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
@@ -130,7 +46,7 @@ extern "C"
 		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return 0;
 
 		// validate max isn't less than min
-		if (featureLevelInfo.MaxSupportedFeatureLevel < nativeMinFeatureLevel) return 0;
+		if (featureLevelInfo.MaxSupportedFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
 
 		// create command queue
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -186,12 +102,6 @@ extern "C"
 		{
 			handle->adapter->Release();
 			handle->adapter = NULL;
-		}
-
-		if (handle->factory != NULL)
-		{
-			handle->factory->Release();
-			handle->factory = NULL;
 		}
 
 		if (handle->debugController != NULL)

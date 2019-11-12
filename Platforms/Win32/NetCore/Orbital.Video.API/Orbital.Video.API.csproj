@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Video.API\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\Abstraction.cs" Link="Abstraction.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,13 +1,6 @@
 #pragma once
 #include "Common.h"
-
-enum FeatureLevel
-{
-	Level_11_0,
-	Level_11_1,
-	Level_12_0,
-	Level_12_1
-};
+#include "Instance.h"
 
 struct Device
 {
@@ -15,7 +8,8 @@ struct Device
 	ID3D12Debug* debugController;
 	#endif
 
-	IDXGIFactory4* factory;
+	//IDXGIFactory4* factory;
+	Instance* instance;
 	IDXGIAdapter* adapter;
 	ID3D12Device* device;
 	ID3D12CommandQueue* commandQueue;

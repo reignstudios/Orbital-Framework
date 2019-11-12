@@ -21,10 +21,12 @@ namespace Orbital.Video
 
 	public abstract class DeviceBase : IDisposable
 	{
+		public readonly InstanceBase instance;
 		public readonly DeviceType type;
 
-		public DeviceBase(DeviceType type)
+		public DeviceBase(InstanceBase instance, DeviceType type)
 		{
+			this.instance = instance;
 			this.type = type;
 		}
 

@@ -4,12 +4,6 @@ using Orbital.Host;
 
 namespace Orbital.Video.Vulkan
 {
-	public enum FeatureLevel
-	{
-		Level_1_0,
-		Level_1_1
-	}
-
 	public struct DeviceDesc
 	{
 		public int adapterIndex;
@@ -23,8 +17,8 @@ namespace Orbital.Video.Vulkan
 
 	public sealed class Device : DeviceBase
 	{
-		public Device(DeviceType type)
-		: base(type)
+		public Device(Instance instance, DeviceType type)
+		: base(instance, type)
 		{
 			
 		}

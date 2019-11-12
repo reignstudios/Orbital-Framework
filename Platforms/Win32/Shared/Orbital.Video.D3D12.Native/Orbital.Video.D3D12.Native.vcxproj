@@ -166,12 +166,14 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Common.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.h" />
     <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandBuffer.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

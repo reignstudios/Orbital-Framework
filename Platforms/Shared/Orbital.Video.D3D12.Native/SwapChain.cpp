@@ -1,14 +1,15 @@
 #include "SwapChain.h"
-#include "Device.h"
 
 extern "C"
 {
-	ORBITAL_EXPORT SwapChain* Orbital_Video_D3D12_SwapChain_Create()
+	ORBITAL_EXPORT SwapChain* Orbital_Video_D3D12_SwapChain_Create(Device* device)
 	{
-		return (SwapChain*)calloc(1, sizeof(SwapChain));
+		SwapChain* handle = (SwapChain*)calloc(1, sizeof(SwapChain));
+		handle->device = device;
+		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, Device* device, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen)
 	{
 		handle->bufferCount = bufferCount;
 
@@ -30,17 +31,17 @@ extern "C"
 		fullscreenDesc.Scaling = DXGI_MODE_SCALING::DXGI_MODE_SCALING_UNSPECIFIED;
 
 		IDXGISwapChain1* swapChain = NULL;
-		if (FAILED(device->factory->CreateSwapChainForHwnd(device->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return 0;
+		if (FAILED(handle->device->instance->factory->CreateSwapChainForHwnd(handle->device->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return 0;
 		handle->swapChain = (IDXGISwapChain3*)swapChain;
-		if (FAILED(device->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
+		if (FAILED(handle->device->instance->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
 
 		// create render targets views
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
 		rtvHeapDesc.NumDescriptors = bufferCount;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		if (FAILED(device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
-		UINT renderTargetViewHeapSize = device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
+		UINT renderTargetViewHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
 		handle->renderTargetDescHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
@@ -48,7 +49,7 @@ extern "C"
 		for (UINT i = 0; i != bufferCount; ++i)
         {
             if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
-            device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
+            handle->device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
 			handle->renderTargetDescHandles[i] = renderTargetDescHandle;
             renderTargetDescHandle.ptr += renderTargetViewHeapSize;
         }

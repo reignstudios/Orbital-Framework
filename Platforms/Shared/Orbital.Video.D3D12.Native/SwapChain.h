@@ -1,8 +1,10 @@
 #pragma once
 #include "Common.h"
+#include "Device.h"
 
 struct SwapChain
 {
+	Device* device;
 	UINT bufferCount, currentRenderTargetIndex;
 	IDXGISwapChain3* swapChain;
 	ID3D12DescriptorHeap* renderTargetViewHeap;

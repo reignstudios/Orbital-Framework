@@ -1,17 +1,18 @@
 #include "CommandBuffer.h"
-#include "Device.h"
 #include "SwapChain.h"
 
 extern "C"
 {
-	ORBITAL_EXPORT CommandBuffer* Orbital_Video_D3D12_CommandBuffer_Create()
+	ORBITAL_EXPORT CommandBuffer* Orbital_Video_D3D12_CommandBuffer_Create(Device* device)
 	{
-		return (CommandBuffer*)calloc(1, sizeof(CommandBuffer));
+		CommandBuffer* handle = (CommandBuffer*)calloc(1, sizeof(CommandBuffer));
+		handle->device = device;
+		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandBuffer_Init(CommandBuffer* handle, Device* device)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandBuffer_Init(CommandBuffer* handle)
 	{
-		if (FAILED(device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
+		if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
 		if (FAILED(handle->commandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
 		return 1;

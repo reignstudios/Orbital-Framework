@@ -5,43 +5,43 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class CommandBuffer : CommandBufferBase
 	{
-		internal IntPtr handle;
 		public readonly Device deviceD3D12;
+		internal IntPtr handle;
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_CommandBuffer_Create();
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern IntPtr Orbital_Video_D3D12_CommandBuffer_Create(IntPtr device);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
-		private static extern int Orbital_Video_D3D12_CommandBuffer_Init(IntPtr handle, IntPtr device);
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern int Orbital_Video_D3D12_CommandBuffer_Init(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Dispose(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Start(IntPtr handle, IntPtr device);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_Finish(IntPtr handle);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_EnableSwapChainRenderTarget(IntPtr handle, IntPtr swapChain);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_EnableSwapChainPresent(IntPtr handle, IntPtr swapChain);
 
-		[DllImport(Device.lib, CallingConvention = Device.callingConvention)]
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandBuffer_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
 
-		public CommandBuffer(Device device)
+		internal CommandBuffer(Device device)
 		: base(device)
 		{
 			deviceD3D12 = device;
-			handle = Orbital_Video_D3D12_CommandBuffer_Create();
+			handle = Orbital_Video_D3D12_CommandBuffer_Create(device.handle);
 		}
 
-		public bool Init()
+		internal bool Init()
 		{
-			return Orbital_Video_D3D12_CommandBuffer_Init(handle, deviceD3D12.handle) != 0;
+			return Orbital_Video_D3D12_CommandBuffer_Init(handle) != 0;
 		}
 
 		public override void Dispose()

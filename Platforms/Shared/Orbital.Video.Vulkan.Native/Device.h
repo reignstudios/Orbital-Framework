@@ -14,4 +14,6 @@ typedef struct Device
 	#endif
 
 	VkInstance instance;
+	VkPhysicalDevice device;
+	VkPhysicalDeviceGroupProperties adapter;
 } Device;

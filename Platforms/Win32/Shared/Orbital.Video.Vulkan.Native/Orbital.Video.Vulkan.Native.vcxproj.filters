@@ -13,9 +13,15 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Device.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Instance.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Device.c">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Instance.c">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

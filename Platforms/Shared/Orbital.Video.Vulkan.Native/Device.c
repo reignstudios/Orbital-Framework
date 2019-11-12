@@ -1,5 +1,6 @@
 #include "Device.h"
 //#include "CommandBuffer.h"
+#include <malloc.h>
 
 char FeatureLevelToNative(FeatureLevel featureLevel, uint32_t* nativeMinFeatureLevel)
 {
@@ -31,37 +32,39 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSever
 
 ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterIndex, FeatureLevel minimumFeatureLevel, int softwareRasterizer)
 {
+	// -1 adapter defaults to 0
+	if (adapterIndex == -1) adapterIndex = 0;
+
 	// get native feature level
 	FeatureLevel nativeMinFeatureLevel;
 	if (!FeatureLevelToNative(minimumFeatureLevel, &nativeMinFeatureLevel)) return 0;
-	// TODO: get what max feature level actually is
+	
+	// set max feature level
+	FeatureLevel nativeMaxFeatureLevel = nativeMinFeatureLevel;
+	RE_INIT_WITH_FEATURE_MAX:;// if the device we
 
 	// setup info objects
-	VkApplicationInfo appInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-		.pNext = NULL,
-		.pApplicationName = "Orbital",
-		.applicationVersion = 0,
-		.pEngineName = "Orbital.Video.Vulkan",
-		.engineVersion = 0,
-		.apiVersion = nativeMinFeatureLevel
-	};
+	VkApplicationInfo appInfo = {0};
+	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	appInfo.pNext = NULL;
+	appInfo.pApplicationName = "Orbital";
+	appInfo.applicationVersion = 0;
+	appInfo.pEngineName = "Orbital.Video.Vulkan";
+	appInfo.engineVersion = 0;
+	appInfo.apiVersion = nativeMaxFeatureLevel;
 
 	uint32_t extCount = 0;
 	char* extension_names[1] = {0};
 	//extension_names[0] = VK_KHR_SURFACE_EXTENSION_NAME;
 
-	VkInstanceCreateInfo createInfo =
-	{
-		.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-		.pNext = NULL,
-		.pApplicationInfo = &appInfo,
-		.enabledLayerCount = 0,
-		.ppEnabledLayerNames = NULL,
-		.enabledExtensionCount = extCount,
-		.ppEnabledExtensionNames = extension_names,
-	};
+	VkInstanceCreateInfo createInfo = {0};
+	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pNext = NULL;
+	createInfo.pApplicationInfo = &appInfo;
+	createInfo.enabledLayerCount = 0;
+	createInfo.ppEnabledLayerNames = NULL;
+	createInfo.enabledExtensionCount = extCount;
+	createInfo.ppEnabledExtensionNames = extension_names;
 
 	// enable debugging
     #ifdef _DEBUG
@@ -77,34 +80,39 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
     #endif
 
 	// init
-	uint32_t gpu_count;
-
     VkResult result = vkCreateInstance(&createInfo, NULL, &handle->instance);
-    if (result == VK_ERROR_INCOMPATIBLE_DRIVER)
+    if (result == VK_ERROR_INCOMPATIBLE_DRIVER) return 0;
+	else if (result == VK_ERROR_EXTENSION_NOT_PRESENT) return 0;
+	else if (result != VK_SUCCESS) return 0;
+
+	if (nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 	{
-		return 0;
-        /*ERR_EXIT(
-            "Cannot find a compatible Vulkan installable client driver (ICD).\n\n"
-            "Please look at the Getting Started guide for additional information.\n",
-            "vkCreateInstance Failure");*/
-    }
-	else if (result == VK_ERROR_EXTENSION_NOT_PRESENT)
+		uint32_t adapterCount;
+		result = vkEnumeratePhysicalDeviceGroups(handle->instance, &adapterCount, NULL);
+		if (result != VK_SUCCESS) return 0;
+		if (adapterIndex >= adapterCount) return 0;
+
+		VkPhysicalDeviceGroupProperties* adapters = alloca(sizeof(VkPhysicalDeviceGroupProperties) * adapterCount);
+        result = vkEnumeratePhysicalDeviceGroups(handle->instance, &adapterCount, adapters);
+		if (result != VK_SUCCESS) return 0;
+		if (adapters[adapterIndex].physicalDeviceCount <= 0) return 0;
+		handle->adapter = adapters[adapterIndex];
+		handle->device = handle->adapter.physicalDevices[0];
+	}
+	else
 	{
-		return 0;
-        /*ERR_EXIT(
-            "Cannot find a specified extension library.\n"
-            "Make sure your layers path is set appropriately.\n",
-            "vkCreateInstance Failure");*/
-    }
-	else if (result)
-	{
-		return 0;
-       /* ERR_EXIT(
-            "vkCreateInstance failed.\n\n"
-            "Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
-            "Please look at the Getting Started guide for additional information.\n",
-            "vkCreateInstance Failure");*/
-    }
+		uint32_t deviceCount;
+		result = vkEnumeratePhysicalDevices(handle->instance, &deviceCount, NULL);
+		if (result != VK_SUCCESS) return 0;
+		if (adapterIndex >= deviceCount) return 0;
+
+		VkPhysicalDevice* devices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
+        result = vkEnumeratePhysicalDevices(handle->instance, &deviceCount, devices);
+		if (result != VK_SUCCESS) return 0;
+		handle->device = devices[adapterIndex];
+	}
+
+
 
 	return 1;
 }

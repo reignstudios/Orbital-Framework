@@ -8,6 +8,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandBuffer.cs" Link="CommandBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs" Link="DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs" Link="RenderTarget.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
   </ItemGroup>
