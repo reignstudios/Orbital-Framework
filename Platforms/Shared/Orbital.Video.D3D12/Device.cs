@@ -61,7 +61,7 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
+		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
 
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
@@ -121,10 +121,10 @@ namespace Orbital.Video.D3D12
 			}
 		}
 
-		public override void ExecuteCommandBuffer(CommandBufferBase commandBuffer)
+		public override void ExecuteCommandList(CommandListBase commandList)
 		{
-			var commandBufferD3D12 = (CommandBuffer)commandBuffer;
-			Orbital_Video_D3D12_Device_ExecuteCommandBuffer(handle, commandBufferD3D12.handle);
+			var commandListD3D12 = (CommandList)commandList;
+			Orbital_Video_D3D12_Device_ExecuteCommandList(handle, commandListD3D12.handle);
 		}
 
 		#region Abstraction Methods
@@ -139,13 +139,13 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override CommandBufferBase CreateCommandBuffer()
+		public override CommandListBase CreateCommandList()
 		{
-			var abstraction = new CommandBuffer(this);
+			var abstraction = new CommandList(this);
 			if (!abstraction.Init())
 			{
 				abstraction.Dispose();
-				throw new Exception("Failed to create CommandBuffer");
+				throw new Exception("Failed to create CommandList");
 			}
 			return abstraction;
 		}

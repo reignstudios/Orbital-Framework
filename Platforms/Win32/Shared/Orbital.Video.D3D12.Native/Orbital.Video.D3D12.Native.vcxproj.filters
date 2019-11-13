@@ -10,9 +10,6 @@
       <Filter>Code</Filter>
     </ClInclude>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandBuffer.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -22,18 +19,21 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandList.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandBuffer.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.cpp">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandList.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

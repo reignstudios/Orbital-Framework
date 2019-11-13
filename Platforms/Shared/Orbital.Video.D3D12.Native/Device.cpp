@@ -1,5 +1,5 @@
 #include "Device.h"
-#include "CommandBuffer.h"
+#include "CommandList.h"
 
 extern "C"
 {
@@ -134,9 +134,9 @@ extern "C"
 		}
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_ExecuteCommandBuffer(Device* handle, CommandBuffer* commandBuffer)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_ExecuteCommandList(Device* handle, CommandList* commandList)
 	{
-		ID3D12CommandList* commandLists[1] = { commandBuffer->commandList };
+		ID3D12CommandList* commandLists[1] = { commandList->commandList };
 		handle->commandQueue->ExecuteCommandLists(1, commandLists);
 	}
 }

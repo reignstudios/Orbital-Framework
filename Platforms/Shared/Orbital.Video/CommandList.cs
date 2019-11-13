@@ -2,11 +2,11 @@
 
 namespace Orbital.Video
 {
-	public abstract class CommandBufferBase : IDisposable
+	public abstract class CommandListBase : IDisposable
 	{
 		public readonly DeviceBase device;
 
-		public CommandBufferBase(DeviceBase device)
+		public CommandListBase(DeviceBase device)
 		{
 			this.device = device;
 		}

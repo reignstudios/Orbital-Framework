@@ -48,7 +48,7 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_Device_EndFrame(IntPtr handle);
 
 		//[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		//private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandBuffer(IntPtr handle, IntPtr commandBuffer);
+		//private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
 
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
@@ -97,7 +97,7 @@ namespace Orbital.Video.Vulkan
 			
 		}
 
-		public override void ExecuteCommandBuffer(CommandBufferBase commandBuffer)
+		public override void ExecuteCommandList(CommandListBase commandList)
 		{
 			
 		}
@@ -108,7 +108,7 @@ namespace Orbital.Video.Vulkan
 			return null;
 		}
 
-		public override CommandBufferBase CreateCommandBuffer()
+		public override CommandListBase CreateCommandList()
 		{
 			return null;
 		}

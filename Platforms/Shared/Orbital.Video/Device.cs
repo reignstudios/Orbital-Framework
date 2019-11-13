@@ -43,13 +43,13 @@ namespace Orbital.Video
 		public abstract void EndFrame();
 
 		/// <summary>
-		/// Executes command-buffer operations
+		/// Executes command-list operations
 		/// </summary>
-		public abstract void ExecuteCommandBuffer(CommandBufferBase commandBuffer);
+		public abstract void ExecuteCommandList(CommandListBase commandList);
 
 		#region Create Methods
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen);
-		public abstract CommandBufferBase CreateCommandBuffer();
+		public abstract CommandListBase CreateCommandList();
 		#endregion
 	}
 }

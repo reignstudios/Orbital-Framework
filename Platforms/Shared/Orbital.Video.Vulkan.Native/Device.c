@@ -13,34 +13,40 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
 	// -1 adapter defaults to 0
 	if (adapterIndex == -1) adapterIndex = 0;
 
-	// create device at max feature/sdk level
+	// get physical device
+	uint32_t deviceCount;
+	if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
+	if (adapterIndex >= deviceCount) return 0;
+
+	VkPhysicalDevice* physicalDevices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
+	if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, physicalDevices) != VK_SUCCESS) return 0;
+	handle->physicalDevice = physicalDevices[adapterIndex];
+
+	// get physical device group if possible
 	if (handle->instance->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 	{
 		uint32_t deviceGroupCount;
 		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, NULL) != VK_SUCCESS) return 0;
-		if (adapterIndex >= deviceGroupCount) return 0;
-
-		VkPhysicalDeviceGroupProperties* deviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
-		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, deviceGroups) != VK_SUCCESS) return 0;
-		if (deviceGroups[adapterIndex].physicalDeviceCount <= 0) return 0;
-		handle->physicalDeviceGroup = deviceGroups[adapterIndex];
-		handle->physicalDevice = handle->physicalDeviceGroup.physicalDevices[0];
-	}
-	else
-	{
-		uint32_t deviceCount;
-		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
-		if (adapterIndex >= deviceCount) return 0;
-
-		VkPhysicalDevice* devices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
-		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, devices) != VK_SUCCESS) return 0;
-		handle->physicalDevice = devices[adapterIndex];
+		if (deviceGroupCount != 0)
+		{
+			VkPhysicalDeviceGroupProperties* physicalDeviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
+			if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, physicalDeviceGroups) != VK_SUCCESS) return 0;
+			for (uint32_t i = 0; i != deviceGroupCount; ++i)
+			{
+				if (physicalDeviceGroups[i].physicalDeviceCount <= 0) continue;
+				for (uint32_t j = 0; j != physicalDeviceGroups[i].physicalDeviceCount; ++j)
+				{
+					if (physicalDeviceGroups[i].physicalDevices[j] != handle->physicalDevice) continue;
+					handle->physicalDeviceGroup = physicalDeviceGroups[j];
+				}
+			}
+		}
 	}
 
 	// get max feature level
-	VkPhysicalDeviceProperties deviceProperties = {0};
-	vkGetPhysicalDeviceProperties(handle->physicalDevice, &deviceProperties);
-	handle->nativeFeatureLevel = deviceProperties.apiVersion;
+	VkPhysicalDeviceProperties physicalDeviceProperties = {0};
+	vkGetPhysicalDeviceProperties(handle->physicalDevice, &physicalDeviceProperties);
+	handle->nativeFeatureLevel = physicalDeviceProperties.apiVersion;
 
 	// validate max isn't less than min
 	if (handle->nativeFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
