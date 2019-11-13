@@ -77,11 +77,11 @@ namespace Orbital.Demo
 				application.RunEvents();
 
 				device.BeginFrame();
-				commandList.Start();
-				commandList.EnabledRenderTarget();
-				commandList.ClearRenderTarget(1, 0, 0, 1);
-				commandList.EnabledPresent();
-				commandList.Finish();
+				//commandList.Start();
+				//commandList.EnabledRenderTarget();
+				//commandList.ClearRenderTarget(1, 0, 0, 1);
+				//commandList.EnabledPresent();
+				//commandList.Finish();
 				device.ExecuteCommandList(commandList);
 				device.EndFrame();
 			}

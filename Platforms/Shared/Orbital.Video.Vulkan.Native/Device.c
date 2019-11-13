@@ -66,13 +66,13 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
     //vkGetPhysicalDeviceFeatures(demo->gpu, &physDevFeatures);
 
 	// create device
-    float queue_priorities[1] = {0};
-    VkDeviceQueueCreateInfo queueCreateInfo[2] = {0};
+    float queuePriorities[1] = {0};
+    VkDeviceQueueCreateInfo queueCreateInfo[1] = {0};
     queueCreateInfo[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfo[0].pNext = NULL;
-    queueCreateInfo[0].queueFamilyIndex = 0;//demo->graphics_queue_family_index;
+    queueCreateInfo[0].queueFamilyIndex = 0;
     queueCreateInfo[0].queueCount = 1;
-    queueCreateInfo[0].pQueuePriorities = queue_priorities;
+    queueCreateInfo[0].pQueuePriorities = queuePriorities;
     queueCreateInfo[0].flags = 0;
 
     VkDeviceCreateInfo deviceInfo = {0};
@@ -82,30 +82,33 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
     deviceInfo.pQueueCreateInfos = queueCreateInfo;
     deviceInfo.enabledLayerCount = 0;
     deviceInfo.ppEnabledLayerNames = NULL;
-    deviceInfo.enabledExtensionCount = 0;//demo->enabled_extension_count,
-    deviceInfo.ppEnabledExtensionNames = NULL;//(const char *const *)demo->extension_names,
-    deviceInfo.pEnabledFeatures = NULL;// If specific features are required, pass them in here
+    deviceInfo.enabledExtensionCount = 0;
+    deviceInfo.ppEnabledExtensionNames = NULL;
+    deviceInfo.pEnabledFeatures = NULL;
 
-    /*if (demo->separate_present_queue)
-	{
-        queueCreateInfo[1].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-        queueCreateInfo[1].pNext = NULL;
-        queueCreateInfo[1].queueFamilyIndex = demo->present_queue_family_index;
-        queueCreateInfo[1].queueCount = 1;
-        queueCreateInfo[1].pQueuePriorities = queue_priorities;
-        queueCreateInfo[1].flags = 0;
-        device.queueCreateInfoCount = 2;
-    }*/
 	if (vkCreateDevice(handle->physicalDevice, &deviceInfo, NULL, &handle->device) != VK_SUCCESS) return 0;
+
+	// create command pool
+	VkCommandPoolCreateInfo poolCreateInfo = {0};
+    poolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolCreateInfo.pNext = NULL;
+    poolCreateInfo.queueFamilyIndex = 0;
+    poolCreateInfo.flags = 0;
+	if (vkCreateCommandPool(handle->device, &poolCreateInfo, NULL, &handle->commandPool) != VK_SUCCESS) return 0;
 
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 {
+	if (handle->commandPool != NULL)
+	{
+		vkDestroyCommandPool(handle->device, handle->commandPool, NULL);
+		handle->commandPool = NULL;
+	}
+
 	if (handle->device != NULL)
 	{
-		vkDeviceWaitIdle(handle->device);
 		vkDestroyDevice(handle->device, NULL);
 		handle->device = NULL;
 	}
@@ -115,10 +118,10 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_BeginFrame(Device* handle)
 {
-		
+	
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_EndFrame(Device* handle)
 {
-		
+	vkDeviceWaitIdle(handle->device);
 }
