@@ -85,6 +85,31 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 		// if there are missing extensions exit
 		if (expectedExtensionCount != initExtensionCount) return 0;
 
+		// check for validation layers
+		uint32_t validationLayerCount = 0;
+		char* validationLayerNames[8] = {0};
+		#ifdef _DEBUG
+		uint32_t allValidationLayerCount = 0;
+		if (vkEnumerateInstanceLayerProperties(&allValidationLayerCount, NULL) != VK_SUCCESS) return 0;
+		if (allValidationLayerCount != 0)
+		{
+			VkLayerProperties *layers = alloca(sizeof(VkLayerProperties) * allValidationLayerCount);
+			if (vkEnumerateInstanceLayerProperties(&allValidationLayerCount, layers) != VK_SUCCESS) return 0;
+			for (uint32_t i = 0; i != allValidationLayerCount; ++i)
+			{
+				if
+				(
+					strcmp(layers[i].layerName, "VK_LAYER_KHRONOS_validation") == 0 ||
+					strcmp(layers[i].layerName, "VK_LAYER_LUNARG_standard_validation") == 0
+				)
+				{
+					validationLayerNames[validationLayerCount] = layers[i].layerName;
+					++validationLayerCount;
+				}
+			}
+		}
+		#endif
+
 		// setup info objects
 		VkApplicationInfo appInfo = {0};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -95,16 +120,12 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 		appInfo.engineVersion = 0;
 		appInfo.apiVersion = handle->nativeMaxFeatureLevel;
 
-		//uint32_t extCount = 0;
-		//char* extension_names[1] = {0};
-		//extension_names[0] = VK_KHR_SURFACE_EXTENSION_NAME;
-
 		VkInstanceCreateInfo createInfo = {0};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pNext = NULL;
 		createInfo.pApplicationInfo = &appInfo;
-		createInfo.enabledLayerCount = 0;
-		createInfo.ppEnabledLayerNames = NULL;
+		createInfo.enabledLayerCount = validationLayerCount;
+		createInfo.ppEnabledLayerNames = validationLayerNames;
 		createInfo.enabledExtensionCount = initExtensionCount;
 		createInfo.ppEnabledExtensionNames = initExtensions;
 
@@ -112,15 +133,15 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 		#ifdef _DEBUG
 		if (handle->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 		{
-			VkDebugUtilsMessengerCreateInfoEXT dbg_messenger_create_info = {0};
-			dbg_messenger_create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-			dbg_messenger_create_info.pNext = NULL;
-			dbg_messenger_create_info.flags = 0;
-			dbg_messenger_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-			dbg_messenger_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-			dbg_messenger_create_info.pfnUserCallback = debug_messenger_callback;
-			dbg_messenger_create_info.pUserData = handle;
-			createInfo.pNext = &dbg_messenger_create_info;
+			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
+			debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+			debugCreateInfo.pNext = NULL;
+			debugCreateInfo.flags = 0;
+			debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+			debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+			debugCreateInfo.pfnUserCallback = debug_messenger_callback;
+			debugCreateInfo.pUserData = handle;
+			createInfo.pNext = &debugCreateInfo;
 		}
 		#endif
 

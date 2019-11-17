@@ -59,6 +59,9 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 		(*sizeEnforced) = 1;
 	}
 
+	handle->width = swapchainExtent.width;
+	handle->height = swapchainExtent.height;
+
 	// get supported alpha mode
 	VkCompositeAlphaFlagBitsKHR compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 	if ((surfaceCapabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR) == 0)
@@ -80,42 +83,56 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 		}
 	}
 
-	VkSwapchainCreateInfoKHR swapchain_ci = {0};
-    swapchain_ci.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	// get buffer format and color space
+	uint32_t count = 0;
+	if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle->device->physicalDevice, handle->surface, &count, NULL) != VK_SUCCESS) return 0;
+	if (count == 0) return 0;
+
+	VkSurfaceFormatKHR* surfaceFormats = alloca(sizeof(VkSurfaceFormatKHR) * count);
+	if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle->device->physicalDevice, handle->surface, &count, surfaceFormats) != VK_SUCCESS) return 0;
+
+	VkFormat format = surfaceFormats[0].format;
+	VkColorSpaceKHR colorSpace = surfaceFormats[0].colorSpace;
+
+	// create swap chain
+	VkSwapchainCreateInfoKHR swapChainCreateInfo = {0};
+    swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	#ifdef __ANDROID__
-    swapchain_ci.clipped = VK_FALSE;
+    swapChainCreateInfo.clipped = VK_FALSE;
 	#else
-    swapchain_ci.clipped = VK_TRUE;
+    swapChainCreateInfo.clipped = VK_TRUE;
 	#endif
-    swapchain_ci.surface = handle->surface;
-    swapchain_ci.minImageCount = bufferCount;
-    swapchain_ci.imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
-    swapchain_ci.imageExtent.width = swapchainExtent.width;
-    swapchain_ci.imageExtent.height = swapchainExtent.height;
-    swapchain_ci.preTransform = surfaceCapabilities.currentTransform;// VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
-    swapchain_ci.compositeAlpha = compositeAlpha;
-    swapchain_ci.imageArrayLayers = 1;
-    swapchain_ci.presentMode = VK_PRESENT_MODE_FIFO_KHR;
-    swapchain_ci.oldSwapchain = VK_NULL_HANDLE;
-    swapchain_ci.imageColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
-    swapchain_ci.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-    swapchain_ci.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    swapchain_ci.queueFamilyIndexCount = 0;
-    swapchain_ci.pQueueFamilyIndices = NULL;
-    if (vkCreateSwapchainKHR(handle->device->device, &swapchain_ci, NULL, &handle->swapChain) != VK_SUCCESS) return 0;
+    swapChainCreateInfo.surface = handle->surface;
+    swapChainCreateInfo.minImageCount = bufferCount;
+    swapChainCreateInfo.imageFormat = format;
+    swapChainCreateInfo.imageExtent.width = swapchainExtent.width;
+    swapChainCreateInfo.imageExtent.height = swapchainExtent.height;
+    swapChainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
+    swapChainCreateInfo.compositeAlpha = compositeAlpha;
+    swapChainCreateInfo.imageArrayLayers = 1;
+    swapChainCreateInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
+    swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
+    swapChainCreateInfo.imageColorSpace = colorSpace;
+    swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    swapChainCreateInfo.queueFamilyIndexCount = 0;
+    swapChainCreateInfo.pQueueFamilyIndices = NULL;
+    if (vkCreateSwapchainKHR(handle->device->device, &swapChainCreateInfo, NULL, &handle->swapChain) != VK_SUCCESS) return 0;
 
-	// create swap-chain image views
-	if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageCount, NULL) != VK_SUCCESS) return 0;
+	// get images
+	if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->bufferCount, NULL) != VK_SUCCESS) return 0;
+	if (handle->bufferCount != bufferCount) return 0;// if image count doesn't match buffer count something is wrong
 
-    handle->images = malloc(sizeof(VkImage) * handle->imageCount);
-    if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageCount, handle->images) != VK_SUCCESS) return 0;
+    handle->images = malloc(sizeof(VkImage) * handle->bufferCount);
+    if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->bufferCount, handle->images) != VK_SUCCESS) return 0;
 
-	handle->imageViews = malloc(sizeof(VkImageView) * handle->imageCount);
-	for (uint32_t i = 0; i != handle->imageCount; ++i)
+	// create image views
+	handle->imageViews = malloc(sizeof(VkImageView) * handle->bufferCount);
+	for (uint32_t i = 0; i != handle->bufferCount; ++i)
 	{
 		VkImageViewCreateInfo imageViewCreateInfo = {0};
         imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        imageViewCreateInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+        imageViewCreateInfo.format = format;
         imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
         imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
         imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
@@ -131,14 +148,127 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 		if (vkCreateImageView(handle->device->device, &imageViewCreateInfo, NULL, &handle->imageViews[i]) != VK_SUCCESS) return 0;
 	}
 
+	// create render pass
+	VkAttachmentDescription attachments[1] = {0};
+	attachments[0].format = format;
+	attachments[0].flags = 0;
+	attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
+	attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachments[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+	attachments[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachments[0].finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+	/*attachments[1].format = format;
+	attachments[1].flags = 0;
+	attachments[1].samples = VK_SAMPLE_COUNT_1_BIT;
+	attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachments[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachments[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachments[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;*/
+
+    VkAttachmentReference colorReference = {0};
+	colorReference.attachment = 0;
+	colorReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    /*VkAttachmentReference depthReference = {0};
+	depthReference.attachment = 1;
+	depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;*/
+
+    VkSubpassDescription subpass = {0};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.flags = 0;
+	subpass.inputAttachmentCount = 0;
+	subpass.pInputAttachments = NULL;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &colorReference;
+	//subpass.pDepthStencilAttachment = &depthReference;
+	subpass.preserveAttachmentCount = 0;
+	subpass.pResolveAttachments = NULL;
+	subpass.preserveAttachmentCount = 0;
+	subpass.pPreserveAttachments = NULL;
+
+    VkSubpassDependency attachmentDependencies[1] = {0};
+	attachmentDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;// Depth buffer is shared between swapchain images
+	attachmentDependencies[0].dstSubpass = 0;
+	attachmentDependencies[0].srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	attachmentDependencies[0].dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	attachmentDependencies[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	attachmentDependencies[0].dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	attachmentDependencies[0].dependencyFlags = 0;
+
+	/*attachmentDependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;// Image Layout Transition
+	attachmentDependencies[1].dstSubpass = 0;
+	attachmentDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	attachmentDependencies[1].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	attachmentDependencies[1].srcAccessMask = 0;
+	attachmentDependencies[1].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+	attachmentDependencies[1].dependencyFlags = 0;*/
+
+	VkRenderPassCreateInfo renderPassInfo = {0};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = 1;//static_cast<uint32_t>(attachments.size());		// Number of attachments used by this render pass
+	renderPassInfo.pAttachments = attachments;//attachments.data();								// Descriptions of the attachments used by the render pass
+	renderPassInfo.subpassCount = 1;												// We only use one subpass in this example
+	renderPassInfo.pSubpasses = &subpass;								// Description of that subpass
+	renderPassInfo.dependencyCount = 1;	// Number of subpass dependencies
+	renderPassInfo.pDependencies = attachmentDependencies;
+	if (vkCreateRenderPass(handle->device->device, &renderPassInfo, NULL, &handle->renderPass) != VK_SUCCESS) return 0;
+
+	// create frame buffers
+	handle->frameBuffers = malloc(sizeof(VkFramebuffer) * handle->bufferCount);
+	for (uint32_t i = 0; i != handle->bufferCount; ++i)
+	{
+		VkFramebufferCreateInfo frameBufferInfo = {0};
+        frameBufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        frameBufferInfo.renderPass = handle->renderPass;
+        frameBufferInfo.attachmentCount = 1;
+        frameBufferInfo.pAttachments = &handle->imageViews[i];
+        frameBufferInfo.width = (*width);
+        frameBufferInfo.height = (*height);
+        frameBufferInfo.layers = 1;
+		if (vkCreateFramebuffer(handle->device->device, &frameBufferInfo, NULL, &handle->frameBuffers[i]) != VK_SUCCESS) return 0;
+	}
+
+	// create fence
+	VkFenceCreateInfo fenceInfo = {0};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = 0;
+    if (vkCreateFence(handle->device->device, &fenceInfo, NULL, &handle->fence) != VK_SUCCESS) return 0;
+
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Dispose(SwapChain* handle)
 {
+	if (handle->fence != NULL)
+	{
+		vkDestroyFence(handle->device->device, handle->fence, NULL);
+		handle->fence = NULL;
+	}
+
+	if (handle->frameBuffers != NULL)
+	{
+		for (uint32_t i = 0; i != handle->bufferCount; ++i)
+		{
+			if (handle->frameBuffers[i] != NULL) vkDestroyFramebuffer(handle->device->device, handle->frameBuffers[i], NULL);
+		}
+		free(handle->frameBuffers);
+		handle->frameBuffers = NULL;
+	}
+
+	if (handle->renderPass != NULL)
+	{
+		vkDestroyRenderPass(handle->device->device, handle->renderPass, NULL);
+		handle->renderPass = NULL;
+	}
+
 	if (handle->imageViews != NULL)
 	{
-		for (uint32_t i = 0; i != handle->imageCount; ++i)
+		for (uint32_t i = 0; i != handle->bufferCount; ++i)
 		{
 			if (handle->imageViews[i] != NULL) vkDestroyImageView(handle->device->device, handle->imageViews[i], NULL);
 		}
@@ -167,7 +297,8 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Dispose(SwapChain* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_BeginFrame(SwapChain* handle)
 {
-	vkAcquireNextImageKHR(handle->device->device, handle->swapChain, UINT_MAX, handle->device->semaphore, handle->device->fence, &handle->currentRenderTargetIndex);
+	vkResetFences(handle->device->device, 1, &handle->fence);
+	vkAcquireNextImageKHR(handle->device->device, handle->swapChain, UINT64_MAX, handle->device->semaphore, handle->fence, &handle->currentRenderTargetIndex);
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
@@ -182,4 +313,5 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
     present.waitSemaphoreCount = 0;
     present.pResults = NULL;
     vkQueuePresentKHR(handle->device->queue, &present);
+	vkWaitForFences(handle->device->device, 1, &handle->fence, VK_TRUE, UINT64_MAX);
 }

@@ -13,12 +13,17 @@ extern "C"
 	{
 		handle->bufferCount = bufferCount;
 
+		// check format support
+		D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = {};
+		formatInfo.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+		if (FAILED(handle->device->device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(D3D12_FEATURE_DATA_FORMAT_INFO)))) return 0;
+
 		// create swap-chain
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 		swapChainDesc.BufferCount = bufferCount;
 		swapChainDesc.Width = width;
 		swapChainDesc.Height = height;
-		swapChainDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+		swapChainDesc.Format = formatInfo.Format;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
