@@ -13,8 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs" Link="CommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs" Link="SwapChain.cs" />
   </ItemGroup>
 
   <ItemGroup>

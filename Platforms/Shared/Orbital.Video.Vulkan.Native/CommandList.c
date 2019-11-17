@@ -11,13 +11,11 @@ ORBITAL_EXPORT CommandList* Orbital_Video_Vulkan_CommandList_Create(Device* devi
 ORBITAL_EXPORT int Orbital_Video_Vulkan_CommandList_Init(CommandList* handle)
 {
 	VkCommandBufferAllocateInfo allocInfo = {0};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-    allocInfo.pNext = NULL,
-    allocInfo.commandPool = handle->device->commandPool,
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.commandPool = handle->device->commandPool;
+    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = 1;
     if (vkAllocateCommandBuffers(handle->device, &allocInfo, &handle->commandBuffer) != VK_SUCCESS) return 0;
-	if (vkEndCommandBuffer(handle->commandBuffer) != VK_SUCCESS) return 0;// make sure this is closed
 
 	return 1;
 }
@@ -33,6 +31,9 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Dispose(CommandList* handle
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Start(CommandList* handle, Device* device)
 {
+	VkCommandBufferResetFlags resetInfo = {0};
+	vkResetCommandBuffer(handle->commandBuffer, &resetInfo);
+
 	VkCommandBufferBeginInfo beginInfo = {0};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	vkBeginCommandBuffer(handle->commandBuffer, &beginInfo);

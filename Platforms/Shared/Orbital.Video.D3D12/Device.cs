@@ -43,7 +43,6 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 		internal SwapChain swapChain;
 		private WindowBase window;
-		private bool ensureSwapChainMatchesWindowSize;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance);
@@ -73,12 +72,10 @@ namespace Orbital.Video.D3D12
 		public bool Init(DeviceDesc desc)
 		{
 			window = desc.window;
-			ensureSwapChainMatchesWindowSize = desc.ensureSwapChainMatchesWindowSize;
-
 			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
-				swapChain = new SwapChain(this);
+				swapChain = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
 				return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
 			}
 			else
@@ -104,12 +101,11 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
-			swapChain.BeginFrame();
-			if (ensureSwapChainMatchesWindowSize)
+			if (type == DeviceType.Presentation)
 			{
-				// TODO: check if window size changed and resize swapchain back-buffer if so to match
+				swapChain.BeginFrame();
+				Orbital_Video_D3D12_Device_BeginFrame(handle);
 			}
-			Orbital_Video_D3D12_Device_BeginFrame(handle);
 		}
 
 		public override void EndFrame()
@@ -128,9 +124,9 @@ namespace Orbital.Video.D3D12
 		}
 
 		#region Abstraction Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
-			var abstraction = new SwapChain(this);
+			var abstraction = new SwapChain(this, ensureSwapChainMatchesWindowSize);
 			if (!abstraction.Init(window, bufferCount, fullscreen))
 			{
 				abstraction.Dispose();

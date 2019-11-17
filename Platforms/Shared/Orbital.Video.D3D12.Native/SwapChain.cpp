@@ -40,8 +40,8 @@ extern "C"
 		rtvHeapDesc.NumDescriptors = bufferCount;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		if (FAILED(handle->device->physicalDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
-		UINT renderTargetViewHeapSize = handle->device->physicalDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
+		UINT renderTargetViewHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
 		handle->renderTargetDescHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
@@ -49,7 +49,7 @@ extern "C"
 		for (UINT i = 0; i != bufferCount; ++i)
         {
             if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
-            handle->device->physicalDevice->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
+            handle->device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
 			handle->renderTargetDescHandles[i] = renderTargetDescHandle;
             renderTargetDescHandle.ptr += renderTargetViewHeapSize;
         }

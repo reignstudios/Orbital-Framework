@@ -10,7 +10,7 @@ struct Device
 	D3D_FEATURE_LEVEL nativeFeatureLevel;
 	Instance* instance;
 	IDXGIAdapter* adapter;
-	ID3D12Device* physicalDevice;
+	ID3D12Device* device;
 	ID3D12CommandQueue* commandQueue;
 	ID3D12CommandAllocator* commandAllocator;
 	ID3D12Fence* fence;

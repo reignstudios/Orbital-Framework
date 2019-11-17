@@ -8,6 +8,7 @@ namespace Orbital.Video.D3D12
 	{
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
+		private readonly bool ensureSwapChainMatchesWindowSize;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device);
@@ -24,11 +25,12 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
-		public SwapChain(Device device)
+		public SwapChain(Device device, bool ensureSwapChainMatchesWindowSize)
 		: base(device)
 		{
 			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle);
+			this.ensureSwapChainMatchesWindowSize = ensureSwapChainMatchesWindowSize;
 		}
 
 		internal bool Init(WindowBase window, int bufferCount, bool fullscreen)
@@ -50,6 +52,10 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
+			if (ensureSwapChainMatchesWindowSize)
+			{
+				// TODO: check if window size changed and resize swapchain back-buffer if so to match
+			}
 			Orbital_Video_D3D12_SwapChain_BeginFrame(handle);
 		}
 

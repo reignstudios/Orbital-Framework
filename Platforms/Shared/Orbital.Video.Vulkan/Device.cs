@@ -17,6 +17,11 @@ namespace Orbital.Video.Vulkan
 		public WindowBase window;
 
 		/// <summary>
+		/// If the window size changes, auto resize the swap-chain to match if possible
+		/// </summary>
+		public bool ensureSwapChainMatchesWindowSizeIfPossible;
+
+		/// <summary>
 		/// Double/Tripple buffering etc
 		/// </summary>
 		public int swapChainBufferCount;
@@ -31,9 +36,10 @@ namespace Orbital.Video.Vulkan
 	{
 		public readonly Instance instanceVulkan;
 		internal IntPtr handle;
+		internal SwapChain swapChain;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_Vulkan_Device_Create(IntPtr Instance);
+		private static extern IntPtr Orbital_Video_Vulkan_Device_Create(IntPtr Instance, DeviceType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern int Orbital_Video_Vulkan_Device_Init(IntPtr handle, int adapterIndex);
@@ -54,7 +60,7 @@ namespace Orbital.Video.Vulkan
 		: base(instance, type)
 		{
 			instanceVulkan = instance;
-			handle = Orbital_Video_Vulkan_Device_Create(instance.handle);
+			handle = Orbital_Video_Vulkan_Device_Create(instance.handle, type);
 		}
 
 		public bool Init(DeviceDesc desc)
@@ -62,9 +68,8 @@ namespace Orbital.Video.Vulkan
 			if (Orbital_Video_Vulkan_Device_Init(handle, desc.adapterIndex) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
-				//swapChain = new SwapChain(this);
-				//return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
-				return true;
+				swapChain = new SwapChain(this, desc.ensureSwapChainMatchesWindowSizeIfPossible);
+				return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
 			}
 			else
 			{
@@ -74,11 +79,11 @@ namespace Orbital.Video.Vulkan
 
 		public override void Dispose()
 		{
-			/*if (swapChain != null)
+			if (swapChain != null)
 			{
 				swapChain.Dispose();
 				swapChain = null;
-			}*/
+			}
 
 			if (handle != IntPtr.Zero)
 			{
@@ -103,7 +108,7 @@ namespace Orbital.Video.Vulkan
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
 			return null;
 		}

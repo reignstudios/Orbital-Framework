@@ -1,10 +1,12 @@
 #include "Device.h"
+#include "CommandList.h"
 #include <malloc.h>
 
-ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance)
+ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance, DeviceType type)
 {
 	Device* handle = (Device*)calloc(1, sizeof(Device));
 	handle->instance = instance;
+	handle->type = type;
 	return handle;
 }
 
@@ -37,7 +39,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
 				for (uint32_t j = 0; j != physicalDeviceGroups[i].physicalDeviceCount; ++j)
 				{
 					if (physicalDeviceGroups[i].physicalDevices[j] != handle->physicalDevice) continue;
-					handle->physicalDeviceGroup = physicalDeviceGroups[j];
+					handle->physicalDeviceGroup = physicalDeviceGroups[i];
 				}
 			}
 		}
@@ -58,49 +60,120 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
 		if (deviceProperties.apiVersion != handle->nativeFeatureLevel) return 0;// make sure all devices support the same api version
 	}
 
-	// TODO?: check extensions
-	//vkEnumerateDeviceExtensionProperties(demo->gpu, NULL, &device_extension_count, NULL);
+	// get device features
+    vkGetPhysicalDeviceFeatures(handle->physicalDevice, &handle->physicalDeviceFeatures);
+	
+	// get supported extensions for device
+	uint32_t extensionPropertiesCount = 0;
+	if (vkEnumerateDeviceExtensionProperties(handle->physicalDevice, NULL, &extensionPropertiesCount, NULL) != VK_SUCCESS) return 0;
 
-	// TODO?: check device features
-	//VkPhysicalDeviceFeatures physDevFeatures;
-    //vkGetPhysicalDeviceFeatures(demo->gpu, &physDevFeatures);
+	VkExtensionProperties* extensionProperties = alloca(sizeof(VkExtensionProperties) * extensionPropertiesCount);
+	if (vkEnumerateDeviceExtensionProperties(handle->physicalDevice, NULL, &extensionPropertiesCount, extensionProperties) != VK_SUCCESS) return 0;
+
+	// make sure device supports required extensions
+	uint32_t initExtensionCount = 0;
+	char* initExtensions[32];
+	if (handle->type == DeviceType_Presentation)
+	{
+		#ifdef _WIN32
+		uint32_t expectedExtensionCount = 1;
+		#endif
+		for (uint32_t i = 0; i != extensionPropertiesCount; ++i)
+		{
+			if
+			(
+				strcmp(extensionProperties[i].extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) != 0
+			)
+			{
+				continue;
+			}
+
+			initExtensions[initExtensionCount] = extensionProperties[i].extensionName;
+			++initExtensionCount;
+		}
+
+		// if there are missing extensions exit
+		if (expectedExtensionCount != initExtensionCount) return 0;
+	}
+
+	// make sure device supports all command queue types
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(handle->physicalDevice, &queueFamilyCount, NULL);
+    if (queueFamilyCount == 0) return 0;
+
+	VkQueueFamilyProperties* queueFamilyProperties = alloca(sizeof(VkQueueFamilyProperties) * queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(handle->physicalDevice, &queueFamilyCount, queueFamilyProperties);
+	int foundQueueFamilyIndex = -1;
+    for (uint32_t i = 0; i != queueFamilyCount; ++i)
+	{
+		VkQueueFlags flags = queueFamilyProperties->queueFlags;
+		if ((flags & VK_QUEUE_GRAPHICS_BIT) != 0 && (flags & VK_QUEUE_COMPUTE_BIT) != 0 && (flags & VK_QUEUE_TRANSFER_BIT) != 0)
+		{
+			foundQueueFamilyIndex = i;
+			break;
+		}
+	}
+	if (foundQueueFamilyIndex == -1) return 0;
+	handle->queueFamilyIndex = foundQueueFamilyIndex;
 
 	// create device
-    float queuePriorities[1] = {0};
+    float queuePriorities = 0;
     VkDeviceQueueCreateInfo queueCreateInfo[1] = {0};
     queueCreateInfo[0].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo[0].pNext = NULL;
-    queueCreateInfo[0].queueFamilyIndex = 0;
+    queueCreateInfo[0].queueFamilyIndex = foundQueueFamilyIndex;
     queueCreateInfo[0].queueCount = 1;
-    queueCreateInfo[0].pQueuePriorities = queuePriorities;
+    queueCreateInfo[0].pQueuePriorities = &queuePriorities;
     queueCreateInfo[0].flags = 0;
 
     VkDeviceCreateInfo deviceInfo = {0};
     deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    deviceInfo.pNext = NULL;
     deviceInfo.queueCreateInfoCount = 1;
     deviceInfo.pQueueCreateInfos = queueCreateInfo;
     deviceInfo.enabledLayerCount = 0;
     deviceInfo.ppEnabledLayerNames = NULL;
-    deviceInfo.enabledExtensionCount = 0;
-    deviceInfo.ppEnabledExtensionNames = NULL;
+    deviceInfo.enabledExtensionCount = initExtensionCount;
+    deviceInfo.ppEnabledExtensionNames = initExtensions;
     deviceInfo.pEnabledFeatures = NULL;
 
 	if (vkCreateDevice(handle->physicalDevice, &deviceInfo, NULL, &handle->device) != VK_SUCCESS) return 0;
-
+	vkGetDeviceQueue(handle->device, foundQueueFamilyIndex, 0, &handle->queue);
+	
 	// create command pool
 	VkCommandPoolCreateInfo poolCreateInfo = {0};
     poolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolCreateInfo.pNext = NULL;
-    poolCreateInfo.queueFamilyIndex = 0;
+    poolCreateInfo.queueFamilyIndex = foundQueueFamilyIndex;
     poolCreateInfo.flags = 0;
 	if (vkCreateCommandPool(handle->device, &poolCreateInfo, NULL, &handle->commandPool) != VK_SUCCESS) return 0;
+
+	// create fence
+	VkFenceCreateInfo fenceInfo = {0};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = 0;
+    if (vkCreateFence(handle->device, &fenceInfo, NULL, &handle->fence) != VK_SUCCESS) return 0;
+
+	// create semaphore
+	VkSemaphoreCreateInfo semaphoreInfo = {0};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+    semaphoreInfo.flags = 0;
+    if (vkCreateSemaphore(handle->device, &semaphoreInfo, NULL, &handle->semaphore) != VK_SUCCESS) return 0;
 
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 {
+	if (handle->semaphore != NULL)
+	{
+		vkDestroySemaphore(handle->device, handle->semaphore, NULL);
+		handle->semaphore = NULL;
+	}
+
+	if (handle->fence != NULL)
+	{
+		vkDestroyFence(handle->device, handle->fence, NULL);
+		handle->fence = NULL;
+	}
+
 	if (handle->commandPool != NULL)
 	{
 		vkDestroyCommandPool(handle->device, handle->commandPool, NULL);
@@ -118,10 +191,27 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_BeginFrame(Device* handle)
 {
-	
+	vkResetFences(handle->device, 1, &handle->fence);
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_EndFrame(Device* handle)
 {
+	vkWaitForFences(handle->device, 1, &handle->fence, VK_TRUE, UINT_MAX);
 	vkDeviceWaitIdle(handle->device);
+}
+
+ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_ExecuteCommandList(Device* handle, CommandList* commandList)
+{
+	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkSubmitInfo submitInfo[1] = {0};
+    submitInfo[0].pNext = NULL;
+    submitInfo[0].sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo[0].waitSemaphoreCount = 1;
+    submitInfo[0].pWaitSemaphores = &handle->semaphore;
+    submitInfo[0].pWaitDstStageMask = &pipeStageFlags;
+    submitInfo[0].commandBufferCount = 1;
+    submitInfo[0].pCommandBuffers = commandList->commandBuffer;
+    submitInfo[0].signalSemaphoreCount = 0;
+    submitInfo[0].pSignalSemaphores = NULL;
+	vkQueueSubmit(handle->queue, 1, &submitInfo, handle->fence);
 }
