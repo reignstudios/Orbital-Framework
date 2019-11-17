@@ -126,6 +126,13 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
     handle->images = malloc(sizeof(VkImage) * handle->bufferCount);
     if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->bufferCount, handle->images) != VK_SUCCESS) return 0;
 
+	// create subresourceRange
+	handle->subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	handle->subresourceRange.baseMipLevel = 0;
+    handle->subresourceRange.levelCount = 1;
+    handle->subresourceRange.baseArrayLayer = 0;
+    handle->subresourceRange.layerCount = 1;
+
 	// create image views
 	handle->imageViews = malloc(sizeof(VkImageView) * handle->bufferCount);
 	for (uint32_t i = 0; i != handle->bufferCount; ++i)
@@ -137,11 +144,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
         imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
         imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
         imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-        imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-        imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-        imageViewCreateInfo.subresourceRange.levelCount = 1;
-        imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
-        imageViewCreateInfo.subresourceRange.layerCount = 1;
+        imageViewCreateInfo.subresourceRange = handle->subresourceRange;
         imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
         imageViewCreateInfo.flags = 0;
         imageViewCreateInfo.image = handle->images[i];
@@ -191,14 +194,14 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 	subpass.preserveAttachmentCount = 0;
 	subpass.pPreserveAttachments = NULL;
 
-    VkSubpassDependency attachmentDependencies[1] = {0};
+   /* VkSubpassDependency attachmentDependencies[1] = {0};
 	attachmentDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;// Depth buffer is shared between swapchain images
 	attachmentDependencies[0].dstSubpass = 0;
 	attachmentDependencies[0].srcStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 	attachmentDependencies[0].dstStageMask = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 	attachmentDependencies[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 	attachmentDependencies[0].dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	attachmentDependencies[0].dependencyFlags = 0;
+	attachmentDependencies[0].dependencyFlags = 0;*/
 
 	/*attachmentDependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;// Image Layout Transition
 	attachmentDependencies[1].dstSubpass = 0;
@@ -214,8 +217,8 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 	renderPassInfo.pAttachments = attachments;//attachments.data();								// Descriptions of the attachments used by the render pass
 	renderPassInfo.subpassCount = 1;												// We only use one subpass in this example
 	renderPassInfo.pSubpasses = &subpass;								// Description of that subpass
-	renderPassInfo.dependencyCount = 1;	// Number of subpass dependencies
-	renderPassInfo.pDependencies = attachmentDependencies;
+	renderPassInfo.dependencyCount = 0;//1;	// Number of subpass dependencies
+	renderPassInfo.pDependencies = NULL;//attachmentDependencies;
 	if (vkCreateRenderPass(handle->device->device, &renderPassInfo, NULL, &handle->renderPass) != VK_SUCCESS) return 0;
 
 	// create frame buffers

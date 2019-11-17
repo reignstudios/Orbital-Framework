@@ -46,10 +46,10 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Finish(CommandList* handle)
 ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_EnableSwapChainRenderTarget(CommandList* handle, SwapChain* swapChain)
 {
 	VkClearValue clearValues[1] = {0};
-	clearValues[0].color.float32[0] = 0.2f;
-	clearValues[0].color.float32[1] = 0.2f;
-	clearValues[0].color.float32[2] = 0.2f;
-	clearValues[0].color.float32[3] = 0.2f;
+	clearValues[0].color.float32[0] = 1;
+	clearValues[0].color.float32[1] = 0;
+	clearValues[0].color.float32[2] = 0;
+	clearValues[0].color.float32[3] = 0;
 	//clearValues[1].depthStencil.depth = 1.0f;
 	//clearValues[1].depthStencil.stencil = 0.0f;
 
@@ -64,6 +64,8 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_EnableSwapChainRenderTarget
 	renderPassBeginInfo.pClearValues = clearValues;
 	renderPassBeginInfo.framebuffer = swapChain->frameBuffers[swapChain->currentRenderTargetIndex];
 	vkCmdBeginRenderPass(handle->commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	//vkCmdClearAttachments()
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_EnableSwapChainPresent(CommandList* handle, SwapChain* swapChain)
@@ -78,5 +80,5 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(
 	rgba.float32[1] = g;
 	rgba.float32[2] = b;
 	rgba.float32[3] = a;
-	vkCmdClearColorImage(handle->commandBuffer, swapChain->images[swapChain->currentRenderTargetIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &rgba, 0, NULL);*/
+	vkCmdClearColorImage(handle->commandBuffer, swapChain->images[swapChain->currentRenderTargetIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &rgba, 1, &swapChain->subresourceRange);*/
 }

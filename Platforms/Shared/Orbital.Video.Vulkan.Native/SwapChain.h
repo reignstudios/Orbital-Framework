@@ -6,6 +6,7 @@ typedef struct SwapChain
 	Device* device;
 	uint32_t bufferCount, currentRenderTargetIndex;
 	uint32_t width, height;
+	VkImageSubresourceRange subresourceRange;
 	VkSurfaceKHR surface;
 	VkSwapchainKHR swapChain;
 	VkImage* images;

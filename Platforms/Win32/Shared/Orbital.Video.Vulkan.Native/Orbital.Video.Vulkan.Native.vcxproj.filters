@@ -22,6 +22,15 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\SwapChain.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPass.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPassDesc.h">
+      <Filter>Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Texture.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Device.c">
@@ -34,6 +43,15 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\SwapChain.c">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPass.c">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPassDesc.c">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Texture.c">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
