@@ -104,14 +104,14 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
     swapchain_ci.pQueueFamilyIndices = NULL;
     if (vkCreateSwapchainKHR(handle->device->device, &swapchain_ci, NULL, &handle->swapChain) != VK_SUCCESS) return 0;
 
-	// get swap-chain images
-	if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageViewCount, NULL) != VK_SUCCESS) return 0;
+	// create swap-chain image views
+	if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageCount, NULL) != VK_SUCCESS) return 0;
 
-    VkImage* images = alloca(sizeof(VkImage) * handle->imageViewCount);
-    if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageViewCount, images) != VK_SUCCESS) return 0;
+    handle->images = malloc(sizeof(VkImage) * handle->imageCount);
+    if (vkGetSwapchainImagesKHR(handle->device->device, handle->swapChain, &handle->imageCount, handle->images) != VK_SUCCESS) return 0;
 
-	handle->imageViews = malloc(sizeof(VkImageView) * handle->imageViewCount);
-	for (uint32_t i = 0; i != handle->imageViewCount; ++i)
+	handle->imageViews = malloc(sizeof(VkImageView) * handle->imageCount);
+	for (uint32_t i = 0; i != handle->imageCount; ++i)
 	{
 		VkImageViewCreateInfo imageViewCreateInfo = {0};
         imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -127,7 +127,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
         imageViewCreateInfo.subresourceRange.layerCount = 1;
         imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
         imageViewCreateInfo.flags = 0;
-        imageViewCreateInfo.image = images[i];
+        imageViewCreateInfo.image = handle->images[i];
 		if (vkCreateImageView(handle->device->device, &imageViewCreateInfo, NULL, &handle->imageViews[i]) != VK_SUCCESS) return 0;
 	}
 
@@ -138,12 +138,18 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Dispose(SwapChain* handle)
 {
 	if (handle->imageViews != NULL)
 	{
-		for (uint32_t i = 0; i != handle->imageViewCount; ++i)
+		for (uint32_t i = 0; i != handle->imageCount; ++i)
 		{
 			if (handle->imageViews[i] != NULL) vkDestroyImageView(handle->device->device, handle->imageViews[i], NULL);
 		}
 		free(handle->imageViews);
 		handle->imageViews = NULL;
+	}
+
+	if (handle->images != NULL)
+	{
+		free(handle->images);
+		handle->images = NULL;
 	}
 
 	if (handle->swapChain != NULL)
@@ -161,10 +167,19 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Dispose(SwapChain* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_BeginFrame(SwapChain* handle)
 {
-	
+	vkAcquireNextImageKHR(handle->device->device, handle->swapChain, UINT_MAX, handle->device->semaphore, handle->device->fence, &handle->currentRenderTargetIndex);
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
 {
-	
+	VkPresentInfoKHR present;
+    present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    present.pNext = NULL;
+    present.swapchainCount = 1;
+    present.pSwapchains = &handle->swapChain;
+    present.pImageIndices = &handle->currentRenderTargetIndex;
+    present.pWaitSemaphores = NULL;
+    present.waitSemaphoreCount = 0;
+    present.pResults = NULL;
+    vkQueuePresentKHR(handle->device->queue, &present);
 }

@@ -17,9 +17,9 @@ namespace Orbital.Video.Vulkan
 		public WindowBase window;
 
 		/// <summary>
-		/// If the window size changes, auto resize the swap-chain to match if possible
+		/// If the window size changes, auto resize the swap-chain to match
 		/// </summary>
-		public bool ensureSwapChainMatchesWindowSizeIfPossible;
+		public bool ensureSwapChainMatchesWindowSize;
 
 		/// <summary>
 		/// Double/Tripple buffering etc
@@ -53,8 +53,8 @@ namespace Orbital.Video.Vulkan
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_Device_EndFrame(IntPtr handle);
 
-		//[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		//private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
 
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
@@ -68,7 +68,7 @@ namespace Orbital.Video.Vulkan
 			if (Orbital_Video_Vulkan_Device_Init(handle, desc.adapterIndex) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
-				swapChain = new SwapChain(this, desc.ensureSwapChainMatchesWindowSizeIfPossible);
+				swapChain = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
 				return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
 			}
 			else
@@ -94,28 +94,43 @@ namespace Orbital.Video.Vulkan
 
 		public override void BeginFrame()
 		{
-			
+			if (type == DeviceType.Presentation) swapChain.BeginFrame();
+			Orbital_Video_Vulkan_Device_BeginFrame(handle);
 		}
 
 		public override void EndFrame()
 		{
-			
+			Orbital_Video_Vulkan_Device_EndFrame(handle);
+			if (type == DeviceType.Presentation) swapChain.Present();
 		}
 
 		public override void ExecuteCommandList(CommandListBase commandList)
 		{
-			
+			var commandListVulkan = (CommandList)commandList;
+			Orbital_Video_Vulkan_Device_ExecuteCommandList(handle, commandListVulkan.handle);
 		}
 
 		#region Create Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
-			return null;
+			var abstraction = new SwapChain(this, ensureSwapChainMatchesWindowSize);
+			if (!abstraction.Init(window, bufferCount, fullscreen))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create SwapChain");
+			}
+			return abstraction;
 		}
 
 		public override CommandListBase CreateCommandList()
 		{
-			return null;
+			var abstraction = new CommandList(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create CommandList");
+			}
+			return abstraction;
 		}
 		#endregion
 	}

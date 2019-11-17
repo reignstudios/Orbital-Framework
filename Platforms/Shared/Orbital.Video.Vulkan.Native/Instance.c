@@ -1,4 +1,5 @@
 #include "Instance.h"
+#include <stdio.h>
 
 char FeatureLevelToNative(FeatureLevel featureLevel, uint32_t* nativeMinFeatureLevel)
 {
@@ -20,7 +21,24 @@ ORBITAL_EXPORT Instance* Orbital_Video_Vulkan_Instance_Create()
 #ifdef _DEBUG
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_messenger_callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData)
 {
-	// TODO: log message
+	char* prefix = NULL;
+	if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT) prefix = "";
+    else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) prefix = "INFO";
+    else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) prefix = "WARNING";
+    else if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) prefix = "ERROR";
+
+	char* type = NULL;
+	if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT) type = "GENERAL";
+	else if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT) type = "VALIDATION";
+    else if (messageType & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT) type = "PERFORMANCE";
+
+	#ifdef _WIN32
+	char buffer[1024];
+	sprintf_s(buffer, 1024, "Vulkan: %s: %s: %s", prefix, type, pCallbackData->pMessage);
+	OutputDebugStringA(buffer);
+	#else
+	printf("Vulkan: %s: %s: %s", prefix, type, pCallbackData->pMessage);
+	#endif
 	return 1;
 }
 #endif

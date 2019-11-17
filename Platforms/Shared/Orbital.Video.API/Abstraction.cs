@@ -64,6 +64,7 @@ namespace Orbital.Video.API
 			#if WIN32 || WINRT
 			instanceDescVulkan.minimumFeatureLevel = Vulkan.FeatureLevel.Level_1_0;
 			deviceDescVulkan.adapterIndex = -1;
+			deviceDescVulkan.ensureSwapChainMatchesWindowSize = true;
 			deviceDescVulkan.swapChainBufferCount = 2;
 			#endif
 		}

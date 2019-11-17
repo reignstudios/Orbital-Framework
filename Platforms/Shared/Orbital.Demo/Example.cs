@@ -44,7 +44,7 @@ namespace Orbital.Demo
 
 			abstractionDesc.deviceDescVulkan.window = window;
 			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
-			abstractionDesc.deviceDescVulkan.adapterIndex = 2;
+			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
 			commandList = device.CreateCommandList();
 		}
@@ -77,11 +77,11 @@ namespace Orbital.Demo
 				application.RunEvents();
 
 				device.BeginFrame();
-				//commandList.Start();
-				//commandList.EnabledRenderTarget();
-				//commandList.ClearRenderTarget(1, 0, 0, 1);
-				//commandList.EnabledPresent();
-				//commandList.Finish();
+				commandList.Start();
+				commandList.EnabledRenderTarget();
+				commandList.ClearRenderTarget(1, 0, 0, 1);
+				commandList.EnabledPresent();
+				commandList.Finish();
 				device.ExecuteCommandList(commandList);
 				device.EndFrame();
 			}

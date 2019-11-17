@@ -101,20 +101,14 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
-			if (type == DeviceType.Presentation)
-			{
-				swapChain.BeginFrame();
-				Orbital_Video_D3D12_Device_BeginFrame(handle);
-			}
+			if (type == DeviceType.Presentation) swapChain.BeginFrame();
+			Orbital_Video_D3D12_Device_BeginFrame(handle);
 		}
 
 		public override void EndFrame()
 		{
-			if (type == DeviceType.Presentation)
-			{
-				swapChain.Present();
-				Orbital_Video_D3D12_Device_EndFrame(handle);
-			}
+			Orbital_Video_D3D12_Device_EndFrame(handle);
+			if (type == DeviceType.Presentation) swapChain.Present();
 		}
 
 		public override void ExecuteCommandList(CommandListBase commandList)
