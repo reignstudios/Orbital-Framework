@@ -25,9 +25,6 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPass.h">
       <Filter>Code</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPassDesc.h">
-      <Filter>Code</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Texture.h">
       <Filter>Code</Filter>
     </ClInclude>
@@ -46,9 +43,6 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPass.c">
-      <Filter>Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\RenderPassDesc.c">
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.Vulkan.Native\Texture.c">

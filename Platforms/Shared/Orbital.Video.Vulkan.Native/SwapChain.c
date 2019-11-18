@@ -91,8 +91,8 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 	VkSurfaceFormatKHR* surfaceFormats = alloca(sizeof(VkSurfaceFormatKHR) * count);
 	if (vkGetPhysicalDeviceSurfaceFormatsKHR(handle->device->physicalDevice, handle->surface, &count, surfaceFormats) != VK_SUCCESS) return 0;
 
-	VkFormat format = surfaceFormats[0].format;
-	VkColorSpaceKHR colorSpace = surfaceFormats[0].colorSpace;
+	handle->format = surfaceFormats[0].format;
+	handle->colorSpace = surfaceFormats[0].colorSpace;
 
 	// create swap chain
 	VkSwapchainCreateInfoKHR swapChainCreateInfo = {0};
@@ -104,7 +104,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 	#endif
     swapChainCreateInfo.surface = handle->surface;
     swapChainCreateInfo.minImageCount = bufferCount;
-    swapChainCreateInfo.imageFormat = format;
+    swapChainCreateInfo.imageFormat = handle->format;
     swapChainCreateInfo.imageExtent.width = swapchainExtent.width;
     swapChainCreateInfo.imageExtent.height = swapchainExtent.height;
     swapChainCreateInfo.preTransform = surfaceCapabilities.currentTransform;
@@ -112,7 +112,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
     swapChainCreateInfo.imageArrayLayers = 1;
     swapChainCreateInfo.presentMode = VK_PRESENT_MODE_FIFO_KHR;
     swapChainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
-    swapChainCreateInfo.imageColorSpace = colorSpace;
+    swapChainCreateInfo.imageColorSpace = handle->colorSpace;
     swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
     swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     swapChainCreateInfo.queueFamilyIndexCount = 0;
@@ -139,7 +139,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 	{
 		VkImageViewCreateInfo imageViewCreateInfo = {0};
         imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-        imageViewCreateInfo.format = format;
+        imageViewCreateInfo.format = handle->format;
         imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
         imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
         imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
@@ -153,7 +153,7 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_SwapChain_Init(SwapChain* handle, HWND h
 
 	// create render pass
 	VkAttachmentDescription attachments[1] = {0};
-	attachments[0].format = format;
+	attachments[0].format = handle->format;
 	attachments[0].flags = 0;
 	attachments[0].samples = VK_SAMPLE_COUNT_1_BIT;
 	attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

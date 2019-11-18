@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Orbital.Numerics
 {
@@ -57,16 +58,17 @@ namespace Orbital.Numerics
 		#endregion
 
 		#region Methods
-		//// Converts from linear RGB space to sRGB.
-		//float3 LinearToSRGB(in float3 color)
-		//{
-		//	return pow(color, 1/2.2f);
-		//}
-		//// Converts from sRGB space to linear RGB.
-		//float3 SRGBToLinear(in float3 color)
-		//{
-		//	return pow(color, 2.2f);
-		//}
+		public Color4 LinearToSRGB()
+		{
+			const float gamma = 1 / 2.2f;
+			return new Color4((byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma));
+		}
+
+		public Color4 SRGBToLinear()
+		{
+			const float gamma = 2.2f;
+			return new Color4((byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma), (byte)Math.Pow(r, gamma));
+		}
 		#endregion
 	}
 }
