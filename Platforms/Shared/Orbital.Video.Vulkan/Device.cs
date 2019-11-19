@@ -132,6 +132,11 @@ namespace Orbital.Video.Vulkan
 			}
 			return abstraction;
 		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
+		{
+			return swapChain.CreateRenderPass(desc);
+		}
 		#endregion
 	}
 }

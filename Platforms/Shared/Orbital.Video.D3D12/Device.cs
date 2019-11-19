@@ -139,6 +139,11 @@ namespace Orbital.Video.D3D12
 			}
 			return abstraction;
 		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
+		{
+			return swapChain.CreateRenderPass(desc);
+		}
 		#endregion
 	}
 }

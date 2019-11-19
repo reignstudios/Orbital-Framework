@@ -14,6 +14,7 @@ namespace Orbital.Demo
 		private InstanceBase instance;
 		private DeviceBase device;
 		private CommandListBase commandList;
+		private RenderPassBase renderPass;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -47,10 +48,23 @@ namespace Orbital.Demo
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
 			commandList = device.CreateCommandList();
+
+			var renderPassDesc = new RenderPassDesc()
+			{
+				clearColor = true,
+				clearColorValue = new Numerics.Vec4(1, 0, 0, 1)
+			};
+			renderPass = device.CreateRenderPass(renderPassDesc);
 		}
 
 		public void Dispose()
 		{
+			if (renderPass != null)
+			{
+				renderPass.Dispose();
+				renderPass = null;
+			}
+
 			if (commandList != null)
 			{
 				commandList.Dispose();
@@ -78,9 +92,9 @@ namespace Orbital.Demo
 
 				device.BeginFrame();
 				commandList.Start();
-				commandList.EnabledRenderTarget();
-				commandList.ClearRenderTarget(1, 0, 0, 1);
-				commandList.EnabledPresent();
+				commandList.BeginRenderPass(renderPass);
+				// TODO: draw stuff
+				commandList.EndRenderPass(renderPass);
 				commandList.Finish();
 				device.ExecuteCommandList(commandList);
 				device.EndFrame();

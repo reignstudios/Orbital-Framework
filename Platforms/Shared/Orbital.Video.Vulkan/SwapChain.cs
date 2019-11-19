@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Orbital.Host;
 
@@ -10,6 +11,7 @@ namespace Orbital.Video.Vulkan
 		internal IntPtr handle;
 		private readonly bool ensureSwapChainMatchesWindowSize;
 		private bool sizeEnforced;
+		internal List<RenderPass> renderPasses = new List<RenderPass>();
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_Vulkan_SwapChain_Create(IntPtr device);
@@ -60,6 +62,7 @@ namespace Orbital.Video.Vulkan
 			if (ensureSwapChainMatchesWindowSize && !sizeEnforced)
 			{
 				// TODO: check if window size changed and resize swapchain back-buffer if so to match
+				foreach (var renderPass in renderPasses) renderPass.ResizeFrameBuffer();
 			}
 			Orbital_Video_Vulkan_SwapChain_BeginFrame(handle);
 		}
@@ -68,5 +71,18 @@ namespace Orbital.Video.Vulkan
 		{
 			Orbital_Video_Vulkan_SwapChain_Present(handle);
 		}
+
+		#region Create Methods
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
+		{
+			var abstraction = new RenderPass(this);
+			if (!abstraction.Init(desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderPass");
+			}
+			return abstraction;
+		}
+		#endregion
 	}
 }

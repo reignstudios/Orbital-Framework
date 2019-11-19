@@ -50,6 +50,7 @@ namespace Orbital.Video
 		#region Create Methods
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize);
 		public abstract CommandListBase CreateCommandList();
+		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
 		#endregion
 	}
 }

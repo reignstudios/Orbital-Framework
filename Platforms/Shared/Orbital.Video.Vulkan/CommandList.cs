@@ -24,10 +24,10 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_CommandList_Finish(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_EnableSwapChainRenderTarget(IntPtr handle, IntPtr swapChain);
+		private static extern void Orbital_Video_Vulkan_CommandList_BeginRenderPass(IntPtr handle, IntPtr renderPass);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_EnableSwapChainPresent(IntPtr handle, IntPtr swapChain);
+		private static extern void Orbital_Video_Vulkan_CommandList_EndRenderPass(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
@@ -63,46 +63,15 @@ namespace Orbital.Video.Vulkan
 			Orbital_Video_Vulkan_CommandList_Finish(handle);
 		}
 
-		public override void EnabledRenderTarget()
+		public override void BeginRenderPass(RenderPassBase renderPass)
 		{
-			Orbital_Video_Vulkan_CommandList_EnableSwapChainRenderTarget(handle, deviceVulkan.swapChain.handle);
+			var renderPassVulkan = (RenderPass)renderPass;
+			Orbital_Video_Vulkan_CommandList_BeginRenderPass(handle, renderPassVulkan.handle);
 		}
 
-		public override void EnabledRenderTarget(DepthStencilBase depthStencil)
+		public override void EndRenderPass(RenderPassBase renderPass)
 		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(SwapChainBase swapChain)
-		{
-			var swapChainVulkan = (SwapChain)swapChain;
-			Orbital_Video_Vulkan_CommandList_EnableSwapChainRenderTarget(handle, swapChainVulkan.handle);
-		}
-
-		public override void EnabledRenderTarget(SwapChainBase swapChain, DepthStencilBase depthStencil)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(RenderTargetBase renderTarget)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(RenderTargetBase renderTarget, DepthStencilBase depthStencil)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledPresent()
-		{
-			Orbital_Video_Vulkan_CommandList_EnableSwapChainPresent(handle, deviceVulkan.swapChain.handle);
-		}
-
-		public override void EnabledPresent(SwapChainBase swapChain)
-		{
-			var swapChainVulkan = (SwapChain)swapChain;
-			Orbital_Video_Vulkan_CommandList_EnableSwapChainPresent(handle, swapChainVulkan.handle);
+			Orbital_Video_Vulkan_CommandList_EndRenderPass(handle);
 		}
 
 		public override void ClearRenderTarget(float r, float g, float b, float a)

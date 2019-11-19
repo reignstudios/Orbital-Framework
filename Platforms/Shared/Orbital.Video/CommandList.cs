@@ -24,44 +24,14 @@ namespace Orbital.Video
 		public abstract void Finish();
 
 		/// <summary>
-		/// Enables device render-target used to present next frame
+		/// Sets GPU render states and enables one or both of render-target and depth-stencil
 		/// </summary>
-		public abstract void EnabledRenderTarget();
+		public abstract void BeginRenderPass(RenderPassBase renderPass);
 
 		/// <summary>
-		/// Enables device render-target + depth-stencil override used to present next frame.
+		/// Ends active render pass
 		/// </summary>
-		public abstract void EnabledRenderTarget(DepthStencilBase depthStencil);
-
-		/// <summary>
-		/// Enables current swap-chain render-target
-		/// </summary>
-		public abstract void EnabledRenderTarget(SwapChainBase swapChain);
-
-		/// <summary>
-		/// Enables current swap-chain render-target + depth-stencil override used to present next frame.
-		/// </summary>
-		public abstract void EnabledRenderTarget(SwapChainBase swapChain, DepthStencilBase depthStencil);
-
-		/// <summary>
-		/// Enables render-target to draw to
-		/// </summary>
-		public abstract void EnabledRenderTarget(RenderTargetBase renderTarget);
-
-		/// <summary>
-		/// Enables render-target + depth-stencil to draw to
-		/// </summary>
-		public abstract void EnabledRenderTarget(RenderTargetBase renderTarget, DepthStencilBase depthStencil);
-
-		/// <summary>
-		/// Prepares device render-target to be used for presenting
-		/// </summary>
-		public abstract void EnabledPresent();
-
-		/// <summary>
-		/// Prepares render-target to be used for presenting
-		/// </summary>
-		public abstract void EnabledPresent(SwapChainBase swapChain);
+		public abstract void EndRenderPass(RenderPassBase renderPass);
 
 		/// <summary>
 		/// Clears render target used by device for presenting

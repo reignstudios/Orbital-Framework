@@ -22,5 +22,9 @@ namespace Orbital.Video
 		/// Swaps back-buffer and presents to display
 		/// </summary>
 		public abstract void Present();
+
+		#region Create Methods
+		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
+		#endregion
 	}
 }

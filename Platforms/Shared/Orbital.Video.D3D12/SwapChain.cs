@@ -63,5 +63,18 @@ namespace Orbital.Video.D3D12
 		{
 			Orbital_Video_D3D12_SwapChain_Present(handle);
 		}
+
+		#region Create Methods
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
+		{
+			var abstraction = new RenderPass(this);
+			if (!abstraction.Init(desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderPass");
+			}
+			return abstraction;
+		}
+		#endregion
 	}
 }

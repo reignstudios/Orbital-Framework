@@ -13,7 +13,7 @@ typedef struct SwapChain
 	VkSwapchainKHR swapChain;
 	VkImage* images;
 	VkImageView* imageViews;
-	VkFramebuffer* frameBuffers;
-	VkRenderPass renderPass;
+	//VkFramebuffer* frameBuffers;
+	//VkRenderPass renderPass;
 	VkFence fence;
 } SwapChain;

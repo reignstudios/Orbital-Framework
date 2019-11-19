@@ -24,10 +24,10 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_Finish(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_EnableSwapChainRenderTarget(IntPtr handle, IntPtr swapChain);
+		private static extern void Orbital_Video_D3D12_CommandList_BeginRenderPass(IntPtr handle, IntPtr renderPass);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_EnableSwapChainPresent(IntPtr handle, IntPtr swapChain);
+		private static extern void Orbital_Video_D3D12_CommandList_EndRenderPass(IntPtr handle, IntPtr renderPass);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
@@ -63,46 +63,16 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_CommandList_Finish(handle);
 		}
 
-		public override void EnabledRenderTarget()
+		public override void BeginRenderPass(RenderPassBase renderPass)
 		{
-			Orbital_Video_D3D12_CommandList_EnableSwapChainRenderTarget(handle, deviceD3D12.swapChain.handle);
+			var renderPassD3D12 = (RenderPass)renderPass;
+			Orbital_Video_D3D12_CommandList_BeginRenderPass(handle, renderPassD3D12.handle);
 		}
 
-		public override void EnabledRenderTarget(DepthStencilBase depthStencil)
+		public override void EndRenderPass(RenderPassBase renderPass)
 		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(SwapChainBase swapChain)
-		{
-			var swapChainD3D12 = (SwapChain)swapChain;
-			Orbital_Video_D3D12_CommandList_EnableSwapChainRenderTarget(handle, swapChainD3D12.handle);
-		}
-
-		public override void EnabledRenderTarget(SwapChainBase swapChain, DepthStencilBase depthStencil)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(RenderTargetBase renderTarget)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledRenderTarget(RenderTargetBase renderTarget, DepthStencilBase depthStencil)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public override void EnabledPresent()
-		{
-			Orbital_Video_D3D12_CommandList_EnableSwapChainPresent(handle, deviceD3D12.swapChain.handle);
-		}
-
-		public override void EnabledPresent(SwapChainBase swapChain)
-		{
-			var swapChainD3D12 = (SwapChain)swapChain;
-			Orbital_Video_D3D12_CommandList_EnableSwapChainPresent(handle, swapChainD3D12.handle);
+			var renderPassD3D12 = (RenderPass)renderPass;
+			Orbital_Video_D3D12_CommandList_EndRenderPass(handle, renderPassD3D12.handle);
 		}
 
 		public override void ClearRenderTarget(float r, float g, float b, float a)
