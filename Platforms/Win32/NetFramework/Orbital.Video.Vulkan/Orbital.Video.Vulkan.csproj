@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ADC7CA61-0DC3-4A17-960E-086F36E06F39}</ProjectGuid>
+    <ProjectGuid>{806DB229-803D-4006-BE14-1F9908613DBF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Orbital.Video</RootNamespace>
-    <AssemblyName>Orbital.Video</AssemblyName>
+    <RootNamespace>Orbital.Video.Vulkan</RootNamespace>
+    <AssemblyName>Orbital.Video.Vulkan</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,28 +43,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs">
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs">
       <Link>CommandList.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs">
-      <Link>DepthStencil.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs">
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs">
       <Link>Device.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs">
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs">
       <Link>Instance.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs">
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs">
       <Link>RenderPass.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderPassDesc.cs">
-      <Link>RenderPassDesc.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs">
-      <Link>RenderTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs">
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs">
       <Link>SwapChain.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +68,10 @@
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
       <Name>Orbital.Numerics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
+      <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
+      <Name>Orbital.Video</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -30,6 +30,9 @@
     <ClInclude Include="..\bin\C\Orbital.Video.h">
       <Filter>CODE</Filter>
     </ClInclude>
+    <ClInclude Include="..\bin\C\Orbital.Video.Vulkan.h">
+      <Filter>CODE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\bin\C\Orbital.Demo.Win32.c">

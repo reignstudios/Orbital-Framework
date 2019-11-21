@@ -43,11 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandBuffer.cs">
-      <Link>CommandBuffer.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandList.cs">
+      <Link>CommandList.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs">
       <Link>Device.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Instance.cs">
+      <Link>Instance.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderPass.cs">
+      <Link>RenderPass.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs">
       <Link>SwapChain.cs</Link>

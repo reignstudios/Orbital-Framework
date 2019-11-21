@@ -24,8 +24,6 @@ namespace Orbital.Demo.WinForms
 				example.Init(@"..\..\..\..\..", "x64", "Win32");
 				#elif NET_FRAMEWORK
 				example.Init(@"..\..\..\..", "x64", "Win32");
-				#elif CS2X
-				example.Init(@"..\..\..\..", "x64", "Win32");
 				#endif
 				example.Run();
 			}

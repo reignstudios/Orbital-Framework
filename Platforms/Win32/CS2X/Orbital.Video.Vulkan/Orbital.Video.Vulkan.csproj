@@ -14,21 +14,22 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WIN32</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;WIN32</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Video.API\Abstraction.cs" Link="Abstraction.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs" Link="RenderPass.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs" Link="SwapChain.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj" />
-    <ProjectReference Include="..\Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj" />
+    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj" />
   </ItemGroup>
 
 </Project>

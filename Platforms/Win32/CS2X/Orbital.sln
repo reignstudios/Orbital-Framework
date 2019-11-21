@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Win32", "Orbit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.Win32", "Orbital.Demo.Win32\Orbital.Demo.Win32.csproj", "{20043219-CF16-4846-8E37-2391FFB16F17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{7E681FAD-6F56-4B68-AAB6-B1C4F3F8E360}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{23DEBC89-0A19-4D31-9B17-831883D7385E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{23DEBC89-0A19-4D31-9B17-831883D7385E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.API", "Orbital.Video.API\Orbital.Video.API.csproj", "{BE55FFBD-E3D4-4710-9F35-22BD808250BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.API", "Orbital.Video.API\Orbital.Video.API.csproj", "{BE55FFBD-E3D4-4710-9F35-22BD808250BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video.Vulkan", "Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj", "{1F98D4CA-785E-4714-9CA2-09F4248D450C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE55FFBD-E3D4-4710-9F35-22BD808250BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F98D4CA-785E-4714-9CA2-09F4248D450C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F98D4CA-785E-4714-9CA2-09F4248D450C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F98D4CA-785E-4714-9CA2-09F4248D450C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F98D4CA-785E-4714-9CA2-09F4248D450C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

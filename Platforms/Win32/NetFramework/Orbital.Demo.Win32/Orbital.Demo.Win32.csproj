@@ -78,6 +78,10 @@
       <Project>{098862ac-00ba-4734-a5d4-9f5d3e0e7aa9}</Project>
       <Name>Orbital.Video.D3D12</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj">
+      <Project>{806db229-803d-4006-be14-1f9908613dbf}</Project>
+      <Name>Orbital.Video.Vulkan</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
       <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
       <Name>Orbital.Video</Name>
