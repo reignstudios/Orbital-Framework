@@ -151,23 +151,11 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
     fenceInfo.flags = 0;
     if (vkCreateFence(handle->device, &fenceInfo, NULL, &handle->fence) != VK_SUCCESS) return 0;
 
-	// create semaphore
-	VkSemaphoreCreateInfo semaphoreInfo = {0};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-    semaphoreInfo.flags = 0;
-    if (vkCreateSemaphore(handle->device, &semaphoreInfo, NULL, &handle->semaphore) != VK_SUCCESS) return 0;
-
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 {
-	if (handle->semaphore != NULL)
-	{
-		vkDestroySemaphore(handle->device, handle->semaphore, NULL);
-		handle->semaphore = NULL;
-	}
-
 	if (handle->fence != NULL)
 	{
 		vkDestroyFence(handle->device, handle->fence, NULL);
@@ -206,8 +194,8 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_ExecuteCommandList(Device* handl
 	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	VkSubmitInfo submitInfo = {0};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = &handle->semaphore;
+    submitInfo.waitSemaphoreCount = 0;
+    submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
     submitInfo.pWaitDstStageMask = &pipeStageFlags;
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandList->commandBuffer;

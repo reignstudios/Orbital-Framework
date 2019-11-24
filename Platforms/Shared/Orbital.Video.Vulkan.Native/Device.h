@@ -21,5 +21,4 @@ typedef struct Device
 	VkQueue queue;
 	VkCommandPool commandPool;
 	VkFence fence;
-	VkSemaphore semaphore;
 } Device;
