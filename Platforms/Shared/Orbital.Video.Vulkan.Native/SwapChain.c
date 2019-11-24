@@ -205,7 +205,7 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_BeginFrame(SwapChain* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
 {
-	VkPresentInfoKHR present;
+	VkPresentInfoKHR present = {0};
     present.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     present.swapchainCount = 1;
     present.pSwapchains = &handle->swapChain;
