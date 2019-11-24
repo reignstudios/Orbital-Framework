@@ -56,7 +56,7 @@ namespace Orbital.Video.D3D12
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
 		{
-			const int maxNameLength = 128, maxAdapters = 32;
+			const int maxNameLength = 64, maxAdapters = 32;
 			uint adapterNameCount = maxAdapters;
 			char** adapterNamesPtr = stackalloc char*[maxAdapters];
 			for (int i = 0; i != maxAdapters; ++i)

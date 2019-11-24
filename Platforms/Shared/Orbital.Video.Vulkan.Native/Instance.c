@@ -167,3 +167,60 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Instance_Dispose(Instance* handle)
 	vkDestroyInstance(handle->instance, NULL);
 	free(handle);
 }
+
+ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_QuerySupportedAdapters(Instance* handle, char** adapterNames, uint32_t adapterNameMaxLength, uint32_t* adapterIndices, uint32_t* adapterCount)
+{
+	uint32_t maxAdapterCount = *adapterCount;
+	*adapterCount = 0;
+
+	// get physical device group if vulkan API version is newer otherwise get physical device only
+	if (handle->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
+	{
+		// collect all device groups supported
+		uint32_t deviceGroupCount;
+		if (vkEnumeratePhysicalDeviceGroups(handle->instance, &deviceGroupCount, NULL) != VK_SUCCESS) return 0;
+
+		VkPhysicalDeviceGroupProperties* physicalDeviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
+		if (vkEnumeratePhysicalDeviceGroups(handle->instance, &deviceGroupCount, physicalDeviceGroups) != VK_SUCCESS) return 0;
+
+		// get properties for all 1st devices in groups
+		for (uint32_t i = 0; i != deviceGroupCount; ++i)
+		{
+			if (physicalDeviceGroups[i].physicalDeviceCount <= 0) continue;
+			VkPhysicalDevice physicalDevice = physicalDeviceGroups[i].physicalDevices[0]; 
+
+			VkPhysicalDeviceProperties physicalDeviceProperties = {0};
+			vkGetPhysicalDeviceProperties(physicalDevice, &physicalDeviceProperties);
+			
+			// add name and increase count
+			uint32_t maxLength = min(sizeof(char) * adapterNameMaxLength, sizeof(physicalDeviceProperties.deviceName));
+			memcpy(adapterNames[(*adapterCount)], physicalDeviceProperties.deviceName, maxLength);
+			adapterIndices[(*adapterCount)] = i;
+			++(*adapterCount);
+		}
+	}
+	else
+	{
+		// collect all devices supported
+		uint32_t deviceCount;
+		if (vkEnumeratePhysicalDevices(handle->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
+
+		VkPhysicalDevice* physicalDevices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
+		if (vkEnumeratePhysicalDevices(handle->instance, &deviceCount, physicalDevices) != VK_SUCCESS) return 0;
+
+		// get properties for all devices
+		for (uint32_t i = 0; i != deviceCount; ++i)
+		{
+			VkPhysicalDeviceProperties physicalDeviceProperties = {0};
+			vkGetPhysicalDeviceProperties(physicalDevices[i], &physicalDeviceProperties);
+
+			// add name and increase count
+			uint32_t maxLength = min(sizeof(char) * adapterNameMaxLength, sizeof(physicalDeviceProperties.deviceName));
+			memcpy(adapterNames[(*adapterCount)], physicalDeviceProperties.deviceName, maxLength);
+			adapterIndices[(*adapterCount)] = i;
+			++(*adapterCount);
+		}
+	}
+
+	return 1;
+}

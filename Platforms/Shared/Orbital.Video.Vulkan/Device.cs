@@ -7,7 +7,7 @@ namespace Orbital.Video.Vulkan
 	public struct DeviceDesc
 	{
 		/// <summary>
-		/// Represents physical device index
+		/// Represents "physical device group" index if Vulkan API 1.1 or newer. Otherwise "physical device" index
 		/// </summary>
 		public int adapterIndex;
 

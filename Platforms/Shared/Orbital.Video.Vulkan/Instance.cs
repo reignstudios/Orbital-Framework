@@ -30,8 +30,8 @@ namespace Orbital.Video.Vulkan
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_Vulkan_Instance_Dispose(IntPtr handle);
 
-		//[DllImport(lib, CallingConvention = callingConvention)]
-		//private static unsafe extern int Orbital_Video_Vulkan_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, char** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static unsafe extern int Orbital_Video_Vulkan_Instance_QuerySupportedAdapters(IntPtr handle, byte** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
 
 		public Instance()
 		{
@@ -54,7 +54,28 @@ namespace Orbital.Video.Vulkan
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
 		{
-			throw new NotImplementedException();
+			const int maxNameLength = 64, maxAdapters = 32;
+			uint adapterNameCount = maxAdapters;
+			byte** adapterNamesPtr = stackalloc byte*[maxAdapters];
+			for (int i = 0; i != maxAdapters; ++i)
+			{
+				byte* adapterNamePtr = stackalloc byte[maxNameLength];
+				adapterNamesPtr[i] = adapterNamePtr;
+			}
+			uint* adapterIndices = stackalloc uint[maxAdapters];
+			if (Orbital_Video_Vulkan_Instance_QuerySupportedAdapters(handle, adapterNamesPtr, maxNameLength, adapterIndices, &adapterNameCount) == 0)
+			{
+				adapters = null;
+				return false;
+			}
+
+			adapters = new AdapterInfo[adapterNameCount];
+			for (int i = 0; i != adapterNameCount; ++i)
+			{
+				string name = Marshal.PtrToStringAnsi((IntPtr)adapterNamesPtr[i]);
+				adapters[i] = new AdapterInfo((int)adapterIndices[i], name);
+			}
+			return true;
 		}
 	}
 }

@@ -15,34 +15,27 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
 	// -1 adapter defaults to 0
 	if (adapterIndex == -1) adapterIndex = 0;
 
-	// get physical device
-	uint32_t deviceCount;
-	if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
-	if (adapterIndex >= deviceCount) return 0;
-
-	VkPhysicalDevice* physicalDevices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
-	if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, physicalDevices) != VK_SUCCESS) return 0;
-	handle->physicalDevice = physicalDevices[adapterIndex];
-
-	// get physical device group if possible
+	// get physical device group if vulkan API version is newer otherwise get physical device only
 	if (handle->instance->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 	{
 		uint32_t deviceGroupCount;
 		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, NULL) != VK_SUCCESS) return 0;
-		if (deviceGroupCount != 0)
-		{
-			VkPhysicalDeviceGroupProperties* physicalDeviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
-			if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, physicalDeviceGroups) != VK_SUCCESS) return 0;
-			for (uint32_t i = 0; i != deviceGroupCount; ++i)
-			{
-				if (physicalDeviceGroups[i].physicalDeviceCount <= 0) continue;
-				for (uint32_t j = 0; j != physicalDeviceGroups[i].physicalDeviceCount; ++j)
-				{
-					if (physicalDeviceGroups[i].physicalDevices[j] != handle->physicalDevice) continue;
-					handle->physicalDeviceGroup = physicalDeviceGroups[i];
-				}
-			}
-		}
+
+		VkPhysicalDeviceGroupProperties* physicalDeviceGroups = alloca(sizeof(VkPhysicalDeviceGroupProperties) * deviceGroupCount);
+		if (vkEnumeratePhysicalDeviceGroups(handle->instance->instance, &deviceGroupCount, physicalDeviceGroups) != VK_SUCCESS) return 0;
+		handle->physicalDeviceGroup = physicalDeviceGroups[adapterIndex];
+		if (handle->physicalDeviceGroup.physicalDeviceCount <= 0) return 0;
+		handle->physicalDevice = handle->physicalDeviceGroup.physicalDevices[0];
+	}
+	else
+	{
+		uint32_t deviceCount;
+		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, NULL) != VK_SUCCESS) return 0;
+		if (adapterIndex >= deviceCount) return 0;
+
+		VkPhysicalDevice* physicalDevices = alloca(sizeof(VkPhysicalDevice) * deviceCount);
+		if (vkEnumeratePhysicalDevices(handle->instance->instance, &deviceCount, physicalDevices) != VK_SUCCESS) return 0;
+		handle->physicalDevice = physicalDevices[adapterIndex];
 	}
 
 	// get max feature level

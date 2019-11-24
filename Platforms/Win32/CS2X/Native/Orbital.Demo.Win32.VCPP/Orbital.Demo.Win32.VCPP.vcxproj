@@ -97,6 +97,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>gcmt-dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>
+      </StackReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

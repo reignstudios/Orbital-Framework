@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using Orbital.Host;
 using Orbital.Video;
@@ -55,6 +56,10 @@ namespace Orbital.Demo
 				clearColorValue = new Numerics.Vec4(1, 0, 0, 1)
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
+
+			// print all GPUs this abstraction supports
+			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
+			foreach (var adapter in adapters) Debug.WriteLine(adapter.name);
 		}
 
 		public void Dispose()

@@ -56,7 +56,7 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_QuerySupportedDevices(Instance* handle, int allowSoftwareAdapters, WCHAR** adapterNames, UINT adapterNameMaxLength, UINT* adapterIndices, UINT* adapterCount)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(Instance* handle, int allowSoftwareAdapters, WCHAR** adapterNames, UINT adapterNameMaxLength, UINT* adapterIndices, UINT* adapterCount)
 	{
 		IDXGIAdapter1* adapter1 = NULL;
 		UINT maxAdapterCount = *adapterCount;
@@ -96,8 +96,8 @@ extern "C"
 
 			// add name and increase count
 			UINT maxLength = min(sizeof(WCHAR) * adapterNameMaxLength, sizeof(desc.Description));
-			memcpy(adapterNames[i], desc.Description, maxLength);
-			adapterIndices[i] = i;
+			memcpy(adapterNames[(*adapterCount)], desc.Description, maxLength);
+			adapterIndices[(*adapterCount)] = i;
 			++(*adapterCount);
 
 			// finish
