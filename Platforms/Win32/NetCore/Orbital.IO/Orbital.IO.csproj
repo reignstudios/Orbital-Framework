@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.IO\StreamBinaryReader.cs" Link="StreamBinaryReader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.IO\StreamExtensions.cs" Link="StreamExtensions.cs" />
+  </ItemGroup>
+
+</Project>

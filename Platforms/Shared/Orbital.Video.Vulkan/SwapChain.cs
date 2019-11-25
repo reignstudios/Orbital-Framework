@@ -36,7 +36,7 @@ namespace Orbital.Video.Vulkan
 			this.ensureSwapChainMatchesWindowSize = ensureSwapChainMatchesWindowSize;
 		}
 
-		internal bool Init(WindowBase window, int bufferCount, bool fullscreen)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			uint width = (uint)size.width;

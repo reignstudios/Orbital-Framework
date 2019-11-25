@@ -106,4 +106,10 @@ extern "C"
 		float rgba[4] = {r, g, b, a};
 		handle->commandList->ClearRenderTargetView(swapChain->renderTargetDescHandles[swapChain->currentRenderTargetIndex], rgba, 0, NULL);
 	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)
+	{
+		ID3D12CommandList* commandLists[1] = { handle->commandList };
+		handle->device->commandQueue->ExecuteCommandLists(1, commandLists);
+	}
 }

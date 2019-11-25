@@ -12,11 +12,15 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPassDesc.cs" Link="RenderPassDesc.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs" Link="RenderTarget.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Shader.cs" Link="Shader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ShaderEffect.cs" Link="ShaderEffect.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\State.cs" Link="State.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+    <ProjectReference Include="..\Orbital.IO\Orbital.IO.csproj" />
   </ItemGroup>
 
 </Project>

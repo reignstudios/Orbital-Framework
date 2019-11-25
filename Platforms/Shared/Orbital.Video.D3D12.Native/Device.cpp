@@ -133,10 +133,4 @@ extern "C"
 			WaitForSingleObject(handle->fenceEvent, INFINITE);
 		}
 	}
-
-	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_ExecuteCommandList(Device* handle, CommandList* commandList)
-	{
-		ID3D12CommandList* commandLists[1] = { commandList->commandList };
-		handle->commandQueue->ExecuteCommandLists(1, commandLists);
-	}
 }

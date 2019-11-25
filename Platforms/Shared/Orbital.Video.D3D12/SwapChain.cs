@@ -33,7 +33,7 @@ namespace Orbital.Video.D3D12
 			this.ensureSwapChainMatchesWindowSize = ensureSwapChainMatchesWindowSize;
 		}
 
-		internal bool Init(WindowBase window, int bufferCount, bool fullscreen)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			IntPtr hWnd = window.GetHandle();

@@ -47,5 +47,10 @@ namespace Orbital.Video
 		/// Clears render target
 		/// </summary>
 		public abstract void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a);
+
+		/// <summary>
+		/// Executes command-list operations
+		/// </summary>
+		public abstract void Execute();
 	}
 }

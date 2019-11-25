@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Orbital.Host;
 
@@ -53,9 +54,6 @@ namespace Orbital.Video.Vulkan
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_Device_EndFrame(IntPtr handle);
 
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
-
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
 		{
@@ -104,12 +102,6 @@ namespace Orbital.Video.Vulkan
 			if (type == DeviceType.Presentation) swapChain.Present();
 		}
 
-		public override void ExecuteCommandList(CommandListBase commandList)
-		{
-			var commandListVulkan = (CommandList)commandList;
-			Orbital_Video_Vulkan_Device_ExecuteCommandList(handle, commandListVulkan.handle);
-		}
-
 		#region Create Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
@@ -136,6 +128,11 @@ namespace Orbital.Video.Vulkan
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
 			return swapChain.CreateRenderPass(desc);
+		}
+
+		public override ShaderEffectBase CreateShaderEffect(Stream stream)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 	}

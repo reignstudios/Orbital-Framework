@@ -32,6 +32,9 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
 
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
+
 		internal CommandList(Device device)
 		: base(device)
 		{
@@ -39,7 +42,7 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_CommandList_Create(device.handle);
 		}
 
-		internal bool Init()
+		public bool Init()
 		{
 			return Orbital_Video_D3D12_CommandList_Init(handle) != 0;
 		}
@@ -89,6 +92,11 @@ namespace Orbital.Video.D3D12
 		public override void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a)
 		{
 			throw new NotImplementedException();
+		}
+
+		public override void Execute()
+		{
+			Orbital_Video_D3D12_CommandList_Execute(handle);
 		}
 	}
 }

@@ -181,18 +181,3 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_EndFrame(Device* handle)
 	if (result == VK_SUCCESS) vkWaitForFences(handle->device, 1, &handle->fence, VK_TRUE, UINT64_MAX);
 	vkDeviceWaitIdle(handle->device);
 }
-
-ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_ExecuteCommandList(Device* handle, CommandList* commandList)
-{
-	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	VkSubmitInfo submitInfo = {0};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.waitSemaphoreCount = 0;
-    submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
-    submitInfo.pWaitDstStageMask = &pipeStageFlags;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandList->commandBuffer;
-    submitInfo.signalSemaphoreCount = 0;
-    submitInfo.pSignalSemaphores = NULL;
-	vkQueueSubmit(handle->queue, 1, &submitInfo, handle->fence);
-}

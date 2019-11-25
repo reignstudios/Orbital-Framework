@@ -81,3 +81,18 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(
 	rgba.float32[3] = a;
 	vkCmdClearColorImage(handle->commandBuffer, swapChain->images[swapChain->currentRenderTargetIndex], VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, &rgba, 1, &swapChain->subresourceRange);
 }
+
+ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Execute(CommandList* handle)
+{
+	VkPipelineStageFlags pipeStageFlags = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkSubmitInfo submitInfo = {0};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.waitSemaphoreCount = 0;
+    submitInfo.pWaitSemaphores = VK_NULL_HANDLE;
+    submitInfo.pWaitDstStageMask = &pipeStageFlags;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &handle->commandBuffer;
+    submitInfo.signalSemaphoreCount = 0;
+    submitInfo.pSignalSemaphores = NULL;
+	vkQueueSubmit(handle->device->queue, 1, &submitInfo, handle->device->fence);
+}

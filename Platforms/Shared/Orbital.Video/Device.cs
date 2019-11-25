@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Orbital.Host;
 
 namespace Orbital.Video
@@ -42,15 +43,11 @@ namespace Orbital.Video
 		/// </summary>
 		public abstract void EndFrame();
 
-		/// <summary>
-		/// Executes command-list operations
-		/// </summary>
-		public abstract void ExecuteCommandList(CommandListBase commandList);
-
 		#region Create Methods
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize);
 		public abstract CommandListBase CreateCommandList();
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
+		public abstract ShaderEffectBase CreateShaderEffect(Stream stream);
 		#endregion
 	}
 }

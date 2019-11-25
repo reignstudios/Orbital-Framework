@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Orbital.Host;
 
@@ -59,9 +60,6 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
 
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_Device_ExecuteCommandList(IntPtr handle, IntPtr commandList);
-
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
 		{
@@ -111,12 +109,6 @@ namespace Orbital.Video.D3D12
 			if (type == DeviceType.Presentation) swapChain.Present();
 		}
 
-		public override void ExecuteCommandList(CommandListBase commandList)
-		{
-			var commandListD3D12 = (CommandList)commandList;
-			Orbital_Video_D3D12_Device_ExecuteCommandList(handle, commandListD3D12.handle);
-		}
-
 		#region Abstraction Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
@@ -143,6 +135,17 @@ namespace Orbital.Video.D3D12
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
 			return swapChain.CreateRenderPass(desc);
+		}
+
+		public override ShaderEffectBase CreateShaderEffect(Stream stream)
+		{
+			var abstraction = new ShaderEffect(this);
+			if (!abstraction.Init(stream))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ShaderEffect");
+			}
+			return abstraction;
 		}
 		#endregion
 	}

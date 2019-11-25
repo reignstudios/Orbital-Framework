@@ -16,6 +16,7 @@ namespace Orbital.Demo
 		private DeviceBase device;
 		private CommandListBase commandList;
 		private RenderPassBase renderPass;
+		private ShaderEffectBase shaderEffect;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -39,7 +40,7 @@ namespace Orbital.Demo
 
 			// load api abstraction
 			var abstractionDesc = new AbstractionDesc(true);
-			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.Vulkan};
+			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
 			abstractionDesc.deviceDescD3D12.window = window;
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
@@ -56,6 +57,11 @@ namespace Orbital.Demo
 				clearColorValue = new Numerics.Vec4(1, 0, 0, 1)
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
+
+			using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				shaderEffect = device.CreateShaderEffect(stream);
+			}
 
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
@@ -101,7 +107,7 @@ namespace Orbital.Demo
 				// TODO: draw stuff
 				commandList.EndRenderPass(renderPass);
 				commandList.Finish();
-				device.ExecuteCommandList(commandList);
+				commandList.Execute();
 				device.EndFrame();
 			}
 		}
