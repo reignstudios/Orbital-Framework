@@ -181,6 +181,8 @@
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\RenderPass.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Shader.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\State.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.h" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Texture.cpp" />
   </ItemGroup>

@@ -1,5 +1,4 @@
 #include "RenderPass.h"
-#include "../Orbital.Video/RenderPassDesc.h"
 
 ORBITAL_EXPORT RenderPass* Orbital_Video_Vulkan_RenderPass_Create_WithSwapChain(Device* device, SwapChain* swapChain)
 {

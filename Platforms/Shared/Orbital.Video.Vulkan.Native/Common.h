@@ -8,4 +8,6 @@
 #include <malloc.h>
 #endif
 
+#include "../Orbital.Video/Structures.h"
+
 #define ORBITAL_EXPORT __declspec(dllexport)

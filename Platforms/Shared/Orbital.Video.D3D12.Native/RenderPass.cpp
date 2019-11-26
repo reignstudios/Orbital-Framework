@@ -1,5 +1,4 @@
 #include "RenderPass.h"
-#include "../Orbital.Video/RenderPassDesc.h"
 
 extern "C"
 {
@@ -13,7 +12,7 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_Native(RenderPass* handle, RenderPassDesc* desc, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)
 	{
-		// render target
+		// render-pass: render target
 		handle->renderTargetCount = renderTargetCount;
 		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(renderTargetCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
 		for (UINT i = 0; i != renderTargetCount; ++i)
@@ -21,6 +20,8 @@ extern "C"
 			D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClear;
 			renderPassBeginningAccessClear.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
 			memcpy(renderPassBeginningAccessClear.Clear.ClearValue.Color, desc->clearColorValue, sizeof(float) * 4);
+			//renderPassBeginningAccessClear.Clear.ClearValue.DepthStencil.Depth = desc->depthValue;
+			//renderPassBeginningAccessClear.Clear.ClearValue.DepthStencil.Stencil = desc->stencilValue;
 
 			D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessPreserve;
 			renderPassEndingAccessPreserve.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
@@ -30,7 +31,7 @@ extern "C"
 			handle->renderTargetDescs[i].EndingAccess = renderPassEndingAccessPreserve;
 		}
 
-		// depth stencil
+		// render-pass: depth stencil
 		//D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessNoAccess{ D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_NO_ACCESS, {} };
 		//D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessNoAccess{ D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_NO_ACCESS, {} };
 		//D3D12_RENDER_PASS_DEPTH_STENCIL_DESC renderPassDepthStencilDesc{ dsvCPUDescriptorHandle, renderPassBeginningAccessNoAccess, renderPassBeginningAccessNoAccess, renderPassEndingAccessNoAccess, renderPassEndingAccessNoAccess };

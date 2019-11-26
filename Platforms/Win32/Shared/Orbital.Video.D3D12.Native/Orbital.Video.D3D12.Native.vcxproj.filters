@@ -60,5 +60,11 @@
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\State.cpp">
       <Filter>Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.h">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
