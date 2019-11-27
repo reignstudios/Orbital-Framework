@@ -34,6 +34,9 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\State.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ShaderEffect.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp">
@@ -64,6 +67,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ShaderEffect.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

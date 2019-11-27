@@ -30,19 +30,6 @@ namespace Orbital.Video
 		GS
 	}
 
-	public enum ShaderDataType
-	{
-		/// <summary>
-		/// Binary contains CS2X metadata header
-		/// </summary>
-		CS2X,
-
-		/// <summary>
-		/// Native shader without any metadata header
-		/// </summary>
-		Native
-	}
-
 	public abstract class ShaderBase : IDisposable
 	{
 		public abstract void Dispose();

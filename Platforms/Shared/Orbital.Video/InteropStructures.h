@@ -4,7 +4,10 @@
 typedef enum SurfaceFormat
 {
 	SurfaceFormat_Default,
-	SurfaceFormat_B8G8R8A8
+	SurfaceFormat_DefaultHDR,
+	SurfaceFormat_B8G8R8A8,
+	SurfaceFormat_R10G10B10A2
+
 }SurfaceFormat;
 
 typedef enum DepthStencilFormat

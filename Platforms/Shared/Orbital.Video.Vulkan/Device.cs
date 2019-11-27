@@ -130,7 +130,12 @@ namespace Orbital.Video.Vulkan
 			return swapChain.CreateRenderPass(desc);
 		}
 
-		public override ShaderEffectBase CreateShaderEffect(Stream stream)
+		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders)
 		{
 			throw new NotImplementedException();
 		}

@@ -1,7 +1,6 @@
 #include "State.h"
 #include "Shader.h"
 #include "Utils.h"
-#include <malloc.h>
 
 struct StateDesc
 {

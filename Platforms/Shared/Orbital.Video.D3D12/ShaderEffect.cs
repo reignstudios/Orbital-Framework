@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Orbital.Video.D3D12
 {
 	public sealed class ShaderEffect : ShaderEffectBase
 	{
 		internal readonly Device device;
+		internal IntPtr handle;
 
 		public Shader vs {get; private set;}
 		public Shader ps {get; private set;}
@@ -13,12 +15,22 @@ namespace Orbital.Video.D3D12
 		public Shader gs {get; private set;}
 		private bool disposeShaders;
 
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern IntPtr Orbital_Video_D3D12_ShaderEffect_Create(IntPtr device);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern int Orbital_Video_D3D12_ShaderEffect_Init(IntPtr handle, IntPtr vs, IntPtr ps, IntPtr hs, IntPtr ds, IntPtr gs);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_ShaderEffect_Dispose(IntPtr handle);
+
 		public ShaderEffect(Device device)
 		{
 			this.device = device;
+			handle = Orbital_Video_D3D12_ShaderEffect_Create(device.handle);
 		}
 
-		public void Init(Shader vs, Shader ps, Shader hs, Shader ds, Shader gs, bool disposeShaders)
+		public bool Init(Shader vs, Shader ps, Shader hs, Shader ds, Shader gs, ShaderEffectDesc desc, bool disposeShaders)
 		{
 			this.vs = vs;
 			this.ps = ps;
@@ -26,6 +38,17 @@ namespace Orbital.Video.D3D12
 			this.ds = ds;
 			this.gs = gs;
 			this.disposeShaders = disposeShaders;
+			return InitFinish(ref desc);
+		}
+
+		protected override bool InitFinish(ref ShaderEffectDesc desc)
+		{
+			IntPtr vsHandle = vs != null ? vs.handle : IntPtr.Zero;
+			IntPtr psHandle = ps != null ? ps.handle : IntPtr.Zero;
+			IntPtr hsHandle = hs != null ? hs.handle : IntPtr.Zero;
+			IntPtr dsHandle = ds != null ? ds.handle : IntPtr.Zero;
+			IntPtr gsHandle = gs != null ? gs.handle : IntPtr.Zero;
+			return Orbital_Video_D3D12_ShaderEffect_Init(handle, vsHandle, psHandle, hsHandle, dsHandle, gsHandle) != 0;
 		}
 
 		protected override bool CreateShader(byte[] data, ShaderType type)
@@ -34,11 +57,11 @@ namespace Orbital.Video.D3D12
 			{
 				case ShaderType.VS:
 					vs = new Shader(device, type);
-					return vs.Init(data, ShaderDataType.CS2X);
+					return vs.Init(data);
 
 				case ShaderType.PS:
 					ps = new Shader(device, type);
-					return ps.Init(data, ShaderDataType.CS2X);
+					return ps.Init(data);
 
 				default: throw new NotSupportedException("Shader type not supported: " + type.ToString());
 			}
@@ -46,36 +69,43 @@ namespace Orbital.Video.D3D12
 
 		public override void Dispose()
 		{
-			if (!disposeShaders) return;
-
-			if (vs != null)
+			if (handle != IntPtr.Zero)
 			{
-				vs.Dispose();
-				vs = null;
+				Orbital_Video_D3D12_ShaderEffect_Dispose(handle);
+				handle = IntPtr.Zero;
 			}
 
-			if (ps != null)
+			if (!disposeShaders)
 			{
-				ps.Dispose();
-				ps = null;
-			}
+				if (vs != null)
+				{
+					vs.Dispose();
+					vs = null;
+				}
 
-			if (hs != null)
-			{
-				hs.Dispose();
-				hs = null;
-			}
+				if (ps != null)
+				{
+					ps.Dispose();
+					ps = null;
+				}
 
-			if (ds != null)
-			{
-				ds.Dispose();
-				ds = null;
-			}
+				if (hs != null)
+				{
+					hs.Dispose();
+					hs = null;
+				}
 
-			if (gs != null)
-			{
-				gs.Dispose();
-				gs = null;
+				if (ds != null)
+				{
+					ds.Dispose();
+					ds = null;
+				}
+
+				if (gs != null)
+				{
+					gs.Dispose();
+					gs = null;
+				}
 			}
 		}
 	}

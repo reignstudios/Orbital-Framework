@@ -26,6 +26,7 @@ extern "C"
 
 		// create device
 		if (FAILED(D3D12CreateDevice(handle->adapter, handle->instance->nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
+		handle->nodeCount = handle->device->GetNodeCount();
 
 		// get max feature level
 		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
@@ -48,6 +49,11 @@ extern "C"
 
 		// validate max isn't less than min
 		if (handle->nativeFeatureLevel < handle->instance->nativeMinFeatureLevel) return 0;
+
+		// get root signature version
+		D3D12_FEATURE_DATA_ROOT_SIGNATURE rootSignature = {};
+		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_ROOT_SIGNATURE, &rootSignature, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE)))) return 0;
+		handle->maxRootSignatureVersion = rootSignature.HighestVersion;
 
 		// create command queue
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};

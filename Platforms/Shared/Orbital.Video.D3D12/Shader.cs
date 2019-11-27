@@ -23,17 +23,13 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_Shader_Create(device.handle);
 		}
 
-		public bool Init(byte[] bytecode, ShaderDataType dataType)
+		public bool Init(byte[] bytecode)
 		{
-			return Init(bytecode, 0, bytecode.Length, dataType);
+			return Init(bytecode, 0, bytecode.Length);
 		}
 
-		public unsafe bool Init(byte[] bytecode, int offset, int length, ShaderDataType dataType)
+		public unsafe bool Init(byte[] bytecode, int offset, int length)
 		{
-			if (dataType == ShaderDataType.CS2X)
-			{
-				// TODO: read metadata
-			}
 			fixed (byte* bytecodePtr = bytecode) return Orbital_Video_D3D12_Shader_Init(handle, bytecodePtr + offset, (uint)length) != 0;
 		}
 

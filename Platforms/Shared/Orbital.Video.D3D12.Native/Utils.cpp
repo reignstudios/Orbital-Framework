@@ -9,6 +9,11 @@ bool GetNative_SurfaceFormat(SurfaceFormat format, DXGI_FORMAT* nativeFormat)
 		case SurfaceFormat::SurfaceFormat_B8G8R8A8:
 			(*nativeFormat) = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
 			return true;
+
+		case SurfaceFormat::SurfaceFormat_DefaultHDR:
+		case SurfaceFormat::SurfaceFormat_R10G10B10A2:
+			(*nativeFormat) = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
+			return true;
 	}
 	return false;
 }

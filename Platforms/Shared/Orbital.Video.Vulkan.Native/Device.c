@@ -1,6 +1,5 @@
 #include "Device.h"
 #include "CommandList.h"
-#include <malloc.h>
 
 ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance, DeviceType type)
 {

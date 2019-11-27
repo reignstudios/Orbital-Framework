@@ -60,7 +60,7 @@ namespace Orbital.Demo
 
 			using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				shaderEffect = device.CreateShaderEffect(stream);
+				shaderEffect = device.CreateShaderEffect(stream, ShaderEffectSamplerAnisotropy.Default);
 			}
 
 			// print all GPUs this abstraction supports

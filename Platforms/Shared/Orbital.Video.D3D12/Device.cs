@@ -137,10 +137,21 @@ namespace Orbital.Video.D3D12
 			return swapChain.CreateRenderPass(desc);
 		}
 
-		public override ShaderEffectBase CreateShaderEffect(Stream stream)
+		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)
 		{
 			var abstraction = new ShaderEffect(this);
-			if (!abstraction.Init(stream))
+			if (!abstraction.Init(stream, anisotropyOverride))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ShaderEffect");
+			}
+			return abstraction;
+		}
+
+		public override ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders)
+		{
+			var abstraction = new ShaderEffect(this);
+			if (!abstraction.Init((Shader)vs, (Shader)ps, (Shader)hs, (Shader)ds, (Shader)gs, desc, disposeShaders))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create ShaderEffect");
