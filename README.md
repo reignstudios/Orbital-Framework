@@ -1,3 +1,5 @@
+[![Gitter](https://badges.gitter.im/ReignStudios/Orbital-Framework.svg)](https://gitter.im/ReignStudios/Orbital-Framework?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 # Orbital-Framework (Prototyping faze)
 Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powerful / Fast)
 
