@@ -1,7 +1,7 @@
 #pragma once
 #include "Device.h"
 
-struct State
+struct RenderState
 {
 	Device* device;
 	ID3D12PipelineState* state;

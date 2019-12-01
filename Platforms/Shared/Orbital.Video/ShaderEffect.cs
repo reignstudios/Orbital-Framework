@@ -128,7 +128,7 @@ namespace Orbital.Video
 				for (int i = 0; i != desc.samplers.Length; ++i) desc.samplers[i].anisotropy = anisotropyOverride;
 			}
 
-			// 
+			// read shaders
 			var reader = new StreamBinaryReader(stream);
 			int shaderCount = stream.ReadByte();
 			for (int i = 0; i != shaderCount; ++i)

@@ -25,6 +25,109 @@ namespace Orbital.Video.Vulkan
 		}
 	}
 
+	#region Vertex Buffer
+	[StructLayout(LayoutKind.Sequential)]
+	public struct VertexBufferLayoutElement_NativeInterop
+	{
+		public VertexBufferLayoutElementType type;
+		public VertexBufferLayoutElementUsage usage;
+		public int streamIndex, usageIndex, byteOffset;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct VertexBufferLayout_NativeInterop : IDisposable
+	{
+		public int elementCount;
+		public VertexBufferLayoutElement_NativeInterop* elements;
+
+		public VertexBufferLayout_NativeInterop(ref VertexBufferLayout layout)
+		{
+			// init defaults
+			elementCount = 0;
+			elements = null;
+
+			// init elements
+			if (layout.elements != null)
+			{
+				elementCount = layout.elements.Length;
+				elements = (VertexBufferLayoutElement_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferLayoutElement_NativeInterop>() * elementCount);
+				for (int i = 0; i != elementCount; ++i)
+				{
+					elements[i].type = layout.elements[i].type;
+					elements[i].usage = layout.elements[i].usage;
+					elements[i].streamIndex = layout.elements[i].streamIndex;
+					elements[i].usageIndex = layout.elements[i].usageIndex;
+					elements[i].byteOffset = layout.elements[i].byteOffset;
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			if (elements != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)elements);
+				elements = null;
+			}
+		}
+	}
+	#endregion
+
+	#region Render State
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct RenderStateDesc_NativeInterop : IDisposable
+	{
+		public IntPtr shaderEffect;
+		public VertexBufferTopology vertexBufferTopology;
+		public VertexBufferLayout_NativeInterop vertexBufferLayout;
+		public int renderTargetCount;
+		public TextureFormat* renderTargetFormats;
+		public DepthStencilFormat depthStencilFormat;
+		public byte depthEnable, stencilEnable;
+		public int msaaLevel;
+
+		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
+		{
+			// init defaults
+			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
+			vertexBufferTopology = desc.vertexBufferTopology;
+			renderTargetCount = 0;
+			renderTargetFormats = null;
+			depthStencilFormat = desc.depthStencilFormat;
+			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
+			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
+			msaaLevel = desc.msaaLevel;
+
+			// init buffer layout
+			vertexBufferLayout = new VertexBufferLayout_NativeInterop(ref desc.vertexBufferLayout);
+
+			// init render targets
+			if (desc.renderTargetFormats != null)
+			{
+				renderTargetCount = desc.renderTargetFormats.Length;
+				long size = sizeof(TextureFormat) * vertexBufferLayout.elementCount;
+				renderTargetFormats = (TextureFormat*)Marshal.AllocHGlobal((int)size);
+				fixed (TextureFormat* renderTargetFormatsPtr = desc.renderTargetFormats)
+				{
+					Buffer.MemoryCopy(renderTargetFormatsPtr, renderTargetFormats, size, size);
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			vertexBufferLayout.Dispose();
+
+			if (renderTargetFormats != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)renderTargetFormats);
+				renderTargetFormats = null;
+			}
+		}
+	}
+	#endregion
+
+	#region Shaders
 	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectResource_NativeInterop
 	{
@@ -118,4 +221,5 @@ namespace Orbital.Video.Vulkan
 			}
 		}
 	}
+	#endregion
 }

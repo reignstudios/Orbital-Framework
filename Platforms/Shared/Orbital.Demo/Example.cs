@@ -16,6 +16,7 @@ namespace Orbital.Demo
 		private DeviceBase device;
 		private CommandListBase commandList;
 		private RenderPassBase renderPass;
+		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
 
 		public Example(ApplicationBase application, WindowBase window)
@@ -75,6 +76,35 @@ namespace Orbital.Demo
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
+			var vertexBufferLayout = new VertexBufferLayout()
+			{
+				elements = new VertexBufferLayoutElement[2]
+				{
+					new VertexBufferLayoutElement()
+					{
+						type = VertexBufferLayoutElementType.Float3,
+						usage = VertexBufferLayoutElementUsage.Position,
+						streamIndex = 0, usageIndex = 0, byteOffset = 0
+					},
+					new VertexBufferLayoutElement()
+					{
+						type = VertexBufferLayoutElementType.RGBAx8,
+						usage = VertexBufferLayoutElementUsage.Color,
+						streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3)
+					}
+				}
+			};
+			var renderStateDesc = new RenderStateDesc()
+			{
+				shaderEffect = shaderEffect,
+				vertexBufferTopology = VertexBufferTopology.Triangle,
+				vertexBufferLayout = vertexBufferLayout,
+				renderTargetFormats = new TextureFormat[1] {TextureFormat.Default},
+				depthStencilFormat = DepthStencilFormat.Default,
+				depthEnable = true
+			};
+			renderState = device.CreateRenderState(renderStateDesc, 0);
+
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
 			foreach (var adapter in adapters) Debug.WriteLine(adapter.name);
@@ -82,6 +112,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (renderState != null)
+			{
+				renderState.Dispose();
+				renderState = null;
+			}
+
 			if (shaderEffect != null)
 			{
 				shaderEffect.Dispose();

@@ -130,6 +130,11 @@ namespace Orbital.Video.Vulkan
 			return swapChain.CreateRenderPass(desc);
 		}
 
+		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)
 		{
 			throw new NotImplementedException();

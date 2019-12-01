@@ -21,11 +21,13 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPassDesc.cs" Link="RenderPassDesc.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderState.cs" Link="RenderState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs" Link="RenderTarget.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ShaderEffect.cs" Link="ShaderEffect.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Video\State.cs" Link="State.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Texture.cs" Link="Texture.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\VertexBuffer.cs" Link="VertexBuffer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,13 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_ShaderEffect_Init(ShaderEffect* handle, Shader* vs, Shader* ps, Shader* hs, Shader* ds, Shader* gs, ShaderEffectDesc* desc)
 	{
+		// reference shaders
+		handle->vs = vs;
+		handle->ps = ps;
+		handle->hs = hs;
+		handle->ds = ds;
+		handle->gs = gs;
+
 		// create desc
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC signatureDesc = {};
 		signatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1;//handle->device->maxRootSignatureVersion;

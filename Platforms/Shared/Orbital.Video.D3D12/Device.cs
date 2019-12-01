@@ -137,6 +137,17 @@ namespace Orbital.Video.D3D12
 			return swapChain.CreateRenderPass(desc);
 		}
 
+		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
+		{
+			var abstraction = new RenderState(this);
+			if (!abstraction.Init(desc, gpuIndex))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderState");
+			}
+			return abstraction;
+		}
+
 		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)
 		{
 			var abstraction = new ShaderEffect(this);

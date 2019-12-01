@@ -19,9 +19,9 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderPass.cs" Link="RenderPass.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderState.cs" Link="RenderState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ShaderEffect.cs" Link="ShaderEffect.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\State.cs" Link="State.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs" Link="SwapChain.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>

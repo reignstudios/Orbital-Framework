@@ -47,6 +47,7 @@ namespace Orbital.Video
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize);
 		public abstract CommandListBase CreateCommandList();
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
+		public abstract RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex);
 		public abstract ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride);
 		public abstract ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders);
 		#endregion

@@ -1,17 +1,17 @@
 #pragma once
 #include "Utils.h"
 
-bool GetNative_SurfaceFormat(SurfaceFormat format, DXGI_FORMAT* nativeFormat)
+bool GetNative_TextureFormat(TextureFormat format, DXGI_FORMAT* nativeFormat)
 {
 	switch (format)
 	{
-		case SurfaceFormat::SurfaceFormat_Default:
-		case SurfaceFormat::SurfaceFormat_B8G8R8A8:
+		case TextureFormat::TextureFormat_Default:
+		case TextureFormat::TextureFormat_B8G8R8A8:
 			(*nativeFormat) = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
 			return true;
 
-		case SurfaceFormat::SurfaceFormat_DefaultHDR:
-		case SurfaceFormat::SurfaceFormat_R10G10B10A2:
+		case TextureFormat::TextureFormat_DefaultHDR:
+		case TextureFormat::TextureFormat_R10G10B10A2:
 			(*nativeFormat) = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
 			return true;
 	}
@@ -30,19 +30,19 @@ bool GetNative_DepthStencilFormat(DepthStencilFormat format, DXGI_FORMAT* native
 	return false;
 }
 
-bool GetNative_Topology(Topology topology, D3D12_PRIMITIVE_TOPOLOGY_TYPE* nativeTopology)
+bool GetNative_VertexBufferTopology(VertexBufferTopology topology, D3D12_PRIMITIVE_TOPOLOGY_TYPE* nativeTopology)
 {
 	switch (topology)
 	{
-		case Topology::Topology_Point:
+		case VertexBufferTopology::VertexBufferTopology_Point:
 			(*nativeTopology) = D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
 			return true;
 
-		case Topology::Topology_Line:
+		case VertexBufferTopology::VertexBufferTopology_Line:
 			(*nativeTopology) = D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
 			return true;
 
-		case Topology::Topology_Triangle:
+		case VertexBufferTopology::VertexBufferTopology_Triangle:
 			(*nativeTopology) = D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			return true;
 	}

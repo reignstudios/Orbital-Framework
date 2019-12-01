@@ -1,28 +1,6 @@
 #pragma once
 #include <stdint.h>
 
-typedef enum SurfaceFormat
-{
-	SurfaceFormat_Default,
-	SurfaceFormat_DefaultHDR,
-	SurfaceFormat_B8G8R8A8,
-	SurfaceFormat_R10G10B10A2
-
-}SurfaceFormat;
-
-typedef enum DepthStencilFormat
-{
-	DepthStencilFormat_Default,
-	DepthStencilFormat_D24S8
-}DepthStencilFormat;
-
-typedef enum Topology
-{
-	Topology_Point,
-	Topology_Line,
-	Topology_Triangle
-}Topology;
-
 typedef struct RenderPassDesc
 {
 	char clearColor, clearDepthStencil;
@@ -30,39 +8,76 @@ typedef struct RenderPassDesc
 	float depthValue, stencilValue;
 }RenderPassDesc;
 
-typedef enum BufferLayoutElementType
+typedef enum TextureFormat
 {
-	BufferLayoutElementType_Float,
-	BufferLayoutElementType_Float2,
-	BufferLayoutElementType_Float3,
-	BufferLayoutElementType_Float4,
-	BufferLayoutElementType_RGBAx8
-}BufferLayoutElementType;
+	TextureFormat_Default,
+	TextureFormat_DefaultHDR,
+	TextureFormat_B8G8R8A8,
+	TextureFormat_R10G10B10A2
+}TextureFormat;
 
-typedef enum BufferLayoutElementUsage
+typedef enum DepthStencilFormat
 {
-	BufferLayoutElementUsage_Position,
-	BufferLayoutElementUsage_Color,
-	BufferLayoutElementUsage_UV,
-	BufferLayoutElementUsage_Normal,
-	BufferLayoutElementUsage_Tangent,
-	BufferLayoutElementUsage_Binormal,
-	BufferLayoutElementUsage_Index,
-	BufferLayoutElementUsage_Weight
-}BufferLayoutElementUsage;
+	DepthStencilFormat_Default,
+	DepthStencilFormat_D24S8
+}DepthStencilFormat;
 
-typedef struct BufferLayoutElement
+#pragma region Vertex Buffer
+typedef enum VertexBufferTopology
 {
-	BufferLayoutElementType type;
-	BufferLayoutElementUsage usage;
-	uint32_t streamIndex, usageIndex, byteOffset;
-}BufferLayoutElement;
+	VertexBufferTopology_Point,
+	VertexBufferTopology_Line,
+	VertexBufferTopology_Triangle
+}VertexBufferTopology;
 
-typedef struct BufferLayout
+typedef enum VertexBufferLayoutElementType
 {
-	uint32_t elementCount;
-	BufferLayoutElement elements[32];
-}BufferLayout;
+	VertexBufferLayoutElementType_Float,
+	VertexBufferLayoutElementType_Float2,
+	VertexBufferLayoutElementType_Float3,
+	VertexBufferLayoutElementType_Float4,
+	VertexBufferLayoutElementType_RGBAx8
+}VertexBufferLayoutElementType;
+
+typedef enum VertexBufferLayoutElementUsage
+{
+	VertexBufferLayoutElementUsage_Position,
+	VertexBufferLayoutElementUsage_Color,
+	VertexBufferLayoutElementUsage_UV,
+	VertexBufferLayoutElementUsage_Normal,
+	VertexBufferLayoutElementUsage_Tangent,
+	VertexBufferLayoutElementUsage_Binormal,
+	VertexBufferLayoutElementUsage_Index,
+	VertexBufferLayoutElementUsage_Weight
+}VertexBufferLayoutElementUsage;
+
+typedef struct VertexBufferLayoutElement
+{
+	VertexBufferLayoutElementType type;
+	VertexBufferLayoutElementUsage usage;
+	int streamIndex, usageIndex, byteOffset;
+}VertexBufferLayoutElement;
+
+typedef struct VertexBufferLayout
+{
+	int elementCount;
+	VertexBufferLayoutElement* elements;
+}VertexBufferLayout;
+#pragma endregion
+
+#pragma region Render State
+typedef struct RenderStateDesc
+{
+	void* shaderEffect;
+	VertexBufferTopology vertexBufferTopology;
+	VertexBufferLayout vertexBufferLayout;
+	int renderTargetCount;
+	TextureFormat* renderTargetFormats;
+	DepthStencilFormat depthStencilFormat;
+	char depthEnable, stencilEnable;
+	int msaaLevel;
+}RenderStateDesc;
+#pragma endregion
 
 #pragma region Shaders
 typedef enum ShaderType
