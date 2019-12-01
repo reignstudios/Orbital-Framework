@@ -19,7 +19,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_ShaderEffect_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_ShaderEffect_Init(IntPtr handle, IntPtr vs, IntPtr ps, IntPtr hs, IntPtr ds, IntPtr gs);
+		private static unsafe extern int Orbital_Video_D3D12_ShaderEffect_Init(IntPtr handle, IntPtr vs, IntPtr ps, IntPtr hs, IntPtr ds, IntPtr gs, ShaderEffectDesc_NativeInterop* desc);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_ShaderEffect_Dispose(IntPtr handle);
@@ -41,14 +41,17 @@ namespace Orbital.Video.D3D12
 			return InitFinish(ref desc);
 		}
 
-		protected override bool InitFinish(ref ShaderEffectDesc desc)
+		protected unsafe override bool InitFinish(ref ShaderEffectDesc desc)
 		{
 			IntPtr vsHandle = vs != null ? vs.handle : IntPtr.Zero;
 			IntPtr psHandle = ps != null ? ps.handle : IntPtr.Zero;
 			IntPtr hsHandle = hs != null ? hs.handle : IntPtr.Zero;
 			IntPtr dsHandle = ds != null ? ds.handle : IntPtr.Zero;
 			IntPtr gsHandle = gs != null ? gs.handle : IntPtr.Zero;
-			return Orbital_Video_D3D12_ShaderEffect_Init(handle, vsHandle, psHandle, hsHandle, dsHandle, gsHandle) != 0;
+			using (var nativeDesc = new ShaderEffectDesc_NativeInterop(ref desc))
+			{
+				return Orbital_Video_D3D12_ShaderEffect_Init(handle, vsHandle, psHandle, hsHandle, dsHandle, gsHandle, &nativeDesc) != 0;
+			}
 		}
 
 		protected override bool CreateShader(byte[] data, ShaderType type)

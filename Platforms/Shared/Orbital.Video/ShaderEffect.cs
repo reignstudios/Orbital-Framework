@@ -20,6 +20,11 @@ namespace Orbital.Video
 	public enum ShaderEffectSampleFilter
 	{
 		/// <summary>
+		/// Will let the API choose
+		/// </summary>
+		Default,
+
+		/// <summary>
 		/// No sub-pixel interpolation
 		/// </summary>
 		Point,

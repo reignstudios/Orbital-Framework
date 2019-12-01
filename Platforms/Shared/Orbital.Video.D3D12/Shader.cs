@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using Orbital.IO;
 
 namespace Orbital.Video.D3D12
 {
@@ -23,6 +25,12 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_Shader_Create(device.handle);
 		}
 
+		public bool Init(Stream stream)
+		{
+			stream.ToByteArray(out byte[] bytecode);
+			return Init(bytecode);
+		}
+
 		public bool Init(byte[] bytecode)
 		{
 			return Init(bytecode, 0, bytecode.Length);
@@ -41,7 +49,7 @@ namespace Orbital.Video.D3D12
 			}
 		}
 
-		public override ShaderType GetType()
+		public override ShaderType GetShaderType()
 		{
 			return type;
 		}

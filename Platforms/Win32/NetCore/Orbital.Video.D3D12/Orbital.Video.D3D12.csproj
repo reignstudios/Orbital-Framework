@@ -6,12 +6,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;D3D12</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;D3D12</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +23,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ShaderEffect.cs" Link="ShaderEffect.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\State.cs" Link="State.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>
 
   <ItemGroup>

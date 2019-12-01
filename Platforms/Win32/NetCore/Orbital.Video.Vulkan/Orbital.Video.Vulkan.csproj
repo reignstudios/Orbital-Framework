@@ -6,10 +6,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;VULKAN</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;VULKAN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +20,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -52,7 +52,12 @@ extern "C"
 
 		// get root signature version
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE rootSignature = {};
-		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_ROOT_SIGNATURE, &rootSignature, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE)))) return 0;
+		rootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_ROOT_SIGNATURE, &rootSignature, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE))))
+		{
+			rootSignature.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+			if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_ROOT_SIGNATURE, &rootSignature, sizeof(D3D12_FEATURE_DATA_ROOT_SIGNATURE)))) return 0;
+		}
 		handle->maxRootSignatureVersion = rootSignature.HighestVersion;
 
 		// create command queue

@@ -37,6 +37,6 @@ namespace Orbital.Video
 		/// <summary>
 		/// Gets shader type
 		/// </summary>
-		public abstract ShaderType GetType();
+		public abstract ShaderType GetShaderType();
 	}
 }

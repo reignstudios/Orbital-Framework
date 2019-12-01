@@ -58,9 +58,21 @@ namespace Orbital.Demo
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
 
-			using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
+			// TODO: load CS2X compiled ShaderEffect
+			/*using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				shaderEffect = device.CreateShaderEffect(stream, ShaderEffectSamplerAnisotropy.Default);
+			}*/
+
+			using (var vsStream = new FileStream("Shaders\\Shader_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (var psStream = new FileStream("Shaders\\Shader_D3D12.ps", FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				var vs = new Video.D3D12.Shader((Video.D3D12.Device)device, ShaderType.VS);
+				var ps = new Video.D3D12.Shader((Video.D3D12.Device)device, ShaderType.PS);
+				if (!vs.Init(vsStream)) throw new Exception("Failed to init VS shader");
+				if (!ps.Init(psStream)) throw new Exception("Failed to init PS shader");
+				var desc = new ShaderEffectDesc();
+				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
 			// print all GPUs this abstraction supports
@@ -70,6 +82,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (shaderEffect != null)
+			{
+				shaderEffect.Dispose();
+				shaderEffect = null;
+			}
+
 			if (renderPass != null)
 			{
 				renderPass.Dispose();

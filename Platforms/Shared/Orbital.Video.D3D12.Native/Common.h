@@ -1,7 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include <dxgi1_6.h>
-#include "../Orbital.Video/InteropStructures.h"
+#include "../Orbital.Video/Interop/InteropStructures.h"
 
 #ifdef _WIN32
 #include <Windows.h>

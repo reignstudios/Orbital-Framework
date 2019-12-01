@@ -16,14 +16,6 @@ typedef enum DepthStencilFormat
 	DepthStencilFormat_D24S8
 }DepthStencilFormat;
 
-typedef enum SamplerState
-{
-	SamplerState_Default,
-	SamplerState_Point,
-	SamplerState_Bilinear,
-	SamplerState_Trilinear
-}SamplerState;
-
 typedef enum Topology
 {
 	Topology_Point,
@@ -71,3 +63,60 @@ typedef struct BufferLayout
 	uint32_t elementCount;
 	BufferLayoutElement elements[32];
 }BufferLayout;
+
+#pragma region Shaders
+typedef enum ShaderType
+{
+	ShaderType_VS,
+	ShaderType_PS,
+	ShaderType_HS,
+	ShaderType_DS,
+	ShaderType_GS
+}ShaderType;
+
+typedef struct ShaderEffectResource
+{
+	int registerIndex;
+	int usedInTypesCount;
+	ShaderType* usedInTypes;
+}ShaderEffectResource;
+
+typedef enum ShaderEffectSampleFilter
+{
+	ShaderEffectSampleFilter_Default,
+	ShaderEffectSampleFilter_Point,
+	ShaderEffectSampleFilter_Bilinear,
+	ShaderEffectSampleFilter_Trilinear
+}ShaderEffectSampleFilter;
+
+typedef enum ShaderEffectSampleAddress
+{
+	ShaderEffectSampleAddress_Wrap,
+	ShaderEffectSampleAddress_Clamp
+}ShaderEffectSampleAddress;
+
+typedef enum ShaderEffectSamplerAnisotropy
+{
+	ShaderEffectSamplerAnisotropy_Default = 0,
+	ShaderEffectSamplerAnisotropy_X1 = 1,
+	ShaderEffectSamplerAnisotropy_X2 = 2,
+	ShaderEffectSamplerAnisotropy_X4 = 4,
+	ShaderEffectSamplerAnisotropy_X8 = 8,
+	ShaderEffectSamplerAnisotropy_X16 = 16
+}ShaderEffectSamplerAnisotropy;
+
+typedef struct ShaderEffectSampler
+{
+	int registerIndex;
+	ShaderEffectSampleFilter filter;
+	ShaderEffectSampleAddress addressU, addressV, addressW;
+	ShaderEffectSamplerAnisotropy anisotropy;
+}ShaderEffectSampler;
+
+typedef struct ShaderEffectDesc
+{
+	int resourcesCount, samplersCount;
+	ShaderEffectResource* resources;
+	ShaderEffectSampler* samplers;
+}ShaderEffectDesc;
+#pragma endregion

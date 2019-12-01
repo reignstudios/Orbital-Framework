@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Orbital.Numerics;
 
 namespace Orbital.Video.Vulkan
 {
-	[StructLayout(LayoutKind.Sequential)]
-	struct RenderPassDescNative
-	{
-		public byte clearColor, clearDepthStencil;
-		public Vec4 clearColorValue;
-		public float depthValue, stencilValue;
-	}
-
 	public sealed class RenderPass : RenderPassBase
 	{
 		internal IntPtr handle;
@@ -21,7 +12,7 @@ namespace Orbital.Video.Vulkan
 		private static extern IntPtr Orbital_Video_Vulkan_RenderPass_Create_WithSwapChain(IntPtr device, IntPtr swapChain);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_Vulkan_RenderPass_Init(IntPtr handle, RenderPassDescNative* desc);
+		private static unsafe extern int Orbital_Video_Vulkan_RenderPass_Init(IntPtr handle, RenderPassDesc_NativeInterop* desc);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_RenderPass_Dispose(IntPtr handle);
@@ -35,14 +26,7 @@ namespace Orbital.Video.Vulkan
 
 		public unsafe bool Init(RenderPassDesc desc)
 		{
-			var descNative = new RenderPassDescNative()
-			{
-				clearColor = (byte)(desc.clearColor ? 1 : 0),
-				clearDepthStencil = (byte)(desc.clearDepthStencil ? 1 : 0),
-				clearColorValue = desc.clearColorValue,
-				depthValue = desc.depthValue,
-				stencilValue = desc.stencilValue
-			};
+			var descNative = new RenderPassDesc_NativeInterop(ref desc);
 			return Orbital_Video_Vulkan_RenderPass_Init(handle, &descNative) != 0;
 		}
 
