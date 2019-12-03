@@ -1,4 +1,6 @@
-﻿namespace Orbital.Video
+﻿using System;
+
+namespace Orbital.Video
 {
 	public enum VertexBufferTopology
 	{
@@ -38,5 +40,10 @@
 	public struct VertexBufferLayout
 	{
 		public VertexBufferLayoutElement[] elements;
+	}
+
+	public abstract class VertexBufferBase : IDisposable
+	{
+		public abstract void Dispose();
 	}
 }

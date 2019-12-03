@@ -34,6 +34,8 @@ extern "C"
 		{
 			VertexBufferLayoutElement element = desc->vertexBufferLayout.elements[i];
 			D3D12_INPUT_ELEMENT_DESC elementDesc = {};
+			elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			elementDesc.InstanceDataStepRate = 0;
 
 			elementDesc.InputSlot = element.streamIndex;
 			elementDesc.AlignedByteOffset = element.byteOffset;
@@ -65,9 +67,37 @@ extern "C"
 			memcpy((void*)&pipelineDesc.InputLayout.pInputElementDescs[i], &elementDesc, sizeof(D3D12_INPUT_ELEMENT_DESC));
 		}
 
-		// TODO
-        //pipelineDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        //pipelineDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+		// rasterizer state
+		pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+        pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+        pipelineDesc.RasterizerState.FrontCounterClockwise = FALSE;
+        pipelineDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+        pipelineDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+        pipelineDesc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+        pipelineDesc.RasterizerState.DepthClipEnable = TRUE;
+        pipelineDesc.RasterizerState.MultisampleEnable = FALSE;
+        pipelineDesc.RasterizerState.AntialiasedLineEnable = FALSE;
+        pipelineDesc.RasterizerState.ForcedSampleCount = 0;
+        pipelineDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+
+		// blend state
+		pipelineDesc.BlendState.AlphaToCoverageEnable = FALSE;
+        pipelineDesc.BlendState.IndependentBlendEnable = FALSE;
+        D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {};
+		blendDesc.BlendEnable = false;
+		blendDesc.LogicOpEnable = false;
+		blendDesc.SrcBlend = D3D12_BLEND_ONE;
+		blendDesc.DestBlend = D3D12_BLEND_ZERO;
+		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
+		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+		blendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+		blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+        for (int i = 0; i != D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)//D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT
+        {
+			pipelineDesc.BlendState.RenderTarget[i] = blendDesc;
+		}
 
 		// msaa
         pipelineDesc.SampleMask = UINT_MAX;
@@ -83,8 +113,21 @@ extern "C"
 
 		// depth stencil
 		if (!GetNative_DepthStencilFormat(desc->depthStencilFormat, &pipelineDesc.DSVFormat)) return 0;
+
         pipelineDesc.DepthStencilState.DepthEnable = desc->depthEnable;
+		pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
         pipelineDesc.DepthStencilState.StencilEnable = desc->stencilEnable;
+		pipelineDesc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+        pipelineDesc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+		D3D12_DEPTH_STENCILOP_DESC stencilOp = {};
+		stencilOp.StencilFailOp = D3D12_STENCIL_OP_KEEP;
+		stencilOp.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
+		stencilOp.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+		stencilOp.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		pipelineDesc.DepthStencilState.FrontFace = stencilOp;
+		pipelineDesc.DepthStencilState.BackFace = stencilOp;
 
 		// create pipeline state
         if (FAILED(handle->device->device->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&handle->state)))) return 0;

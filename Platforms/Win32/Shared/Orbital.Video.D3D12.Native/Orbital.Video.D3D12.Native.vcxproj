@@ -173,6 +173,7 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\RenderState.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Texture.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBuffer.h" />
     <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
@@ -187,6 +188,7 @@
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Utils.h" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\SwapChain.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Texture.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBuffer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

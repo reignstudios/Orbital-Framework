@@ -20,11 +20,13 @@ extern "C"
 
 		// create desc
 		D3D12_VERSIONED_ROOT_SIGNATURE_DESC signatureDesc = {};
-		signatureDesc.Version = D3D_ROOT_SIGNATURE_VERSION_1;//handle->device->maxRootSignatureVersion;
+		signatureDesc.Version = handle->device->maxRootSignatureVersion;
 		signatureDesc.Desc_1_0.NumParameters = 0;
 		//signatureDesc.Desc_1_0.pParameters = (D3D12_ROOT_PARAMETER*)alloca(sizeof(D3D12_ROOT_PARAMETER) * 1);
 		signatureDesc.Desc_1_0.NumStaticSamplers = 0;
 		//signatureDesc.Desc_1_0.pStaticSamplers = (D3D12_STATIC_SAMPLER_DESC*)alloca(sizeof(D3D12_STATIC_SAMPLER_DESC) * 1);
+
+		signatureDesc.Desc_1_0.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
 		// serialize desc
 		ID3DBlob* serializedDesc = NULL;
