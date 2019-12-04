@@ -9,7 +9,11 @@ namespace Orbital.Numerics
 		#region Properties
 		public byte r, g, b, a;
 
-		public static readonly Color4 black = new Color4();
+		public static readonly Color4 black = new Color4(0, 0, 0, 255);
+		public static readonly Color4 white = new Color4(255, 255, 255, 255);
+		public static readonly Color4 red = new Color4(255, 0, 0, 255);
+		public static readonly Color4 green = new Color4(0, 255, 0, 255);
+		public static readonly Color4 blue = new Color4(0, 0, 255, 255);
 
 		public int Value
 		{

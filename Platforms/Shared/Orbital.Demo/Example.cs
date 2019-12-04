@@ -1,12 +1,26 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Orbital.Host;
+using Orbital.Numerics;
 using Orbital.Video;
 using Orbital.Video.API;
 
 namespace Orbital.Demo
 {
+	[StructLayout(LayoutKind.Sequential)]
+	struct Vertex
+	{
+		public Vec3 position;
+		public Color4 color;
+		public Vertex(Vec3 position, Color4 color)
+		{
+			this.position = position;
+			this.color = color;
+		}
+	}
+
 	public sealed class Example : IDisposable
 	{
 		private ApplicationBase application;
@@ -18,6 +32,7 @@ namespace Orbital.Demo
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
+		private VertexBufferBase vertexBuffer;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -105,6 +120,16 @@ namespace Orbital.Demo
 			};
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
+			var vertices = new Vertex[]
+			{
+				new Vertex(new Vec3(-1, -1, 0), Color4.red),
+				new Vertex(new Vec3(0, 1, 0), Color4.green),
+				new Vertex(new Vec3(1, -1, 0), Color4.blue)
+			};
+			var vertexBufferD3D12 = new Video.D3D12.VertexBuffer((Video.D3D12.Device)device);
+			if (!vertexBufferD3D12.Init<Vertex>(vertices)) throw new Exception("Failed: VertexBuffer init");
+			vertexBuffer = vertexBufferD3D12;
+
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
 			foreach (var adapter in adapters) Debug.WriteLine(adapter.name);
@@ -112,6 +137,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (vertexBuffer != null)
+			{
+				vertexBuffer.Dispose();
+				vertexBuffer = null;
+			}
+
 			if (renderState != null)
 			{
 				renderState.Dispose();
