@@ -1,6 +1,9 @@
 #include "CommandList.h"
 #include "SwapChain.h"
 #include "RenderPass.h"
+#include "RenderState.h"
+#include "VertexBuffer.h"
+#include "ShaderEffect.h"
 
 extern "C"
 {
@@ -117,6 +120,30 @@ extern "C"
 		viewPort.MinDepth = minDepth;
 		viewPort.MaxDepth = maxDepth;
 		handle->commandList->RSSetViewports(1, &viewPort);
+
+		D3D12_RECT rect;
+		rect.left = x;
+		rect.top = y;
+		rect.right = x + width;
+		rect.bottom = y + height;
+		handle->commandList->RSSetScissorRects(1, &rect);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetRenderState(CommandList* handle, RenderState* renderState)
+	{
+		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffectSignature);
+		handle->commandList->IASetPrimitiveTopology(renderState->topology);
+		handle->commandList->SetPipelineState(renderState->state);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetVertexBuffer(CommandList* handle, VertexBuffer* vertexBuffer)
+	{
+		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexIndex, UINT vertexCount, UINT instanceCount)
+	{
+		handle->commandList->DrawInstanced(vertexCount, instanceCount, vertexIndex, 0);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)

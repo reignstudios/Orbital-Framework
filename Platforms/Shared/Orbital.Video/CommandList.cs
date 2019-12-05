@@ -48,7 +48,25 @@ namespace Orbital.Video
 		/// </summary>
 		public abstract void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a);
 
+		/// <summary>
+		/// Sets view port
+		/// </summary>
 		public abstract void SetViewPort(ViewPort viewPort);
+
+		/// <summary>
+		/// Sets render state
+		/// </summary>
+		public abstract void SetRenderState(RenderStateBase renderState);
+
+		/// <summary>
+		/// Sets vertex buffer
+		/// </summary>
+		public abstract void SetVertexBuffer(VertexBufferBase vertexBuffer);
+
+		/// <summary>
+		/// Draw actively set vertex buffer. Must first call 'SetVertexBuffer'
+		/// </summary>
+		public abstract void Draw();
 
 		/// <summary>
 		/// Executes command-list operations

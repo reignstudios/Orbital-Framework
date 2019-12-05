@@ -23,9 +23,17 @@ extern "C"
 		if (shaderEffect->ds != NULL) pipelineDesc.DS = shaderEffect->ds->bytecode;
 		if (shaderEffect->gs != NULL) pipelineDesc.GS = shaderEffect->gs->bytecode;
 		pipelineDesc.pRootSignature = shaderEffect->signatures[gpuIndex];
+		handle->shaderEffectSignature = pipelineDesc.pRootSignature;
 
 		// topology
 		if (!GetNative_VertexBufferTopology(desc->vertexBufferTopology, &pipelineDesc.PrimitiveTopologyType)) return 0;
+		switch (pipelineDesc.PrimitiveTopologyType)
+		{
+			case D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT: handle->topology = D3D_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_POINTLIST; break;
+			case D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE: handle->topology = D3D_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST; break;
+			case D3D12_PRIMITIVE_TOPOLOGY_TYPE::D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE: handle->topology = D3D_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST; break;
+			default: return 0;
+		}
 
 		// vertex buffer layout
 		pipelineDesc.InputLayout.NumElements = desc->vertexBufferLayout.elementCount;
@@ -112,7 +120,8 @@ extern "C"
 		}
 
 		// depth stencil
-		if (!GetNative_DepthStencilFormat(desc->depthStencilFormat, &pipelineDesc.DSVFormat)) return 0;
+		if (!desc->depthEnable) pipelineDesc.DSVFormat = DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;// this must be set to unknown when disabled
+		else if (!GetNative_DepthStencilFormat(desc->depthStencilFormat, &pipelineDesc.DSVFormat)) return 0;
 
         pipelineDesc.DepthStencilState.DepthEnable = desc->depthEnable;
 		pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;

@@ -7,6 +7,7 @@ namespace Orbital.Video.D3D12
 	{
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
+		private VertexBuffer lastVertexBuffer;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_CommandList_Create(IntPtr device);
@@ -34,6 +35,15 @@ namespace Orbital.Video.D3D12
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_SetViewPort(IntPtr handle, uint x, uint y, uint width, uint height, float minDepth, float maxDepth);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_SetRenderState(IntPtr handle, IntPtr renderState);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_SetVertexBuffer(IntPtr handle, IntPtr vertexBuffer);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexIndex, uint vertexCount, uint instanceCount);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
@@ -67,6 +77,7 @@ namespace Orbital.Video.D3D12
 		public override void Finish()
 		{
 			Orbital_Video_D3D12_CommandList_Finish(handle);
+			lastVertexBuffer = null;
 		}
 
 		public override void BeginRenderPass(RenderPassBase renderPass)
@@ -100,6 +111,23 @@ namespace Orbital.Video.D3D12
 		public override void SetViewPort(ViewPort viewPort)
 		{
 			Orbital_Video_D3D12_CommandList_SetViewPort(handle, (uint)viewPort.rect.position.x, (uint)viewPort.rect.position.y, (uint)viewPort.rect.size.width, (uint)viewPort.rect.size.height, viewPort.minDepth, viewPort.maxDepth);
+		}
+
+		public override void SetRenderState(RenderStateBase renderState)
+		{
+			var renderStateD3D12 = (RenderState)renderState;
+			Orbital_Video_D3D12_CommandList_SetRenderState(handle, renderStateD3D12.handle);
+		}
+
+		public override void SetVertexBuffer(VertexBufferBase vertexBuffer)
+		{
+			lastVertexBuffer = (VertexBuffer)vertexBuffer;
+			Orbital_Video_D3D12_CommandList_SetVertexBuffer(handle, lastVertexBuffer.handle);
+		}
+
+		public override void Draw()
+		{
+			Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastVertexBuffer.vertexCount, 1);
 		}
 
 		public override void Execute()

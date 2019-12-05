@@ -73,7 +73,7 @@ namespace Orbital.Demo
 			var renderPassDesc = new RenderPassDesc()
 			{
 				clearColor = true,
-				clearColorValue = new Numerics.Vec4(1, 0, 0, 1)
+				clearColorValue = new Vec4(0, .2f, .4f, 1)
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
 
@@ -121,7 +121,7 @@ namespace Orbital.Demo
 				vertexBufferLayout = vertexBufferLayout,
 				renderTargetFormats = new TextureFormat[1] {TextureFormat.Default},
 				depthStencilFormat = DepthStencilFormat.Default,
-				depthEnable = true
+				depthEnable = false
 			};
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
@@ -194,7 +194,9 @@ namespace Orbital.Demo
 				commandList.BeginRenderPass(renderPass);
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
-				// TODO: draw stuff
+				commandList.SetRenderState(renderState);
+				commandList.SetVertexBuffer(vertexBuffer);
+				commandList.Draw();
 				commandList.EndRenderPass(renderPass);
 				commandList.Finish();
 				commandList.Execute();

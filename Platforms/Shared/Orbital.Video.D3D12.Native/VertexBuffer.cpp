@@ -9,7 +9,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint64_t vertexCount, uint32_t vertexSize)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint32_t vertexCount, uint32_t vertexSize)
 	{
 		uint64_t bufferSize = vertexSize * vertexCount;
 

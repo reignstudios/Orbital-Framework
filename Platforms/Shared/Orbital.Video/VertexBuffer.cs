@@ -44,6 +44,9 @@ namespace Orbital.Video
 
 	public abstract class VertexBufferBase : IDisposable
 	{
+		public int vertexCount { get; protected set; }
+		public int vertexSize { get; protected set; }
+
 		public abstract void Dispose();
 	}
 }
