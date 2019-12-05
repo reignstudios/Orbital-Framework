@@ -93,6 +93,11 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void SetViewPort(ViewPort viewPort)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Execute()
 		{
 			Orbital_Video_Vulkan_CommandList_Execute(handle);

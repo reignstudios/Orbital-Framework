@@ -33,6 +33,9 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_SetViewPort(IntPtr handle, uint x, uint y, uint width, uint height, float minDepth, float maxDepth);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
 
 		internal CommandList(Device device)
@@ -92,6 +95,11 @@ namespace Orbital.Video.D3D12
 		public override void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a)
 		{
 			throw new NotImplementedException();
+		}
+
+		public override void SetViewPort(ViewPort viewPort)
+		{
+			Orbital_Video_D3D12_CommandList_SetViewPort(handle, (uint)viewPort.rect.position.x, (uint)viewPort.rect.position.y, (uint)viewPort.rect.size.width, (uint)viewPort.rect.size.height, viewPort.minDepth, viewPort.maxDepth);
 		}
 
 		public override void Execute()

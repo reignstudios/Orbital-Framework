@@ -48,6 +48,8 @@ namespace Orbital.Video
 		/// </summary>
 		public abstract void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a);
 
+		public abstract void SetViewPort(ViewPort viewPort);
+
 		/// <summary>
 		/// Executes command-list operations
 		/// </summary>

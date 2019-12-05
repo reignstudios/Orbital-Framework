@@ -54,7 +54,7 @@ namespace Orbital.Demo
 			const string config = "Debug";
 			#endif
 
-			// load api abstraction
+			// load api abstraction (api-instance and hardware-device)
 			var abstractionDesc = new AbstractionDesc(true);
 			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
@@ -65,8 +65,11 @@ namespace Orbital.Demo
 			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
+
+			// create command list
 			commandList = device.CreateCommandList();
 
+			// create render pass
 			var renderPassDesc = new RenderPassDesc()
 			{
 				clearColor = true,
@@ -74,6 +77,7 @@ namespace Orbital.Demo
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
 
+			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
 			/*using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
@@ -91,6 +95,7 @@ namespace Orbital.Demo
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
+			// create render state
 			var vertexBufferLayout = new VertexBufferLayout()
 			{
 				elements = new VertexBufferLayoutElement[2]
@@ -120,15 +125,14 @@ namespace Orbital.Demo
 			};
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
+			// create vertex buffer
 			var vertices = new Vertex[]
 			{
 				new Vertex(new Vec3(-1, -1, 0), Color4.red),
 				new Vertex(new Vec3(0, 1, 0), Color4.green),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue)
 			};
-			var vertexBufferD3D12 = new Video.D3D12.VertexBuffer((Video.D3D12.Device)device);
-			if (!vertexBufferD3D12.Init<Vertex>(vertices)) throw new Exception("Failed: VertexBuffer init");
-			vertexBuffer = vertexBufferD3D12;
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices);
 
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
@@ -182,18 +186,22 @@ namespace Orbital.Demo
 
 		public void Run()
 		{
+			application.RunEvents();// run this once before checking window
 			while (!window.IsClosed())
 			{
-				application.RunEvents();
-
 				device.BeginFrame();
 				commandList.Start();
 				commandList.BeginRenderPass(renderPass);
+				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				// TODO: draw stuff
 				commandList.EndRenderPass(renderPass);
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();
+
+				// run application events
+				application.RunEvents();
 			}
 		}
 	}

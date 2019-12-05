@@ -43,6 +43,11 @@ extern "C"
         memcpy(gpuDataPtr, vertices, bufferSize);
         handle->vertexBuffer->Unmap(0, nullptr);
 
+		// create view
+		handle->vertexBufferView.BufferLocation = handle->vertexBuffer->GetGPUVirtualAddress();
+        handle->vertexBufferView.StrideInBytes = vertexSize;
+        handle->vertexBufferView.SizeInBytes = bufferSize;
+
 		return 1;
 	}
 

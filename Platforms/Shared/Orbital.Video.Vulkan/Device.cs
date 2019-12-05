@@ -92,14 +92,14 @@ namespace Orbital.Video.Vulkan
 
 		public override void BeginFrame()
 		{
-			if (type == DeviceType.Presentation) swapChain.BeginFrame();
 			Orbital_Video_Vulkan_Device_BeginFrame(handle);
+			if (type == DeviceType.Presentation) swapChain.BeginFrame();
 		}
 
 		public override void EndFrame()
 		{
-			Orbital_Video_Vulkan_Device_EndFrame(handle);
 			if (type == DeviceType.Presentation) swapChain.Present();
+			Orbital_Video_Vulkan_Device_EndFrame(handle);
 		}
 
 		#region Create Methods
@@ -141,6 +141,11 @@ namespace Orbital.Video.Vulkan
 		}
 
 		public override ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices)
 		{
 			throw new NotImplementedException();
 		}

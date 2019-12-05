@@ -1,6 +1,12 @@
 #include "Device.h"
 #include "CommandList.h"
 
+void Device_AddFence(Device* device, VkFence fence)
+{
+	device->activeFences[device->activeFenceCount] = fence;
+	++device->activeFenceCount;
+}
+
 ORBITAL_EXPORT Device* Orbital_Video_Vulkan_Device_Create(Instance* instance, DeviceType type)
 {
 	Device* handle = (Device*)calloc(1, sizeof(Device));
@@ -137,23 +143,11 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Device_Init(Device* handle, int adapterI
     poolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	if (vkCreateCommandPool(handle->device, &poolCreateInfo, NULL, &handle->commandPool) != VK_SUCCESS) return 0;
 
-	// create fence
-	VkFenceCreateInfo fenceInfo = {0};
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = 0;
-    if (vkCreateFence(handle->device, &fenceInfo, NULL, &handle->fence) != VK_SUCCESS) return 0;
-
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 {
-	if (handle->fence != NULL)
-	{
-		vkDestroyFence(handle->device, handle->fence, NULL);
-		handle->fence = NULL;
-	}
-
 	if (handle->commandPool != NULL)
 	{
 		vkDestroyCommandPool(handle->device, handle->commandPool, NULL);
@@ -171,12 +165,16 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_Dispose(Device* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_BeginFrame(Device* handle)
 {
-	vkResetFences(handle->device, 1, &handle->fence);
+	if (handle->activeFenceCount != 0)
+	{
+		vkResetFences(handle->device, handle->activeFenceCount, &handle->activeFences);
+		handle->activeFenceCount = 0;
+	}
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_Device_EndFrame(Device* handle)
 {
-	VkResult result = vkGetFenceStatus(handle->device, handle->fence);
-	if (result == VK_SUCCESS) vkWaitForFences(handle->device, 1, &handle->fence, VK_TRUE, UINT64_MAX);
+	if (handle->activeFenceCount != 0) vkWaitForFences(handle->device, handle->activeFenceCount, &handle->activeFences, VK_TRUE, UINT64_MAX);
+	vkQueueWaitIdle(handle->queue);
 	vkDeviceWaitIdle(handle->device);
 }

@@ -199,8 +199,8 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Dispose(SwapChain* handle)
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_BeginFrame(SwapChain* handle)
 {
-	vkResetFences(handle->device->device, 1, &handle->fence);
 	vkAcquireNextImageKHR(handle->device->device, handle->swapChain, UINT64_MAX, VK_NULL_HANDLE, handle->fence, &handle->currentRenderTargetIndex);
+	Device_AddFence(handle->device, handle->fence);
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
@@ -214,5 +214,4 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_SwapChain_Present(SwapChain* handle)
     present.waitSemaphoreCount = 0;
     present.pResults = NULL;
     vkQueuePresentKHR(handle->device->queue, &present);
-	vkWaitForFences(handle->device->device, 1, &handle->fence, VK_TRUE, UINT64_MAX);
 }

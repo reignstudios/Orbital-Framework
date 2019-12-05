@@ -73,7 +73,6 @@ extern "C"
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
 		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		if (handle->fenceEvent == NULL) return 0;
-		handle->fenceValue = 1;
 
 		return 1;
 	}
@@ -132,16 +131,17 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
 	{
-		// signal and increment the fence value.
-		const UINT64 fence = handle->fenceValue;
-		if (FAILED(handle->commandQueue->Signal(handle->fence, fence))) return;
-		++handle->fenceValue;
+		// set current fence value
+		if (FAILED(handle->commandQueue->Signal(handle->fence, handle->fenceValue))) return;
 
-		// wait until the previous frame is finished.
-		if (handle->fence->GetCompletedValue() < fence)
+		// wait for frame to finish
+		if (handle->fence->GetCompletedValue() != handle->fenceValue)
 		{
-			if (FAILED(handle->fence->SetEventOnCompletion(fence, handle->fenceEvent))) return;
+			if (FAILED(handle->fence->SetEventOnCompletion(handle->fenceValue, handle->fenceEvent))) return;
 			WaitForSingleObject(handle->fenceEvent, INFINITE);
 		}
+
+		// increment for next frame
+		++handle->fenceValue;
 	}
 }

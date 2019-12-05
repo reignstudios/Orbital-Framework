@@ -107,6 +107,18 @@ extern "C"
 		handle->commandList->ClearRenderTargetView(swapChain->renderTargetDescHandles[swapChain->currentRenderTargetIndex], rgba, 0, NULL);
 	}
 
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetViewPort(CommandList* handle, UINT x, UINT y, UINT width, UINT height, float minDepth, float maxDepth)
+	{
+		D3D12_VIEWPORT viewPort;
+		viewPort.TopLeftX = x;
+		viewPort.TopLeftY = y;
+		viewPort.Width = width;
+		viewPort.Height = height;
+		viewPort.MinDepth = minDepth;
+		viewPort.MaxDepth = maxDepth;
+		handle->commandList->RSSetViewports(1, &viewPort);
+	}
+
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)
 	{
 		ID3D12CommandList* commandLists[1] = { handle->commandList };

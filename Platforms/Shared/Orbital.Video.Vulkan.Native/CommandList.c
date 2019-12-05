@@ -11,6 +11,7 @@ ORBITAL_EXPORT CommandList* Orbital_Video_Vulkan_CommandList_Create(Device* devi
 
 ORBITAL_EXPORT int Orbital_Video_Vulkan_CommandList_Init(CommandList* handle)
 {
+	// create command buffer
 	VkCommandBufferAllocateInfo allocInfo = {0};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = handle->device->commandPool;
@@ -18,11 +19,23 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_CommandList_Init(CommandList* handle)
     allocInfo.commandBufferCount = 1;
     if (vkAllocateCommandBuffers(handle->device->device, &allocInfo, &handle->commandBuffer) != VK_SUCCESS) return 0;
 
+	// create fence
+	VkFenceCreateInfo fenceInfo = {0};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = 0;
+    if (vkCreateFence(handle->device->device, &fenceInfo, NULL, &handle->fence) != VK_SUCCESS) return 0;
+
 	return 1;
 }
 
 ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Dispose(CommandList* handle)
 {
+	if (handle->fence != NULL)
+	{
+		vkDestroyFence(handle->device->device, handle->fence, NULL);
+		handle->fence = NULL;
+	}
+
 	if (handle->commandBuffer != NULL)
 	{
 		vkFreeCommandBuffers(handle->device->device, handle->device->commandPool, 1, &handle->commandBuffer);
@@ -94,5 +107,6 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Execute(CommandList* handle
     submitInfo.pCommandBuffers = &handle->commandBuffer;
     submitInfo.signalSemaphoreCount = 0;
     submitInfo.pSignalSemaphores = NULL;
-	vkQueueSubmit(handle->device->queue, 1, &submitInfo, handle->device->fence);
+	vkQueueSubmit(handle->device->queue, 1, &submitInfo, handle->fence);
+	Device_AddFence(handle->device, handle->fence);
 }

@@ -20,5 +20,9 @@ typedef struct Device
 	VkDevice device;
 	VkQueue queue;
 	VkCommandPool commandPool;
-	VkFence fence;
+
+	uint32_t activeFenceCount;
+	VkFence activeFences[1024];
 } Device;
+
+void Device_AddFence(Device* device, VkFence fence);

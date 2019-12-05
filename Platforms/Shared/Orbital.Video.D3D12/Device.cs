@@ -99,14 +99,14 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
-			if (type == DeviceType.Presentation) swapChain.BeginFrame();
 			Orbital_Video_D3D12_Device_BeginFrame(handle);
+			if (type == DeviceType.Presentation) swapChain.BeginFrame();
 		}
 
 		public override void EndFrame()
 		{
-			Orbital_Video_D3D12_Device_EndFrame(handle);
 			if (type == DeviceType.Presentation) swapChain.Present();
+			Orbital_Video_D3D12_Device_EndFrame(handle);
 		}
 
 		#region Abstraction Methods
@@ -166,6 +166,17 @@ namespace Orbital.Video.D3D12
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create ShaderEffect");
+			}
+			return abstraction;
+		}
+
+		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices)
+		{
+			var abstraction = new VertexBuffer(this);
+			if (!abstraction.Init<T>(vertices))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create VertexBuffer");
 			}
 			return abstraction;
 		}
