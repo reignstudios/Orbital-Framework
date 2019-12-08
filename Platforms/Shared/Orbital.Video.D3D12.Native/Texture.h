@@ -3,4 +3,5 @@
 struct Texture
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle;
+	DXGI_FORMAT format;
 };

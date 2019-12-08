@@ -95,7 +95,7 @@ namespace Orbital.Demo
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
-			// create render state
+			// create vertex buffer
 			var vertexBufferLayout = new VertexBufferLayout()
 			{
 				elements = new VertexBufferLayoutElement[2]
@@ -114,25 +114,24 @@ namespace Orbital.Demo
 					}
 				}
 			};
-			var renderStateDesc = new RenderStateDesc()
-			{
-				shaderEffect = shaderEffect,
-				vertexBufferTopology = VertexBufferTopology.Triangle,
-				vertexBufferLayout = vertexBufferLayout,
-				renderTargetFormats = new TextureFormat[1] {TextureFormat.Default},
-				depthStencilFormat = DepthStencilFormat.Default,
-				depthEnable = false
-			};
-			renderState = device.CreateRenderState(renderStateDesc, 0);
-
-			// create vertex buffer
+			
 			var vertices = new Vertex[]
 			{
 				new Vertex(new Vec3(-1, -1, 0), Color4.red),
 				new Vertex(new Vec3(0, 1, 0), Color4.green),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue)
 			};
-			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices);
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout);
+
+			// create render state
+			var renderStateDesc = new RenderStateDesc()
+			{
+				renderPass = renderPass,
+				shaderEffect = shaderEffect,
+				vertexBuffer = vertexBuffer,
+				vertexBufferTopology = VertexBufferTopology.Triangle
+			};
+			renderState = device.CreateRenderState(renderStateDesc, 0);
 
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
@@ -195,9 +194,8 @@ namespace Orbital.Demo
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				commandList.SetRenderState(renderState);
-				commandList.SetVertexBuffer(vertexBuffer);
 				commandList.Draw();
-				commandList.EndRenderPass(renderPass);
+				commandList.EndRenderPass();
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();

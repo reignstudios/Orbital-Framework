@@ -7,8 +7,10 @@ struct RenderPass
 {
 	Device* device;
 	SwapChain* swapChain;
-	Texture* texture;
 	UINT renderTargetCount;
+	DXGI_FORMAT* renderTargetFormats;
+	DXGI_FORMAT depthStencilFormat;
 	D3D12_RENDER_PASS_RENDER_TARGET_DESC* renderTargetDescs;
 	D3D12_RENDER_PASS_DEPTH_STENCIL_DESC* depthStencilDesc;
+	ID3D12Resource** renderTargetViews;
 };

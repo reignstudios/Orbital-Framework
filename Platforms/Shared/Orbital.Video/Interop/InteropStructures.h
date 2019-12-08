@@ -68,12 +68,14 @@ typedef struct VertexBufferLayout
 #pragma region Render State
 typedef struct RenderStateDesc
 {
+	void* renderPass;
 	void* shaderEffect;
+	void* vertexBuffer;
 	VertexBufferTopology vertexBufferTopology;
-	VertexBufferLayout vertexBufferLayout;
+	/*VertexBufferLayout vertexBufferLayout;
 	int renderTargetCount;
 	TextureFormat* renderTargetFormats;
-	DepthStencilFormat depthStencilFormat;
+	DepthStencilFormat depthStencilFormat;*/
 	char depthEnable, stencilEnable;
 	int msaaLevel;
 }RenderStateDesc;

@@ -8,6 +8,7 @@ namespace Orbital.Video.D3D12
 namespace Orbital.Video.Vulkan
 #endif
 {
+	#region Render Pass
 	[StructLayout(LayoutKind.Sequential)]
 	struct RenderPassDesc_NativeInterop
 	{
@@ -24,6 +25,28 @@ namespace Orbital.Video.Vulkan
 			stencilValue = desc.stencilValue;
 		}
 	}
+	#endregion
+
+	#region Render State
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct RenderStateDesc_NativeInterop
+	{
+		public IntPtr renderPass;
+		public IntPtr shaderEffect;
+		public IntPtr vertexBuffer;
+		public VertexBufferTopology vertexBufferTopology;
+		public int msaaLevel;
+
+		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
+		{
+			renderPass = ((RenderPass)desc.renderPass).handle;
+			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
+			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
+			vertexBufferTopology = desc.vertexBufferTopology;
+			msaaLevel = desc.msaaLevel;
+		}
+	}
+	#endregion
 
 	#region Vertex Buffer
 	[StructLayout(LayoutKind.Sequential)]
@@ -68,60 +91,6 @@ namespace Orbital.Video.Vulkan
 			{
 				Marshal.FreeHGlobal((IntPtr)elements);
 				elements = null;
-			}
-		}
-	}
-	#endregion
-
-	#region Render State
-	[StructLayout(LayoutKind.Sequential)]
-	public unsafe struct RenderStateDesc_NativeInterop : IDisposable
-	{
-		public IntPtr shaderEffect;
-		public VertexBufferTopology vertexBufferTopology;
-		public VertexBufferLayout_NativeInterop vertexBufferLayout;
-		public int renderTargetCount;
-		public TextureFormat* renderTargetFormats;
-		public DepthStencilFormat depthStencilFormat;
-		public byte depthEnable, stencilEnable;
-		public int msaaLevel;
-
-		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
-		{
-			// init defaults
-			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
-			vertexBufferTopology = desc.vertexBufferTopology;
-			renderTargetCount = 0;
-			renderTargetFormats = null;
-			depthStencilFormat = desc.depthStencilFormat;
-			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
-			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
-			msaaLevel = desc.msaaLevel;
-
-			// init buffer layout
-			vertexBufferLayout = new VertexBufferLayout_NativeInterop(ref desc.vertexBufferLayout);
-
-			// init render targets
-			if (desc.renderTargetFormats != null)
-			{
-				renderTargetCount = desc.renderTargetFormats.Length;
-				long size = sizeof(TextureFormat) * vertexBufferLayout.elementCount;
-				renderTargetFormats = (TextureFormat*)Marshal.AllocHGlobal((int)size);
-				fixed (TextureFormat* renderTargetFormatsPtr = desc.renderTargetFormats)
-				{
-					Buffer.MemoryCopy(renderTargetFormatsPtr, renderTargetFormats, size, size);
-				}
-			}
-		}
-
-		public void Dispose()
-		{
-			vertexBufferLayout.Dispose();
-
-			if (renderTargetFormats != null)
-			{
-				Marshal.FreeHGlobal((IntPtr)renderTargetFormats);
-				renderTargetFormats = null;
 			}
 		}
 	}

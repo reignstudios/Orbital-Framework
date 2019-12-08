@@ -1,41 +1,39 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Orbital.Video.D3D12
+namespace Orbital.Video.Vulkan
 {
 	public sealed class VertexBuffer : VertexBufferBase
 	{
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_VertexBuffer_Create(IntPtr device);
+		private static extern IntPtr Orbital_Video_Vulkan_VertexBuffer_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_VertexBuffer_Init(IntPtr handle, void* vertices, uint vertexCount, uint vertexSize, VertexBufferLayout_NativeInterop* layout);
+		private static unsafe extern int Orbital_Video_Vulkan_VertexBuffer_Init(IntPtr handle, void* vertices, uint vertexCount, uint vertexSize);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_VertexBuffer_Dispose(IntPtr handle);
+		private static extern void Orbital_Video_Vulkan_VertexBuffer_Dispose(IntPtr handle);
 
 		public VertexBuffer(Device device)
 		{
-			handle = Orbital_Video_D3D12_VertexBuffer_Create(device.handle);
+			handle = Orbital_Video_Vulkan_VertexBuffer_Create(device.handle);
 		}
 
 		#if CS_7_3
-		public unsafe bool Init<T>(T[] vertices, VertexBufferLayout layout) where T : unmanaged
+		public unsafe bool Init<T>(T[] vertices) where T : unmanaged
 		{
-			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
 			vertexCount = vertices.Length;
 			vertexSize = Marshal.SizeOf<T>();
 			fixed (T* verticesPtr = vertices)
 			{
-				return Orbital_Video_D3D12_VertexBuffer_Init(handle, verticesPtr, (uint)vertices.LongLength, (uint)vertexSize, &layoutNative) != 0;
+				return Orbital_Video_Vulkan_VertexBuffer_Init(handle, verticesPtr, (uint)vertices.LongLength, (uint)vertexSize) != 0;
 			}
 		}
 		#else
 		public unsafe bool Init<T>(T[] vertices) where T : struct
 		{
-			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
 			vertexCount = vertices.Length;
 			vertexSize = Marshal.SizeOf<T>();
 			byte[] verticesDataCopy = new byte[Marshal.SizeOf<T>() * vertices.Length];
@@ -44,7 +42,7 @@ namespace Orbital.Video.D3D12
 			gcHandle.Free();
 			fixed (byte* verticesPtr = verticesDataCopy)
 			{
-				return Orbital_Video_D3D12_VertexBuffer_Init(handle, verticesPtr, (uint)vertices.LongLength, (uint)vertexSize, &layoutNative) != 0;
+				return Orbital_Video_Vulkan_VertexBuffer_Init(handle, verticesPtr, (uint)vertices.LongLength, (uint)vertexSize) != 0;
 			}
 		}
 		#endif
@@ -53,7 +51,7 @@ namespace Orbital.Video.D3D12
 		{
 			if (handle != IntPtr.Zero)
 			{
-				Orbital_Video_D3D12_VertexBuffer_Dispose(handle);
+				Orbital_Video_Vulkan_VertexBuffer_Dispose(handle);
 				handle = IntPtr.Zero;
 			}
 		}

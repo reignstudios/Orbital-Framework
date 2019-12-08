@@ -9,7 +9,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint32_t vertexCount, uint32_t vertexSize)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint32_t vertexCount, uint32_t vertexSize, VertexBufferLayout* layout)
 	{
 		uint64_t bufferSize = vertexSize * vertexCount;
 
@@ -48,11 +48,57 @@ extern "C"
         handle->vertexBufferView.StrideInBytes = vertexSize;
         handle->vertexBufferView.SizeInBytes = bufferSize;
 
+		// vertex buffer layout
+		handle->elementCount = layout->elementCount;
+		handle->elements = (D3D12_INPUT_ELEMENT_DESC*)calloc(layout->elementCount, sizeof(D3D12_INPUT_ELEMENT_DESC));
+		for (int i = 0; i != layout->elementCount; ++i)
+		{
+			VertexBufferLayoutElement element = layout->elements[i];
+			D3D12_INPUT_ELEMENT_DESC elementDesc = {};
+			elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			elementDesc.InstanceDataStepRate = 0;
+
+			elementDesc.InputSlot = element.streamIndex;
+			elementDesc.AlignedByteOffset = element.byteOffset;
+			elementDesc.SemanticIndex = element.usageIndex;
+
+			switch (element.type)
+			{
+				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_Float: elementDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
+				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_Float2: elementDesc.Format = DXGI_FORMAT_R32G32_FLOAT; break;
+				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_Float3: elementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT; break;
+				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_Float4: elementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT; break;
+				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_RGBAx8: elementDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; break;
+				default: return 0;
+			}
+
+			switch (element.usage)
+			{
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Position: elementDesc.SemanticName = "POSITION"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Color: elementDesc.SemanticName = "COLOR"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_UV: elementDesc.SemanticName = "TEXCOORD"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Normal: elementDesc.SemanticName = "NORMAL"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Tangent: elementDesc.SemanticName = "TANGENT"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Binormal: elementDesc.SemanticName = "BINORMAL"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Index: elementDesc.SemanticName = "BLENDINDICES"; break;
+				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Weight: elementDesc.SemanticName = "BLENDWEIGHT"; break;
+				default: return 0;
+			}
+
+			memcpy(&handle->elements[i], &elementDesc, sizeof(D3D12_INPUT_ELEMENT_DESC));
+		}
+
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_VertexBuffer_Dispose(VertexBuffer* handle)
 	{
+		if (handle->elements != NULL)
+		{
+			free(handle->elements);
+			handle->elements = NULL;
+		}
+
 		if (handle->vertexBuffer != NULL)
 		{
 			handle->vertexBuffer->Release();

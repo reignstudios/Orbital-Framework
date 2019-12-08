@@ -72,7 +72,7 @@ namespace Orbital.Video.Vulkan
 			Orbital_Video_Vulkan_CommandList_BeginRenderPass(handle, renderPassVulkan.handle);
 		}
 
-		public override void EndRenderPass(RenderPassBase renderPass)
+		public override void EndRenderPass()
 		{
 			Orbital_Video_Vulkan_CommandList_EndRenderPass(handle);
 		}

@@ -7,7 +7,9 @@ namespace Orbital.Video.D3D12
 	{
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
+
 		private VertexBuffer lastVertexBuffer;
+		private RenderPass lastRenderPass;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_CommandList_Create(IntPtr device);
@@ -82,14 +84,14 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginRenderPass(RenderPassBase renderPass)
 		{
-			var renderPassD3D12 = (RenderPass)renderPass;
-			Orbital_Video_D3D12_CommandList_BeginRenderPass(handle, renderPassD3D12.handle);
+			lastRenderPass = (RenderPass)renderPass;
+			Orbital_Video_D3D12_CommandList_BeginRenderPass(handle, lastRenderPass.handle);
 		}
 
-		public override void EndRenderPass(RenderPassBase renderPass)
+		public override void EndRenderPass()
 		{
-			var renderPassD3D12 = (RenderPass)renderPass;
-			Orbital_Video_D3D12_CommandList_EndRenderPass(handle, renderPassD3D12.handle);
+			Orbital_Video_D3D12_CommandList_EndRenderPass(handle, lastRenderPass.handle);
+			lastRenderPass = null;
 		}
 
 		public override void ClearRenderTarget(float r, float g, float b, float a)
@@ -116,6 +118,7 @@ namespace Orbital.Video.D3D12
 		public override void SetRenderState(RenderStateBase renderState)
 		{
 			var renderStateD3D12 = (RenderState)renderState;
+			lastVertexBuffer = renderStateD3D12.vertexBuffer;
 			Orbital_Video_D3D12_CommandList_SetRenderState(handle, renderStateD3D12.handle);
 		}
 

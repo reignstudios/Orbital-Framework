@@ -31,7 +31,7 @@ namespace Orbital.Video
 		/// <summary>
 		/// Ends active render pass
 		/// </summary>
-		public abstract void EndRenderPass(RenderPassBase renderPass);
+		public abstract void EndRenderPass();
 
 		/// <summary>
 		/// Clears render target used by device for presenting
@@ -59,7 +59,7 @@ namespace Orbital.Video
 		public abstract void SetRenderState(RenderStateBase renderState);
 
 		/// <summary>
-		/// Sets vertex buffer
+		/// Sets vertex buffer (NOTE: RenderState will set this for you)
 		/// </summary>
 		public abstract void SetVertexBuffer(VertexBufferBase vertexBuffer);
 

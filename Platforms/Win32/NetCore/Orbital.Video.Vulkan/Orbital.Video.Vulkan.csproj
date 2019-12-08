@@ -22,6 +22,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ShaderEffect.cs" Link="ShaderEffect.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\VertexBuffer.cs" Link="VertexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>
 
