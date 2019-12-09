@@ -364,22 +364,28 @@ namespace Orbital.Numerics
 			return mat.Transpose();
 		}
 
-		public static Mat4 View(Vec3 position, Vec3 lookAt, Vec3 upVector)
+		public static Mat4 ViewRH(Vec3 position, Vec3 forward, Vec3 up)
 		{
-			var forward = (lookAt - position).Normalize();
-			var xVec = forward.Cross(upVector).Normalize();
-			upVector = xVec.Cross(forward);
-			
-			Mat4 result;
-			result.x.x = xVec.x;
-			result.x.y = xVec.y;
-			result.x.z = xVec.z;
-			result.x.w = position.Dot(-xVec);
+			Vec3 right;
+			return ViewRH(position, ref forward, ref up, out right);
+		}
 
-			result.y.x = upVector.x;
-			result.y.y = upVector.y;
-			result.y.z = upVector.z;
-			result.y.w = position.Dot(-upVector);
+		public static Mat4 ViewRH(Vec3 position, ref Vec3 forward, ref Vec3 up, out Vec3 right)
+		{
+			forward = forward.Normalize();
+			right = forward.Cross(up).Normalize();
+			up = right.Cross(forward);
+
+			Mat4 result;
+			result.x.x = right.x;
+			result.x.y = right.y;
+			result.x.z = right.z;
+			result.x.w = position.Dot(-right);
+
+			result.y.x = up.x;
+			result.y.y = up.y;
+			result.y.z = up.z;
+			result.y.w = position.Dot(-up);
 
 			result.z.x = -forward.x;
 			result.z.y = -forward.y;

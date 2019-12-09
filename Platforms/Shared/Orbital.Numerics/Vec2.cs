@@ -131,12 +131,12 @@ namespace Orbital.Numerics
 
 		public Vec2 DegToRad()
 		{
-			return new Vec2(MathUtilities.DegToRad(x), MathUtilities.DegToRad(y));
+			return new Vec2(MathTools.DegToRad(x), MathTools.DegToRad(y));
 		}
 
 		public Vec2 RadToDeg()
 		{
-			return new Vec2(MathUtilities.RadToDeg(x), MathUtilities.RadToDeg(y));
+			return new Vec2(MathTools.RadToDeg(x), MathTools.RadToDeg(y));
 		}
 
 		public Vec2 Max(float value)
@@ -315,29 +315,29 @@ namespace Orbital.Numerics
 		public float Angle180()
 		{
 			var vec = this.Normalize();
-			return ((float)Math.Atan2(-vec.y, vec.x)) % MathUtilities.pi2;
+			return ((float)Math.Atan2(-vec.y, vec.x)) % MathTools.pi2;
 		}
 
 		public float Angle180(Vec2 vector)
 		{
 			var vec = this.Normalize();
 			vector = vector.Normalize();
-			return ((float)Math.Atan2((vec.x*vector.y)-(vec.y*vector.x), (vec.x*vector.x)+(vec.y*vector.y))) % MathUtilities.pi2;
+			return ((float)Math.Atan2((vec.x*vector.y)-(vec.y*vector.x), (vec.x*vector.x)+(vec.y*vector.y))) % MathTools.pi2;
 		}
 
 		public float Angle360()
 		{
 			var vec = this.Normalize();
-			float value = ((float)Math.Atan2(-vec.y, vec.x)) % MathUtilities.pi2;
-			return (value < 0) ? ((MathUtilities.pi+value)+MathUtilities.pi) : value;
+			float value = ((float)Math.Atan2(-vec.y, vec.x)) % MathTools.pi2;
+			return (value < 0) ? ((MathTools.pi+value)+MathTools.pi) : value;
 		}
 
 		public float Angle360(Vec2 vector)
 		{
 			var vec = this.Normalize();
 			vector = vector.Normalize();
-			float value = ((float)Math.Atan2((vec.x*vector.y)-(vec.y*vector.x), (vec.x*vector.x)+(vec.y*vector.y))) % MathUtilities.pi2;
-			return (value < 0) ? ((MathUtilities.pi+value)+MathUtilities.pi) : value;
+			float value = ((float)Math.Atan2((vec.x*vector.y)-(vec.y*vector.x), (vec.x*vector.x)+(vec.y*vector.y))) % MathTools.pi2;
+			return (value < 0) ? ((MathTools.pi+value)+MathTools.pi) : value;
 		}
 
 		public static Vec2 Lerp(Vec2 start, Vec2 end, float interpolationAmount)

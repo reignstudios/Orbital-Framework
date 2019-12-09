@@ -44,7 +44,7 @@ namespace Orbital.Numerics
 		public bool Intersects(Bound2 boundingBox, out float result)
         {
 			// X
-            if (Math.Abs(direction.x) < MathUtilities.epsilon && (origin.x < boundingBox.min.x || origin.x > boundingBox.max.x))
+            if (Math.Abs(direction.x) < MathTools.epsilon && (origin.x < boundingBox.min.x || origin.x > boundingBox.max.x))
             {
                 //If the ray isn't pointing along the axis at all, and is outside of the box's interval, then it can't be intersecting.
 				result = 0;
@@ -71,7 +71,7 @@ namespace Orbital.Numerics
 			}
 
 			// Y
-            if (Math.Abs(direction.y) < MathUtilities.epsilon && (origin.y < boundingBox.min.y || origin.y > boundingBox.max.y))
+            if (Math.Abs(direction.y) < MathTools.epsilon && (origin.y < boundingBox.min.y || origin.y > boundingBox.max.y))
             {                
                 //If the ray isn't pointing along the axis at all, and is outside of the box's interval, then it can't be intersecting.
 				result = 0;

@@ -177,12 +177,12 @@ namespace Orbital.Numerics
 		#region Methods
 		public Vec3 DegToRad()
 		{
-			return new Vec3(MathUtilities.DegToRad(x), MathUtilities.DegToRad(y), MathUtilities.DegToRad(z));
+			return new Vec3(MathTools.DegToRad(x), MathTools.DegToRad(y), MathTools.DegToRad(z));
 		}
 
 		public Vec3 RadToDeg()
 		{
-			return new Vec3(MathUtilities.RadToDeg(x), MathUtilities.RadToDeg(y), MathUtilities.RadToDeg(z));
+			return new Vec3(MathTools.RadToDeg(x), MathTools.RadToDeg(y), MathTools.RadToDeg(z));
 		}
 
 		public Vec3 Max(float value)
@@ -359,9 +359,9 @@ namespace Orbital.Numerics
 
 		public Vec3 Transform(Quat quaternion)
 		{
-			float x2 = quaternion.x + quaternion.x;
-			float y2 = quaternion.y + quaternion.y;
-			float z2 = quaternion.z + quaternion.z;
+			float x2 = quaternion.x * 2;
+			float y2 = quaternion.y * 2;
+			float z2 = quaternion.z * 2;
 			float xx2 = quaternion.x * x2;
 			float xy2 = quaternion.x * y2;
 			float xz2 = quaternion.x * z2;
@@ -374,9 +374,9 @@ namespace Orbital.Numerics
 
 			return new Vec3
 			(
-				x * ((1f - yy2) - zz2) + y * (xy2 - wz2) + z * (xz2 + wy2),
-				x * (xy2 + wz2) + y * ((1f - xx2) - zz2) + z * (yz2 - wx2),
-				x * (xz2 - wy2) + y * (yz2 + wx2) + z * ((1f - xx2) - yy2)
+				(x * ((1 - yy2) - zz2)) + (y * (xy2 - wz2)) + (z * (xz2 + wy2)),
+				(x * (xy2 + wz2)) + (y * ((1 - xx2) - zz2)) + (z * (yz2 - wx2)),
+				(x * (xz2 - wy2)) + (y * (yz2 + wx2)) + (z * ((1 - xx2) - yy2))
 			);
 		}
 

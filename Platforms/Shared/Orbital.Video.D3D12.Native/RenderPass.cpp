@@ -62,6 +62,18 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderPass_Dispose(RenderPass* handle)
 	{
+		if (handle->renderTargetFormats != NULL)
+		{
+			free(handle->renderTargetFormats);
+			handle->renderTargetFormats = NULL;
+		}
+
+		if (handle->renderTargetViews != NULL)
+		{
+			free(handle->renderTargetViews);
+			handle->renderTargetViews = NULL;
+		}
+
 		if (handle->renderTargetDescs != NULL)
 		{
 			free(handle->renderTargetDescs);
@@ -72,12 +84,6 @@ extern "C"
 		{
 			free(handle->depthStencilDesc);
 			handle->depthStencilDesc = NULL;
-		}
-
-		if (handle->renderTargetViews != NULL)
-		{
-			free(handle->renderTargetViews);
-			handle->renderTargetViews = NULL;
 		}
 
 		free(handle);

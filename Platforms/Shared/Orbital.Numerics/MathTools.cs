@@ -2,7 +2,7 @@
 
 namespace Orbital.Numerics
 {
-	public static class MathUtilities
+	public static class MathTools
 	{
 		#region Properties
 		/// <summary>

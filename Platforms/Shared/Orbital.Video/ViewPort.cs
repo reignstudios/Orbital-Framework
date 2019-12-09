@@ -20,5 +20,10 @@ namespace Orbital.Video
 			this.minDepth = minDepth;
 			this.maxDepth = maxDepth;
 		}
+
+		public float GetAspect()
+		{
+			return rect.size.width / rect.size.height;
+		}
 	}
 }

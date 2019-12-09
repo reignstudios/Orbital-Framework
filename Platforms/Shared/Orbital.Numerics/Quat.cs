@@ -45,11 +45,16 @@ namespace Orbital.Numerics
 			this.w = w;
 		}
 
-		public static Quat LookAt(Vec3 forward, Vec3 up)
+		public static Quat FromCross(Vec3 forward, Vec3 up)
 		{
-			Mat3 mat = Mat3.LookAt(forward, up);
-			Quat q = Quat.FromMatrix3(mat);
-			return q;
+			Mat3 mat = Mat3.FromCross(forward, up);
+			return FromMatrix3(mat);
+		}
+
+		public static Quat FromCrossPreNormalized(Vec3 forward, Vec3 up)
+		{
+			Mat3 mat = Mat3.FromCrossPreNormalized(forward, up);
+			return FromMatrix3(mat);
 		}
 
 		public static Quat FromMatrix3(Mat3 matrix)
@@ -333,7 +338,7 @@ namespace Orbital.Numerics
 
 		public void SphericalRotation(out float latitude, out float longitude, out float angle)
 		{
-			angle = (float)Math.Acos(w) * MathUtilities.pi2;
+			angle = (float)Math.Acos(w) * MathTools.pi2;
 			float sinAngle = (float)Math.Sqrt(1 - (w*w));
 			if (sinAngle == 0) sinAngle = 1;
 			sinAngle = 1 / sinAngle;
@@ -344,8 +349,8 @@ namespace Orbital.Numerics
 
 			latitude = -(float)Math.Asin(y);
 			if ((x*x) + (z*z) == 0) longitude = 0;
-			else longitude = (float)Math.Atan2(x, z) * MathUtilities.pi;
-			if (longitude < 0) longitude += MathUtilities.pi2;
+			else longitude = (float)Math.Atan2(x, z) * MathTools.pi;
+			if (longitude < 0) longitude += MathTools.pi2;
 		}
 
 		public void Euler(out Vec3 euler)

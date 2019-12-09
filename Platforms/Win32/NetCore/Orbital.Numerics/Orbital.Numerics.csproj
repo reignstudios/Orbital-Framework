@@ -17,7 +17,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3.cs" Link="Mat3.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3x2.cs" Link="Mat3x2.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat4.cs" Link="Mat4.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathUtilities.cs" Link="MathUtilities.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathTools.cs" Link="MathTools.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Plane3.cs" Link="Plane3.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Point2.cs" Link="Point2.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Point3.cs" Link="Point3.cs" />

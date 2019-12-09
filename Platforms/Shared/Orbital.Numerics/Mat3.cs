@@ -140,31 +140,20 @@ namespace Orbital.Numerics
 			return FromQuaternion(quaternion);
 		}
 
-		public static Mat3 LookAt(Vec3 forward, Vec3 up)
+		public static Mat3 FromCross(Vec3 forward, Vec3 up)
 		{
-			var Z = forward.Normalize();
-			var X = up.Cross(Z).Normalize();
-			var Y = Z.Cross(X);
-
-			return new Mat3(X, Y, Z);
+			forward = forward.Normalize();
+			var right = up.Cross(forward).Normalize();
+			up = forward.Cross(right);
+			return new Mat3(right, up, forward);
 		}
 
-		public static Mat3 FromCross(Vec3 vector)
-        {
-			Mat3 result;
-            result.x.x = 0;
-            result.x.y = -vector.z;
-            result.x.z = vector.y;
-
-            result.y.x = vector.z;
-            result.y.y = 0;
-            result.y.z = -vector.x;
-
-            result.z.x = -vector.y;
-            result.z.y = vector.x;
-			result.z.z = 0;
-			return result;
-        }
+		public static Mat3 FromCrossPreNormalized(Vec3 forward, Vec3 up)
+		{
+			var right = up.Cross(forward);
+			up = forward.Cross(right);
+			return new Mat3(right, up, forward);
+		}
 
 		public static readonly Mat3 identity = new Mat3
 		(
@@ -306,12 +295,12 @@ namespace Orbital.Numerics
 				}
 				else
 				{
-					return new Vec3(0, MathUtilities.piHalf, -(float)Math.Atan2(y.z, y.y));
+					return new Vec3(0, MathTools.piHalf, -(float)Math.Atan2(y.z, y.y));
 				}
 			}
 			else
 			{
-				return new Vec3(0, -MathUtilities.piHalf, (float)Math.Atan2(-y.z, y.y));
+				return new Vec3(0, -MathTools.piHalf, (float)Math.Atan2(-y.z, y.y));
 			}
 		}
 
@@ -328,14 +317,14 @@ namespace Orbital.Numerics
 				else
 				{
 					result.x = 0;
-					result.y = MathUtilities.piHalf;
+					result.y = MathTools.piHalf;
 					result.z = -(float)Math.Atan2(matrix.y.z, matrix.y.y);
 				}
 			}
 			else
 			{
 				result.x = 0;
-				result.y = -MathUtilities.piHalf;
+				result.y = -MathTools.piHalf;
 				result.z = (float)Math.Atan2(-matrix.y.z, matrix.y.y);
 			}
 		}
