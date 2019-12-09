@@ -11,15 +11,17 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_Native(RenderPass* handle, RenderPassDesc* desc, DXGI_FORMAT* renderTargetFormats, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)//, DXGI_FORMAT depthStencilFormat)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_Native(RenderPass* handle, RenderPassDesc* desc, DXGI_FORMAT* renderTargetFormats, ID3D12Resource** renderTargetViews, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)//, DXGI_FORMAT depthStencilFormat)
 	{
 		// render-pass: render target
 		handle->renderTargetCount = renderTargetCount;
-		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(renderTargetCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
 		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(renderTargetCount, sizeof(DXGI_FORMAT));
+		handle->renderTargetViews = (ID3D12Resource**)calloc(renderTargetCount, sizeof(ID3D12Resource));
+		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(renderTargetCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
 		for (UINT i = 0; i != renderTargetCount; ++i)
 		{
 			handle->renderTargetFormats[i] = renderTargetFormats[i];
+			handle->renderTargetViews[i] = renderTargetViews[i];
 
 			D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClear;
 			renderPassBeginningAccessClear.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
@@ -50,7 +52,7 @@ extern "C"
 		{
 			DXGI_FORMAT* renderTargetFormatFormats = (DXGI_FORMAT*)alloca(sizeof(DXGI_FORMAT) * handle->swapChain->bufferCount);
 			for (UINT i = 0; i != handle->swapChain->bufferCount; ++i) renderTargetFormatFormats[i] = handle->swapChain->renderTargetFormat;
-			return Orbital_Video_D3D12_RenderPass_Init_Native(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetDescHandles, handle->swapChain->bufferCount);//, handle->depthStencilFormat);
+			return Orbital_Video_D3D12_RenderPass_Init_Native(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetViews, handle->swapChain->renderTargetDescHandles, handle->swapChain->bufferCount);//, handle->depthStencilFormat);
 		}
 		else
 		{
