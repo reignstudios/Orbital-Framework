@@ -55,6 +55,7 @@ namespace Orbital.Video
 		#else
 		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout) where T : struct;
 		#endif
+		public abstract ConstantBufferBase CreateConstantBuffer();
 		#endregion
 	}
 }

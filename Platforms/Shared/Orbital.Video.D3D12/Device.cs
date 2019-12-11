@@ -109,7 +109,7 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_Device_EndFrame(handle);
 		}
 
-		#region Abstraction Methods
+		#region Create Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
 		{
 			var abstraction = new SwapChain(this, ensureSwapChainMatchesWindowSize);
@@ -177,6 +177,17 @@ namespace Orbital.Video.D3D12
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create VertexBuffer");
+			}
+			return abstraction;
+		}
+
+		public override ConstantBufferBase CreateConstantBuffer()
+		{
+			var abstraction = new ConstantBuffer(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ConstantBuffer");
 			}
 			return abstraction;
 		}

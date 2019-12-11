@@ -33,6 +33,7 @@ namespace Orbital.Demo
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
+		private ConstantBufferBase constantBuffer;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -76,6 +77,9 @@ namespace Orbital.Demo
 				clearColorValue = new Vec4(0, .2f, .4f, 1)
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
+
+			// create constant buffer
+			constantBuffer = device.CreateConstantBuffer();
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
@@ -140,6 +144,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (constantBuffer != null)
+			{
+				constantBuffer.Dispose();
+				constantBuffer = null;
+			}
+
 			if (vertexBuffer != null)
 			{
 				vertexBuffer.Dispose();

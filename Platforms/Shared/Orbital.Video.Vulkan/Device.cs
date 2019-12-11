@@ -149,6 +149,11 @@ namespace Orbital.Video.Vulkan
 		{
 			throw new NotImplementedException();
 		}
+
+		public override ConstantBufferBase CreateConstantBuffer()
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

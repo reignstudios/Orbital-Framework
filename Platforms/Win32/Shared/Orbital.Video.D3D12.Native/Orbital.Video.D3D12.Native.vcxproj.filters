@@ -40,6 +40,9 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBuffer.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ConstantBuffer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp">
@@ -76,6 +79,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBuffer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ConstantBuffer.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>
