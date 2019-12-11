@@ -4,6 +4,7 @@
 #include "RenderState.h"
 #include "VertexBuffer.h"
 #include "ShaderEffect.h"
+#include "ConstantBuffer.h"
 
 extern "C"
 {
@@ -146,6 +147,12 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetVertexBuffer(CommandList* handle, VertexBuffer* vertexBuffer)
 	{
 		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetConstantBuffer(CommandList* handle, ConstantBuffer* constantBuffer, UINT registerIndex)
+	{
+		handle->commandList->SetDescriptorHeaps(1, &constantBuffer->resourceHeap);
+		handle->commandList->SetGraphicsRootDescriptorTable(registerIndex, constantBuffer->resourceHeapHandle);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexIndex, UINT vertexCount, UINT instanceCount)

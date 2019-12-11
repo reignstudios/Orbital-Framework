@@ -181,10 +181,32 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override ConstantBufferBase CreateConstantBuffer()
+		public override ConstantBufferBase CreateConstantBuffer(int size)
 		{
 			var abstraction = new ConstantBuffer(this);
-			if (!abstraction.Init())
+			if (!abstraction.Init(size))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ConstantBuffer");
+			}
+			return abstraction;
+		}
+
+		public override ConstantBufferBase CreateConstantBuffer<T>()
+		{
+			var abstraction = new ConstantBuffer(this);
+			if (!abstraction.Init<T>())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ConstantBuffer");
+			}
+			return abstraction;
+		}
+
+		public override ConstantBufferBase CreateConstantBuffer<T>(T initialData)
+		{
+			var abstraction = new ConstantBuffer(this);
+			if (!abstraction.Init<T>(initialData))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create ConstantBuffer");

@@ -108,6 +108,11 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void SetConstantBuffer(ConstantBufferBase constantBuffer, int registerIndex)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Draw()
 		{
 			throw new NotImplementedException();

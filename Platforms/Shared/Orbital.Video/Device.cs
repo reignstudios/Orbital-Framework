@@ -52,10 +52,13 @@ namespace Orbital.Video
 		public abstract ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders);
 		#if CS_7_3
 		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout) where T : unmanaged;
+		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData) where T : unmanaged;
 		#else
 		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout) where T : struct;
+		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData) where T : struct;
 		#endif
-		public abstract ConstantBufferBase CreateConstantBuffer();
+		public abstract ConstantBufferBase CreateConstantBuffer<T>() where T : struct;
+		public abstract ConstantBufferBase CreateConstantBuffer(int size);
 		#endregion
 	}
 }

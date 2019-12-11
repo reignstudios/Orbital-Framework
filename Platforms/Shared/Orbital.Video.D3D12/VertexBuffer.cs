@@ -33,12 +33,12 @@ namespace Orbital.Video.D3D12
 			}
 		}
 		#else
-		public unsafe bool Init<T>(T[] vertices) where T : struct
+		public unsafe bool Init<T>(T[] vertices, VertexBufferLayout layout) where T : unmanaged
 		{
 			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
 			vertexCount = vertices.Length;
 			vertexSize = Marshal.SizeOf<T>();
-			byte[] verticesDataCopy = new byte[Marshal.SizeOf<T>() * vertices.Length];
+			byte[] verticesDataCopy = new byte[vertexSize * vertices.Length];
 			var gcHandle = GCHandle.Alloc(vertices, GCHandleType.Pinned);
 			Marshal.Copy(gcHandle.AddrOfPinnedObject(), verticesDataCopy, 0, verticesDataCopy.Length);
 			gcHandle.Free();

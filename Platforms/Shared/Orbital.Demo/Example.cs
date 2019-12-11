@@ -21,6 +21,13 @@ namespace Orbital.Demo
 		}
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	struct ConstantBufferObject
+	{
+		public float offset;
+		public float constrast;
+	}
+
 	public sealed class Example : IDisposable
 	{
 		private ApplicationBase application;
@@ -79,7 +86,12 @@ namespace Orbital.Demo
 			renderPass = device.CreateRenderPass(renderPassDesc);
 
 			// create constant buffer
-			constantBuffer = device.CreateConstantBuffer();
+			var constantBufferObject = new ConstantBufferObject()
+			{
+				offset = .5f,
+				constrast = .5f
+			};
+			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
@@ -96,6 +108,14 @@ namespace Orbital.Demo
 				if (!vs.Init(vsStream)) throw new Exception("Failed to init VS shader");
 				if (!ps.Init(psStream)) throw new Exception("Failed to init PS shader");
 				var desc = new ShaderEffectDesc();
+				desc.constantBuffers = new ShaderEffectConstantBuffer[1]
+				{
+					new ShaderEffectConstantBuffer()
+					{
+						registerIndex = 0,
+						size = constantBuffer.size
+					}
+				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
@@ -204,6 +224,7 @@ namespace Orbital.Demo
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				commandList.SetRenderState(renderState);
+				commandList.SetConstantBuffer(constantBuffer, 0);
 				commandList.Draw();
 				commandList.EndRenderPass();
 				commandList.Finish();

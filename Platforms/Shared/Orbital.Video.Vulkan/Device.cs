@@ -150,7 +150,17 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override ConstantBufferBase CreateConstantBuffer()
+		public override ConstantBufferBase CreateConstantBuffer(int size)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override ConstantBufferBase CreateConstantBuffer<T>()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override ConstantBufferBase CreateConstantBuffer<T>(T initialData)
 		{
 			throw new NotImplementedException();
 		}

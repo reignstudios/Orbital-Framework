@@ -115,19 +115,29 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	struct ShaderEffectConstantBuffer_NativeInterop
+	{
+		public int registerIndex;
+		public int size;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectDesc_NativeInterop : IDisposable
 	{
-		public int resourcesCount, samplersCount;
+		public int resourcesCount, samplersCount, constantBufferCount;
 		public ShaderEffectResource_NativeInterop* resources;
 		public ShaderEffectSampler_NativeInterop* samplers;
+		public ShaderEffectConstantBuffer_NativeInterop* constantBuffers;
 
 		public ShaderEffectDesc_NativeInterop(ref ShaderEffectDesc desc)
 		{
 			// init defaults
 			resourcesCount = 0;
 			samplersCount = 0;
+			constantBufferCount = 0;
 			resources = null;
 			samplers = null;
+			constantBuffers = null;
 
 			// allocate resource heaps
 			if (desc.resources != null)
@@ -165,6 +175,18 @@ namespace Orbital.Video.Vulkan
 					samplers[i].anisotropy = desc.samplers[i].anisotropy;
 				}
 			}
+
+			// allocate constant buffer heaps
+			if (desc.constantBuffers != null)
+			{
+				constantBufferCount = desc.constantBuffers.Length;
+				constantBuffers = (ShaderEffectConstantBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectConstantBuffer_NativeInterop>() * constantBufferCount);
+				for (int i = 0; i != constantBufferCount; ++i)
+				{
+					constantBuffers[i].registerIndex = desc.constantBuffers[i].registerIndex;
+					constantBuffers[i].size = desc.constantBuffers[i].size;
+				}
+			}
 		}
 
 		public void Dispose()
@@ -187,6 +209,12 @@ namespace Orbital.Video.Vulkan
 			{
 				Marshal.FreeHGlobal((IntPtr)samplers);
 				samplers = null;
+			}
+
+			if (constantBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)constantBuffers);
+				constantBuffers = null;
 			}
 		}
 	}

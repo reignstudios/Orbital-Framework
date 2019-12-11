@@ -130,10 +130,17 @@ typedef struct ShaderEffectSampler
 	ShaderEffectSamplerAnisotropy anisotropy;
 }ShaderEffectSampler;
 
+typedef struct ShaderEffectConstantBuffer
+{
+	int registerIndex;
+	int size;
+}ShaderEffectConstantBuffer;
+
 typedef struct ShaderEffectDesc
 {
-	int resourcesCount, samplersCount;
+	int resourcesCount, samplersCount, constantBufferCount;
 	ShaderEffectResource* resources;
 	ShaderEffectSampler* samplers;
+	ShaderEffectConstantBuffer* constantBuffers;
 }ShaderEffectDesc;
 #pragma endregion

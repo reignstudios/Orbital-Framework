@@ -64,6 +64,11 @@ namespace Orbital.Video
 		public abstract void SetVertexBuffer(VertexBufferBase vertexBuffer);
 
 		/// <summary>
+		/// Sets constant buffer (NOTE: RenderState will set this for you)
+		/// </summary>
+		public abstract void SetConstantBuffer(ConstantBufferBase constantBuffer, int registerIndex);
+
+		/// <summary>
 		/// Draw actively set vertex buffer. Must first call 'SetVertexBuffer'
 		/// </summary>
 		public abstract void Draw();

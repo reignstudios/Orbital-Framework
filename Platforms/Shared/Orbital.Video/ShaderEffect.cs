@@ -109,10 +109,24 @@ namespace Orbital.Video
 		public ShaderEffectSamplerAnisotropy anisotropy;
 	}
 
+	public struct ShaderEffectConstantBuffer
+	{
+		/// <summary>
+		/// Register index of constant buffer
+		/// </summary>
+		public int registerIndex;
+
+		/// <summary>
+		/// Size of constant buffer
+		/// </summary>
+		public int size;
+	}
+
 	public struct ShaderEffectDesc
 	{
 		public ShaderEffectResource[] resources;
 		public ShaderEffectSampler[] samplers;
+		public ShaderEffectConstantBuffer[] constantBuffers;
 	}
 
 	public abstract class ShaderEffectBase : IDisposable
