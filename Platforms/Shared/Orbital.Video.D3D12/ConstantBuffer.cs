@@ -40,7 +40,7 @@ namespace Orbital.Video.D3D12
 			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, &initialData) != 0;
 		}
 		#else
-		public unsafe bool Init<T>(T initialData) where T : unmanaged
+		public unsafe bool Init<T>(T initialData) where T : struct
 		{
 			size = Marshal.SizeOf<T>();
 			TypedReference reference = __makeref(initialData);

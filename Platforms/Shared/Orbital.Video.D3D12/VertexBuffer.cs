@@ -33,7 +33,7 @@ namespace Orbital.Video.D3D12
 			}
 		}
 		#else
-		public unsafe bool Init<T>(T[] vertices, VertexBufferLayout layout) where T : unmanaged
+		public unsafe bool Init<T>(T[] vertices, VertexBufferLayout layout) where T : struct
 		{
 			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
 			vertexCount = vertices.Length;
