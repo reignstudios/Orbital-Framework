@@ -12,19 +12,35 @@
 		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;CS_7_3</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;CS_7_3</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Camera.cs" Link="Camera.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs" Link="DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs" Link="RenderPass.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderPassDesc.cs" Link="RenderPassDesc.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderState.cs" Link="RenderState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs" Link="RenderTarget.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Shader.cs" Link="Shader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ShaderEffect.cs" Link="ShaderEffect.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\Texture.cs" Link="Texture.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\VertexBuffer.cs" Link="VertexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ViewPort.cs" Link="ViewPort.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+    <ProjectReference Include="..\Orbital.IO\Orbital.IO.csproj" />
   </ItemGroup>
 
 </Project>

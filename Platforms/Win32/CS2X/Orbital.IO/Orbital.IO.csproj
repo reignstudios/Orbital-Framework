@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
+		<!-- Prevent .NET Core 3+ from generating exe -->
+		<UseAppHost>false</UseAppHost>
+
+		<!--Disable .NET Core SDK libs-->
+		<NoStdLib>true</NoStdLib>
+		<NoStandardLibraries>true</NoStandardLibraries>
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.IO\StreamBinaryReader.cs" Link="StreamBinaryReader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.IO\StreamExtensions.cs" Link="StreamExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Submodules\CS2X\CS2X.CoreLib\CS2X.CoreLib.csproj" />
+  </ItemGroup>
+
+</Project>
