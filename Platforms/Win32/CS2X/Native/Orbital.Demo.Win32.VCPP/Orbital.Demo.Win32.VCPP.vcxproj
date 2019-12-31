@@ -136,17 +136,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\bin\C\CS2X.CoreLib.h" />
-    <ClInclude Include="..\bin\C\Orbital.Host.h" />
-    <ClInclude Include="..\bin\C\Orbital.Host.Win32.h" />
-    <ClInclude Include="..\bin\C\Orbital.Numerics.h" />
-    <ClInclude Include="..\bin\C\Orbital.Video.API.h" />
-    <ClInclude Include="..\bin\C\Orbital.Video.D3D12.h" />
-    <ClInclude Include="..\bin\C\Orbital.Video.h" />
-    <ClInclude Include="..\bin\C\Orbital.Video.Vulkan.h" />
-    <ClInclude Include="..\bin\C\_StringLiterals.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\bin\C\Orbital.Demo.Win32.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

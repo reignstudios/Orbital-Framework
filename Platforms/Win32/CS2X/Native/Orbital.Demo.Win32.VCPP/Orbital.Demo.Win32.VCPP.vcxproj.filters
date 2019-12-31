@@ -6,35 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\bin\C\_StringLiterals.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\CS2X.CoreLib.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Host.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Host.Win32.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Numerics.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Video.API.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Video.D3D12.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Video.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\bin\C\Orbital.Video.Vulkan.h">
-      <Filter>CODE</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\bin\C\Orbital.Demo.Win32.c">
       <Filter>CODE</Filter>
     </ClCompile>

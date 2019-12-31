@@ -108,35 +108,29 @@ namespace Orbital.Demo
 				if (!vs.Init(vsStream)) throw new Exception("Failed to init VS shader");
 				if (!ps.Init(psStream)) throw new Exception("Failed to init PS shader");
 				var desc = new ShaderEffectDesc();
-				desc.constantBuffers = new ShaderEffectConstantBuffer[1]
+				desc.constantBuffers = new ShaderEffectConstantBuffer[1];
+				desc.constantBuffers[0] = new ShaderEffectConstantBuffer()
 				{
-					new ShaderEffectConstantBuffer()
-					{
-						registerIndex = 0,
-						size = constantBuffer.size
-					}
+					registerIndex = 0,
+					size = constantBuffer.size
 				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
 			// create vertex buffer
-			var vertexBufferLayout = new VertexBufferLayout()
+			var vertexBufferLayout = new VertexBufferLayout();
+			vertexBufferLayout.elements = new VertexBufferLayoutElement[2];
+			vertexBufferLayout.elements[0] = new VertexBufferLayoutElement()
 			{
-				elements = new VertexBufferLayoutElement[2]
-				{
-					new VertexBufferLayoutElement()
-					{
-						type = VertexBufferLayoutElementType.Float3,
-						usage = VertexBufferLayoutElementUsage.Position,
-						streamIndex = 0, usageIndex = 0, byteOffset = 0
-					},
-					new VertexBufferLayoutElement()
-					{
-						type = VertexBufferLayoutElementType.RGBAx8,
-						usage = VertexBufferLayoutElementUsage.Color,
-						streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3)
-					}
-				}
+				type = VertexBufferLayoutElementType.Float3,
+				usage = VertexBufferLayoutElementUsage.Position,
+				streamIndex = 0, usageIndex = 0, byteOffset = 0
+			};
+			vertexBufferLayout.elements[1] = new VertexBufferLayoutElement()
+			{
+				type = VertexBufferLayoutElementType.RGBAx8,
+				usage = VertexBufferLayoutElementUsage.Color,
+				streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3)
 			};
 			
 			var vertices = new Vertex[]
