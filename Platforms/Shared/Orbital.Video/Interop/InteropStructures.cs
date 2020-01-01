@@ -35,6 +35,7 @@ namespace Orbital.Video.Vulkan
 		public IntPtr shaderEffect;
 		public IntPtr vertexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
+		public byte depthEnable, stencilEnable;
 		public int msaaLevel;
 
 		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
@@ -43,6 +44,8 @@ namespace Orbital.Video.Vulkan
 			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
 			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
 			vertexBufferTopology = desc.vertexBufferTopology;
+			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
+			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
 			msaaLevel = desc.msaaLevel;
 		}
 	}

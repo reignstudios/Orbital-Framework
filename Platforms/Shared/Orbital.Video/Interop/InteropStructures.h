@@ -72,10 +72,6 @@ typedef struct RenderStateDesc
 	void* shaderEffect;
 	void* vertexBuffer;
 	VertexBufferTopology vertexBufferTopology;
-	/*VertexBufferLayout vertexBufferLayout;
-	int renderTargetCount;
-	TextureFormat* renderTargetFormats;
-	DepthStencilFormat depthStencilFormat;*/
 	char depthEnable, stencilEnable;
 	int msaaLevel;
 }RenderStateDesc;

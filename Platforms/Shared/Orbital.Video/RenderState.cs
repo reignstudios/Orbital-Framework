@@ -8,6 +8,7 @@ namespace Orbital.Video
 		public ShaderEffectBase shaderEffect;
 		public VertexBufferBase vertexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
+		public bool depthEnable, stencilEnable;
 		public int msaaLevel;
 	}
 

@@ -60,11 +60,11 @@ extern "C"
 		// depth stencil
 		pipelineDesc.DSVFormat = renderPass->depthStencilFormat;
 
-        pipelineDesc.DepthStencilState.DepthEnable = desc->depthEnable;
+        pipelineDesc.DepthStencilState.DepthEnable = desc->depthEnable && renderPass->depthStencilDesc != NULL;
 		pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 		pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 
-        pipelineDesc.DepthStencilState.StencilEnable = desc->stencilEnable;
+        pipelineDesc.DepthStencilState.StencilEnable = desc->stencilEnable && renderPass->depthStencilDesc != NULL;
 		pipelineDesc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
         pipelineDesc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
 		D3D12_DEPTH_STENCILOP_DESC stencilOp = {};
