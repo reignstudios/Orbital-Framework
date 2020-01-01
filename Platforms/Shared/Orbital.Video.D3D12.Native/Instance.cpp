@@ -28,10 +28,13 @@ extern "C"
 		// enable debugging
 		UINT factoryFlags = 0;
 		#if defined(_DEBUG)
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
+		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
 		{
-			handle->debugController->EnableDebugLayer();
-			factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
+			{
+				handle->debugController->EnableDebugLayer();
+				factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+			}
 		}
 		#endif
 
@@ -47,11 +50,13 @@ extern "C"
 			handle->factory = NULL;
 		}
 
+		#if defined(_DEBUG)
 		if (handle->debugController != NULL)
 		{
 			handle->debugController->Release();
 			handle->debugController = NULL;
 		}
+		#endif
 
 		free(handle);
 	}

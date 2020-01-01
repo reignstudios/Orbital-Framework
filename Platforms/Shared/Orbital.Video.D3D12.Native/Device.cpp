@@ -115,12 +115,6 @@ extern "C"
 			handle->adapter = NULL;
 		}
 
-		if (handle->debugController != NULL)
-		{
-			handle->debugController->Release();
-			handle->debugController = NULL;
-		}
-
 		free(handle);
 	}
 

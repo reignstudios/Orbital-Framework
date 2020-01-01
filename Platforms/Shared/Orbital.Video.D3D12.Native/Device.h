@@ -3,10 +3,6 @@
 
 struct Device
 {
-	#if defined(_DEBUG)
-	ID3D12Debug* debugController;
-	#endif
-
 	D3D_FEATURE_LEVEL nativeFeatureLevel;
 	D3D_ROOT_SIGNATURE_VERSION maxRootSignatureVersion;
 
