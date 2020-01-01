@@ -29,12 +29,10 @@ extern "C"
 		UINT factoryFlags = 0;
 		#if defined(_DEBUG)
 		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 		{
-			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
-			{
-				handle->debugController->EnableDebugLayer();
-				factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-			}
+			handle->debugController->EnableDebugLayer();
+			factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 		#endif
 

@@ -131,6 +131,9 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 
 		// enable debugging
 		#ifdef _DEBUG
+		#ifdef _WIN32
+		if (IsDebuggerPresent())
+		#endif
 		if (handle->nativeMaxFeatureLevel >= VK_API_VERSION_1_1)
 		{
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {0};
