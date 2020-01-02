@@ -1,7 +1,10 @@
 <<< NuGet package cache location >>>
 %userprofile%\.nuget\packages
 
-<<< Update git submodules >>>
+<<< Update git submodules to tracked versions >>>
+git submodule update --recursive --remote
+
+<<< Update git submodules to latest versions >>>
 git submodule update --remote --merge
 
 <<< Push git submodule changes >>>
