@@ -52,7 +52,7 @@ Writing shaders will not be required as many shading presets will be provided an
 * N64
 * Other legacy...
 
-### Audio
+### Audio / Sound
 API Agnostic DSP effects can be written in C#<br>
 
 * MS: DirectSound
@@ -61,7 +61,7 @@ API Agnostic DSP effects can be written in C#<br>
 * Apple: Cocoa
 * Apple: Carbon
 
-### Input
+### Input / Mouse,Keyboard,GamePads,Touch
 * MS: DirectInput
 * MS: XInput
 * MS: Win16 / Win32 / WinForms / WPF Input
