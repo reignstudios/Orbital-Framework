@@ -181,9 +181,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override ConstantBufferBase CreateConstantBuffer(int size)
+		public override ConstantBufferBase CreateConstantBuffer(int size, ConstantBufferMode mode)
 		{
-			var abstraction = new ConstantBuffer(this);
+			var abstraction = new ConstantBuffer(this, mode);
 			if (!abstraction.Init(size))
 			{
 				abstraction.Dispose();
@@ -192,9 +192,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override ConstantBufferBase CreateConstantBuffer<T>()
+		public override ConstantBufferBase CreateConstantBuffer<T>(ConstantBufferMode mode)
 		{
-			var abstraction = new ConstantBuffer(this);
+			var abstraction = new ConstantBuffer(this, mode);
 			if (!abstraction.Init<T>())
 			{
 				abstraction.Dispose();
@@ -203,9 +203,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override ConstantBufferBase CreateConstantBuffer<T>(T initialData)
+		public override ConstantBufferBase CreateConstantBuffer<T>(T initialData, ConstantBufferMode mode)
 		{
-			var abstraction = new ConstantBuffer(this);
+			var abstraction = new ConstantBuffer(this, mode);
 			if (!abstraction.Init<T>(initialData))
 			{
 				abstraction.Dispose();

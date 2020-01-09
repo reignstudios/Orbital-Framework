@@ -74,11 +74,43 @@ extern "C"
 		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 		if (handle->fenceEvent == NULL) return 0;
 
+		// create helpers for synchronous buffer operations
+		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
+		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+
+		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
+		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (handle->internalFenceEvent == NULL) return 0;
+
+		// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
+		handle->fenceValue = 1;
+		handle->internalFenceValue = 1;
+
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_Dispose(Device* handle)
 	{
+		// dispose helpers
+		if (handle->internalFenceEvent != NULL)
+		{
+			CloseHandle(handle->internalFenceEvent);
+			handle->internalFenceEvent = NULL;
+		}
+
+		if (handle->internalFence != NULL)
+		{
+			handle->internalFence->Release();
+			handle->internalFence = NULL;
+		}
+
+		if (handle->internalCommandList != NULL)
+		{
+			handle->internalCommandList->Release();
+			handle->internalCommandList = NULL;
+		}
+
+		// dispose normal
 		if (handle->fenceEvent != NULL)
 		{
 			CloseHandle(handle->fenceEvent);
@@ -125,17 +157,23 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
 	{
-		// set current fence value
-		if (FAILED(handle->commandQueue->Signal(handle->fence, handle->fenceValue))) return;
+		WaitForFence(handle, handle->fence, handle->fenceEvent, handle->fenceValue);
+	}
+}
 
-		// wait for frame to finish
-		if (handle->fence->GetCompletedValue() != handle->fenceValue)
-		{
-			if (FAILED(handle->fence->SetEventOnCompletion(handle->fenceValue, handle->fenceEvent))) return;
-			WaitForSingleObject(handle->fenceEvent, INFINITE);
-		}
+void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
+{
+	// increment for next frame
+	++fenceValue;
+	if (fenceValue == UINT64_MAX) fenceValue = 0;// UINT64_MAX is reserved
 
-		// increment for next frame
-		++handle->fenceValue;
+	// set current fence value
+	if (FAILED(handle->commandQueue->Signal(fence, fenceValue))) return;
+
+	// wait for frame to finish
+	if (fence->GetCompletedValue() != fenceValue)
+	{
+		if (FAILED(fence->SetEventOnCompletion(fenceValue, fenceEvent))) return;
+		WaitForSingleObject(fenceEvent, INFINITE);
 	}
 }

@@ -15,4 +15,12 @@ struct Device
 	ID3D12Fence* fence;
 	HANDLE fenceEvent;
 	UINT64 fenceValue;
+
+	// used for special synchronous buffer operations
+	ID3D12GraphicsCommandList5* internalCommandList;
+	ID3D12Fence* internalFence;
+	HANDLE internalFenceEvent;
+	UINT64 internalFenceValue;
 };
+
+void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue);

@@ -25,12 +25,6 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Dispose(CommandList* handle)
 	{
-		if (handle->pipelineState != NULL)
-		{
-			handle->pipelineState->Release();
-			handle->pipelineState = NULL;
-		}
-
 		if (handle->commandList != NULL)
 		{
 			handle->commandList->Release();
@@ -42,7 +36,7 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Start(CommandList* handle, Device* device)
 	{
-		handle->commandList->Reset(device->commandAllocator, handle->pipelineState);
+		handle->commandList->Reset(device->commandAllocator, NULL);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Finish(CommandList* handle)

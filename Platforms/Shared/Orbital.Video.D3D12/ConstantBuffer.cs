@@ -8,7 +8,7 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_ConstantBuffer_Create(IntPtr device);
+		private static extern IntPtr Orbital_Video_D3D12_ConstantBuffer_Create(IntPtr device, ConstantBufferMode mode);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_Init(IntPtr handle, uint size, void* initialData);
@@ -16,9 +16,9 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_ConstantBuffer_Dispose(IntPtr handle);
 
-		public ConstantBuffer(Device device)
+		public ConstantBuffer(Device device, ConstantBufferMode mode)
 		{
-			handle = Orbital_Video_D3D12_ConstantBuffer_Create(device.handle);
+			handle = Orbital_Video_D3D12_ConstantBuffer_Create(device.handle, mode);
 		}
 
 		public unsafe bool Init(int size)

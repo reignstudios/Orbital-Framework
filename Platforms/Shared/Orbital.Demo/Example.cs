@@ -91,7 +91,7 @@ namespace Orbital.Demo
 				offset = .5f,
 				constrast = .5f
 			};
-			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject);
+			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.Static);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
