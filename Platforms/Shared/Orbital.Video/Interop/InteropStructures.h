@@ -25,12 +25,18 @@ typedef enum DepthStencilFormat
 #pragma region Command Buffer
 typedef enum ConstantBufferMode
 {
-	Update,
-	Static
+	ConstantBufferMode_Update,
+	ConstantBufferMode_Static
 }ConstantBufferMode;
 #pragma endregion
 
 #pragma region Vertex Buffer
+typedef enum VertexBufferMode
+{
+	VertexBufferMode_Update,
+	VertexBufferMode_Static
+}VertexBufferMode;
+
 typedef enum VertexBufferTopology
 {
 	VertexBufferTopology_Point,

@@ -170,9 +170,20 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout)
+		public override VertexBufferBase CreateVertexBuffer(int size, VertexBufferLayout layout, VertexBufferMode mode)
 		{
-			var abstraction = new VertexBuffer(this);
+			var abstraction = new VertexBuffer(this, mode);
+			if (!abstraction.Init(size, layout))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create VertexBuffer");
+			}
+			return abstraction;
+		}
+
+		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode)
+		{
+			var abstraction = new VertexBuffer(this, mode);
 			if (!abstraction.Init<T>(vertices, layout))
 			{
 				abstraction.Dispose();

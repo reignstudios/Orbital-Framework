@@ -5,12 +5,12 @@ namespace Orbital.Video
 	public enum ConstantBufferMode
 	{
 		/// <summary>
-		/// Constant buffer memory will be frequently updated from the CPU
+		/// Memory will be frequently updated from the CPU
 		/// </summary>
 		Update,
 
 		/// <summary>
-		/// Constant buffer memory will only be initialized by the CPU once
+		/// Memory will only be initialized by the CPU once
 		/// </summary>
 		Static
 	}

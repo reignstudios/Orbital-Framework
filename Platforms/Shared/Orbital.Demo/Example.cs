@@ -139,7 +139,7 @@ namespace Orbital.Demo
 				new Vertex(new Vec3(0, 1, 0), Color4.green),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue)
 			};
-			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout);
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.Static);
 
 			// create render state
 			var renderStateDesc = new RenderStateDesc()

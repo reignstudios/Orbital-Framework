@@ -15,34 +15,34 @@ extern "C"
 		int alignedSize = (size + 255) & ~255;// size is required to be 256-byte aligned
 
 		// create resource
-		D3D12_HEAP_PROPERTIES properties = {};
-		properties.Type = handle->mode == ConstantBufferMode::Static ? D3D12_HEAP_TYPE_DEFAULT : D3D12_HEAP_TYPE_UPLOAD;
-        properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-        properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-        properties.CreationNodeMask = 1;// TODO: multi-gpu setup
-        properties.VisibleNodeMask = 1;
+		D3D12_HEAP_PROPERTIES heapProperties = {};
+		heapProperties.Type = handle->mode == ConstantBufferMode::ConstantBufferMode_Static ? D3D12_HEAP_TYPE_DEFAULT : D3D12_HEAP_TYPE_UPLOAD;
+        heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+        heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+        heapProperties.CreationNodeMask = 1;// TODO: multi-gpu setup
+        heapProperties.VisibleNodeMask = 1;
 
-		D3D12_RESOURCE_DESC desc = {};
-		desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-        desc.Alignment = 0;
-        desc.Width = alignedSize;
-        desc.Height = 1;
-        desc.DepthOrArraySize = 1;
-        desc.MipLevels = 1;
-        desc.Format = DXGI_FORMAT_UNKNOWN;
-        desc.SampleDesc.Count = 1;
-        desc.SampleDesc.Quality = 0;
-        desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-        desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		D3D12_RESOURCE_DESC resourceDesc = {};
+		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+        resourceDesc.Alignment = 0;
+        resourceDesc.Width = alignedSize;
+        resourceDesc.Height = 1;
+        resourceDesc.DepthOrArraySize = 1;
+        resourceDesc.MipLevels = 1;
+        resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+        resourceDesc.SampleDesc.Count = 1;
+        resourceDesc.SampleDesc.Quality = 0;
+        resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+        resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
 		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		if (initialData != NULL)
 		{
-			if (handle->mode == ConstantBufferMode::Update) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
-			else if (handle->mode == ConstantBufferMode::Static) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
+			if (handle->mode == ConstantBufferMode::ConstantBufferMode_Update) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
+			else if (handle->mode == ConstantBufferMode::ConstantBufferMode_Static) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 			else return 0;
 		}
-		if (FAILED(handle->device->device->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE, &desc, initialResourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
+		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
 
 		// create resource heap
 		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
@@ -65,12 +65,12 @@ extern "C"
 			// allocate gpu upload buffer if needed
 			bool useUploadBuffer = false;
 			ID3D12Resource* uploadResource = handle->resource;
-			if (properties.Type != D3D12_HEAP_TYPE_UPLOAD)
+			if (heapProperties.Type != D3D12_HEAP_TYPE_UPLOAD)
 			{
 				useUploadBuffer = true;
 				uploadResource = NULL;
-				properties.Type = D3D12_HEAP_TYPE_UPLOAD;
-				if (FAILED(handle->device->device->CreateCommittedResource(&properties, D3D12_HEAP_FLAG_NONE, &desc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadResource)))) return 0;
+				heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+				if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadResource)))) return 0;
 			}
 
 			// copy CPU memory to GPU

@@ -2,6 +2,19 @@
 
 namespace Orbital.Video
 {
+	public enum VertexBufferMode
+	{
+		/// <summary>
+		/// Memory will be frequently updated from the CPU
+		/// </summary>
+		Update,
+
+		/// <summary>
+		/// Memory will only be initialized by the CPU once
+		/// </summary>
+		Static
+	}
+
 	public enum VertexBufferTopology
 	{
 		Point,

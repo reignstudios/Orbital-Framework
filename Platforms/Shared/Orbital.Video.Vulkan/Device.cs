@@ -145,7 +145,12 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout)
+		public override VertexBufferBase CreateVertexBuffer(int size, VertexBufferLayout layout, VertexBufferMode mode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode)
 		{
 			throw new NotImplementedException();
 		}
