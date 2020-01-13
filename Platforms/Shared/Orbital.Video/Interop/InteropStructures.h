@@ -8,6 +8,22 @@ typedef struct RenderPassDesc
 	float depthValue, stencilValue;
 }RenderPassDesc;
 
+#pragma region Texture
+typedef enum TextureMode
+{
+	TextureMode_GPUOptimized,
+	TextureMode_Write,
+	TextureMode_Read
+}TextureMode;
+
+typedef enum TextureType
+{
+	TextureType_1D,
+	TextureType_2D,
+	TextureType_3D,
+	TextureType_Cube
+}TextureType;
+
 typedef enum TextureFormat
 {
 	TextureFormat_Default,
@@ -15,26 +31,31 @@ typedef enum TextureFormat
 	TextureFormat_B8G8R8A8,
 	TextureFormat_R10G10B10A2
 }TextureFormat;
+#pragma endregion
 
+#pragma region Depth Stencil
 typedef enum DepthStencilFormat
 {
 	DepthStencilFormat_Default,
 	DepthStencilFormat_D24S8
 }DepthStencilFormat;
+#pragma endregion
 
 #pragma region Command Buffer
 typedef enum ConstantBufferMode
 {
-	ConstantBufferMode_Update,
-	ConstantBufferMode_Static
+	ConstantBufferMode_GPUOptimized,
+	ConstantBufferMode_Write,
+	ConstantBufferMode_Read
 }ConstantBufferMode;
 #pragma endregion
 
 #pragma region Vertex Buffer
 typedef enum VertexBufferMode
 {
-	VertexBufferMode_Update,
-	VertexBufferMode_Static
+	VertexBufferMode_GPUOptimized,
+	VertexBufferMode_Write,
+	VertexBufferMode_Read
 }VertexBufferMode;
 
 typedef enum VertexBufferTopology

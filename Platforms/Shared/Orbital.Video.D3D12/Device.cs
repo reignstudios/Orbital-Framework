@@ -224,6 +224,17 @@ namespace Orbital.Video.D3D12
 			}
 			return abstraction;
 		}
+
+		public override Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, int mipLevels, byte[] data, TextureMode mode)
+		{
+			var abstraction = new Texture2D(this, mode);
+			if (!abstraction.Init(format, width, height, mipLevels, data))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create Texture2D");
+			}
+			return abstraction;
+		}
 		#endregion
 	}
 }

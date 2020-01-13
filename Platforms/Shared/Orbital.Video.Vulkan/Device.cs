@@ -169,6 +169,11 @@ namespace Orbital.Video.Vulkan
 		{
 			throw new NotImplementedException();
 		}
+
+		public override Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, int mipLevels, byte[] data, TextureMode mode)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

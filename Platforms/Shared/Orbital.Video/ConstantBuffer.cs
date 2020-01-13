@@ -5,14 +5,19 @@ namespace Orbital.Video
 	public enum ConstantBufferMode
 	{
 		/// <summary>
-		/// Memory will be frequently updated from the CPU
+		/// Memory will be optimized for GPU only use
 		/// </summary>
-		Update,
+		GPUOptimized,
 
 		/// <summary>
-		/// Memory will only be initialized by the CPU once
+		/// Memory will be frequently written to by CPU
 		/// </summary>
-		Static
+		Write,
+
+		/// <summary>
+		/// Memory will be frequently read from the CPU
+		/// </summary>
+		Read
 	}
 
 	public abstract class ConstantBufferBase : IDisposable

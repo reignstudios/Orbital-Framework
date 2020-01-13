@@ -91,7 +91,7 @@ namespace Orbital.Demo
 				offset = .5f,
 				constrast = .5f
 			};
-			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.Static);
+			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.GPUOptimized);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
@@ -139,7 +139,7 @@ namespace Orbital.Demo
 				new Vertex(new Vec3(0, 1, 0), Color4.green),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue)
 			};
-			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.Static);
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.GPUOptimized);
 
 			// create render state
 			var renderStateDesc = new RenderStateDesc()

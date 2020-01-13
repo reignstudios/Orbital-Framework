@@ -29,7 +29,7 @@ namespace Orbital.Video.Vulkan
 
 	#region Render State
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe struct RenderStateDesc_NativeInterop
+	unsafe struct RenderStateDesc_NativeInterop
 	{
 		public IntPtr renderPass;
 		public IntPtr shaderEffect;
@@ -51,9 +51,19 @@ namespace Orbital.Video.Vulkan
 	}
 	#endregion
 
+	#region Texture
+	enum TextureType_NativeInterop
+	{
+		_1D,
+		_2D,
+		_3D,
+		_Cube
+	}
+	#endregion
+
 	#region Vertex Buffer
 	[StructLayout(LayoutKind.Sequential)]
-	public struct VertexBufferLayoutElement_NativeInterop
+	struct VertexBufferLayoutElement_NativeInterop
 	{
 		public VertexBufferLayoutElementType type;
 		public VertexBufferLayoutElementUsage usage;
@@ -61,7 +71,7 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public unsafe struct VertexBufferLayout_NativeInterop : IDisposable
+	unsafe struct VertexBufferLayout_NativeInterop : IDisposable
 	{
 		public int elementCount;
 		public VertexBufferLayoutElement_NativeInterop* elements;

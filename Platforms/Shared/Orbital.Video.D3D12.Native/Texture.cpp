@@ -1,0 +1,159 @@
+#include "Texture.h"
+
+extern "C"
+{
+	bool TextureFormatToNative(TextureFormat format, DXGI_FORMAT* nativeMinFeatureLevel)
+	{
+		switch (format)
+		{
+			case TextureFormat::TextureFormat_Default:
+			case TextureFormat::TextureFormat_B8G8R8A8:
+				*nativeMinFeatureLevel = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
+				break;
+
+			case TextureFormat::TextureFormat_DefaultHDR:
+			case TextureFormat::TextureFormat_R10G10B10A2:
+				*nativeMinFeatureLevel = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
+				break;
+			default: return false;
+		}
+		return true;
+	}
+
+	ORBITAL_EXPORT Texture* Orbital_Video_D3D12_Texture_Create(Device* device, TextureMode mode)
+	{
+		Texture* handle = (Texture*)calloc(1, sizeof(Texture));
+		handle->device = device;
+		handle->mode = mode;
+		return handle;
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevels, void* data)
+	{
+		if (!TextureFormatToNative(format, &handle->format)) return 0;
+
+		// create resource
+		D3D12_HEAP_PROPERTIES heapProperties = {};
+		if (handle->mode == TextureMode_GPUOptimized) heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		else if (handle->mode == TextureMode_Write) heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+		else if (handle->mode == TextureMode_Read) heapProperties.Type = D3D12_HEAP_TYPE_READBACK;
+		else return 0;
+        heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+        heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+        heapProperties.CreationNodeMask = 1;// TODO: multi-gpu setup
+        heapProperties.VisibleNodeMask = 1;
+
+		D3D12_RESOURCE_DESC resourceDesc = {};
+		if (type == TextureType::TextureType_1D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		else if (type == TextureType::TextureType_1D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+		else if (type == TextureType::TextureType_2D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		else if (type == TextureType::TextureType_3D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+		else if (type == TextureType::TextureType_Cube) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		else return 0;
+        resourceDesc.Alignment = 0;
+        resourceDesc.Width = width;
+        resourceDesc.Height = height;
+        resourceDesc.DepthOrArraySize = depth;
+        resourceDesc.MipLevels = 1;
+        resourceDesc.Format = handle->format;
+        resourceDesc.SampleDesc.Count = 1;
+        resourceDesc.SampleDesc.Quality = 0;
+        resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+        resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		if (data != NULL)
+		{
+			if (handle->mode == TextureMode_GPUOptimized || handle->mode == TextureMode_Read) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy or CPU read
+			else if (handle->mode == TextureMode_Write) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
+			else return 0;
+		}
+		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, NULL, IID_PPV_ARGS(&handle->texture)))) return 0;
+
+		/*// create resource heap
+		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
+        cbvHeapDesc.NumDescriptors = 1;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        if (FAILED(handle->device->device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
+
+		// create resource view
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+        cbvDesc.BufferLocation = handle->resource->GetGPUVirtualAddress();
+        cbvDesc.SizeInBytes = alignedSize;
+		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
+        handle->device->device->CreateConstantBufferView(&cbvDesc, cpuHandle);
+		handle->resourceHeapHandle = handle->resourceHeap->GetGPUDescriptorHandleForHeapStart();*/
+
+		// upload initial data
+		if (data != NULL)
+		{
+			// allocate gpu upload buffer if needed
+			bool useUploadBuffer = false;
+			ID3D12Resource* uploadResource = handle->texture;
+			if (heapProperties.Type != D3D12_HEAP_TYPE_UPLOAD)
+			{
+				useUploadBuffer = true;
+				uploadResource = NULL;
+				heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+				if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadResource)))) return 0;
+			}
+
+			// copy CPU memory to GPU
+			UINT8* gpuDataPtr;
+			D3D12_RANGE readRange = {};
+			if (FAILED(uploadResource->Map(0, &readRange, reinterpret_cast<void**>(&gpuDataPtr))))
+			{
+				if (useUploadBuffer) uploadResource->Release();
+				return 0;
+			}
+			memcpy(gpuDataPtr, data, width * height * depth);
+			uploadResource->Unmap(0, nullptr);
+
+			// copy upload buffer to default buffer
+			if (useUploadBuffer)
+			{
+				// reset command list and copy resource
+				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
+				handle->device->internalCommandList->CopyResource(handle->texture, uploadResource);
+
+				// change resource to function as constant buffer
+				if (handle->mode != TextureMode_Read)
+				{
+					D3D12_RESOURCE_BARRIER barrier = {};
+					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+					barrier.Transition.pResource = handle->texture;
+					barrier.Transition.StateBefore = initialResourceState;
+					barrier.Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+					handle->device->internalCommandList->ResourceBarrier(1, &barrier);
+				}
+
+				// close command list
+				handle->device->internalCommandList->Close();
+
+				// execute operations
+				ID3D12CommandList* commandLists[1] = { handle->device->internalCommandList };
+				handle->device->commandQueue->ExecuteCommandLists(1, commandLists);
+				WaitForFence(handle->device, handle->device->internalFence, handle->device->internalFenceEvent, handle->device->internalFenceValue);
+
+				// release temp resource
+				uploadResource->Release();
+			}
+		}
+
+		return 1;
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_Texture_Dispose(Texture* handle)
+	{
+		if (handle->texture != NULL)
+		{
+			handle->texture->Release();
+			handle->texture = NULL;
+		}
+
+		free(handle);
+	}
+}

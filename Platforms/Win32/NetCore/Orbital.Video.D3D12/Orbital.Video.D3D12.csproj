@@ -24,6 +24,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ShaderEffect.cs" Link="ShaderEffect.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs" Link="SwapChain.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Texture2D.cs" Link="Texture2D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\VertexBuffer.cs" Link="VertexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>

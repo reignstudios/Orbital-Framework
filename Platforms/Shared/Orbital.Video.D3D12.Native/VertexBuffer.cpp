@@ -16,7 +16,10 @@ extern "C"
 
 		// create buffer
 		D3D12_HEAP_PROPERTIES heapProperties = {};
-		heapProperties.Type = handle->mode == VertexBufferMode::VertexBufferMode_Static ? D3D12_HEAP_TYPE_DEFAULT : D3D12_HEAP_TYPE_UPLOAD;
+		if (handle->mode == VertexBufferMode_GPUOptimized) heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		else if (handle->mode == VertexBufferMode_Write) heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+		else if (handle->mode == VertexBufferMode_Read) heapProperties.Type = D3D12_HEAP_TYPE_READBACK;
+		else return 0;
         heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
         heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
         heapProperties.CreationNodeMask = 1;// TODO: multi-gpu setup
@@ -38,8 +41,8 @@ extern "C"
 		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		if (vertices != NULL)
 		{
-			if (handle->mode == VertexBufferMode::VertexBufferMode_Update) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
-			else if (handle->mode == VertexBufferMode::VertexBufferMode_Static) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
+			if (handle->mode == VertexBufferMode_GPUOptimized || handle->mode == VertexBufferMode_Read) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy or CPU read
+			else if (handle->mode == VertexBufferMode_Write) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
 			else return 0;
 		}
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, nullptr, IID_PPV_ARGS(&handle->vertexBuffer)))) return 0;
@@ -77,14 +80,19 @@ extern "C"
 				handle->device->internalCommandList->CopyResource(handle->vertexBuffer, uploadResource);
 
 				// change resource to function as constant buffer
-				D3D12_RESOURCE_BARRIER barrier = {};
-				barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barrier.Transition.pResource = handle->vertexBuffer;
-				barrier.Transition.StateBefore = initialResourceState;
-				barrier.Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-				barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				handle->device->internalCommandList->ResourceBarrier(1, &barrier);
+				if (handle->mode != VertexBufferMode_Read)
+				{
+					D3D12_RESOURCE_BARRIER barrier = {};
+					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+					barrier.Transition.pResource = handle->vertexBuffer;
+					barrier.Transition.StateBefore = initialResourceState;
+					barrier.Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+					handle->device->internalCommandList->ResourceBarrier(1, &barrier);
+				}
+
+				// close command list
 				handle->device->internalCommandList->Close();
 
 				// execute operations
