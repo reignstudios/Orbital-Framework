@@ -2,20 +2,33 @@
 
 extern "C"
 {
-	bool TextureFormatToNative(TextureFormat format, DXGI_FORMAT* nativeMinFeatureLevel)
+	bool TextureFormatToNative(TextureFormat format, DXGI_FORMAT* nativeFormat)
 	{
 		switch (format)
 		{
 			case TextureFormat::TextureFormat_Default:
 			case TextureFormat::TextureFormat_B8G8R8A8:
-				*nativeMinFeatureLevel = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
+				*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
 				break;
 
 			case TextureFormat::TextureFormat_DefaultHDR:
 			case TextureFormat::TextureFormat_R10G10B10A2:
-				*nativeMinFeatureLevel = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
+				*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
 				break;
 			default: return false;
+		}
+		return true;
+	}
+
+	UINT TextureFormatSizePerPixel(DXGI_FORMAT nativeFormat)
+	{
+		switch (nativeFormat)
+		{
+			case DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM:
+			case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM:
+				return 4;
+
+			default: return 0;
 		}
 		return true;
 	}
@@ -28,7 +41,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevels, void* data)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data)
 	{
 		if (!TextureFormatToNative(format, &handle->format)) return 0;
 
@@ -51,14 +64,14 @@ extern "C"
 		else if (type == TextureType::TextureType_Cube) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		else return 0;
         resourceDesc.Alignment = 0;
-        resourceDesc.Width = width;
-        resourceDesc.Height = height;
-        resourceDesc.DepthOrArraySize = depth;
+        resourceDesc.Width = *width;
+        resourceDesc.Height = *height;
+        resourceDesc.DepthOrArraySize = *depth;
         resourceDesc.MipLevels = 1;
         resourceDesc.Format = handle->format;
         resourceDesc.SampleDesc.Count = 1;
         resourceDesc.SampleDesc.Quality = 0;
-        resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+        resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
 		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
@@ -96,26 +109,70 @@ extern "C"
 				useUploadBuffer = true;
 				uploadResource = NULL;
 				heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+				UINT64 uploadBufferSize;
+				handle->device->device->GetCopyableFootprints(&resourceDesc, 0, mipLevels, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
+
+				ZeroMemory(&resourceDesc, sizeof(D3D12_RESOURCE_DESC));
+				resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+				resourceDesc.Alignment = 0;
+				resourceDesc.Width = uploadBufferSize;
+				resourceDesc.Height = 1;
+				resourceDesc.DepthOrArraySize = 1;
+				resourceDesc.MipLevels = 1;
+				resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+				resourceDesc.SampleDesc.Count = 1;
+				resourceDesc.SampleDesc.Quality = 0;
+				resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+				resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
 				if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadResource)))) return 0;
 			}
 
 			// copy CPU memory to GPU
 			UINT8* gpuDataPtr;
 			D3D12_RANGE readRange = {};
-			if (FAILED(uploadResource->Map(0, &readRange, reinterpret_cast<void**>(&gpuDataPtr))))
+			for (UINT i = 0; i != mipLevels; ++i)
 			{
-				if (useUploadBuffer) uploadResource->Release();
-				return 0;
+				if (FAILED(uploadResource->Map(i, &readRange, reinterpret_cast<void**>(&gpuDataPtr))))
+				{
+					if (useUploadBuffer) uploadResource->Release();
+					return 0;
+				}
+			
+				size_t bufferSize = width[i] * height[i] * depth[i] * TextureFormatSizePerPixel(handle->format);
+				memcpy(gpuDataPtr, data[i], bufferSize);// upload mipmap
+				uploadResource->Unmap(i, nullptr);
 			}
-			memcpy(gpuDataPtr, data, width * height * depth);
-			uploadResource->Unmap(0, nullptr);
 
 			// copy upload buffer to default buffer
 			if (useUploadBuffer)
 			{
 				// reset command list and copy resource
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
-				handle->device->internalCommandList->CopyResource(handle->texture, uploadResource);
+
+				// copy all mip levels
+				for (UINT i = 0; i != mipLevels; ++i)
+				{
+					D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+					D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+					dstLoc.pResource = handle->texture;
+					srcLoc.pResource = uploadResource;
+					dstLoc.SubresourceIndex = i;
+					srcLoc.SubresourceIndex = i;
+					dstLoc.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+					srcLoc.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+
+					srcLoc.PlacedFootprint.Footprint.Width = width[i];
+					srcLoc.PlacedFootprint.Footprint.Height = height[i];
+					srcLoc.PlacedFootprint.Footprint.Depth = depth[i];
+					srcLoc.PlacedFootprint.Footprint.Format = handle->format;
+					UINT32 size = width[i] * TextureFormatSizePerPixel(handle->format);
+					const UINT32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1;
+					srcLoc.PlacedFootprint.Footprint.RowPitch = (size + alignment) & ~alignment;// row size is required to be aligned
+
+					handle->device->internalCommandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, nullptr);
+				}
 
 				// change resource to function as constant buffer
 				if (handle->mode != TextureMode_Read)

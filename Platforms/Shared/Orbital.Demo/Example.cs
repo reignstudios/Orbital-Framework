@@ -41,6 +41,7 @@ namespace Orbital.Demo
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
 		private ConstantBufferBase constantBuffer;
+		private Texture2DBase texture2D;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -84,6 +85,12 @@ namespace Orbital.Demo
 				clearColorValue = new Vec4(0, .2f, .4f, 1)
 			};
 			renderPass = device.CreateRenderPass(renderPassDesc);
+
+			// create texture
+			const int textureWidth = 256, textureHeight = 256;
+			var textureData = new byte[textureWidth * textureHeight * 4];
+			Array.Fill<byte>(textureData, 255);
+			texture2D = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
 			// create constant buffer
 			var constantBufferObject = new ConstantBufferObject()
@@ -158,6 +165,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (texture2D != null)
+			{
+				texture2D.Dispose();
+				texture2D = null;
+			}
+
 			if (constantBuffer != null)
 			{
 				constantBuffer.Dispose();

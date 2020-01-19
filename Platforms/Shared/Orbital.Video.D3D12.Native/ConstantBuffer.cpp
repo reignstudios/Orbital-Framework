@@ -12,8 +12,9 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Init(ConstantBuffer* handle, UINT32 size, void* initialData)
 	{
-		int alignedSize = (size + 255) & ~255;// size is required to be 256-byte aligned
-
+		const UINT32 alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT - 1;
+		const int alignedSize = (size + alignment) & ~alignment;// size is required to be aligned
+		
 		// create resource
 		D3D12_HEAP_PROPERTIES heapProperties = {};
 		if (handle->mode == ConstantBufferMode_GPUOptimized) heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;

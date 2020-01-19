@@ -28,6 +28,12 @@ namespace Orbital.Video
 		R10G10B10A2
 	}
 
+	public struct TextureMipLevel2D
+	{
+		public int width, height;
+		public byte[] data;
+	}
+
 	public abstract class Texture2DBase : IDisposable
 	{
 		public abstract void Dispose();
