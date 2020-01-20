@@ -147,6 +147,11 @@ namespace Orbital.Host.Win32
 			return hWnd;
 		}
 
+		public override object GetManagedHandle()
+		{
+			return this;
+		}
+
 		public override void SetTitle(string title)
 		{
 			byte[] encodedTitle = Encoding.Default.GetBytes(title + '\0');

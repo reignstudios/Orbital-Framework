@@ -70,6 +70,11 @@ namespace Orbital.Host
 		/// </summary>
 		public abstract IntPtr GetHandle();
 
+		/// <summary>
+		/// Returns pointer to platform specific managed handle
+		/// </summary>
+		public abstract object GetManagedHandle();
+
 		public virtual void SetTitle(string title) { }
 		public virtual void Show() { }
 		public virtual void Hide() { }

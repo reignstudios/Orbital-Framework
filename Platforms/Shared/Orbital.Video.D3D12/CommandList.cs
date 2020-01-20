@@ -45,9 +45,6 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_SetVertexBuffer(IntPtr handle, IntPtr vertexBuffer);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_SetConstantBuffer(IntPtr handle, IntPtr constantBuffer, uint registerIndex);
-
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexIndex, uint vertexCount, uint instanceCount);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -129,12 +126,6 @@ namespace Orbital.Video.D3D12
 		{
 			lastVertexBuffer = (VertexBuffer)vertexBuffer;
 			Orbital_Video_D3D12_CommandList_SetVertexBuffer(handle, lastVertexBuffer.handle);
-		}
-
-		public override void SetConstantBuffer(ConstantBufferBase constantBuffer, int registerIndex)
-		{
-			var constantBufferD3D12 = (ConstantBuffer)constantBuffer;
-			Orbital_Video_D3D12_CommandList_SetConstantBuffer(handle, constantBufferD3D12.handle, (uint)registerIndex);
 		}
 
 		public override void Draw()

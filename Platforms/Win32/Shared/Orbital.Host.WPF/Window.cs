@@ -83,6 +83,11 @@ namespace Orbital.Host.WPF
 			return handle;
 		}
 
+		public override object GetManagedHandle()
+		{
+			return window;
+		}
+
 		public override void SetTitle(string title)
 		{
 			window.Title = title;

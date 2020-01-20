@@ -34,8 +34,24 @@ namespace Orbital.Video
 		public byte[] data;
 	}
 
-	public abstract class Texture2DBase : IDisposable
+	public abstract class TextureBase : IDisposable
 	{
+		/// <summary>
+		/// Returns pointer to platform specific native handle
+		/// </summary>
+		public abstract IntPtr GetHandle();
+
+		/// <summary>
+		/// Returns pointer to platform specific managed handle
+		/// </summary>
+		public abstract object GetManagedHandle();
+
 		public abstract void Dispose();
+	}
+
+	public abstract class Texture2DBase : TextureBase
+	{
+		public int width { get; protected set; }
+		public int height { get; protected set; }
 	}
 }

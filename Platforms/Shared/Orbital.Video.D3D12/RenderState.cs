@@ -25,8 +25,10 @@ namespace Orbital.Video.D3D12
 		public unsafe bool Init(RenderStateDesc desc, int gpuIndex)
 		{
 			vertexBuffer = (VertexBuffer)desc.vertexBuffer;
-			var nativeDesc = new RenderStateDesc_NativeInterop(ref desc);
-			return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;
+			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
+			{
+				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;
+			}
 		}
 
 		public override void Dispose()

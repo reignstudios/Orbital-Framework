@@ -6,6 +6,8 @@ namespace Orbital.Video
 	{
 		public RenderPassBase renderPass;
 		public ShaderEffectBase shaderEffect;
+		public ConstantBufferBase[] constantBuffers;
+		public TextureBase[] textures;
 		public VertexBufferBase vertexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
 		public bool depthEnable, stencilEnable;

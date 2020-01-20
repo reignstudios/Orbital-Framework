@@ -71,6 +71,11 @@ namespace Orbital.Host.WinForms
 			return form.Handle;
 		}
 
+		public override object GetManagedHandle()
+		{
+			return form;
+		}
+
 		public override void SetTitle(string title)
 		{
 			form.Text = title;

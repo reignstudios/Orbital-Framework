@@ -105,6 +105,10 @@ typedef struct RenderStateDesc
 {
 	void* renderPass;
 	void* shaderEffect;
+	int constantBufferCount;
+	intptr_t* constantBuffers;
+	int textureCount;
+	intptr_t* textures;
 	void* vertexBuffer;
 	VertexBufferTopology vertexBufferTopology;
 	char depthEnable, stencilEnable;
@@ -122,26 +126,41 @@ typedef enum ShaderType
 	ShaderType_GS
 }ShaderType;
 
-typedef struct ShaderEffectResource
+typedef enum ShaderEffectResourceUsage
+{
+	ShaderEffectResourceUsage_VS = 1,
+	ShaderEffectResourceUsage_PS = 2,
+	ShaderEffectResourceUsage_HS = 4,
+	ShaderEffectResourceUsage_DS = 8,
+	ShaderEffectResourceUsage_GS = 16,
+	ShaderEffectResourceUsage_All = ShaderEffectResourceUsage_VS | ShaderEffectResourceUsage_PS | ShaderEffectResourceUsage_HS | ShaderEffectResourceUsage_DS | ShaderEffectResourceUsage_GS,
+}ShaderEffectResourceUsage;
+
+typedef struct ShaderEffectConstantBuffer
 {
 	int registerIndex;
-	int usedInTypesCount;
-	ShaderType* usedInTypes;
-}ShaderEffectResource;
+	ShaderEffectResourceUsage usage;
+}ShaderEffectConstantBuffer;
 
-typedef enum ShaderEffectSampleFilter
+typedef struct ShaderEffectTexture
 {
-	ShaderEffectSampleFilter_Default,
-	ShaderEffectSampleFilter_Point,
-	ShaderEffectSampleFilter_Bilinear,
-	ShaderEffectSampleFilter_Trilinear
-}ShaderEffectSampleFilter;
+	int registerIndex;
+	ShaderEffectResourceUsage usage;
+}ShaderEffectTexture;
 
-typedef enum ShaderEffectSampleAddress
+typedef enum ShaderEffectSamplerFilter
 {
-	ShaderEffectSampleAddress_Wrap,
-	ShaderEffectSampleAddress_Clamp
-}ShaderEffectSampleAddress;
+	ShaderEffectSamplerFilter_Default,
+	ShaderEffectSamplerFilter_Point,
+	ShaderEffectSamplerFilter_Bilinear,
+	ShaderEffectSamplerFilter_Trilinear
+}ShaderEffectSamplerFilter;
+
+typedef enum ShaderEffectSamplerAddress
+{
+	ShaderEffectSamplerAddress_Wrap,
+	ShaderEffectSamplerAddress_Clamp
+}ShaderEffectSamplerAddress;
 
 typedef enum ShaderEffectSamplerAnisotropy
 {
@@ -156,22 +175,16 @@ typedef enum ShaderEffectSamplerAnisotropy
 typedef struct ShaderEffectSampler
 {
 	int registerIndex;
-	ShaderEffectSampleFilter filter;
-	ShaderEffectSampleAddress addressU, addressV, addressW;
+	ShaderEffectSamplerFilter filter;
 	ShaderEffectSamplerAnisotropy anisotropy;
+	ShaderEffectSamplerAddress addressU, addressV, addressW;
 }ShaderEffectSampler;
-
-typedef struct ShaderEffectConstantBuffer
-{
-	int registerIndex;
-	int size;
-}ShaderEffectConstantBuffer;
 
 typedef struct ShaderEffectDesc
 {
-	int resourcesCount, samplersCount, constantBufferCount;
-	ShaderEffectResource* resources;
-	ShaderEffectSampler* samplers;
+	int constantBufferCount, textureCount, samplersCount;
 	ShaderEffectConstantBuffer* constantBuffers;
+	ShaderEffectTexture* textures;
+	ShaderEffectSampler* samplers;
 }ShaderEffectDesc;
 #pragma endregion

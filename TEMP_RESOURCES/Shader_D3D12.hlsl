@@ -1,38 +1,39 @@
-//*********************************************************
-//
-// Copyright (c) Microsoft. All rights reserved.
-// This code is licensed under the MIT License (MIT).
-// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//*********************************************************
-
 cbuffer ConstantBufferObject : register(b0)
 {
     float offset;
 	float constrast;
 };
 
+struct VSInput
+{
+    float4 position : POSITION0;
+    float4 color : COLOR0;
+    float2 uv : TEXCOORD0;
+};
+
 struct PSInput
 {
     float4 position : SV_POSITION;
-    float4 color : COLOR;
+    float4 color : COLOR0;
+    float2 uv : TEXCOORD0;
 };
 
-PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
+PSInput VSMain(VSInput input)
 {
     PSInput result;
 
-    result.position = position;
+    result.position = input.position;
     result.position.x += offset;
-    result.color = color * constrast;
+    result.color = input.color * constrast;
+    result.uv = input.uv;
 
     return result;
 }
 
+Texture2D mainTexture : register(t0);
+SamplerState mainSampler : register(s0);
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color;
+    return input.color * mainTexture.Sample(mainSampler, input.uv);
 }

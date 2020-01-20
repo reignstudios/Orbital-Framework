@@ -29,10 +29,14 @@ namespace Orbital.Video.Vulkan
 
 	#region Render State
 	[StructLayout(LayoutKind.Sequential)]
-	unsafe struct RenderStateDesc_NativeInterop
+	unsafe struct RenderStateDesc_NativeInterop : IDisposable
 	{
 		public IntPtr renderPass;
 		public IntPtr shaderEffect;
+		public int constantBufferCount;
+		public IntPtr* constantBuffers;
+		public int textureCount;
+		public IntPtr* textures;
 		public IntPtr vertexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
 		public byte depthEnable, stencilEnable;
@@ -42,11 +46,35 @@ namespace Orbital.Video.Vulkan
 		{
 			renderPass = ((RenderPass)desc.renderPass).handle;
 			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
+
+			constantBufferCount = desc.constantBuffers.Length;
+			constantBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * constantBufferCount);
+			for (int i = 0; i != constantBufferCount; ++i) constantBuffers[i] = ((ConstantBuffer)desc.constantBuffers[i]).handle;
+
+			textureCount = desc.textures.Length;
+			textures = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureCount);
+			for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
+
 			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
 			vertexBufferTopology = desc.vertexBufferTopology;
 			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
 			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
 			msaaLevel = desc.msaaLevel;
+		}
+
+		public void Dispose()
+		{
+			if (constantBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)constantBuffers);
+				constantBuffers = null;
+			}
+
+			if (textures != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textures);
+				textures = null;
+			}
 		}
 	}
 	#endregion
@@ -111,65 +139,67 @@ namespace Orbital.Video.Vulkan
 
 	#region Shaders
 	[StructLayout(LayoutKind.Sequential)]
-	unsafe struct ShaderEffectResource_NativeInterop
+	struct ShaderEffectConstantBuffer_NativeInterop
 	{
 		public int registerIndex;
-		public int usedInTypesCount;
-		public ShaderType* usedInTypes;
+		public ShaderEffectResourceUsage usage;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct ShaderEffectTexture_NativeInterop
+	{
+		public int registerIndex;
+		public ShaderEffectResourceUsage usage;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	struct ShaderEffectSampler_NativeInterop
 	{
 		public int registerIndex;
-		public ShaderEffectSampleFilter filter;
-		public ShaderEffectSampleAddress addressU, addressV, addressW;
+		public ShaderEffectSamplerFilter filter;
 		public ShaderEffectSamplerAnisotropy anisotropy;
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	struct ShaderEffectConstantBuffer_NativeInterop
-	{
-		public int registerIndex;
-		public int size;
+		public ShaderEffectSamplerAddress addressU, addressV, addressW;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectDesc_NativeInterop : IDisposable
 	{
-		public int resourcesCount, samplersCount, constantBufferCount;
-		public ShaderEffectResource_NativeInterop* resources;
-		public ShaderEffectSampler_NativeInterop* samplers;
+		public int constantBufferCount, textureCount, samplersCount;
 		public ShaderEffectConstantBuffer_NativeInterop* constantBuffers;
+		public ShaderEffectTexture_NativeInterop* textures;
+		public ShaderEffectSampler_NativeInterop* samplers;
 
 		public ShaderEffectDesc_NativeInterop(ref ShaderEffectDesc desc)
 		{
 			// init defaults
-			resourcesCount = 0;
-			samplersCount = 0;
 			constantBufferCount = 0;
-			resources = null;
-			samplers = null;
+			textureCount = 0;
+			samplersCount = 0;
 			constantBuffers = null;
+			textures = null;
+			samplers = null;
 
-			// allocate resource heaps
-			if (desc.resources != null)
+			// allocate constant buffer heaps
+			if (desc.constantBuffers != null)
 			{
-				resourcesCount = desc.resources.Length;
-				resources = (ShaderEffectResource_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectResource_NativeInterop>() * resourcesCount);
-				for (int i = 0; i != resourcesCount; ++i)
+				constantBufferCount = desc.constantBuffers.Length;
+				constantBuffers = (ShaderEffectConstantBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectConstantBuffer_NativeInterop>() * constantBufferCount);
+				for (int i = 0; i != constantBufferCount; ++i)
 				{
-					resources[i].registerIndex = desc.resources[i].registerIndex;
-					if (desc.resources[i].usedInTypes != null)
-					{
-						resources[i].usedInTypesCount = desc.resources[i].usedInTypes.Length;
-						long size = sizeof(ShaderType) * resources[i].usedInTypesCount;
-						resources[i].usedInTypes = (ShaderType*)Marshal.AllocHGlobal((int)size);
-						fixed (ShaderType* usedInTypesPtr = desc.resources[i].usedInTypes)
-						{
-							Buffer.MemoryCopy(usedInTypesPtr, resources[i].usedInTypes, size, size);
-						}
-					}
+					constantBuffers[i].registerIndex = desc.constantBuffers[i].registerIndex;
+					constantBuffers[i].usage = desc.constantBuffers[i].usage;
+				}
+			}
+
+			// allocate texture heaps
+			if (desc.textures != null)
+			{
+				textureCount = desc.textures.Length;
+				textures = (ShaderEffectTexture_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectTexture_NativeInterop>() * textureCount);
+				for (int i = 0; i != textureCount; ++i)
+				{
+					textures[i].registerIndex = desc.textures[i].registerIndex;
+					textures[i].usage = desc.textures[i].usage;
 				}
 			}
 
@@ -188,46 +218,26 @@ namespace Orbital.Video.Vulkan
 					samplers[i].anisotropy = desc.samplers[i].anisotropy;
 				}
 			}
-
-			// allocate constant buffer heaps
-			if (desc.constantBuffers != null)
-			{
-				constantBufferCount = desc.constantBuffers.Length;
-				constantBuffers = (ShaderEffectConstantBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectConstantBuffer_NativeInterop>() * constantBufferCount);
-				for (int i = 0; i != constantBufferCount; ++i)
-				{
-					constantBuffers[i].registerIndex = desc.constantBuffers[i].registerIndex;
-					constantBuffers[i].size = desc.constantBuffers[i].size;
-				}
-			}
 		}
 
 		public void Dispose()
 		{
-			if (resources != null)
+			if (constantBuffers != null)
 			{
-				for (int i = 0; i != resourcesCount; ++i)
-				{
-					if (resources[i].usedInTypes != null)
-					{
-						Marshal.FreeHGlobal((IntPtr)resources[i].usedInTypes);
-						resources[i].usedInTypes = null;
-					}
-				}
-				Marshal.FreeHGlobal((IntPtr)resources);
-				resources = null;
+				Marshal.FreeHGlobal((IntPtr)constantBuffers);
+				constantBuffers = null;
+			}
+
+			if (textures != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textures);
+				textures = null;
 			}
 
 			if (samplers != null)
 			{
 				Marshal.FreeHGlobal((IntPtr)samplers);
 				samplers = null;
-			}
-
-			if (constantBuffers != null)
-			{
-				Marshal.FreeHGlobal((IntPtr)constantBuffers);
-				constantBuffers = null;
 			}
 		}
 	}

@@ -14,10 +14,12 @@ namespace Orbital.Demo
 	{
 		public Vec3 position;
 		public Color4 color;
-		public Vertex(Vec3 position, Color4 color)
+		public Vec2 uv;
+		public Vertex(Vec3 position, Color4 color, Vec2 uv)
 		{
 			this.position = position;
 			this.color = color;
+			this.uv = uv;
 		}
 	}
 
@@ -89,7 +91,25 @@ namespace Orbital.Demo
 			// create texture
 			const int textureWidth = 256, textureHeight = 256;
 			var textureData = new byte[textureWidth * textureHeight * 4];
-			Array.Fill<byte>(textureData, 255);
+			for (int y = 0; y != textureHeight; ++y)
+			for (int x = 0; x != textureWidth; ++x)
+			{
+				int i = (x * 4) + (y * textureWidth * 4);
+				if (x % 16 <= 7 && y % 16 <= 7)
+				{
+					textureData[i + 0] = 0;
+					textureData[i + 1] = 0;
+					textureData[i + 2] = 0;
+					textureData[i + 3] = 0;
+				}
+				else
+				{
+					textureData[i + 0] = 255;
+					textureData[i + 1] = 255;
+					textureData[i + 2] = 255;
+					textureData[i + 3] = 255;
+				}
+			}
 			texture2D = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
 			// create constant buffer
@@ -119,14 +139,30 @@ namespace Orbital.Demo
 				desc.constantBuffers[0] = new ShaderEffectConstantBuffer()
 				{
 					registerIndex = 0,
-					size = constantBuffer.size
+					usage = ShaderEffectResourceUsage.VS
+				};
+				desc.textures = new ShaderEffectTexture[1];
+				desc.textures[0] = new ShaderEffectTexture()
+				{
+					registerIndex = 0,
+					usage = ShaderEffectResourceUsage.PS
+				};
+				desc.samplers = new ShaderEffectSampler[1];
+				desc.samplers[0] = new ShaderEffectSampler()
+				{
+					registerIndex = 0,
+					filter = ShaderEffectSamplerFilter.Default,
+					anisotropy = ShaderEffectSamplerAnisotropy.Default,
+					addressU = ShaderEffectSamplerAddress.Wrap,
+					addressV = ShaderEffectSamplerAddress.Wrap,
+					addressW = ShaderEffectSamplerAddress.Wrap
 				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
 
 			// create vertex buffer
 			var vertexBufferLayout = new VertexBufferLayout();
-			vertexBufferLayout.elements = new VertexBufferLayoutElement[2];
+			vertexBufferLayout.elements = new VertexBufferLayoutElement[3];
 			vertexBufferLayout.elements[0] = new VertexBufferLayoutElement()
 			{
 				type = VertexBufferLayoutElementType.Float3,
@@ -139,12 +175,18 @@ namespace Orbital.Demo
 				usage = VertexBufferLayoutElementUsage.Color,
 				streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3)
 			};
+			vertexBufferLayout.elements[2] = new VertexBufferLayoutElement()
+			{
+				type = VertexBufferLayoutElementType.Float2,
+				usage = VertexBufferLayoutElementUsage.UV,
+				streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3) + 4
+			};
 			
 			var vertices = new Vertex[]
 			{
-				new Vertex(new Vec3(-1, -1, 0), Color4.red),
-				new Vertex(new Vec3(0, 1, 0), Color4.green),
-				new Vertex(new Vec3(1, -1, 0), Color4.blue)
+				new Vertex(new Vec3(-1, -1, 0), Color4.red, new Vec2(0, 0)),
+				new Vertex(new Vec3(0, 1, 0), Color4.green, new Vec2(.5f, 1)),
+				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0))
 			};
 			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.GPUOptimized);
 
@@ -153,9 +195,13 @@ namespace Orbital.Demo
 			{
 				renderPass = renderPass,
 				shaderEffect = shaderEffect,
+				constantBuffers = new ConstantBufferBase[1],
+				textures = new TextureBase[1],
 				vertexBuffer = vertexBuffer,
 				vertexBufferTopology = VertexBufferTopology.Triangle
 			};
+			renderStateDesc.constantBuffers[0] = constantBuffer;
+			renderStateDesc.textures[0] = texture2D;
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
 			// print all GPUs this abstraction supports
@@ -231,7 +277,6 @@ namespace Orbital.Demo
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				commandList.SetRenderState(renderState);
-				commandList.SetConstantBuffer(constantBuffer, 0);
 				commandList.Draw();
 				commandList.EndRenderPass();
 				commandList.Finish();

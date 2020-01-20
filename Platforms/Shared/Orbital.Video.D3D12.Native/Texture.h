@@ -6,6 +6,7 @@ struct Texture
 	Device* device;
 	TextureMode mode;
 	ID3D12Resource* texture;
-	//D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle;
+	ID3D12DescriptorHeap* textureHeap;
+	D3D12_GPU_DESCRIPTOR_HANDLE textureHeapHandle;
 	DXGI_FORMAT format;
 };

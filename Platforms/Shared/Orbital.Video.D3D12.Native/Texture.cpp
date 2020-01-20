@@ -58,7 +58,6 @@ extern "C"
 
 		D3D12_RESOURCE_DESC resourceDesc = {};
 		if (type == TextureType::TextureType_1D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-		else if (type == TextureType::TextureType_1D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
 		else if (type == TextureType::TextureType_2D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		else if (type == TextureType::TextureType_3D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
 		else if (type == TextureType::TextureType_Cube) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -67,7 +66,7 @@ extern "C"
         resourceDesc.Width = *width;
         resourceDesc.Height = *height;
         resourceDesc.DepthOrArraySize = *depth;
-        resourceDesc.MipLevels = 1;
+        resourceDesc.MipLevels = mipLevels;
         resourceDesc.Format = handle->format;
         resourceDesc.SampleDesc.Count = 1;
         resourceDesc.SampleDesc.Quality = 0;
@@ -83,20 +82,25 @@ extern "C"
 		}
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, NULL, IID_PPV_ARGS(&handle->texture)))) return 0;
 
-		/*// create resource heap
-		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-        cbvHeapDesc.NumDescriptors = 1;
-        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        if (FAILED(handle->device->device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
+		// create resource heap
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+        heapDesc.NumDescriptors = 1;
+        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
+        if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->textureHeap)))) return 0;
+		handle->textureHeapHandle = handle->textureHeap->GetGPUDescriptorHandleForHeapStart();
 
 		// create resource view
-		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-        cbvDesc.BufferLocation = handle->resource->GetGPUVirtualAddress();
-        cbvDesc.SizeInBytes = alignedSize;
-		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
-        handle->device->device->CreateConstantBufferView(&cbvDesc, cpuHandle);
-		handle->resourceHeapHandle = handle->resourceHeap->GetGPUDescriptorHandleForHeapStart();*/
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDesc.Format = handle->format;
+		if (type == TextureType::TextureType_1D) srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
+		else if (type == TextureType::TextureType_2D) srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		else if (type == TextureType::TextureType_3D) srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+		else if (type == TextureType::TextureType_Cube) srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		else return 0;
+		srvDesc.Texture2D.MipLevels = mipLevels;
+		handle->device->device->CreateShaderResourceView(handle->texture, &srvDesc, handle->textureHeap->GetCPUDescriptorHandleForHeapStart());
 
 		// upload initial data
 		if (data != NULL)
@@ -140,8 +144,14 @@ extern "C"
 					return 0;
 				}
 			
-				size_t bufferSize = width[i] * height[i] * depth[i] * TextureFormatSizePerPixel(handle->format);
-				memcpy(gpuDataPtr, data[i], bufferSize);// upload mipmap
+				UINT srcPitch = width[i] * TextureFormatSizePerPixel(handle->format);
+				const UINT32 alignment = D3D12_TEXTURE_DATA_PITCH_ALIGNMENT - 1;
+				UINT dstPitch = (srcPitch + alignment) & ~alignment;// row size is required to be aligned
+				for (UINT y = 0; y != height[i]; ++y)
+				{
+					memcpy(gpuDataPtr + (dstPitch * y), data[i] + (srcPitch * y), srcPitch);// copy texture row
+				}
+
 				uploadResource->Unmap(i, nullptr);
 			}
 
@@ -205,6 +215,12 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Texture_Dispose(Texture* handle)
 	{
+		if (handle->textureHeap != NULL)
+		{
+			handle->textureHeap->Release();
+			handle->textureHeap = NULL;
+		}
+
 		if (handle->texture != NULL)
 		{
 			handle->texture->Release();

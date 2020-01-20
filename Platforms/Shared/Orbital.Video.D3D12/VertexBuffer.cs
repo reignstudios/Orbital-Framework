@@ -23,19 +23,23 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(long size, VertexBufferLayout layout)
 		{
-			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
-			return Orbital_Video_D3D12_VertexBuffer_Init(handle, null, (ulong)size, sizeof(byte), &layoutNative) != 0;
+			using (var layoutNative = new VertexBufferLayout_NativeInterop(ref layout))
+			{
+				return Orbital_Video_D3D12_VertexBuffer_Init(handle, null, (ulong)size, sizeof(byte), &layoutNative) != 0;
+			}
 		}
 
 		#if CS_7_3
 		public unsafe bool Init<T>(T[] vertices, VertexBufferLayout layout) where T : unmanaged
 		{
-			var layoutNative = new VertexBufferLayout_NativeInterop(ref layout);
-			vertexCount = vertices.Length;
-			vertexSize = Marshal.SizeOf<T>();
-			fixed (T* verticesPtr = vertices)
+			using (var layoutNative = new VertexBufferLayout_NativeInterop(ref layout))
 			{
-				return Orbital_Video_D3D12_VertexBuffer_Init(handle, verticesPtr, (ulong)vertices.LongLength, (uint)vertexSize, &layoutNative) != 0;
+				vertexCount = vertices.Length;
+				vertexSize = Marshal.SizeOf<T>();
+				fixed (T* verticesPtr = vertices)
+				{
+					return Orbital_Video_D3D12_VertexBuffer_Init(handle, verticesPtr, (ulong)vertices.LongLength, (uint)vertexSize, &layoutNative) != 0;
+				}
 			}
 		}
 		#else

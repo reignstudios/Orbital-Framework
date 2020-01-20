@@ -1,6 +1,8 @@
 #include "RenderState.h"
 #include "RenderPass.h"
 #include "ShaderEffect.h"
+#include "ConstantBuffer.h"
+#include "Texture.h"
 #include "VertexBuffer.h"
 #include "Utils.h"
 
@@ -26,6 +28,46 @@ extern "C"
 		if (shaderEffect->gs != NULL) pipelineDesc.GS = shaderEffect->gs->bytecode;
 		pipelineDesc.pRootSignature = shaderEffect->signatures[gpuIndex];
 		handle->shaderEffectSignature = pipelineDesc.pRootSignature;
+
+		// add constant buffer heaps
+		if (desc->constantBufferCount != 0)
+		{
+			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+			heapDesc.NumDescriptors = desc->constantBufferCount;
+			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->constantBufferHeap)))) return 0;
+			handle->constantBufferGPUDescHandle = handle->constantBufferHeap->GetGPUDescriptorHandleForHeapStart();
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuComputerBufferHeap = handle->constantBufferHeap->GetCPUDescriptorHandleForHeapStart();
+			UINT heapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			for (int i = 0; i != desc->constantBufferCount; ++i)
+			{
+				ConstantBuffer* constantBuffer = (ConstantBuffer*)desc->constantBuffers[i];
+				D3D12_CPU_DESCRIPTOR_HANDLE heap = constantBuffer->resourceHeap->GetCPUDescriptorHandleForHeapStart();
+				handle->device->device->CopyDescriptorsSimple(1, cpuComputerBufferHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				cpuComputerBufferHeap.ptr += heapSize;
+			}
+		}
+
+		// add texture heaps
+		if (desc->textureCount != 0)
+		{
+			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+			heapDesc.NumDescriptors = desc->textureCount;
+			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->textureHeap)))) return 0;
+			handle->textureGPUDescHandle = handle->textureHeap->GetGPUDescriptorHandleForHeapStart();
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuTextureHeap = handle->textureHeap->GetCPUDescriptorHandleForHeapStart();
+			UINT heapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			for (int i = 0; i != desc->textureCount; ++i)
+			{
+				Texture* texture = (Texture*)desc->textures[i];
+				D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->textureHeap->GetCPUDescriptorHandleForHeapStart();
+				handle->device->device->CopyDescriptorsSimple(1, cpuTextureHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				cpuTextureHeap.ptr += heapSize;
+			}
+		}
 
 		// topology
 		if (!GetNative_VertexBufferTopology(desc->vertexBufferTopology, &pipelineDesc.PrimitiveTopologyType)) return 0;
@@ -119,6 +161,18 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderState_Dispose(RenderState* handle)
 	{
+		if (handle->constantBufferHeap != NULL)
+		{
+			handle->constantBufferHeap->Release();
+			handle->constantBufferHeap = NULL;
+		}
+
+		if (handle->textureHeap != NULL)
+		{
+			handle->textureHeap->Release();
+			handle->textureHeap = NULL;
+		}
+
 		if (handle->state != NULL)
 		{
 			handle->state->Release();

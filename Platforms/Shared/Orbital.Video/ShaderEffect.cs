@@ -4,20 +4,67 @@ using Orbital.IO;
 
 namespace Orbital.Video
 {
-	public struct ShaderEffectResource
+	[Flags]
+	public enum ShaderEffectResourceUsage
 	{
 		/// <summary>
-		/// Register index of the resource
+		/// Vertex Shader
+		/// </summary>
+		VS = 1,
+
+		/// <summary>
+		/// Pixel Shader
+		/// </summary>
+		PS = 2,
+
+		/// <summary>
+		/// Hull Shader
+		/// </summary>
+		HS = 4,
+
+		/// <summary>
+		/// Domain Shader
+		/// </summary>
+		DS = 8,
+
+		/// <summary>
+		/// Geometry Shader
+		/// </summary>
+		GS = 16,
+
+		/// <summary>
+		/// Used in all types
+		/// </summary>
+		All = VS | PS | HS | DS | GS
+	}
+
+	public struct ShaderEffectConstantBuffer
+	{
+		/// <summary>
+		/// Register index of constant buffer
 		/// </summary>
 		public int registerIndex;
 
 		/// <summary>
-		/// Shader types the resource is used in
+		/// Shader types the constant buffer is used in
 		/// </summary>
-		public ShaderType[] usedInTypes;
+		public ShaderEffectResourceUsage usage;
 	}
 
-	public enum ShaderEffectSampleFilter
+	public struct ShaderEffectTexture
+	{
+		/// <summary>
+		/// Register index of the texture
+		/// </summary>
+		public int registerIndex;
+
+		/// <summary>
+		/// Shader types the texture is used in
+		/// </summary>
+		public ShaderEffectResourceUsage usage;
+	}
+
+	public enum ShaderEffectSamplerFilter
 	{
 		/// <summary>
 		/// Will let the API choose
@@ -38,19 +85,6 @@ namespace Orbital.Video
 		/// UVW Sub-pixel interpolation (requires mip-maps to function)
 		/// </summary>
 		Trilinear
-	}
-
-	public enum ShaderEffectSampleAddress
-	{
-		/// <summary>
-		/// Wrap texture UVs (outputUV = inputUV % 1.0)
-		/// </summary>
-		Wrap,
-
-		/// <summary>
-		/// Clamp texture UVs between 0-1
-		/// </summary>
-		Clamp
 	}
 
 	public enum ShaderEffectSamplerAnisotropy
@@ -86,6 +120,19 @@ namespace Orbital.Video
 		X16 = 16
 	}
 
+	public enum ShaderEffectSamplerAddress
+	{
+		/// <summary>
+		/// Wrap texture UVs (outputUV = inputUV % 1.0)
+		/// </summary>
+		Wrap,
+
+		/// <summary>
+		/// Clamp texture UVs between 0-1
+		/// </summary>
+		Clamp
+	}
+
 	public struct ShaderEffectSampler
 	{
 		/// <summary>
@@ -96,37 +143,24 @@ namespace Orbital.Video
 		/// <summary>
 		/// Texture sampler filter
 		/// </summary>
-		public ShaderEffectSampleFilter filter;
-
-		/// <summary>
-		/// Texture address mode
-		/// </summary>
-		public ShaderEffectSampleAddress addressU, addressV, addressW;
+		public ShaderEffectSamplerFilter filter;
 
 		/// <summary>
 		/// Anisotropy texture filtering
 		/// </summary>
 		public ShaderEffectSamplerAnisotropy anisotropy;
-	}
-
-	public struct ShaderEffectConstantBuffer
-	{
-		/// <summary>
-		/// Register index of constant buffer
-		/// </summary>
-		public int registerIndex;
 
 		/// <summary>
-		/// Size of constant buffer
+		/// Texture address mode
 		/// </summary>
-		public int size;
+		public ShaderEffectSamplerAddress addressU, addressV, addressW;
 	}
 
 	public struct ShaderEffectDesc
 	{
-		public ShaderEffectResource[] resources;
-		public ShaderEffectSampler[] samplers;
 		public ShaderEffectConstantBuffer[] constantBuffers;
+		public ShaderEffectTexture[] textures;
+		public ShaderEffectSampler[] samplers;
 	}
 
 	public abstract class ShaderEffectBase : IDisposable

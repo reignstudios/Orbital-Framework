@@ -49,19 +49,18 @@ extern "C"
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
 
 		// create resource heap
-		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-        cbvHeapDesc.NumDescriptors = 1;
-        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        if (FAILED(handle->device->device->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
+		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+        heapDesc.NumDescriptors = 1;
+        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
+        if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
+		handle->resourceHeapHandle = handle->resourceHeap->GetGPUDescriptorHandleForHeapStart();
 
 		// create resource view
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
         cbvDesc.BufferLocation = handle->resource->GetGPUVirtualAddress();
         cbvDesc.SizeInBytes = alignedSize;
-		D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
-        handle->device->device->CreateConstantBufferView(&cbvDesc, cpuHandle);
-		handle->resourceHeapHandle = handle->resourceHeap->GetGPUDescriptorHandleForHeapStart();
+        handle->device->device->CreateConstantBufferView(&cbvDesc, handle->resourceHeap->GetCPUDescriptorHandleForHeapStart());
 
 		// upload initial data
 		if (initialData != NULL)
