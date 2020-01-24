@@ -132,7 +132,34 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetRenderState(CommandList* handle, RenderState* renderState)
 	{
-		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffectSignature);
+		// set resource states
+		for (UINT i = 0; i != renderState->constantBufferCount; ++i)
+		{
+			ConstantBuffer* constantBuffer = renderState->constantBuffers[i];
+			Orbital_Video_D3D12_ConstantBuffer_ChangeState(constantBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+		}
+
+		for (UINT i = 0; i != renderState->textureCount; ++i)
+		{
+			Texture* texture = renderState->textures[i];
+			D3D12_RESOURCE_STATES state = {};
+			if (renderState->shaderEffect->textures[i].usage == ShaderEffectResourceUsage_PS)
+			{
+				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+			}
+			else
+			{
+				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+				if ((renderState->shaderEffect->textures[i].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+			}
+			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList);
+		}
+
+		VertexBuffer* vertexBuffer = renderState->vertexBuffer;
+		if (vertexBuffer->mode != TextureMode_Read) Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+
+		// bind shader resources
+		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signatures[0]);// TODO: handle multi-gpu
 
 		UINT descIndex = 0;
 		if (renderState->constantBufferHeap != NULL)
@@ -148,9 +175,12 @@ extern "C"
 			handle->commandList->SetGraphicsRootDescriptorTable(descIndex, renderState->textureGPUDescHandle);
 		}
 
+		// enable render state
 		handle->commandList->SetPipelineState(renderState->state);
+
+		// enable vertex / index buffers
 		handle->commandList->IASetPrimitiveTopology(renderState->topology);
-		handle->commandList->IASetVertexBuffers(0, 1, &renderState->vertexBufferView);
+		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetVertexBuffer(CommandList* handle, VertexBuffer* vertexBuffer)

@@ -9,4 +9,7 @@ struct VertexBuffer
     D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
 	UINT elementCount;
 	D3D12_INPUT_ELEMENT_DESC* elements;
+	D3D12_RESOURCE_STATES resourceState;
 };
+
+void Orbital_Video_D3D12_VertexBuffer_ChangeState(VertexBuffer* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList);

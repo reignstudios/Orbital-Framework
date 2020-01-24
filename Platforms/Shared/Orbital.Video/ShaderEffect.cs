@@ -165,6 +165,9 @@ namespace Orbital.Video
 
 	public abstract class ShaderEffectBase : IDisposable
 	{
+		public int constantBufferCount { get; protected set; }
+		public int textureCount { get; protected set; }
+
 		public abstract void Dispose();
 
 		public bool Init(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)

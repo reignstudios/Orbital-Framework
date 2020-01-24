@@ -53,9 +53,7 @@ typedef enum ConstantBufferMode
 #pragma region Vertex Buffer
 typedef enum VertexBufferMode
 {
-	VertexBufferMode_GPUOptimized,
-	VertexBufferMode_Write,
-	VertexBufferMode_Read
+	VertexBufferMode_GPUOptimized
 }VertexBufferMode;
 
 typedef enum VertexBufferTopology

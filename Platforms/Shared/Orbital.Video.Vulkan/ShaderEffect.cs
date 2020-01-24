@@ -43,6 +43,9 @@ namespace Orbital.Video.Vulkan
 
 		protected unsafe override bool InitFinish(ref ShaderEffectDesc desc)
 		{
+			if (desc.constantBuffers != null) constantBufferCount = desc.constantBuffers.Length;
+			if (desc.textures != null) textureCount = desc.textures.Length;
+
 			IntPtr vsHandle = vs != null ? vs.handle : IntPtr.Zero;
 			IntPtr psHandle = ps != null ? ps.handle : IntPtr.Zero;
 			IntPtr hsHandle = hs != null ? hs.handle : IntPtr.Zero;

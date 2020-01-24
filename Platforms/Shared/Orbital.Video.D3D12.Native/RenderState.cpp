@@ -21,17 +21,22 @@ extern "C"
 
 		// shaders
 		ShaderEffect* shaderEffect = (ShaderEffect*)desc->shaderEffect;
+		handle->shaderEffect = shaderEffect;
         if (shaderEffect->vs != NULL) pipelineDesc.VS = shaderEffect->vs->bytecode;
         if (shaderEffect->ps != NULL) pipelineDesc.PS = shaderEffect->ps->bytecode;
 		if (shaderEffect->hs != NULL) pipelineDesc.HS = shaderEffect->hs->bytecode;
 		if (shaderEffect->ds != NULL) pipelineDesc.DS = shaderEffect->ds->bytecode;
 		if (shaderEffect->gs != NULL) pipelineDesc.GS = shaderEffect->gs->bytecode;
 		pipelineDesc.pRootSignature = shaderEffect->signatures[gpuIndex];
-		handle->shaderEffectSignature = pipelineDesc.pRootSignature;
 
 		// add constant buffer heaps
 		if (desc->constantBufferCount != 0)
 		{
+			handle->constantBufferCount = desc->constantBufferCount;
+			UINT size = sizeof(ConstantBuffer*) * handle->constantBufferCount;
+			handle->constantBuffers = (ConstantBuffer**)malloc(size);
+			memcpy(handle->constantBuffers, desc->constantBuffers, size);
+
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 			heapDesc.NumDescriptors = desc->constantBufferCount;
 			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -52,6 +57,11 @@ extern "C"
 		// add texture heaps
 		if (desc->textureCount != 0)
 		{
+			handle->textureCount = desc->textureCount;
+			UINT size = sizeof(Texture*) * handle->textureCount;
+			handle->textures = (Texture**)malloc(size);
+			memcpy(handle->textures, desc->textures, size);
+
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 			heapDesc.NumDescriptors = desc->textureCount;
 			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -84,7 +94,7 @@ extern "C"
 		pipelineDesc.InputLayout.NumElements = vertexBuffer->elementCount;
 		pipelineDesc.InputLayout.pInputElementDescs = (D3D12_INPUT_ELEMENT_DESC*)alloca(sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
 		memcpy((void*)pipelineDesc.InputLayout.pInputElementDescs, vertexBuffer->elements, sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
-		handle->vertexBufferView = vertexBuffer->vertexBufferView;
+		handle->vertexBuffer = vertexBuffer;
 		
 		// render targets
 		RenderPass* renderPass = (RenderPass*)desc->renderPass;
@@ -161,6 +171,18 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderState_Dispose(RenderState* handle)
 	{
+		if (handle->constantBuffers != NULL)
+		{
+			free(handle->constantBuffers);
+			handle->constantBuffers = NULL;
+		}
+
+		if (handle->textures != NULL)
+		{
+			free(handle->textures);
+			handle->textures = NULL;
+		}
+
 		if (handle->constantBufferHeap != NULL)
 		{
 			handle->constantBufferHeap->Release();

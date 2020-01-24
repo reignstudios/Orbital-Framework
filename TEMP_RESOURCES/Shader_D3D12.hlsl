@@ -31,9 +31,10 @@ PSInput VSMain(VSInput input)
 }
 
 Texture2D mainTexture : register(t0);
+Texture2D mainTexture2 : register(t1);
 SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color * mainTexture.Sample(mainSampler, input.uv);
+    return input.color * mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv);
 }

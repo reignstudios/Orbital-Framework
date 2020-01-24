@@ -43,7 +43,7 @@ namespace Orbital.Demo
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
 		private ConstantBufferBase constantBuffer;
-		private Texture2DBase texture2D;
+		private Texture2DBase texture, texture2;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -89,7 +89,7 @@ namespace Orbital.Demo
 			renderPass = device.CreateRenderPass(renderPassDesc);
 
 			// create texture
-			const int textureWidth = 256, textureHeight = 256;
+			int textureWidth = 256, textureHeight = 256;
 			var textureData = new byte[textureWidth * textureHeight * 4];
 			for (int y = 0; y != textureHeight; ++y)
 			for (int x = 0; x != textureWidth; ++x)
@@ -110,7 +110,32 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture2D = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
+			texture = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
+
+			// create texture 2
+			textureWidth = 100;
+			textureHeight = 100;
+			textureData = new byte[textureWidth * textureHeight * 4];
+			for (int y = 0; y != textureHeight; ++y)
+			for (int x = 0; x != textureWidth; ++x)
+			{
+				int i = (x * 4) + (y * textureWidth * 4);
+				if (x % 16 <= 7 && y % 16 <= 7)
+				{
+					textureData[i + 0] = 0;
+					textureData[i + 1] = 0;
+					textureData[i + 2] = 0;
+					textureData[i + 3] = 0;
+				}
+				else
+				{
+					textureData[i + 0] = 255;
+					textureData[i + 1] = 255;
+					textureData[i + 2] = 255;
+					textureData[i + 3] = 255;
+				}
+			}
+			texture2 = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
 			// create constant buffer
 			var constantBufferObject = new ConstantBufferObject()
@@ -118,7 +143,7 @@ namespace Orbital.Demo
 				offset = .5f,
 				constrast = .5f
 			};
-			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.GPUOptimized);
+			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.Write);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
@@ -141,10 +166,15 @@ namespace Orbital.Demo
 					registerIndex = 0,
 					usage = ShaderEffectResourceUsage.VS
 				};
-				desc.textures = new ShaderEffectTexture[1];
+				desc.textures = new ShaderEffectTexture[2];
 				desc.textures[0] = new ShaderEffectTexture()
 				{
 					registerIndex = 0,
+					usage = ShaderEffectResourceUsage.PS
+				};
+				desc.textures[1] = new ShaderEffectTexture()
+				{
+					registerIndex = 1,
 					usage = ShaderEffectResourceUsage.PS
 				};
 				desc.samplers = new ShaderEffectSampler[1];
@@ -196,12 +226,13 @@ namespace Orbital.Demo
 				renderPass = renderPass,
 				shaderEffect = shaderEffect,
 				constantBuffers = new ConstantBufferBase[1],
-				textures = new TextureBase[1],
+				textures = new TextureBase[2],
 				vertexBuffer = vertexBuffer,
 				vertexBufferTopology = VertexBufferTopology.Triangle
 			};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
-			renderStateDesc.textures[0] = texture2D;
+			renderStateDesc.textures[0] = texture;
+			renderStateDesc.textures[1] = texture2;
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
 			// print all GPUs this abstraction supports
@@ -211,10 +242,16 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
-			if (texture2D != null)
+			if (texture != null)
 			{
-				texture2D.Dispose();
-				texture2D = null;
+				texture.Dispose();
+				texture = null;
+			}
+
+			if (texture2 != null)
+			{
+				texture2.Dispose();
+				texture2 = null;
 			}
 
 			if (constantBuffer != null)

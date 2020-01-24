@@ -7,17 +7,7 @@ namespace Orbital.Video
 		/// <summary>
 		/// Memory will be optimized for GPU only use
 		/// </summary>
-		GPUOptimized,
-
-		/// <summary>
-		/// Memory will be frequently written to by CPU
-		/// </summary>
-		Write,
-
-		/// <summary>
-		/// Memory will be frequently read from the CPU
-		/// </summary>
-		Read
+		GPUOptimized
 	}
 
 	public enum TextureFormat

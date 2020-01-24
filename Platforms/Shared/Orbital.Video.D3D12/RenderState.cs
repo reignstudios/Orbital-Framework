@@ -24,6 +24,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderStateDesc desc, int gpuIndex)
 		{
+			ValidateInit(ref desc);
 			vertexBuffer = (VertexBuffer)desc.vertexBuffer;
 			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
 			{

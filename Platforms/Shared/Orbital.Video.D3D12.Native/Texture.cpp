@@ -73,14 +73,11 @@ extern "C"
         resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		D3D12_RESOURCE_STATES initialResourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-		if (data != NULL)
-		{
-			if (handle->mode == TextureMode_GPUOptimized || handle->mode == TextureMode_Read) initialResourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy or CPU read
-			else if (handle->mode == TextureMode_Write) initialResourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent gpu updates
-			else return 0;
-		}
-		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, initialResourceState, NULL, IID_PPV_ARGS(&handle->texture)))) return 0;
+		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		if (data != NULL && handle->mode == TextureMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
+		else if (handle->mode == TextureMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
+		else if (handle->mode == TextureMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes
+		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->texture)))) return 0;
 
 		// create resource heap
 		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
@@ -184,19 +181,6 @@ extern "C"
 					handle->device->internalCommandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, nullptr);
 				}
 
-				// change resource to function as constant buffer
-				if (handle->mode != TextureMode_Read)
-				{
-					D3D12_RESOURCE_BARRIER barrier = {};
-					barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-					barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-					barrier.Transition.pResource = handle->texture;
-					barrier.Transition.StateBefore = initialResourceState;
-					barrier.Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-					barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-					handle->device->internalCommandList->ResourceBarrier(1, &barrier);
-				}
-
 				// close command list
 				handle->device->internalCommandList->Close();
 
@@ -229,4 +213,19 @@ extern "C"
 
 		free(handle);
 	}
+}
+
+void Orbital_Video_D3D12_Texture_ChangeState(Texture* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)
+{
+	if (handle->resourceState == state) return;
+	if (handle->mode == TextureMode_Read || handle->mode == TextureMode_Write) return;
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = handle->texture;
+	barrier.Transition.StateBefore = handle->resourceState;
+	barrier.Transition.StateAfter = state;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
+	handle->resourceState = state;
 }
