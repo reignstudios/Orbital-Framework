@@ -87,6 +87,7 @@ extern "C"
 			// copy upload buffer to default buffer
 			if (useUploadBuffer)
 			{
+				handle->device->internalMutex->lock();
 				// reset command list and copy resource
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
 				handle->device->internalCommandList->CopyResource(handle->resource, uploadResource);
@@ -101,6 +102,7 @@ extern "C"
 
 				// release temp resource
 				uploadResource->Release();
+				handle->device->internalMutex->unlock();
 			}
 		}
 
@@ -122,6 +124,16 @@ extern "C"
 		}
 
 		free(handle);
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize)
+	{
+		UINT8* gpuDataPtr;
+		D3D12_RANGE readRange = {};
+		if (FAILED(handle->resource->Map(0, &readRange, reinterpret_cast<void**>(&gpuDataPtr)))) return 0;
+		memcpy(gpuDataPtr, data, dataSize);
+		handle->resource->Unmap(0, nullptr);
+		return 1;
 	}
 }
 

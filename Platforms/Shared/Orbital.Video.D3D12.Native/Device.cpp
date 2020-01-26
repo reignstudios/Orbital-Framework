@@ -7,6 +7,7 @@ extern "C"
 	{
 		Device* handle = (Device*)calloc(1, sizeof(Device));
 		handle->instance = instance;
+		handle->internalMutex = new std::mutex();
 		return handle;
 	}
 
@@ -145,6 +146,12 @@ extern "C"
 		{
 			handle->adapter->Release();
 			handle->adapter = NULL;
+		}
+
+		if (handle->internalMutex != NULL)
+		{
+			delete handle->internalMutex;
+			handle->internalMutex = NULL;
 		}
 
 		free(handle);

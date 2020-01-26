@@ -155,6 +155,7 @@ extern "C"
 			// copy upload buffer to default buffer
 			if (useUploadBuffer)
 			{
+				handle->device->internalMutex->lock();
 				// reset command list and copy resource
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
 
@@ -191,6 +192,7 @@ extern "C"
 
 				// release temp resource
 				uploadResource->Release();
+				handle->device->internalMutex->unlock();
 			}
 		}
 

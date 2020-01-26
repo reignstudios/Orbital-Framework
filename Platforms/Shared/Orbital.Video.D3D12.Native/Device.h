@@ -1,5 +1,6 @@
 #pragma once
 #include "Instance.h"
+#include <mutex>
 
 struct Device
 {
@@ -21,6 +22,7 @@ struct Device
 	ID3D12Fence* internalFence;
 	HANDLE internalFenceEvent;
 	UINT64 internalFenceValue;
+	std::mutex* internalMutex;
 };
 
 void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue);
