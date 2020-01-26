@@ -25,5 +25,13 @@ namespace Orbital.Video
 		public int size { get; protected set; }
 
 		public abstract void Dispose();
+
+		#if CS_7_3
+		public abstract bool Update<T>(T data) where T : unmanaged;
+		#else
+		public abstract bool Update<T>(T data) where T : struct;
+		#endif
+
+		public unsafe abstract bool Update(void* data, int dataSize, int dstOffset);
 	}
 }

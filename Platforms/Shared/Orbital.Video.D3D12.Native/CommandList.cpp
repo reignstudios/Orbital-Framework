@@ -17,8 +17,17 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandList_Init(CommandList* handle)
 	{
+		// create command list
 		if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
 		if (FAILED(handle->commandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+
+		// create fence
+		if (FAILED(handle->device->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
+		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (handle->fenceEvent == NULL) return 0;
+
+		// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
+		handle->fenceValue = 1;
 
 		return 1;
 	}
@@ -29,6 +38,18 @@ extern "C"
 		{
 			handle->commandList->Release();
 			handle->commandList = NULL;
+		}
+
+		if (handle->fenceEvent != NULL)
+		{
+			CloseHandle(handle->fenceEvent);
+			handle->fenceEvent = NULL;
+		}
+
+		if (handle->fence != NULL)
+		{
+			handle->fence->Release();
+			handle->fence = NULL;
 		}
 
 		free(handle);
@@ -197,5 +218,6 @@ extern "C"
 	{
 		ID3D12CommandList* commandLists[1] = { handle->commandList };
 		handle->device->commandQueue->ExecuteCommandLists(1, commandLists);
+		WaitForFence(handle->device, handle->fence, handle->fenceEvent, handle->fenceValue);// make sure gpu has finished before we continue
 	}
 }

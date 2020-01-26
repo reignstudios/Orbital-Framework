@@ -126,12 +126,12 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize, UINT dstOffset)
 	{
 		UINT8* gpuDataPtr;
 		D3D12_RANGE readRange = {};
 		if (FAILED(handle->resource->Map(0, &readRange, reinterpret_cast<void**>(&gpuDataPtr)))) return 0;
-		memcpy(gpuDataPtr, data, dataSize);
+		memcpy(gpuDataPtr + dstOffset, data, dataSize);
 		handle->resource->Unmap(0, nullptr);
 		return 1;
 	}

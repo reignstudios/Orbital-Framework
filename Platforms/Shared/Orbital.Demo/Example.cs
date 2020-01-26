@@ -45,6 +45,9 @@ namespace Orbital.Demo
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
 
+		private ConstantBufferObject constantBufferObject;
+		private float rot;
+
 		public Example(ApplicationBase application, WindowBase window)
 		{
 			this.application = application;
@@ -138,7 +141,7 @@ namespace Orbital.Demo
 			texture2 = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
 			// create constant buffer
-			var constantBufferObject = new ConstantBufferObject()
+			constantBufferObject = new ConstantBufferObject()
 			{
 				offset = .5f,
 				constrast = .5f
@@ -319,6 +322,11 @@ namespace Orbital.Demo
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();
+
+				// update constant buffer
+				constantBufferObject.offset = (float)Math.Sin(rot);
+				rot += 0.1f;
+				constantBuffer.Update(constantBufferObject);
 
 				// run application events
 				application.RunEvents();

@@ -60,5 +60,15 @@ namespace Orbital.Video.Vulkan
 				handle = IntPtr.Zero;
 			}
 		}
+
+		public override bool Update<T>(T data)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe bool Update(void* data, int dataSize, int dstOffset)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
