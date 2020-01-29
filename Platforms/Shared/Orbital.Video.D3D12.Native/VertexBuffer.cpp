@@ -38,7 +38,7 @@ extern "C"
 		resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		handle->resourceState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 		if (vertices != NULL && handle->mode == VertexBufferMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 		else if (handle->mode == VertexBufferMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
 		else if (handle->mode == VertexBufferMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes

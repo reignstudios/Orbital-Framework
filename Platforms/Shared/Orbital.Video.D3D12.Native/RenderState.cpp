@@ -95,6 +95,9 @@ extern "C"
 		pipelineDesc.InputLayout.pInputElementDescs = (D3D12_INPUT_ELEMENT_DESC*)alloca(sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
 		memcpy((void*)pipelineDesc.InputLayout.pInputElementDescs, vertexBuffer->elements, sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
 		handle->vertexBuffer = vertexBuffer;
+
+		// vertex buffer layout
+		handle->indexBuffer = (IndexBuffer*)desc->indexBuffer;
 		
 		// render targets
 		RenderPass* renderPass = (RenderPass*)desc->renderPass;

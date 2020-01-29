@@ -114,8 +114,9 @@ typedef struct RenderStateDesc
 	intptr_t* constantBuffers;
 	int textureCount;
 	intptr_t* textures;
-	void* vertexBuffer;
 	VertexBufferTopology vertexBufferTopology;
+	void* vertexBuffer;
+	void* indexBuffer;
 	char depthEnable, stencilEnable;
 	int msaaLevel;
 }RenderStateDesc;

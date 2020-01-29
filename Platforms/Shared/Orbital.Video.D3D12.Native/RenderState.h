@@ -4,6 +4,7 @@
 #include "ConstantBuffer.h"
 #include "Texture.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 struct RenderState
 {
@@ -21,7 +22,7 @@ struct RenderState
 	ID3D12DescriptorHeap* textureHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureGPUDescHandle;
 
-
 	D3D_PRIMITIVE_TOPOLOGY topology;
 	VertexBuffer* vertexBuffer;
+	IndexBuffer* indexBuffer;
 };

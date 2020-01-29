@@ -38,7 +38,7 @@ extern "C"
 		resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+		handle->resourceState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 		if (indices != NULL && handle->mode == IndexBufferMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 		else if (handle->mode == IndexBufferMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
 		else if (handle->mode == IndexBufferMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes
@@ -93,7 +93,7 @@ extern "C"
 
 		// create view
 		handle->indexBufferView.BufferLocation = handle->indexBuffer->GetGPUVirtualAddress();
-        handle->indexBufferView.StrideInBytes = indexSize;
+        handle->indexBufferView.Format = indexSize == 16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
         handle->indexBufferView.SizeInBytes = bufferSize;
 
 		return 1;

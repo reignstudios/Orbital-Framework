@@ -9,6 +9,7 @@ namespace Orbital.Video
 		public ConstantBufferBase[] constantBuffers;
 		public TextureBase[] textures;
 		public VertexBufferBase vertexBuffer;
+		public IndexBufferBase indexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
 		public bool depthEnable, stencilEnable;
 		public int msaaLevel;

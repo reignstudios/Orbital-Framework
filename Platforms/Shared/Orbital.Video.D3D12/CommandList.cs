@@ -9,6 +9,7 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 
 		private VertexBuffer lastVertexBuffer;
+		private IndexBuffer lastIndexBuffer;
 		private RenderPass lastRenderPass;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -45,7 +46,13 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_SetVertexBuffer(IntPtr handle, IntPtr vertexBuffer);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexIndex, uint vertexCount, uint instanceCount);
+		private static extern void Orbital_Video_D3D12_CommandList_SetIndexBuffer(IntPtr handle, IntPtr indexBuffer);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexOffset, uint vertexCount, uint instanceCount);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(IntPtr handle, uint vertexOffset, uint indexOffset, uint indexCount, uint instanceCount);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
@@ -80,6 +87,7 @@ namespace Orbital.Video.D3D12
 		{
 			Orbital_Video_D3D12_CommandList_Finish(handle);
 			lastVertexBuffer = null;
+			lastIndexBuffer = null;
 		}
 
 		public override void BeginRenderPass(RenderPassBase renderPass)
@@ -119,6 +127,7 @@ namespace Orbital.Video.D3D12
 		{
 			var renderStateD3D12 = (RenderState)renderState;
 			lastVertexBuffer = renderStateD3D12.vertexBuffer;
+			lastIndexBuffer = renderStateD3D12.indexBuffer;
 			Orbital_Video_D3D12_CommandList_SetRenderState(handle, renderStateD3D12.handle);
 		}
 
@@ -128,9 +137,20 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_CommandList_SetVertexBuffer(handle, lastVertexBuffer.handle);
 		}
 
+		public override void SetIndexBuffer(IndexBufferBase indexBuffer)
+		{
+			lastIndexBuffer = (IndexBuffer)indexBuffer;
+			Orbital_Video_D3D12_CommandList_SetIndexBuffer(handle, lastIndexBuffer.handle);
+		}
+
 		public override void Draw()
 		{
 			Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastVertexBuffer.vertexCount, 1);
+		}
+
+		public override void DrawIndexed()
+		{
+			Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastIndexBuffer.indexCount, 1);
 		}
 
 		public override void Execute()

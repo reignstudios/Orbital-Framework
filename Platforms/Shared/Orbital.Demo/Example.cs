@@ -42,6 +42,7 @@ namespace Orbital.Demo
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
+		private IndexBufferBase indexBuffer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
 
@@ -223,6 +224,13 @@ namespace Orbital.Demo
 			};
 			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.GPUOptimized);
 
+			// create index buffer
+			var indices = new ushort[]
+			{
+				0, 1, 2
+			};
+			indexBuffer = device.CreateIndexBuffer(indices, IndexBufferMode.GPUOptimized);
+
 			// create render state
 			var renderStateDesc = new RenderStateDesc()
 			{
@@ -231,6 +239,7 @@ namespace Orbital.Demo
 				constantBuffers = new ConstantBufferBase[1],
 				textures = new TextureBase[2],
 				vertexBuffer = vertexBuffer,
+				indexBuffer = indexBuffer,
 				vertexBufferTopology = VertexBufferTopology.Triangle
 			};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
@@ -267,6 +276,12 @@ namespace Orbital.Demo
 			{
 				vertexBuffer.Dispose();
 				vertexBuffer = null;
+			}
+
+			if (indexBuffer != null)
+			{
+				indexBuffer.Dispose();
+				indexBuffer = null;
 			}
 
 			if (renderState != null)
@@ -317,7 +332,7 @@ namespace Orbital.Demo
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				commandList.SetRenderState(renderState);
-				commandList.Draw();
+				commandList.DrawIndexed();
 				commandList.EndRenderPass();
 				commandList.Finish();
 				commandList.Execute();

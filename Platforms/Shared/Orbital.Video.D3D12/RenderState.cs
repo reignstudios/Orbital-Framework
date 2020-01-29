@@ -7,6 +7,7 @@ namespace Orbital.Video.D3D12
 	{
 		internal IntPtr handle;
 		internal VertexBuffer vertexBuffer;
+		internal IndexBuffer indexBuffer;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_RenderState_Create(IntPtr device);
@@ -26,6 +27,7 @@ namespace Orbital.Video.D3D12
 		{
 			ValidateInit(ref desc);
 			vertexBuffer = (VertexBuffer)desc.vertexBuffer;
+			indexBuffer = (IndexBuffer)desc.indexBuffer;
 			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
 			{
 				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;

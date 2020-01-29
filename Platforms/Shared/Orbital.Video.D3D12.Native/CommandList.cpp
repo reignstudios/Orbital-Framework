@@ -3,6 +3,7 @@
 #include "RenderPass.h"
 #include "RenderState.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 #include "ShaderEffect.h"
 #include "ConstantBuffer.h"
 
@@ -179,6 +180,9 @@ extern "C"
 		VertexBuffer* vertexBuffer = renderState->vertexBuffer;
 		Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
 
+		IndexBuffer* indexBuffer = renderState->indexBuffer;
+		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList);
+
 		// bind shader resources
 		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signatures[0]);// TODO: handle multi-gpu
 
@@ -202,6 +206,7 @@ extern "C"
 		// enable vertex / index buffers
 		handle->commandList->IASetPrimitiveTopology(renderState->topology);
 		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
+		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetVertexBuffer(CommandList* handle, VertexBuffer* vertexBuffer)
@@ -209,9 +214,19 @@ extern "C"
 		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexIndex, UINT vertexCount, UINT instanceCount)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetIndexBuffer(CommandList* handle, IndexBuffer* indexBuffer)
 	{
-		handle->commandList->DrawInstanced(vertexCount, instanceCount, vertexIndex, 0);
+		handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexOffset, UINT vertexCount, UINT instanceCount)
+	{
+		handle->commandList->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(CommandList* handle, UINT vertexOffset, UINT indexOffset, UINT indexCount, UINT instanceCount)
+	{
+		handle->commandList->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, vertexOffset, 0);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)

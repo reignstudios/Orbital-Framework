@@ -108,7 +108,17 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void SetIndexBuffer(IndexBufferBase indexBuffer)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Draw()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void DrawIndexed()
 		{
 			throw new NotImplementedException();
 		}

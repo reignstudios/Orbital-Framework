@@ -37,8 +37,9 @@ namespace Orbital.Video.Vulkan
 		public IntPtr* constantBuffers;
 		public int textureCount;
 		public IntPtr* textures;
-		public IntPtr vertexBuffer;
 		public VertexBufferTopology vertexBufferTopology;
+		public IntPtr vertexBuffer;
+		public IntPtr indexBuffer;
 		public byte depthEnable, stencilEnable;
 		public int msaaLevel;
 
@@ -55,8 +56,9 @@ namespace Orbital.Video.Vulkan
 			textures = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureCount);
 			for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
 
-			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
 			vertexBufferTopology = desc.vertexBufferTopology;
+			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
+			indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
 			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
 			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
 			msaaLevel = desc.msaaLevel;

@@ -6,7 +6,7 @@ struct IndexBuffer
 	Device* device;
 	IndexBufferMode mode;
 	ID3D12Resource* indexBuffer;
-    D3D12_VERTEX_BUFFER_VIEW indexBufferView;
+    D3D12_INDEX_BUFFER_VIEW indexBufferView;
 	D3D12_RESOURCE_STATES resourceState;
 };
 

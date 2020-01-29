@@ -64,9 +64,19 @@ namespace Orbital.Video
 		public abstract void SetVertexBuffer(VertexBufferBase vertexBuffer);
 
 		/// <summary>
-		/// Draw actively set vertex buffer. Must first call 'SetVertexBuffer'
+		/// Sets vertex buffer (NOTE: RenderState will set this for you)
+		/// </summary>
+		public abstract void SetIndexBuffer(IndexBufferBase indexBuffer);
+
+		/// <summary>
+		/// Draw actively set vertex buffer
 		/// </summary>
 		public abstract void Draw();
+
+		/// <summary>
+		/// Draw actively set vertex/index buffer
+		/// </summary>
+		public abstract void DrawIndexed();
 
 		/// <summary>
 		/// Executes command-list operations
