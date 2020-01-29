@@ -48,8 +48,6 @@ extern "C"
 		// create resource
 		D3D12_HEAP_PROPERTIES heapProperties = {};
 		if (handle->mode == TextureMode_GPUOptimized) heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
-		else if (handle->mode == TextureMode_Write) heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
-		else if (handle->mode == TextureMode_Read) heapProperties.Type = D3D12_HEAP_TYPE_READBACK;
 		else return 0;
         heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
         heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
@@ -75,8 +73,6 @@ extern "C"
 
 		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		if (data != NULL && handle->mode == TextureMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
-		else if (handle->mode == TextureMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
-		else if (handle->mode == TextureMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->texture)))) return 0;
 
 		// create resource heap
@@ -220,7 +216,6 @@ extern "C"
 void Orbital_Video_D3D12_Texture_ChangeState(Texture* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)
 {
 	if (handle->resourceState == state) return;
-	if (handle->mode == TextureMode_Read || handle->mode == TextureMode_Write) return;
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;

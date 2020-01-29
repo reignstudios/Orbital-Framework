@@ -57,7 +57,10 @@ namespace Orbital.Video
 		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode) where T : struct;
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData, ConstantBufferMode mode) where T : struct;
 		#endif
-		public abstract VertexBufferBase CreateVertexBuffer(int size, VertexBufferLayout layout, VertexBufferMode mode);
+		public abstract VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferLayout layout, VertexBufferMode mode);
+		public abstract IndexBufferBase CreateIndexBuffer(uint indexCount, IndexBufferSize indexSize, IndexBufferMode mode);
+		public abstract IndexBufferBase CreateIndexBuffer(ushort[] indices, IndexBufferMode mode);
+		public abstract IndexBufferBase CreateIndexBuffer(uint[] indices, IndexBufferMode mode);
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(ConstantBufferMode mode) where T : struct;
 		public abstract ConstantBufferBase CreateConstantBuffer(int size, ConstantBufferMode mode);
 		public abstract Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode);

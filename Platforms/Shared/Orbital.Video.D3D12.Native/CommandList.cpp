@@ -177,7 +177,7 @@ extern "C"
 		}
 
 		VertexBuffer* vertexBuffer = renderState->vertexBuffer;
-		if (vertexBuffer->mode != TextureMode_Read) Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+		Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
 
 		// bind shader resources
 		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signatures[0]);// TODO: handle multi-gpu

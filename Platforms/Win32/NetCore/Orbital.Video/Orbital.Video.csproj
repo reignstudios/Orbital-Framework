@@ -20,6 +20,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs" Link="DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\IndexBuffer.cs" Link="IndexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderState.cs" Link="RenderState.cs" />

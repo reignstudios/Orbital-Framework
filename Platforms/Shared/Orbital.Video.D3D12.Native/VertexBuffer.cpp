@@ -10,13 +10,15 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint64_t vertexCount, uint32_t vertexSize, VertexBufferLayout* layout)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBuffer_Init(VertexBuffer* handle, void* vertices, uint32_t vertexCount, uint32_t vertexSize, VertexBufferLayout* layout)
 	{
 		uint64_t bufferSize = vertexSize * vertexCount;
 
 		// create buffer
 		D3D12_HEAP_PROPERTIES heapProperties = {};
 		if (handle->mode == VertexBufferMode_GPUOptimized) heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+		else if (handle->mode == VertexBufferMode_Write) heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+		else if (handle->mode == VertexBufferMode_Read) heapProperties.Type = D3D12_HEAP_TYPE_READBACK;
 		else return 0;
         heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
         heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
@@ -38,6 +40,8 @@ extern "C"
 
 		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		if (vertices != NULL && handle->mode == VertexBufferMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
+		else if (handle->mode == VertexBufferMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
+		else if (handle->mode == VertexBufferMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, nullptr, IID_PPV_ARGS(&handle->vertexBuffer)))) return 0;
 
 		// upload cpu buffer to gpu
@@ -156,6 +160,7 @@ extern "C"
 void Orbital_Video_D3D12_VertexBuffer_ChangeState(VertexBuffer* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)
 {
 	if (handle->resourceState == state) return;
+	if (handle->mode == VertexBufferMode_Read || handle->mode == VertexBufferMode_Write) return;
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;

@@ -170,10 +170,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override VertexBufferBase CreateVertexBuffer(int size, VertexBufferLayout layout, VertexBufferMode mode)
+		public override VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferLayout layout, VertexBufferMode mode)
 		{
 			var abstraction = new VertexBuffer(this, mode);
-			if (!abstraction.Init(size, layout))
+			if (!abstraction.Init(vertexCount, vertexSize, layout))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create VertexBuffer");
@@ -188,6 +188,39 @@ namespace Orbital.Video.D3D12
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create VertexBuffer");
+			}
+			return abstraction;
+		}
+
+		public override IndexBufferBase CreateIndexBuffer(uint indexCount, IndexBufferSize indexSize, IndexBufferMode mode)
+		{
+			var abstraction = new IndexBuffer(this, mode);
+			if (!abstraction.Init(indexCount, indexSize))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create IndexBuffer");
+			}
+			return abstraction;
+		}
+
+		public override IndexBufferBase CreateIndexBuffer(ushort[] indices, IndexBufferMode mode)
+		{
+			var abstraction = new IndexBuffer(this, mode);
+			if (!abstraction.Init(indices))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create IndexBuffer");
+			}
+			return abstraction;
+		}
+
+		public override IndexBufferBase CreateIndexBuffer(uint[] indices, IndexBufferMode mode)
+		{
+			var abstraction = new IndexBuffer(this, mode);
+			if (!abstraction.Init(indices))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create IndexBuffer");
 			}
 			return abstraction;
 		}

@@ -11,9 +11,7 @@ typedef struct RenderPassDesc
 #pragma region Texture
 typedef enum TextureMode
 {
-	TextureMode_GPUOptimized,
-	TextureMode_Write,
-	TextureMode_Read
+	TextureMode_GPUOptimized
 }TextureMode;
 
 typedef enum TextureType
@@ -53,8 +51,17 @@ typedef enum ConstantBufferMode
 #pragma region Vertex Buffer
 typedef enum VertexBufferMode
 {
-	VertexBufferMode_GPUOptimized
+	VertexBufferMode_GPUOptimized,
+	VertexBufferMode_Write,
+	VertexBufferMode_Read
 }VertexBufferMode;
+
+typedef enum IndexBufferMode
+{
+	IndexBufferMode_GPUOptimized,
+	IndexBufferMode_Write,
+	IndexBufferMode_Read
+}IndexBufferMode;
 
 typedef enum VertexBufferTopology
 {
