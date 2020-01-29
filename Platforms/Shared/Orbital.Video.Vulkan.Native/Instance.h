@@ -4,7 +4,8 @@
 typedef enum FeatureLevel
 {
 	FeatureLevel_Level_1_0,
-	FeatureLevel_Level_1_1
+	FeatureLevel_Level_1_1,
+	FeatureLevel_Level_1_2
 } FeatureLevel;
 
 typedef struct Instance

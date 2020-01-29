@@ -6,7 +6,8 @@ namespace Orbital.Video.Vulkan
 	public enum FeatureLevel
 	{
 		Level_1_0,
-		Level_1_1
+		Level_1_1,
+		Level_1_2
 	}
 
 	public struct InstanceDesc

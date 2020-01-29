@@ -7,6 +7,7 @@ char FeatureLevelToNative(FeatureLevel featureLevel, uint32_t* nativeMinFeatureL
 	{
 		case FeatureLevel_Level_1_0: *nativeMinFeatureLevel = VK_API_VERSION_1_0; break;
 		case FeatureLevel_Level_1_1: *nativeMinFeatureLevel = VK_API_VERSION_1_1; break;
+		case FeatureLevel_Level_1_2: *nativeMinFeatureLevel = VK_API_VERSION_1_2; break;
 		default: return 0;
 	}
 	return 1;
@@ -49,9 +50,12 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 	if (!FeatureLevelToNative(minimumFeatureLevel, &handle->nativeMinFeatureLevel)) return 0;
 	
 	// init max feature level
-	handle->nativeMaxFeatureLevel = VK_API_VERSION_1_1;
+	handle->nativeMaxFeatureLevel = VK_API_VERSION_1_2;
 	while (1)// loop until we find max api version avaliable
 	{
+		// if max feature level is to small break / fail
+		if (handle->nativeMaxFeatureLevel < handle->nativeMinFeatureLevel) break;
+
 		// get supported extensions for instance
 		uint32_t extensionPropertiesCount = 0;
 		if (vkEnumerateInstanceExtensionProperties(NULL, &extensionPropertiesCount, NULL) != VK_SUCCESS) return 0;
@@ -153,7 +157,12 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_Instance_Init(Instance* handle, FeatureL
 
 		// if sdk instance failed to init, try older version
 		handle->instance = NULL;
-		if (handle->nativeMaxFeatureLevel == VK_API_VERSION_1_1)
+		if (handle->nativeMaxFeatureLevel == VK_API_VERSION_1_2)
+		{
+			handle->nativeMaxFeatureLevel = VK_API_VERSION_1_1;
+			continue;
+		}
+		else if (handle->nativeMaxFeatureLevel == VK_API_VERSION_1_1)
 		{
 			handle->nativeMaxFeatureLevel = VK_API_VERSION_1_0;
 			continue;
