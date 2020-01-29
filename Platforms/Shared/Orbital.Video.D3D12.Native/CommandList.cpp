@@ -209,16 +209,6 @@ extern "C"
 		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetVertexBuffer(CommandList* handle, VertexBuffer* vertexBuffer)
-	{
-		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
-	}
-
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetIndexBuffer(CommandList* handle, IndexBuffer* indexBuffer)
-	{
-		handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
-	}
-
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexOffset, UINT vertexCount, UINT instanceCount)
 	{
 		handle->commandList->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);

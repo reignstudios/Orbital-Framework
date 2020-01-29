@@ -91,11 +91,19 @@ typedef enum VertexBufferLayoutElementUsage
 	VertexBufferLayoutElementUsage_Weight
 }VertexBufferLayoutElementUsage;
 
+typedef enum VertexBufferLayoutStreamType
+{
+	VertexBufferLayoutStreamType_VertexData,
+	VertexBufferLayoutStreamType_InstanceData
+}VertexBufferLayoutStreamType;
+
 typedef struct VertexBufferLayoutElement
 {
 	VertexBufferLayoutElementType type;
 	VertexBufferLayoutElementUsage usage;
-	int streamIndex, usageIndex, byteOffset;
+	int usageIndex;
+	VertexBufferLayoutStreamType streamType;
+	int streamIndex, streamByteOffset;
 }VertexBufferLayoutElement;
 
 typedef struct VertexBufferLayout

@@ -201,19 +201,28 @@ namespace Orbital.Demo
 			{
 				type = VertexBufferLayoutElementType.Float3,
 				usage = VertexBufferLayoutElementUsage.Position,
-				streamIndex = 0, usageIndex = 0, byteOffset = 0
+				usageIndex = 0,
+				streamType = VertexBufferLayoutStreamType.VertexData,
+				streamIndex = 0,
+				streamByteOffset = 0
 			};
 			vertexBufferLayout.elements[1] = new VertexBufferLayoutElement()
 			{
 				type = VertexBufferLayoutElementType.RGBAx8,
 				usage = VertexBufferLayoutElementUsage.Color,
-				streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3)
+				usageIndex = 0,
+				streamType = VertexBufferLayoutStreamType.VertexData,
+				streamIndex = 0,
+				streamByteOffset = (sizeof(float) * 3)
 			};
 			vertexBufferLayout.elements[2] = new VertexBufferLayoutElement()
 			{
 				type = VertexBufferLayoutElementType.Float2,
 				usage = VertexBufferLayoutElementUsage.UV,
-				streamIndex = 0, usageIndex = 0, byteOffset = (sizeof(float) * 3) + 4
+				usageIndex = 0,
+				streamType = VertexBufferLayoutStreamType.VertexData,
+				streamIndex = 0,
+				streamByteOffset = (sizeof(float) * 3) + 4
 			};
 			
 			var vertices = new Vertex[]
@@ -332,7 +341,7 @@ namespace Orbital.Demo
 				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
 				commandList.SetRenderState(renderState);
-				commandList.DrawIndexed();
+				commandList.Draw();
 				commandList.EndRenderPass();
 				commandList.Finish();
 				commandList.Execute();

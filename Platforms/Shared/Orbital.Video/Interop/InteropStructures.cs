@@ -97,7 +97,9 @@ namespace Orbital.Video.Vulkan
 	{
 		public VertexBufferLayoutElementType type;
 		public VertexBufferLayoutElementUsage usage;
-		public int streamIndex, usageIndex, byteOffset;
+		public int usageIndex;
+		public VertexBufferLayoutStreamType streamType;
+		public int streamIndex, streamByteOffset;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -121,9 +123,10 @@ namespace Orbital.Video.Vulkan
 				{
 					elements[i].type = layout.elements[i].type;
 					elements[i].usage = layout.elements[i].usage;
-					elements[i].streamIndex = layout.elements[i].streamIndex;
 					elements[i].usageIndex = layout.elements[i].usageIndex;
-					elements[i].byteOffset = layout.elements[i].byteOffset;
+					elements[i].streamType = layout.elements[i].streamType;
+					elements[i].streamIndex = layout.elements[i].streamIndex;
+					elements[i].streamByteOffset = layout.elements[i].streamByteOffset;
 				}
 			}
 		}

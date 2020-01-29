@@ -48,11 +48,50 @@ namespace Orbital.Video
 		Weight
 	}
 
+	public enum VertexBufferLayoutStreamType
+	{
+		/// <summary>
+		/// Common vertex buffer data
+		/// </summary>
+		VertexData,
+
+		/// <summary>
+		/// Data that is specific to the instance stream and increments per mesh instead of per vertex
+		/// </summary>
+		InstanceData
+	}
+
 	public struct VertexBufferLayoutElement
 	{
+		/// <summary>
+		/// The element data type
+		/// </summary>
 		public VertexBufferLayoutElementType type;
+
+		/// <summary>
+		/// How the element will be used
+		/// </summary>
 		public VertexBufferLayoutElementUsage usage;
-		public int streamIndex, usageIndex, byteOffset;
+
+		/// <summary>
+		/// Which slot will the usage be used
+		/// </summary>
+		public int usageIndex;
+
+		/// <summary>
+		/// How the data is streamed
+		/// </summary>
+		public VertexBufferLayoutStreamType streamType;
+
+		/// <summary>
+		/// The vertex buffer stream index
+		/// </summary>
+		public int streamIndex;
+
+		/// <summary>
+		/// The byte offset in the vertex buffer stream
+		/// </summary>
+		public int streamByteOffset;
 	}
 
 	public struct VertexBufferLayout

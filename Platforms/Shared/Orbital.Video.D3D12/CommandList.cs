@@ -8,9 +8,8 @@ namespace Orbital.Video.D3D12
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
-		private VertexBuffer lastVertexBuffer;
-		private IndexBuffer lastIndexBuffer;
 		private RenderPass lastRenderPass;
+		private RenderState lastRenderState;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_CommandList_Create(IntPtr device);
@@ -41,12 +40,6 @@ namespace Orbital.Video.D3D12
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_SetRenderState(IntPtr handle, IntPtr renderState);
-
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_SetVertexBuffer(IntPtr handle, IntPtr vertexBuffer);
-
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_SetIndexBuffer(IntPtr handle, IntPtr indexBuffer);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexOffset, uint vertexCount, uint instanceCount);
@@ -86,8 +79,7 @@ namespace Orbital.Video.D3D12
 		public override void Finish()
 		{
 			Orbital_Video_D3D12_CommandList_Finish(handle);
-			lastVertexBuffer = null;
-			lastIndexBuffer = null;
+			lastRenderState = null;
 		}
 
 		public override void BeginRenderPass(RenderPassBase renderPass)
@@ -125,32 +117,14 @@ namespace Orbital.Video.D3D12
 
 		public override void SetRenderState(RenderStateBase renderState)
 		{
-			var renderStateD3D12 = (RenderState)renderState;
-			lastVertexBuffer = renderStateD3D12.vertexBuffer;
-			lastIndexBuffer = renderStateD3D12.indexBuffer;
-			Orbital_Video_D3D12_CommandList_SetRenderState(handle, renderStateD3D12.handle);
-		}
-
-		public override void SetVertexBuffer(VertexBufferBase vertexBuffer)
-		{
-			lastVertexBuffer = (VertexBuffer)vertexBuffer;
-			Orbital_Video_D3D12_CommandList_SetVertexBuffer(handle, lastVertexBuffer.handle);
-		}
-
-		public override void SetIndexBuffer(IndexBufferBase indexBuffer)
-		{
-			lastIndexBuffer = (IndexBuffer)indexBuffer;
-			Orbital_Video_D3D12_CommandList_SetIndexBuffer(handle, lastIndexBuffer.handle);
+			lastRenderState = (RenderState)renderState;
+			Orbital_Video_D3D12_CommandList_SetRenderState(handle, lastRenderState.handle);
 		}
 
 		public override void Draw()
 		{
-			Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastVertexBuffer.vertexCount, 1);
-		}
-
-		public override void DrawIndexed()
-		{
-			Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastIndexBuffer.indexCount, 1);
+			if (lastRenderState.indexBuffer == null) Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastRenderState.vertexBuffer.vertexCount, 1);
+			else Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastRenderState.indexBuffer.indexCount, 1);
 		}
 
 		public override void Execute()

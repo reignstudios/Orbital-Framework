@@ -103,13 +103,8 @@ extern "C"
 		{
 			VertexBufferLayoutElement element = layout->elements[i];
 			D3D12_INPUT_ELEMENT_DESC elementDesc = {};
-			elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-			elementDesc.InstanceDataStepRate = 0;
 
-			elementDesc.InputSlot = element.streamIndex;
-			elementDesc.AlignedByteOffset = element.byteOffset;
-			elementDesc.SemanticIndex = element.usageIndex;
-
+			// set data type
 			switch (element.type)
 			{
 				case VertexBufferLayoutElementType::VertexBufferLayoutElementType_Float: elementDesc.Format = DXGI_FORMAT_R32_FLOAT; break;
@@ -120,6 +115,8 @@ extern "C"
 				default: return 0;
 			}
 
+			// set shader usage
+			elementDesc.SemanticIndex = element.usageIndex;
 			switch (element.usage)
 			{
 				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Position: elementDesc.SemanticName = "POSITION"; break;
@@ -132,6 +129,21 @@ extern "C"
 				case VertexBufferLayoutElementUsage::VertexBufferLayoutElementUsage_Weight: elementDesc.SemanticName = "BLENDWEIGHT"; break;
 				default: return 0;
 			}
+
+			// set stream specifics
+			if (element.streamType == VertexBufferLayoutStreamType_VertexData)
+			{
+				elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+				elementDesc.InstanceDataStepRate = 0;
+			}
+			else
+			{
+				elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+				elementDesc.InstanceDataStepRate = 1;
+			}
+
+			elementDesc.InputSlot = element.streamIndex;
+			elementDesc.AlignedByteOffset = element.streamByteOffset;
 
 			memcpy(&handle->elements[i], &elementDesc, sizeof(D3D12_INPUT_ELEMENT_DESC));
 		}
