@@ -30,6 +30,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs" Link="SwapChain.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Texture.cs" Link="Texture.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\VertexBuffer.cs" Link="VertexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\VertexBufferStreamer.cs" Link="VertexBufferStreamer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ViewPort.cs" Link="ViewPort.cs" />
   </ItemGroup>
 

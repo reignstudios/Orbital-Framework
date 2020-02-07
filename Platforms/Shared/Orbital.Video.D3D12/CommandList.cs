@@ -123,8 +123,8 @@ namespace Orbital.Video.D3D12
 
 		public override void Draw()
 		{
-			if (lastRenderState.indexBuffer == null) Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastRenderState.vertexBuffer.vertexCount, 1);
-			else Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastRenderState.indexBuffer.indexCount, 1);
+			if (lastRenderState.indexCount == 0) Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastRenderState.vertexCount, 1);
+			else Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastRenderState.indexCount, 1);
 		}
 
 		public override void Execute()

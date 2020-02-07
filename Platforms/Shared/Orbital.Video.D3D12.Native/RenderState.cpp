@@ -3,7 +3,6 @@
 #include "ShaderEffect.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
-#include "VertexBuffer.h"
 #include "Utils.h"
 
 extern "C"
@@ -90,11 +89,12 @@ extern "C"
 		}
 
 		// vertex buffer layout
-		VertexBuffer* vertexBuffer = (VertexBuffer*)desc->vertexBuffer;
-		pipelineDesc.InputLayout.NumElements = vertexBuffer->elementCount;
-		pipelineDesc.InputLayout.pInputElementDescs = (D3D12_INPUT_ELEMENT_DESC*)alloca(sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
-		memcpy((void*)pipelineDesc.InputLayout.pInputElementDescs, vertexBuffer->elements, sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBuffer->elementCount);
-		handle->vertexBuffer = vertexBuffer;
+		VertexBufferStreamer* vertexBufferStreamer = (VertexBufferStreamer*)desc->vertexBufferStreamer;
+		handle->vertexBufferStreamer = vertexBufferStreamer;
+		pipelineDesc.InputLayout.NumElements = vertexBufferStreamer->elementCount;
+		size_t elementBufferSize = sizeof(D3D12_INPUT_ELEMENT_DESC) * vertexBufferStreamer->elementCount;
+		pipelineDesc.InputLayout.pInputElementDescs = (D3D12_INPUT_ELEMENT_DESC*)alloca(elementBufferSize);
+		memcpy((void*)pipelineDesc.InputLayout.pInputElementDescs, vertexBufferStreamer->elements, elementBufferSize);
 
 		// vertex buffer layout
 		handle->indexBuffer = (IndexBuffer*)desc->indexBuffer;
@@ -164,7 +164,7 @@ extern "C"
 
 		// msaa
         pipelineDesc.SampleMask = UINT_MAX;
-        pipelineDesc.SampleDesc.Count = desc->msaaLevel != 0 ? desc->msaaLevel : 1;
+        pipelineDesc.SampleDesc.Count = desc->msaaLevel == MSAALevel_Disabled ? 1 : (UINT)desc->msaaLevel;
 		pipelineDesc.SampleDesc.Quality = 0;// default MSAA quality
 
 		// create pipeline state

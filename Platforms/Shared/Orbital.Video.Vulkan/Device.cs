@@ -145,12 +145,12 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferLayout layout, VertexBufferMode mode)
+		public override VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferMode mode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode)
+		public override VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferMode mode)
 		{
 			throw new NotImplementedException();
 		}
@@ -166,6 +166,11 @@ namespace Orbital.Video.Vulkan
 		}
 
 		public override IndexBufferBase CreateIndexBuffer(uint[] indices, IndexBufferMode mode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override VertexBufferStreamerBase CreateVertexBufferStreamer(VertexBufferStreamLayout layout)
 		{
 			throw new NotImplementedException();
 		}

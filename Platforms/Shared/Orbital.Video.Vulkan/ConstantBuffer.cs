@@ -37,7 +37,7 @@ namespace Orbital.Video.Vulkan
 		public unsafe bool Init<T>(T initialData) where T : unmanaged
 		{
 			size = Marshal.SizeOf<T>();
-			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, &initialData) != 0;
+			return Orbital_Video_Vulkan_ConstantBuffer_Init(handle, (uint)size, &initialData) != 0;
 		}
 		#else
 		public unsafe bool Init<T>(T initialData) where T : struct

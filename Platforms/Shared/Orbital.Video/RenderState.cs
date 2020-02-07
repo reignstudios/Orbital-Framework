@@ -2,17 +2,67 @@
 
 namespace Orbital.Video
 {
+	public enum MSAALevel
+	{
+		Disabled = 0,
+		X2 = 2,
+		X4 = 4,
+		X8 = 8,
+		X16 = 16
+	}
+
 	public struct RenderStateDesc
 	{
+		/// <summary>
+		/// Render pass this state will be used in
+		/// </summary>
 		public RenderPassBase renderPass;
+
+		/// <summary>
+		/// Shader effect to render geometry with
+		/// </summary>
 		public ShaderEffectBase shaderEffect;
+
+		/// <summary>
+		/// Constant buffers to be accessed in shader effect
+		/// </summary>
 		public ConstantBufferBase[] constantBuffers;
+
+		/// <summary>
+		/// Textures to be accessed in shader effect
+		/// </summary>
 		public TextureBase[] textures;
-		public VertexBufferBase vertexBuffer;
-		public IndexBufferBase indexBuffer;
+
+		/// <summary>
+		/// How the geometry will appear
+		/// </summary>
 		public VertexBufferTopology vertexBufferTopology;
-		public bool depthEnable, stencilEnable;
-		public int msaaLevel;
+
+		/// <summary>
+		/// Vertex buffers to use and stream in parallel
+		/// </summary>
+		public VertexBufferStreamerBase vertexBufferStreamer;
+
+		/// <summary>
+		/// Index buffer to use.
+		/// If null, the IndexBuffer from the first element of the VertexBufferStreamer will be used
+		/// </summary>
+		public IndexBufferBase indexBuffer;
+
+		/// <summary>
+		/// Enables depth read/write
+		/// </summary>
+		public bool depthEnable;
+		
+		/// <summary>
+		/// Enables stencil read/write
+		/// </summary>
+		public bool stencilEnable;
+
+		/// <summary>
+		/// Multisample anti-aliasing level
+		/// </summary>
+		public MSAALevel msaaLevel;
 	}
 
 	public abstract class RenderStateBase : IDisposable

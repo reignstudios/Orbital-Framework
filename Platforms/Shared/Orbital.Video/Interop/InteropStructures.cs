@@ -38,10 +38,10 @@ namespace Orbital.Video.Vulkan
 		public int textureCount;
 		public IntPtr* textures;
 		public VertexBufferTopology vertexBufferTopology;
-		public IntPtr vertexBuffer;
+		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
 		public byte depthEnable, stencilEnable;
-		public int msaaLevel;
+		public MSAALevel msaaLevel;
 
 		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
 		{
@@ -57,7 +57,7 @@ namespace Orbital.Video.Vulkan
 			for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
 
 			vertexBufferTopology = desc.vertexBufferTopology;
-			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
+			vertexBufferStreamer = ((VertexBufferStreamer)desc.vertexBufferStreamer).handle;
 			indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
 			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
 			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
@@ -93,40 +93,64 @@ namespace Orbital.Video.Vulkan
 
 	#region Vertex Buffer
 	[StructLayout(LayoutKind.Sequential)]
-	struct VertexBufferLayoutElement_NativeInterop
+	struct VertexBufferStreamDesc_NativeInterop
 	{
-		public VertexBufferLayoutElementType type;
-		public VertexBufferLayoutElementUsage usage;
-		public int usageIndex;
-		public VertexBufferLayoutStreamType streamType;
-		public int streamIndex, streamByteOffset;
+		public IntPtr vertexBuffer;
+		public VertexBufferStreamType type;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	unsafe struct VertexBufferLayout_NativeInterop : IDisposable
+	struct VertexBufferStreamElement_NativeInterop
 	{
-		public int elementCount;
-		public VertexBufferLayoutElement_NativeInterop* elements;
+		public int index;
+		public VertexBufferStreamElementType type;
+		public VertexBufferStreamElementUsage usage;
+		public int usageIndex;
+		public int offset;
+	}
 
-		public VertexBufferLayout_NativeInterop(ref VertexBufferLayout layout)
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct VertexBufferStreamLayout_NativeInterop : IDisposable
+	{
+		public int descCount;
+		public VertexBufferStreamDesc_NativeInterop* descs;
+
+		public int elementCount;
+		public VertexBufferStreamElement_NativeInterop* elements;
+
+		public VertexBufferStreamLayout_NativeInterop(ref VertexBufferStreamLayout layout)
 		{
 			// init defaults
+			descCount = 0;
+			descs = null;
 			elementCount = 0;
 			elements = null;
+
+			// init descriptions
+			if (layout.descs != null)
+			{
+				descCount = layout.descs.Length;
+				descs = (VertexBufferStreamDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferStreamDesc_NativeInterop>() * descCount);
+				for (int i = 0; i != descCount; ++i)
+				{
+					var vertexBuffer = (VertexBuffer)layout.descs[i].vertexBuffer;
+					descs[i].vertexBuffer = vertexBuffer.handle;
+					descs[i].type = layout.descs[i].type;
+				}
+			}
 
 			// init elements
 			if (layout.elements != null)
 			{
 				elementCount = layout.elements.Length;
-				elements = (VertexBufferLayoutElement_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferLayoutElement_NativeInterop>() * elementCount);
+				elements = (VertexBufferStreamElement_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferStreamElement_NativeInterop>() * elementCount);
 				for (int i = 0; i != elementCount; ++i)
 				{
+					elements[i].index = layout.elements[i].index;
 					elements[i].type = layout.elements[i].type;
 					elements[i].usage = layout.elements[i].usage;
 					elements[i].usageIndex = layout.elements[i].usageIndex;
-					elements[i].streamType = layout.elements[i].streamType;
-					elements[i].streamIndex = layout.elements[i].streamIndex;
-					elements[i].streamByteOffset = layout.elements[i].streamByteOffset;
+					elements[i].offset = layout.elements[i].offset;
 				}
 			}
 		}

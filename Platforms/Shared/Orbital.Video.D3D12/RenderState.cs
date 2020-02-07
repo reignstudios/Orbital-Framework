@@ -6,8 +6,7 @@ namespace Orbital.Video.D3D12
 	public sealed class RenderState : RenderStateBase
 	{
 		internal IntPtr handle;
-		internal VertexBuffer vertexBuffer;
-		internal IndexBuffer indexBuffer;
+		internal int vertexCount, indexCount;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_RenderState_Create(IntPtr device);
@@ -26,8 +25,9 @@ namespace Orbital.Video.D3D12
 		public unsafe bool Init(RenderStateDesc desc, int gpuIndex)
 		{
 			ValidateInit(ref desc);
-			vertexBuffer = (VertexBuffer)desc.vertexBuffer;
-			indexBuffer = (IndexBuffer)desc.indexBuffer;
+			var streamer = (VertexBufferStreamer)desc.vertexBufferStreamer;
+			vertexCount = streamer.vertexCount;
+			indexCount = desc.indexBuffer.indexCount;
 			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
 			{
 				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;

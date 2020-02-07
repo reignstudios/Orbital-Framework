@@ -70,63 +70,80 @@ typedef enum VertexBufferTopology
 	VertexBufferTopology_Triangle
 }VertexBufferTopology;
 
-typedef enum VertexBufferLayoutElementType
+typedef enum VertexBufferStreamType
 {
-	VertexBufferLayoutElementType_Float,
-	VertexBufferLayoutElementType_Float2,
-	VertexBufferLayoutElementType_Float3,
-	VertexBufferLayoutElementType_Float4,
-	VertexBufferLayoutElementType_RGBAx8
-}VertexBufferLayoutElementType;
+	VertexBufferStreamType_VertexData,
+	VertexBufferStreamType_InstanceData
+}VertexBufferStreamType;
 
-typedef enum VertexBufferLayoutElementUsage
+typedef struct VertexBufferStreamDesc
 {
-	VertexBufferLayoutElementUsage_Position,
-	VertexBufferLayoutElementUsage_Color,
-	VertexBufferLayoutElementUsage_UV,
-	VertexBufferLayoutElementUsage_Normal,
-	VertexBufferLayoutElementUsage_Tangent,
-	VertexBufferLayoutElementUsage_Binormal,
-	VertexBufferLayoutElementUsage_Index,
-	VertexBufferLayoutElementUsage_Weight
-}VertexBufferLayoutElementUsage;
+	intptr_t vertexBuffer;
+	VertexBufferStreamType type;
+}VertexBufferStreamDesc;
 
-typedef enum VertexBufferLayoutStreamType
+typedef enum VertexBufferStreamElementType
 {
-	VertexBufferLayoutStreamType_VertexData,
-	VertexBufferLayoutStreamType_InstanceData
-}VertexBufferLayoutStreamType;
+	VertexBufferStreamElementType_Float,
+	VertexBufferStreamElementType_Float2,
+	VertexBufferStreamElementType_Float3,
+	VertexBufferStreamElementType_Float4,
+	VertexBufferStreamElementType_RGBAx8
+}VertexBufferStreamElementType;
 
-typedef struct VertexBufferLayoutElement
+typedef enum VertexBufferStreamElementUsage
 {
-	VertexBufferLayoutElementType type;
-	VertexBufferLayoutElementUsage usage;
+	VertexBufferStreamElementUsage_Position,
+	VertexBufferStreamElementUsage_Color,
+	VertexBufferStreamElementUsage_UV,
+	VertexBufferStreamElementUsage_Normal,
+	VertexBufferStreamElementUsage_Tangent,
+	VertexBufferStreamElementUsage_Binormal,
+	VertexBufferStreamElementUsage_Index,
+	VertexBufferStreamElementUsage_Weight
+}VertexBufferStreamElementUsage;
+
+typedef struct VertexBufferStreamElement
+{
+	int index;
+	VertexBufferStreamElementType type;
+	VertexBufferStreamElementUsage usage;
 	int usageIndex;
-	VertexBufferLayoutStreamType streamType;
-	int streamIndex, streamByteOffset;
-}VertexBufferLayoutElement;
+	int offset;
+}VertexBufferStreamElement;
 
-typedef struct VertexBufferLayout
+typedef struct VertexBufferStreamLayout
 {
+	int descCount;
+	VertexBufferStreamDesc* descs;
 	int elementCount;
-	VertexBufferLayoutElement* elements;
-}VertexBufferLayout;
+	VertexBufferStreamElement* elements;
+}VertexBufferStreamLayout;
 #pragma endregion
 
 #pragma region Render State
+typedef enum MSAALevel
+{
+	MSAALevel_Disabled = 0,
+	MSAALevel_X2 = 2,
+	MSAALevel_X4 = 4,
+	MSAALevel_X8 = 8,
+	MSAALevel_X16 = 16
+}MSAALevel;
+
 typedef struct RenderStateDesc
 {
-	void* renderPass;
-	void* shaderEffect;
+	intptr_t renderPass;
+	intptr_t shaderEffect;
 	int constantBufferCount;
 	intptr_t* constantBuffers;
 	int textureCount;
 	intptr_t* textures;
 	VertexBufferTopology vertexBufferTopology;
-	void* vertexBuffer;
-	void* indexBuffer;
+	intptr_t vertexBufferStreamer;
+	intptr_t indexBuffer;
 	char depthEnable, stencilEnable;
-	int msaaLevel;
+	MSAALevel msaaLevel;
 }RenderStateDesc;
 #pragma endregion
 

@@ -28,6 +28,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Texture.cs" Link="Texture.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Texture2D.cs" Link="Texture2D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\VertexBuffer.cs" Link="VertexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\VertexBufferStreamer.cs" Link="VertexBufferStreamer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>
 

@@ -46,6 +46,9 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\IndexBuffer.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBufferStreamer.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp">
@@ -88,6 +91,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\IndexBuffer.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\VertexBufferStreamer.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

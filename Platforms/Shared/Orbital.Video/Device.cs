@@ -51,16 +51,17 @@ namespace Orbital.Video
 		public abstract ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride);
 		public abstract ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders);
 		#if CS_7_3
-		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode) where T : unmanaged;
+		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferMode mode) where T : unmanaged;
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData, ConstantBufferMode mode) where T : unmanaged;
 		#else
-		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferLayout layout, VertexBufferMode mode) where T : struct;
+		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferMode mode) where T : struct;
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData, ConstantBufferMode mode) where T : struct;
 		#endif
-		public abstract VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferLayout layout, VertexBufferMode mode);
+		public abstract VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferMode mode);
 		public abstract IndexBufferBase CreateIndexBuffer(uint indexCount, IndexBufferSize indexSize, IndexBufferMode mode);
 		public abstract IndexBufferBase CreateIndexBuffer(ushort[] indices, IndexBufferMode mode);
 		public abstract IndexBufferBase CreateIndexBuffer(uint[] indices, IndexBufferMode mode);
+		public abstract VertexBufferStreamerBase CreateVertexBufferStreamer(VertexBufferStreamLayout layout);
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(ConstantBufferMode mode) where T : struct;
 		public abstract ConstantBufferBase CreateConstantBuffer(int size, ConstantBufferMode mode);
 		public abstract Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode);

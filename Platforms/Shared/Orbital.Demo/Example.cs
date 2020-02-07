@@ -43,6 +43,7 @@ namespace Orbital.Demo
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
 		private IndexBufferBase indexBuffer;
+		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
 
@@ -195,43 +196,13 @@ namespace Orbital.Demo
 			}
 
 			// create vertex buffer
-			var vertexBufferLayout = new VertexBufferLayout();
-			vertexBufferLayout.elements = new VertexBufferLayoutElement[3];
-			vertexBufferLayout.elements[0] = new VertexBufferLayoutElement()
-			{
-				type = VertexBufferLayoutElementType.Float3,
-				usage = VertexBufferLayoutElementUsage.Position,
-				usageIndex = 0,
-				streamType = VertexBufferLayoutStreamType.VertexData,
-				streamIndex = 0,
-				streamByteOffset = 0
-			};
-			vertexBufferLayout.elements[1] = new VertexBufferLayoutElement()
-			{
-				type = VertexBufferLayoutElementType.RGBAx8,
-				usage = VertexBufferLayoutElementUsage.Color,
-				usageIndex = 0,
-				streamType = VertexBufferLayoutStreamType.VertexData,
-				streamIndex = 0,
-				streamByteOffset = (sizeof(float) * 3)
-			};
-			vertexBufferLayout.elements[2] = new VertexBufferLayoutElement()
-			{
-				type = VertexBufferLayoutElementType.Float2,
-				usage = VertexBufferLayoutElementUsage.UV,
-				usageIndex = 0,
-				streamType = VertexBufferLayoutStreamType.VertexData,
-				streamIndex = 0,
-				streamByteOffset = (sizeof(float) * 3) + 4
-			};
-			
 			var vertices = new Vertex[]
 			{
 				new Vertex(new Vec3(-1, -1, 0), Color4.red, new Vec2(0, 0)),
 				new Vertex(new Vec3(0, 1, 0), Color4.green, new Vec2(.5f, 1)),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0))
 			};
-			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, vertexBufferLayout, VertexBufferMode.GPUOptimized);
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, VertexBufferMode.GPUOptimized);
 
 			// create index buffer
 			var indices = new ushort[]
@@ -240,6 +211,37 @@ namespace Orbital.Demo
 			};
 			indexBuffer = device.CreateIndexBuffer(indices, IndexBufferMode.GPUOptimized);
 
+			// create vertex buffer streamer
+			var vertexBufferStreamLayout = new VertexBufferStreamLayout()
+			{
+				descs = new VertexBufferStreamDesc[1],
+				elements = new VertexBufferStreamElement[3]
+			};
+			vertexBufferStreamLayout.descs[0] = new VertexBufferStreamDesc()
+			{
+				vertexBuffer = vertexBuffer,
+				type = VertexBufferStreamType.VertexData
+			};
+			vertexBufferStreamLayout.elements[0] = new VertexBufferStreamElement()
+			{
+				type = VertexBufferStreamElementType.Float3,
+				usage = VertexBufferStreamElementUsage.Position,
+				offset = 0
+			};
+			vertexBufferStreamLayout.elements[1] = new VertexBufferStreamElement()
+			{
+				type = VertexBufferStreamElementType.RGBAx8,
+				usage = VertexBufferStreamElementUsage.Color,
+				offset = (sizeof(float) * 3)
+			};
+			vertexBufferStreamLayout.elements[2] = new VertexBufferStreamElement()
+			{
+				type = VertexBufferStreamElementType.Float2,
+				usage = VertexBufferStreamElementUsage.UV,
+				offset = (sizeof(float) * 3) + 4
+			};
+			vertexBufferStreamer = device.CreateVertexBufferStreamer(vertexBufferStreamLayout);
+
 			// create render state
 			var renderStateDesc = new RenderStateDesc()
 			{
@@ -247,9 +249,10 @@ namespace Orbital.Demo
 				shaderEffect = shaderEffect,
 				constantBuffers = new ConstantBufferBase[1],
 				textures = new TextureBase[2],
-				vertexBuffer = vertexBuffer,
+				vertexBufferTopology = VertexBufferTopology.Triangle,
+				vertexBufferStreamer = vertexBufferStreamer,
 				indexBuffer = indexBuffer,
-				vertexBufferTopology = VertexBufferTopology.Triangle
+				msaaLevel = MSAALevel.Disabled
 			};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
 			renderStateDesc.textures[0] = texture;
@@ -291,6 +294,12 @@ namespace Orbital.Demo
 			{
 				indexBuffer.Dispose();
 				indexBuffer = null;
+			}
+
+			if (vertexBufferStreamer != null)
+			{
+				vertexBufferStreamer.Dispose();
+				vertexBufferStreamer = null;
 			}
 
 			if (renderState != null)

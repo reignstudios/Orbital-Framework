@@ -154,13 +154,14 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetRenderState(CommandList* handle, RenderState* renderState)
 	{
-		// set resource states
+		// set constant buffer states
 		for (UINT i = 0; i != renderState->constantBufferCount; ++i)
 		{
 			ConstantBuffer* constantBuffer = renderState->constantBuffers[i];
 			Orbital_Video_D3D12_ConstantBuffer_ChangeState(constantBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
 		}
 
+		// set texture states
 		for (UINT i = 0; i != renderState->textureCount; ++i)
 		{
 			Texture* texture = renderState->textures[i];
@@ -177,9 +178,12 @@ extern "C"
 			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList);
 		}
 
-		VertexBuffer* vertexBuffer = renderState->vertexBuffer;
-		Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+		// set vertex buffer states
+		UINT vertexBufferCount = renderState->vertexBufferStreamer->vertexBufferCount;
+		VertexBuffer** vertexBuffers = renderState->vertexBufferStreamer->vertexBuffers;
+		for (UINT i = 0; i != vertexBufferCount; ++i) Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffers[i], D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
 
+		// set index buffer states
 		IndexBuffer* indexBuffer = renderState->indexBuffer;
 		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList);
 
@@ -205,7 +209,7 @@ extern "C"
 
 		// enable vertex / index buffers
 		handle->commandList->IASetPrimitiveTopology(renderState->topology);
-		handle->commandList->IASetVertexBuffers(0, 1, &vertexBuffer->vertexBufferView);
+		handle->commandList->IASetVertexBuffers(0, vertexBufferCount, renderState->vertexBufferStreamer->vertexBufferViews);
 		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
 	}
 

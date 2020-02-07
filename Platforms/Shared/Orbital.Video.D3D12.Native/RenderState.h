@@ -3,7 +3,7 @@
 #include "ShaderEffect.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
-#include "VertexBuffer.h"
+#include "VertexBufferStreamer.h"
 #include "IndexBuffer.h"
 
 struct RenderState
@@ -23,6 +23,6 @@ struct RenderState
 	D3D12_GPU_DESCRIPTOR_HANDLE textureGPUDescHandle;
 
 	D3D_PRIMITIVE_TOPOLOGY topology;
-	VertexBuffer* vertexBuffer;
+	VertexBufferStreamer* vertexBufferStreamer;
 	IndexBuffer* indexBuffer;
 };
