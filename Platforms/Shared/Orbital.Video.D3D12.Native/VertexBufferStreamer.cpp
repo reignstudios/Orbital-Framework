@@ -37,10 +37,14 @@ extern "C"
 				elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 				elementDesc.InstanceDataStepRate = 0;
 			}
-			else
+			else if (vertexBufferDesc.type == VertexBufferStreamType::VertexBufferStreamType_InstanceData)
 			{
 				elementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
 				elementDesc.InstanceDataStepRate = 1;
+			}
+			else
+			{
+				return 0;
 			}
 
 			// set data type
