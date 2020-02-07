@@ -24,7 +24,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderStateDesc desc, int gpuIndex)
 		{
-			ValidateInit(ref desc);
+			InitBase(ref desc);
 			var streamer = (VertexBufferStreamer)desc.vertexBufferStreamer;
 			vertexCount = streamer.vertexCount;
 			indexCount = desc.indexBuffer.indexCount;

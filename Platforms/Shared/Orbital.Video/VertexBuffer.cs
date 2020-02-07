@@ -29,9 +29,27 @@ namespace Orbital.Video
 
 	public abstract class VertexBufferBase : IDisposable
 	{
+		public readonly DeviceBase device;
+		public IndexBufferBase indexBuffer { get; protected set; }
 		public int vertexCount { get; protected set; }
 		public int vertexSize { get; protected set; }
 
+		public VertexBufferBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
+
+		protected IndexBufferMode GetIndexBufferMode(VertexBufferMode mode)
+		{
+			switch (mode)
+			{
+				case VertexBufferMode.GPUOptimized: return IndexBufferMode.GPUOptimized;
+				case VertexBufferMode.Write: return IndexBufferMode.Write;
+				case VertexBufferMode.Read: return IndexBufferMode.Read;
+			}
+			throw new NotSupportedException("VertexBufferMode not compatible with IndexBufferMode");
+		}
 	}
 }

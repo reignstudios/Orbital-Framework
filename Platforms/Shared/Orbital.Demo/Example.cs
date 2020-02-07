@@ -42,7 +42,6 @@ namespace Orbital.Demo
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
 		private VertexBufferBase vertexBuffer;
-		private IndexBufferBase indexBuffer;
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
@@ -202,14 +201,11 @@ namespace Orbital.Demo
 				new Vertex(new Vec3(0, 1, 0), Color4.green, new Vec2(.5f, 1)),
 				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0))
 			};
-			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, VertexBufferMode.GPUOptimized);
-
-			// create index buffer
 			var indices = new ushort[]
 			{
 				0, 1, 2
 			};
-			indexBuffer = device.CreateIndexBuffer(indices, IndexBufferMode.GPUOptimized);
+			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, indices, VertexBufferMode.GPUOptimized);
 
 			// create vertex buffer streamer
 			var vertexBufferStreamLayout = new VertexBufferStreamLayout()
@@ -251,7 +247,6 @@ namespace Orbital.Demo
 				textures = new TextureBase[2],
 				vertexBufferTopology = VertexBufferTopology.Triangle,
 				vertexBufferStreamer = vertexBufferStreamer,
-				indexBuffer = indexBuffer,
 				msaaLevel = MSAALevel.Disabled
 			};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
@@ -288,12 +283,6 @@ namespace Orbital.Demo
 			{
 				vertexBuffer.Dispose();
 				vertexBuffer = null;
-			}
-
-			if (indexBuffer != null)
-			{
-				indexBuffer.Dispose();
-				indexBuffer = null;
 			}
 
 			if (vertexBufferStreamer != null)

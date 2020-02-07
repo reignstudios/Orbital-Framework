@@ -23,8 +23,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(VertexBufferStreamLayout layout)
 		{
-			if (layout.vertexCount == 0) vertexCount = layout.descs[0].vertexBuffer.vertexCount;
-			else vertexCount = layout.vertexCount;
+			InitBase(ref layout);
 			using (var layoutNative = new VertexBufferStreamLayout_NativeInterop(ref layout))
 			{
 				return Orbital_Video_D3D12_VertexBufferStreamer_Init(handle, &layoutNative) != 0;

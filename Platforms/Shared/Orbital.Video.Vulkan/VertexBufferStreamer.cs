@@ -23,6 +23,7 @@ namespace Orbital.Video.Vulkan
 
 		public unsafe bool Init(VertexBufferStreamLayout layout)
 		{
+			InitBase(ref layout);
 			using (var layoutNative = new VertexBufferStreamLayout_NativeInterop(ref layout))
 			{
 				return Orbital_Video_D3D12_VertexBufferStreamer_Init(handle, &layoutNative) != 0;

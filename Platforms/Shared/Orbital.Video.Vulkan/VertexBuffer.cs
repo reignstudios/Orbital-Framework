@@ -5,6 +5,7 @@ namespace Orbital.Video.Vulkan
 {
 	public sealed class VertexBuffer : VertexBufferBase
 	{
+		public readonly Device deviceVulkan;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -17,7 +18,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_VertexBuffer_Dispose(IntPtr handle);
 
 		public VertexBuffer(Device device)
+		: base(device)
 		{
+			deviceVulkan = device;
 			handle = Orbital_Video_Vulkan_VertexBuffer_Create(device.handle);
 		}
 

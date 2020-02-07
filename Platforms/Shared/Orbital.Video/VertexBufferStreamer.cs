@@ -98,8 +98,20 @@ namespace Orbital.Video
 
 	public abstract class VertexBufferStreamerBase : IDisposable
 	{
+		public VertexBufferBase[] vertexBuffers { get; protected set; }
 		public int vertexCount { get; protected set; }
 
 		public abstract void Dispose();
+
+		protected void InitBase(ref VertexBufferStreamLayout layout)
+		{
+			if (layout.descs == null || layout.descs.Length == 0) throw new ArgumentException("VertexBufferStreamLayout must have at least one desc object");
+
+			vertexBuffers = new VertexBufferBase[layout.descs.Length];
+			for (int i = 0; i != layout.descs.Length; ++i) vertexBuffers[i] = layout.descs[i].vertexBuffer;
+
+			if (layout.vertexCount == 0) vertexCount = layout.descs[0].vertexBuffer.vertexCount;
+			else vertexCount = layout.vertexCount;
+		}
 	}
 }
