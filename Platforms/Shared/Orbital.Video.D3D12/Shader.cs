@@ -7,6 +7,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class Shader : ShaderBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 		private readonly ShaderType type;
 
@@ -20,7 +21,9 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_Shader_Dispose(IntPtr handle);
 
 		public Shader(Device device, ShaderType type)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			this.type = type;
 			handle = Orbital_Video_D3D12_Shader_Create(device.handle);
 		}

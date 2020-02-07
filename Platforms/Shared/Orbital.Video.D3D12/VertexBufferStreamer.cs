@@ -5,6 +5,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class VertexBufferStreamer : VertexBufferStreamerBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -16,8 +17,10 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_VertexBufferStreamer_Dispose(IntPtr handle);
 
-		public VertexBufferStreamer()
+		public VertexBufferStreamer(Device device)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_VertexBufferStreamer_Create();
 		}
 

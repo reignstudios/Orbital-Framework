@@ -26,6 +26,15 @@ namespace Orbital.Video
 
 	public abstract class TextureBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public TextureBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
+		public abstract void Dispose();
+
 		/// <summary>
 		/// Returns pointer to platform specific native handle
 		/// </summary>
@@ -35,13 +44,15 @@ namespace Orbital.Video
 		/// Returns pointer to platform specific managed handle
 		/// </summary>
 		public abstract object GetManagedHandle();
-
-		public abstract void Dispose();
 	}
 
 	public abstract class Texture2DBase : TextureBase
 	{
 		public int width { get; protected set; }
 		public int height { get; protected set; }
+
+		public Texture2DBase(DeviceBase device)
+		: base(device)
+		{}
 	}
 }

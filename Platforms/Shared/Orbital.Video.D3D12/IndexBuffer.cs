@@ -5,6 +5,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class IndexBuffer : IndexBufferBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -17,13 +18,14 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_IndexBuffer_Dispose(IntPtr handle);
 
 		public IndexBuffer(Device device, IndexBufferMode mode)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_IndexBuffer_Create(device.handle, mode);
 		}
 
 		public unsafe bool Init(uint indexCount, IndexBufferSize indexSize)
 		{
-			
 			this.indexSize = indexSize;
 			return Orbital_Video_D3D12_IndexBuffer_Init(handle, null, indexCount, (uint)indexSize) != 0;
 		}

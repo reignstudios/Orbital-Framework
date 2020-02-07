@@ -5,6 +5,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class RenderState : RenderStateBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 		internal int vertexCount, indexCount;
 
@@ -18,7 +19,9 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_RenderState_Dispose(IntPtr handle);
 
 		public RenderState(Device device)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_RenderState_Create(device.handle);
 		}
 

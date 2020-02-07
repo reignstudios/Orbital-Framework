@@ -7,6 +7,7 @@ namespace Orbital.Video.Vulkan
 {
 	public sealed class Shader : ShaderBase
 	{
+		public readonly Device deviceVulkan;
 		internal IntPtr handle;
 		private readonly ShaderType type;
 
@@ -20,7 +21,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_Shader_Dispose(IntPtr handle);
 
 		public Shader(Device device, ShaderType type)
+		: base(device)
 		{
+			deviceVulkan = device;
 			this.type = type;
 			handle = Orbital_Video_Vulkan_Shader_Create(device.handle);
 		}

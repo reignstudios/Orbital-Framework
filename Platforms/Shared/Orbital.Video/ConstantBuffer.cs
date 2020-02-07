@@ -22,7 +22,13 @@ namespace Orbital.Video
 
 	public abstract class ConstantBufferBase : IDisposable
 	{
+		public readonly DeviceBase device;
 		public int size { get; protected set; }
+
+		public ConstantBufferBase(DeviceBase device)
+		{
+			this.device = device;
+		}
 
 		public abstract void Dispose();
 

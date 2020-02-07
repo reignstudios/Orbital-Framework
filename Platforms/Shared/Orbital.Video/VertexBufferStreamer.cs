@@ -98,8 +98,14 @@ namespace Orbital.Video
 
 	public abstract class VertexBufferStreamerBase : IDisposable
 	{
+		public readonly DeviceBase device;
 		public VertexBufferBase[] vertexBuffers { get; protected set; }
 		public int vertexCount { get; protected set; }
+
+		public VertexBufferStreamerBase(DeviceBase device)
+		{
+			this.device = device;
+		}
 
 		public abstract void Dispose();
 

@@ -5,6 +5,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class RenderPass : RenderPassBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -17,7 +18,9 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_RenderPass_Dispose(IntPtr handle);
 
 		public RenderPass(SwapChain swapChain)
+		: base(swapChain.device)
 		{
+			deviceD3D12 = swapChain.deviceD3D12;
 			handle = Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(swapChain.deviceD3D12.handle, swapChain.handle);
 		}
 

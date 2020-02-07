@@ -5,7 +5,7 @@ namespace Orbital.Video.Vulkan
 {
 	public sealed class ShaderEffect : ShaderEffectBase
 	{
-		internal readonly Device device;
+		public readonly Device deviceVulkan;
 		internal IntPtr handle;
 
 		public Shader vs { get; private set; }
@@ -25,8 +25,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_ShaderEffect_Dispose(IntPtr handle);
 
 		public ShaderEffect(Device device)
+		: base(device)
 		{
-			this.device = device;
+			deviceVulkan = device;
 			handle = Orbital_Video_Vulkan_ShaderEffect_Create(device.handle);
 		}
 
@@ -62,11 +63,11 @@ namespace Orbital.Video.Vulkan
 			switch (type)
 			{
 				case ShaderType.VS:
-					vs = new Shader(device, type);
+					vs = new Shader(deviceVulkan, type);
 					return vs.Init(data);
 
 				case ShaderType.PS:
-					ps = new Shader(device, type);
+					ps = new Shader(deviceVulkan, type);
 					return ps.Init(data);
 
 				default: throw new NotSupportedException("Shader type not supported: " + type.ToString());

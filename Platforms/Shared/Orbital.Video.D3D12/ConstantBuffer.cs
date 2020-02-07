@@ -5,6 +5,7 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class ConstantBuffer : ConstantBufferBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -20,7 +21,9 @@ namespace Orbital.Video.D3D12
 		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset);
 
 		public ConstantBuffer(Device device, ConstantBufferMode mode)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_ConstantBuffer_Create(device.handle, mode);
 		}
 

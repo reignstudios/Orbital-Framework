@@ -10,6 +10,13 @@ namespace Orbital.Video
 
 	public abstract class DepthStencilBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public DepthStencilBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
 	}
 }

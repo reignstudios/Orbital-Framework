@@ -5,10 +5,13 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class Texture2D : Texture2DBase
 	{
+		public readonly Device deviceD3D12;
 		internal IntPtr handle;
 
 		public Texture2D(Device device, TextureMode mode)
+		: base(device)
 		{
+			deviceD3D12 = device;
 			handle = Texture.Orbital_Video_D3D12_Texture_Create(device.handle, mode);
 		}
 

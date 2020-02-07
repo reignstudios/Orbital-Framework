@@ -28,8 +28,14 @@ namespace Orbital.Video
 
 	public abstract class IndexBufferBase : IDisposable
 	{
+		public readonly DeviceBase device;
 		public int indexCount { get; protected set; }
 		public IndexBufferSize indexSize { get; protected set; }
+
+		public IndexBufferBase(DeviceBase device)
+		{
+			this.device = device;
+		}
 
 		public abstract void Dispose();
 	}

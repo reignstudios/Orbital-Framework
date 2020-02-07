@@ -5,6 +5,7 @@ namespace Orbital.Video.Vulkan
 {
 	public sealed class RenderPass : RenderPassBase
 	{
+		public readonly Device deviceVulkan;
 		internal IntPtr handle;
 		private readonly SwapChain swapChain;
 
@@ -18,7 +19,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_RenderPass_Dispose(IntPtr handle);
 
 		public RenderPass(SwapChain swapChain)
+		: base(swapChain.device)
 		{
+			deviceVulkan = swapChain.deviceVulkan;
 			this.swapChain = swapChain;
 			handle = Orbital_Video_Vulkan_RenderPass_Create_WithSwapChain(swapChain.deviceVulkan.handle, swapChain.handle);
 			this.swapChain.renderPasses.Add(this);

@@ -5,6 +5,7 @@ namespace Orbital.Video.Vulkan
 {
 	public sealed class IndexBuffer : IndexBufferBase
 	{
+		public readonly Device deviceVulkan;
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
@@ -17,7 +18,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_IndexBuffer_Dispose(IntPtr handle);
 
 		public IndexBuffer(Device device, IndexBufferMode mode)
+		: base(device)
 		{
+			deviceVulkan = device;
 			handle = Orbital_Video_Vulkan_IndexBuffer_Create(device.handle, mode);
 		}
 

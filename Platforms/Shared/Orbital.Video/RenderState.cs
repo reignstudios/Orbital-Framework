@@ -67,6 +67,13 @@ namespace Orbital.Video
 
 	public abstract class RenderStateBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public RenderStateBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
 
 		protected void InitBase(ref RenderStateDesc desc)

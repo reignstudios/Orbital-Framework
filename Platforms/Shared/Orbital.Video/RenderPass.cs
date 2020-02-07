@@ -12,6 +12,13 @@ namespace Orbital.Video
 
 	public abstract class RenderPassBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public RenderPassBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
 	}
 }

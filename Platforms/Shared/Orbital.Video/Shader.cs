@@ -32,6 +32,13 @@ namespace Orbital.Video
 
 	public abstract class ShaderBase : IDisposable
 	{
+		public readonly DeviceBase device;
+
+		public ShaderBase(DeviceBase device)
+		{
+			this.device = device;
+		}
+
 		public abstract void Dispose();
 
 		/// <summary>

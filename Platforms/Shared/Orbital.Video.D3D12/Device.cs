@@ -249,7 +249,7 @@ namespace Orbital.Video.D3D12
 
 		public override VertexBufferStreamerBase CreateVertexBufferStreamer(VertexBufferStreamLayout layout)
 		{
-			var abstraction = new VertexBufferStreamer();
+			var abstraction = new VertexBufferStreamer(this);
 			if (!abstraction.Init(layout))
 			{
 				abstraction.Dispose();

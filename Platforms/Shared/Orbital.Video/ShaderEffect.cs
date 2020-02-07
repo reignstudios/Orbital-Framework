@@ -165,8 +165,14 @@ namespace Orbital.Video
 
 	public abstract class ShaderEffectBase : IDisposable
 	{
+		public readonly DeviceBase device;
 		public int constantBufferCount { get; protected set; }
 		public int textureCount { get; protected set; }
+
+		public ShaderEffectBase(DeviceBase device)
+		{
+			this.device = device;
+		}
 
 		public abstract void Dispose();
 
