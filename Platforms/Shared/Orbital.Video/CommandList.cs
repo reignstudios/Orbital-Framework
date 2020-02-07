@@ -46,7 +46,7 @@ namespace Orbital.Video
 		/// <summary>
 		/// Clears render target
 		/// </summary>
-		public abstract void ClearRenderTarget(RenderTargetBase renderTarget, float r, float g, float b, float a);
+		public abstract void ClearRenderTarget(RenderTextureBase renderTarget, float r, float g, float b, float a);
 
 		/// <summary>
 		/// Sets view port
