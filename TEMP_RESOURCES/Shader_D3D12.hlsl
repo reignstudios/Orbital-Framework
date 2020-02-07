@@ -1,7 +1,7 @@
 cbuffer ConstantBufferObject : register(b0)
 {
-    float offset;
 	float constrast;
+    float4x4 camera;
 };
 
 struct VSInput
@@ -22,8 +22,8 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
 
-    result.position = input.position;
-    result.position.x += offset;
+    float4 pos = input.position;
+    result.position = mul(pos, camera);
     result.color = input.color * constrast;
     result.uv = input.uv;
 
@@ -36,5 +36,5 @@ SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color * mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv);
+    return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv));
 }

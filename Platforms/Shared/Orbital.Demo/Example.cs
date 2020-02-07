@@ -23,11 +23,11 @@ namespace Orbital.Demo
 		}
 	}
 
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Explicit)]
 	struct ConstantBufferObject
 	{
-		public float offset;
-		public float constrast;
+		[FieldOffset(0)] public float constrast;
+		[FieldOffset(sizeof(float) * 4)] public Mat4 camera;
 	}
 
 	public sealed class Example : IDisposable
@@ -46,6 +46,7 @@ namespace Orbital.Demo
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
 
+		private Camera camera;
 		private ConstantBufferObject constantBufferObject;
 		private float rot;
 
@@ -142,11 +143,7 @@ namespace Orbital.Demo
 			texture2 = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
 			// create constant buffer
-			constantBufferObject = new ConstantBufferObject()
-			{
-				offset = .5f,
-				constrast = .5f
-			};
+			constantBufferObject = new ConstantBufferObject();
 			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.Write);
 
 			// load shaders
@@ -257,6 +254,9 @@ namespace Orbital.Demo
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
 			foreach (var adapter in adapters) Debug.WriteLine(adapter.name);
+
+			// setup camera
+			camera = new Camera();
 		}
 
 		public void Dispose()
@@ -333,22 +333,32 @@ namespace Orbital.Demo
 			application.RunEvents();// run this once before checking window
 			while (!window.IsClosed())
 			{
+				// get window size and viewport
+				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+				var viewPort = new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height));
+
+				// update camera
+				camera.position = new Vec3(MathF.Cos(rot), 0, MathF.Sin(rot)) * 5;
+				camera.LookAt(Vec3.zero);
+				camera.Update(viewPort);
+
+				// update constant buffer
+				constantBufferObject.camera = camera.matrix;
+				constantBufferObject.constrast = MathF.Abs(MathF.Sin(rot * .5f));
+				rot += 0.1f;
+				constantBuffer.Update(constantBufferObject);
+
+				// render frame and present
 				device.BeginFrame();
 				commandList.Start();
 				commandList.BeginRenderPass(renderPass);
-				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
-				commandList.SetViewPort(new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height)));
+				commandList.SetViewPort(viewPort);
 				commandList.SetRenderState(renderState);
 				commandList.Draw();
 				commandList.EndRenderPass();
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();
-
-				// update constant buffer
-				constantBufferObject.offset = (float)Math.Sin(rot);
-				rot += 0.1f;
-				constantBuffer.Update(constantBufferObject);
 
 				// run application events
 				application.RunEvents();
