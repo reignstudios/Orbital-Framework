@@ -12,13 +12,19 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_ConstantBuffer_Create(IntPtr device, ConstantBufferMode mode);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_Init(IntPtr handle, uint size, void* initialData);
+		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_Init(IntPtr handle, uint size, int* alignedSize, void* initialData);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_ConstantBuffer_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset);
+		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(IntPtr handle);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_EndUpdate(IntPtr handle);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset);
 
 		public ConstantBuffer(Device device, ConstantBufferMode mode)
 		: base(device)
@@ -29,32 +35,40 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(int size)
 		{
-			this.size = size;
-			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, null) != 0;
+			int alignedSize;
+			int result = Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, &alignedSize, null);
+			this.size = alignedSize;
+			return result != 0;
 		}
 
 		public unsafe bool Init<T>() where T : struct
 		{
-			size = Marshal.SizeOf<T>();
-			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, null) != 0;
+			int alignedSize;
+			int result = Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)Marshal.SizeOf<T>(), &alignedSize, null);
+			size = alignedSize;
+			return result != 0;
 		}
 
 		#if CS_7_3
 		public unsafe bool Init<T>(T initialData) where T : unmanaged
 		{
-			size = Marshal.SizeOf<T>();
-			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, &initialData) != 0;
+			int alignedSize;
+			int result = Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)Marshal.SizeOf<T>(), &alignedSize, &initialData);
+			size = alignedSize;
+			return result != 0;
 		}
 		#else
 		public unsafe bool Init<T>(T initialData) where T : struct
 		{
-			size = Marshal.SizeOf<T>();
+			int alignedSize;
 			TypedReference reference = __makeref(initialData);
 			byte* ptr = (byte*)*((IntPtr*)&reference);
 			#if MONO
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
-			return Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)size, ptr) != 0;
+			int result = Orbital_Video_D3D12_ConstantBuffer_Init(handle, (uint)Marshal.SizeOf<T>(), &alignedSize, ptr);
+			size = alignedSize;
+			return result != 0;
 		}
 		#endif
 
@@ -67,26 +81,46 @@ namespace Orbital.Video.D3D12
 			}
 		}
 
-		#if CS_7_3
-		public unsafe override bool Update<T>(T data)
+		public override bool BeginUpdate()
 		{
-			return Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), 0) != 0;
+			return Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(handle) != 0;
+		}
+
+		public override void EndUpdate()
+		{
+			Orbital_Video_D3D12_ConstantBuffer_EndUpdate(handle);
+		}
+
+		#if CS_7_3
+		public unsafe override void Update<T>(T data)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), 0);
+		}
+
+		public unsafe override void Update<T>(T data, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)offset);
 		}
 		#else
-		public unsafe override bool Update<T>(T data)
+		public unsafe override void Update<T>(T data)
+		{
+			Update<T>(data, 0);
+		}
+
+		public unsafe override void Update<T>(T data, int offset)
 		{
 			TypedReference reference = __makeref(data);
 			byte* ptr = (byte*)*((IntPtr*)&reference);
 			#if MONO
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
-			return Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), 0) != 0;
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)offset);
 		}
 		#endif
 
-		public override unsafe bool Update(void* data, int dataSize, int dstOffset)
+		public override unsafe void Update(void* data, int dataSize, int offset)
 		{
-			return Orbital_Video_D3D12_ConstantBuffer_Update(handle, data, (uint)dataSize, (uint)dstOffset) != 0;
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, data, (uint)dataSize, (uint)offset);
 		}
 	}
 }

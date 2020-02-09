@@ -10,10 +10,10 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Init(ConstantBuffer* handle, UINT32 size, void* initialData)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Init(ConstantBuffer* handle, UINT32 size, int* alignedSize, void* initialData)
 	{
 		const UINT32 alignment = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT - 1;
-		const int alignedSize = (size + alignment) & ~alignment;// size is required to be aligned
+		*alignedSize = (size + alignment) & ~alignment;// size is required to be aligned
 		
 		// create resource
 		D3D12_HEAP_PROPERTIES heapProperties = {};
@@ -29,7 +29,7 @@ extern "C"
 		D3D12_RESOURCE_DESC resourceDesc = {};
 		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
         resourceDesc.Alignment = 0;
-        resourceDesc.Width = alignedSize;
+        resourceDesc.Width = *alignedSize;
         resourceDesc.Height = 1;
         resourceDesc.DepthOrArraySize = 1;
         resourceDesc.MipLevels = 1;
@@ -56,7 +56,7 @@ extern "C"
 		// create resource view
 		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
         cbvDesc.BufferLocation = handle->resource->GetGPUVirtualAddress();
-        cbvDesc.SizeInBytes = alignedSize;
+        cbvDesc.SizeInBytes = *alignedSize;
         handle->device->device->CreateConstantBufferView(&cbvDesc, handle->resourceHeap->GetCPUDescriptorHandleForHeapStart());
 
 		// upload initial data
@@ -126,14 +126,21 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize, UINT dstOffset)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(ConstantBuffer* handle)
 	{
-		UINT8* gpuDataPtr;
 		D3D12_RANGE readRange = {};
-		if (FAILED(handle->resource->Map(0, &readRange, reinterpret_cast<void**>(&gpuDataPtr)))) return 0;
-		memcpy(gpuDataPtr + dstOffset, data, dataSize);
-		handle->resource->Unmap(0, nullptr);
+		if (FAILED(handle->resource->Map(0, &readRange, reinterpret_cast<void**>(&handle->updateDataPtr)))) return 0;
 		return 1;
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_ConstantBuffer_EndUpdate(ConstantBuffer* handle)
+	{
+		handle->resource->Unmap(0, nullptr);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize, UINT offset)
+	{
+		memcpy(handle->updateDataPtr + offset, data, dataSize);
 	}
 }
 

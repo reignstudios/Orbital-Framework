@@ -64,12 +64,27 @@ namespace Orbital.Video.Vulkan
 			}
 		}
 
-		public override bool Update<T>(T data)
+		public override bool BeginUpdate()
 		{
 			throw new NotImplementedException();
 		}
 
-		public override unsafe bool Update(void* data, int dataSize, int dstOffset)
+		public override void EndUpdate()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update<T>(T data)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update<T>(T data, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(void* data, int dataSize, int offset)
 		{
 			throw new NotImplementedException();
 		}

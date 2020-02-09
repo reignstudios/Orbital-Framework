@@ -346,7 +346,9 @@ namespace Orbital.Demo
 				constantBufferObject.camera = camera.matrix;
 				constantBufferObject.constrast = MathF.Abs(MathF.Sin(rot * .5f));
 				rot += 0.1f;
+				constantBuffer.BeginUpdate();
 				constantBuffer.Update(constantBufferObject);
+				constantBuffer.EndUpdate();
 
 				// render frame and present
 				device.BeginFrame();

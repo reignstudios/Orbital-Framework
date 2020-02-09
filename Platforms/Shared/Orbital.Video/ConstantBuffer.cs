@@ -23,6 +23,10 @@ namespace Orbital.Video
 	public abstract class ConstantBufferBase : IDisposable
 	{
 		public readonly DeviceBase device;
+
+		/// <summary>
+		/// Size of the buffer with alignment padding
+		/// </summary>
 		public int size { get; protected set; }
 
 		public ConstantBufferBase(DeviceBase device)
@@ -32,12 +36,17 @@ namespace Orbital.Video
 
 		public abstract void Dispose();
 
+		public abstract bool BeginUpdate();
+		public abstract void EndUpdate();
+
 		#if CS_7_3
-		public abstract bool Update<T>(T data) where T : unmanaged;
+		public abstract void Update<T>(T data) where T : unmanaged;
+		public abstract void Update<T>(T data, int offset) where T : unmanaged;
 		#else
-		public abstract bool Update<T>(T data) where T : struct;
+		public abstract void Update<T>(T data) where T : struct;
+		public abstract void Update<T>(T data, int offset) where T : struct;
 		#endif
 
-		public unsafe abstract bool Update(void* data, int dataSize, int dstOffset);
+		public unsafe abstract void Update(void* data, int dataSize, int offset);
 	}
 }
