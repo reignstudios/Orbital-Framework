@@ -42,9 +42,13 @@ namespace Orbital.Video
 		#if CS_7_3
 		public abstract void Update<T>(T data) where T : unmanaged;
 		public abstract void Update<T>(T data, int offset) where T : unmanaged;
+		public abstract void Update<T>(T[] data, int offset) where T : unmanaged;
+		public abstract void Update<T>(T data, ShaderEffectVariableMapping variable) where T : unmanaged;
+		public abstract void Update<T>(T[] data, ShaderEffectVariableMapping variable) where T : unmanaged;
 		#else
 		public abstract void Update<T>(T data) where T : struct;
 		public abstract void Update<T>(T data, int offset) where T : struct;
+		public abstract void Update<T>(T[] data, int offset) where T : struct;
 		#endif
 
 		public unsafe abstract void Update(void* data, int dataSize, int offset);

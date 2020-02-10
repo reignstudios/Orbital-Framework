@@ -26,6 +26,9 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset);
 
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_UpdateArray(IntPtr handle, void* data, uint dataElementSize, uint dataElementCount, uint offset, uint srcStride, uint dstStride);
+
 		public ConstantBuffer(Device device, ConstantBufferMode mode)
 		: base(device)
 		{
@@ -101,10 +104,38 @@ namespace Orbital.Video.D3D12
 		{
 			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)offset);
 		}
+
+		public unsafe override void Update<T>(T[] data, int offset)
+		{
+			fixed (T* dataPtr = data)
+			{
+				Orbital_Video_D3D12_ConstantBuffer_Update(handle, dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset);
+			}
+		}
+
+		public unsafe override void Update<T>(T data, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)variable.offset);
+		}
+
+		public unsafe override void Update<T>(T[] data, ShaderEffectVariableMapping variable)
+		{
+			uint srcStride = (uint)ShaderEffectBase.VariableTypeToSrcStride(variable.type);
+			uint dstStride = (uint)ShaderEffectBase.VariableTypeToDstStride(variable.type);
+			fixed (T* dataPtr = data)
+			{
+				Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride);
+			}
+		}
 		#else
 		public unsafe override void Update<T>(T data)
 		{
-			Update<T>(data, 0);
+			TypedReference reference = __makeref(data);
+			byte* ptr = (byte*)*((IntPtr*)&reference);
+			#if MONO
+			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
+			#endif
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), 0);
 		}
 
 		public unsafe override void Update<T>(T data, int offset)
@@ -115,6 +146,34 @@ namespace Orbital.Video.D3D12
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
 			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)offset);
+		}
+
+		public unsafe override void Update<T>(T[] data, int offset)
+		{
+			GCHandle gcHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+			IntPtr dataPtr = gcHandle.AddrOfPinnedObject();
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, (void*)dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset);
+			gcHandle.Free();
+		}
+
+		public unsafe override void Update<T>(T data, ShaderEffectVariableMapping variable)
+		{
+			TypedReference reference = __makeref(data);
+			byte* ptr = (byte*)*((IntPtr*)&reference);
+			#if MONO
+			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
+			#endif
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)variable.offset);
+		}
+
+		public unsafe override void Update<T>(T[] data, ShaderEffectVariableMapping variable)
+		{
+			uint srcStride = (uint)ShaderEffectBase.VariableTypeToSrcStride(variable.type);
+			uint dstStride = (uint)ShaderEffectBase.VariableTypeToDstStride(variable.type);
+			GCHandle gcHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
+			IntPtr dataPtr = gcHandle.AddrOfPinnedObject();
+			Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, (void*)dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride);
+			gcHandle.Free();
 		}
 		#endif
 

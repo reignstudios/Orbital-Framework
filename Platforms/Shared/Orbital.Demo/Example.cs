@@ -23,13 +23,6 @@ namespace Orbital.Demo
 		}
 	}
 
-	[StructLayout(LayoutKind.Explicit)]
-	struct ConstantBufferObject
-	{
-		[FieldOffset(0)] public float constrast;
-		[FieldOffset(sizeof(float) * 4)] public Mat4 camera;
-	}
-
 	public sealed class Example : IDisposable
 	{
 		private ApplicationBase application;
@@ -41,13 +34,13 @@ namespace Orbital.Demo
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
+		private ShaderEffectVariableMapping shaderEffectVar_Constrast, shaderEffectVar_Camera;
 		private VertexBufferBase vertexBuffer;
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
 
 		private Camera camera;
-		private ConstantBufferObject constantBufferObject;
 		private float rot;
 
 		public Example(ApplicationBase application, WindowBase window)
@@ -142,10 +135,6 @@ namespace Orbital.Demo
 			}
 			texture2 = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
 
-			// create constant buffer
-			constantBufferObject = new ConstantBufferObject();
-			constantBuffer = device.CreateConstantBuffer<ConstantBufferObject>(constantBufferObject, ConstantBufferMode.Write);
-
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
 			/*using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -165,7 +154,18 @@ namespace Orbital.Demo
 				desc.constantBuffers[0] = new ShaderEffectConstantBuffer()
 				{
 					registerIndex = 0,
-					usage = ShaderEffectResourceUsage.VS
+					usage = ShaderEffectResourceUsage.VS,
+					variables = new ShaderEffectVariable[2]
+				};
+				desc.constantBuffers[0].variables[0] = new ShaderEffectVariable()
+				{
+					name = "constrast",
+					type = ShaderEffectVariableType.Float
+				};
+				desc.constantBuffers[0].variables[1] = new ShaderEffectVariable()
+				{
+					name = "camera",
+					type = ShaderEffectVariableType.Float4x4
 				};
 				desc.textures = new ShaderEffectTexture[2];
 				desc.textures[0] = new ShaderEffectTexture()
@@ -190,6 +190,12 @@ namespace Orbital.Demo
 				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
+
+			if (!shaderEffect.FindVariable("constrast", out shaderEffectVar_Constrast)) throw new Exception("Failed to find shader effect variable");
+			if (!shaderEffect.FindVariable("camera", out shaderEffectVar_Camera)) throw new Exception("Failed to find shader effect variable");
+
+			// create constant buffer
+			constantBuffer = device.CreateConstantBuffer(shaderEffect.constantBufferMappings[0].size, ConstantBufferMode.Write);
 
 			// create vertex buffer
 			var vertices = new Vertex[]
@@ -343,12 +349,11 @@ namespace Orbital.Demo
 				camera.Update(viewPort);
 
 				// update constant buffer
-				constantBufferObject.camera = camera.matrix;
-				constantBufferObject.constrast = MathF.Abs(MathF.Sin(rot * .5f));
-				rot += 0.1f;
 				constantBuffer.BeginUpdate();
-				constantBuffer.Update(constantBufferObject);
+				constantBuffer.Update<float>(MathF.Abs(MathF.Sin(rot * .5f)), shaderEffectVar_Constrast);
+				constantBuffer.Update<Mat4>(camera.matrix, shaderEffectVar_Camera);
 				constantBuffer.EndUpdate();
+				rot += 0.1f;
 
 				// render frame and present
 				device.BeginFrame();

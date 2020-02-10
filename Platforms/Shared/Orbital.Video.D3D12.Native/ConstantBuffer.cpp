@@ -142,6 +142,28 @@ extern "C"
 	{
 		memcpy(handle->updateDataPtr + offset, data, dataSize);
 	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_ConstantBuffer_UpdateArray(ConstantBuffer* handle, void* data, UINT dataElementSize, UINT dataElementCount, UINT offset, UINT srcStride, UINT dstStride)
+	{
+		UINT dataSize = dataElementSize * dataElementCount;
+		if (srcStride == dstStride)
+		{
+			memcpy(handle->updateDataPtr + offset, data, dataSize);
+		}
+		else
+		{
+			byte* srcDataPtr = (byte*)data;
+			UINT dstOffset = offset;
+			UINT dataRead = 0;
+			while (dataRead < dataSize)
+			{
+				memcpy(handle->updateDataPtr + dstOffset, srcDataPtr, srcStride);
+				dataRead += srcStride;
+				srcDataPtr += srcStride;
+				dstOffset += dstStride;
+			}
+		}
+	}
 }
 
 void Orbital_Video_D3D12_ConstantBuffer_ChangeState(ConstantBuffer* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)

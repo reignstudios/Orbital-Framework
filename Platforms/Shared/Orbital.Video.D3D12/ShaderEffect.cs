@@ -44,9 +44,7 @@ namespace Orbital.Video.D3D12
 
 		protected unsafe override bool InitFinish(ref ShaderEffectDesc desc)
 		{
-			if (desc.constantBuffers != null) constantBufferCount = desc.constantBuffers.Length;
-			if (desc.textures != null) textureCount = desc.textures.Length;
-
+			if (!base.InitFinish(ref desc)) return false;
 			IntPtr vsHandle = vs != null ? vs.handle : IntPtr.Zero;
 			IntPtr psHandle = ps != null ? ps.handle : IntPtr.Zero;
 			IntPtr hsHandle = hs != null ? hs.handle : IntPtr.Zero;
