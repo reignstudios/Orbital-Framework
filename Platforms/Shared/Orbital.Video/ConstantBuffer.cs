@@ -97,5 +97,41 @@ namespace Orbital.Video
 		/// Writes color as float4
 		/// </summary>
 		public abstract void Update(Color4 color, ShaderEffectVariableMapping variable);
+
+		public abstract void Update(float[] values, int offset);
+		public abstract void Update(Vec2[] vectors, int offset);
+		public abstract void Update(Vec3[] vectors, int offset);
+		public abstract void Update(Vec4[] vectors, int offset);
+
+		public abstract void Update(Mat2[] matrices, int offset);
+		public abstract void Update(Mat2x3[] matrices, int offset);
+		public abstract void Update(Mat3[] matrices, int offset);
+		public abstract void Update(Mat3x2[] matrices, int offset);
+		public abstract void Update(Mat4[] matrices, int offset);
+
+		public abstract void Update(Quat[] quaternions, int offset);
+
+		/// <summary>
+		/// Writes color as float4
+		/// </summary>
+		public abstract void Update(Color4[] colors, int offset);
+
+		public abstract void Update(float[] values, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec2[] vectors, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec3[] vectors, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec4[] vectors, ShaderEffectVariableMapping variable);
+
+		public abstract void Update(Mat2[] matrices, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat2x3[] matrices, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat3[] matrices, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat3x2[] matrices, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat4[] matrices, ShaderEffectVariableMapping variable);
+
+		public abstract void Update(Quat[] quaternions, ShaderEffectVariableMapping variable);
+
+		/// <summary>
+		/// Writes color as float4
+		/// </summary>
+		public abstract void Update(Color4[] colors, ShaderEffectVariableMapping variable);
 	}
 }

@@ -214,5 +214,115 @@ namespace Orbital.Video.Vulkan
 		{
 			throw new NotImplementedException();
 		}
+
+		public override unsafe void Update(float[] values, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec2[] vectors, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec3[] vectors, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec4[] vectors, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat2[] matrices, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat2x3[] matrices, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat3[] matrices, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat3x2[] matrices, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat4[] matrices, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Quat[] quaternions, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Color4[] colors, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(float[] values, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec2[] vectors, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec3[] vectors, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Vec4[] vectors, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat2[] matrices, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat2x3[] matrices, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat3[] matrices, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat3x2[] matrices, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Mat4[] matrices, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Quat[] quaternions, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override unsafe void Update(Color4[] colors, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

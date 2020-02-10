@@ -164,6 +164,26 @@ extern "C"
 			}
 		}
 	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(ConstantBuffer* handle, void* data, UINT dataElementSize, UINT dataElementCount, UINT offset, UINT srcStride, UINT dstStride)
+	{
+		UINT dataSize = dataElementSize * dataElementCount;
+		byte* srcDataPtr = (byte*)data;
+		UINT dstOffset = offset;
+		UINT dataRead = 0;
+		while (dataRead < dataSize)
+		{
+			float srcDataVec[4];
+			srcDataVec[0] = srcDataPtr[0] / 255.0f;
+			srcDataVec[1] = srcDataPtr[1] / 255.0f;
+			srcDataVec[2] = srcDataPtr[2] / 255.0f;
+			if (srcStride >= 4) srcDataVec[3] = srcDataPtr[3] / 255.0f;
+			memcpy(handle->updateDataPtr + dstOffset, srcDataVec, srcStride);
+			dataRead += srcStride;
+			srcDataPtr += srcStride;
+			dstOffset += dstStride;
+		}
+	}
 }
 
 void Orbital_Video_D3D12_ConstantBuffer_ChangeState(ConstantBuffer* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)
