@@ -1,4 +1,5 @@
 ﻿using System;
+using Orbital.Numerics;
 
 namespace Orbital.Video
 {
@@ -36,7 +37,15 @@ namespace Orbital.Video
 
 		public abstract void Dispose();
 
+		/// <summary>
+		/// Open command buffer for updates
+		/// </summary>
+		/// <returns>True if successful</returns>
 		public abstract bool BeginUpdate();
+
+		/// <summary>
+		/// Close command buffer from updates
+		/// </summary>
 		public abstract void EndUpdate();
 
 		#if CS_7_3
@@ -52,5 +61,41 @@ namespace Orbital.Video
 		#endif
 
 		public unsafe abstract void Update(void* data, int dataSize, int offset);
+
+		public abstract void Update(float value, int offset);
+		public abstract void Update(Vec2 vector, int offset);
+		public abstract void Update(Vec3 vector, int offset);
+		public abstract void Update(Vec4 vector, int offset);
+
+		public abstract void Update(Mat2 matrix, int offset);
+		public abstract void Update(Mat2x3 matrix, int offset);
+		public abstract void Update(Mat3 matrix, int offset);
+		public abstract void Update(Mat3x2 matrix, int offset);
+		public abstract void Update(Mat4 matrix, int offset);
+
+		public abstract void Update(Quat quaternion, int offset);
+
+		/// <summary>
+		/// Writes color as float4
+		/// </summary>
+		public abstract void Update(Color4 color, int offset);
+
+		public abstract void Update(float value, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec2 vector, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec3 vector, ShaderEffectVariableMapping variable);
+		public abstract void Update(Vec4 vector, ShaderEffectVariableMapping variable);
+
+		public abstract void Update(Mat2 matrix, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat2x3 matrix, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat3 matrix, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat3x2 matrix, ShaderEffectVariableMapping variable);
+		public abstract void Update(Mat4 matrix, ShaderEffectVariableMapping variable);
+
+		public abstract void Update(Quat quaternion, ShaderEffectVariableMapping variable);
+
+		/// <summary>
+		/// Writes color as float4
+		/// </summary>
+		public abstract void Update(Color4 color, ShaderEffectVariableMapping variable);
 	}
 }

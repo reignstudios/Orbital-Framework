@@ -350,8 +350,8 @@ namespace Orbital.Demo
 
 				// update constant buffer
 				constantBuffer.BeginUpdate();
-				constantBuffer.Update<float>(MathF.Abs(MathF.Sin(rot * .5f)), shaderEffectVar_Constrast);
-				constantBuffer.Update<Mat4>(camera.matrix, shaderEffectVar_Camera);
+				constantBuffer.Update(MathF.Abs(MathF.Sin(rot * .5f)), shaderEffectVar_Constrast);
+				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
 				constantBuffer.EndUpdate();
 				rot += 0.1f;
 

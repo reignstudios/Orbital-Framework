@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Orbital.Numerics;
 
 namespace Orbital.Video.Vulkan
 {
@@ -100,6 +101,116 @@ namespace Orbital.Video.Vulkan
 		}
 
 		public override unsafe void Update(void* data, int dataSize, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(float value, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec2 vector, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec3 vector, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec4 vector, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat2 matrix, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat2x3 matrix, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat3 matrix, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat3x2 matrix, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat4 matrix, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Quat quaternion, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Color4 color, int offset)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(float value, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec2 vector, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec3 vector, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Vec4 vector, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat2 matrix, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat2x3 matrix, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat3 matrix, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat3x2 matrix, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Mat4 matrix, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Quat quaternion, ShaderEffectVariableMapping variable)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void Update(Color4 color, ShaderEffectVariableMapping variable)
 		{
 			throw new NotImplementedException();
 		}

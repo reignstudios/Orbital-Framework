@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Orbital.Numerics;
 
 namespace Orbital.Video.D3D12
 {
@@ -180,6 +181,118 @@ namespace Orbital.Video.D3D12
 		public override unsafe void Update(void* data, int dataSize, int offset)
 		{
 			Orbital_Video_D3D12_ConstantBuffer_Update(handle, data, (uint)dataSize, (uint)offset);
+		}
+
+		public override unsafe void Update(float value, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)offset);
+		}
+
+		public override unsafe void Update(Vec2 vector, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Vec3 vector, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Vec4 vector, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Mat2 matrix, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Mat2x3 matrix, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Mat3 matrix, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Mat3x2 matrix, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Mat4 matrix, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Quat quaternion, int offset)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)offset);
+		}
+
+		public override unsafe void Update(Color4 color, int offset)
+		{
+			var colorVec = color.ToVec4();
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)offset);
+		}
+
+		public override unsafe void Update(float value, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Vec2 vector, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Vec3 vector, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Vec4 vector, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Mat2 matrix, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Mat2x3 matrix, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Mat3 matrix, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Mat3x2 matrix, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Mat4 matrix, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Quat quaternion, ShaderEffectVariableMapping variable)
+		{
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)variable.offset);
+		}
+
+		public override unsafe void Update(Color4 color, ShaderEffectVariableMapping variable)
+		{
+			var colorVec = color.ToVec4();
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset);
 		}
 	}
 }
