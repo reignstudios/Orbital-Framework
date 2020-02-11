@@ -4,6 +4,11 @@ cbuffer ConstantBufferObject : register(b0)
     float4x4 camera;
 };
 
+/*tbuffer TextureBufferObject : register(t2)
+{
+    float4x4 transforms[10];
+}*/
+
 struct VSInput
 {
     float4 position : POSITION0;
