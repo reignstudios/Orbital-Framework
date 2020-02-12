@@ -4,10 +4,14 @@ cbuffer ConstantBufferObject : register(b0)
     float4x4 camera;
 };
 
+// Test reference
 /*tbuffer TextureBufferObject : register(t2)
 {
     float4x4 transforms[10];
 }*/
+// GLSL equivalent
+// https://www.khronos.org/opengl/wiki/Buffer_Texture
+// texelFetch or texelFetchOffset: https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Direct_texel_fetches
 
 struct VSInput
 {
