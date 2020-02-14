@@ -84,6 +84,10 @@
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj">
+      <Project>{c42b7ef8-3969-49ea-9992-b2ceae3906a8}</Project>
+      <Name>Orbital.NetCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
       <Name>Orbital.Numerics</Name>

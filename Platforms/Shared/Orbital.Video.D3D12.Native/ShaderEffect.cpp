@@ -109,6 +109,9 @@ extern "C"
 		signatureDesc.Desc_1_1.NumParameters = 0;
 		if (desc->constantBufferCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
 		if (desc->textureCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
+		size_t paramSize;
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) paramSize = sizeof(D3D12_ROOT_PARAMETER);
+		else paramSize = sizeof(D3D12_ROOT_PARAMETER1);
 		signatureDesc.Desc_1_1.pParameters = (D3D12_ROOT_PARAMETER1*)alloca(sizeof(D3D12_ROOT_PARAMETER1) * signatureDesc.Desc_1_1.NumParameters);// PARAMETER1 is the same size as PARAMETER
 
 		int parameterIndex = 0;
@@ -135,8 +138,8 @@ extern "C"
 			}
 
 			parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
-			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_ROOT_PARAMETER);
-			else size = sizeof(D3D12_ROOT_PARAMETER1);
+			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
+			else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
 			parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->constantBufferCount);
 			for (int i = 0; i != desc->constantBufferCount; ++i)
 			{
@@ -156,7 +159,7 @@ extern "C"
 					memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
 				}
 			}
-			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, size);
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
 			++parameterIndex;
 		}
 
@@ -183,8 +186,8 @@ extern "C"
 			}
 
 			parameter.DescriptorTable.NumDescriptorRanges = desc->textureCount;
-			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_ROOT_PARAMETER);
-			else size = sizeof(D3D12_ROOT_PARAMETER1);
+			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
+			else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
 			parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->textureCount);
 			for (int i = 0; i != desc->textureCount; ++i)
 			{
@@ -204,7 +207,7 @@ extern "C"
 					memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
 				}
 			}
-			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, size);
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
 			++parameterIndex;
 		}
 

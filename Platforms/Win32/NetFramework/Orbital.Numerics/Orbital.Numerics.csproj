@@ -77,8 +77,8 @@
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat4.cs">
       <Link>Mat4.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathUtilities.cs">
-      <Link>MathUtilities.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathTools.cs">
+      <Link>MathTools.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Plane3.cs">
       <Link>Plane3.cs</Link>

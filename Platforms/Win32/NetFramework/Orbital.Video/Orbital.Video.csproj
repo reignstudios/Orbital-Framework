@@ -18,17 +18,19 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CS_7_3</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CS_7_3</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,8 +43,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Camera.cs">
+      <Link>Camera.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs">
       <Link>CommandList.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs">
+      <Link>ConstantBuffer.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs">
       <Link>DepthStencil.cs</Link>
@@ -50,20 +58,41 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs">
       <Link>Device.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\IndexBuffer.cs">
+      <Link>IndexBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs">
       <Link>Instance.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs">
       <Link>RenderPass.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderPassDesc.cs">
-      <Link>RenderPassDesc.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderState.cs">
+      <Link>RenderState.cs</Link>
     </Compile>
-    <Compile Include="..\..\..\Shared\Orbital.Video\RenderTarget.cs">
-      <Link>RenderTarget.cs</Link>
+    <Compile Include="..\..\..\Shared\Orbital.Video\RenderTexture.cs">
+      <Link>RenderTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Shader.cs">
+      <Link>Shader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\ShaderEffect.cs">
+      <Link>ShaderEffect.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\SwapChain.cs">
       <Link>SwapChain.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Texture.cs">
+      <Link>Texture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\VertexBuffer.cs">
+      <Link>VertexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\VertexBufferStreamer.cs">
+      <Link>VertexBufferStreamer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\ViewPort.cs">
+      <Link>ViewPort.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -71,6 +100,10 @@
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.IO\Orbital.IO.csproj">
+      <Project>{e618a9ca-0a48-4682-b1b8-44c4f3ecd300}</Project>
+      <Name>Orbital.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>

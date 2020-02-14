@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CS_7_3;D3D12</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;CS_7_3;D3D12</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -46,8 +46,14 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandList.cs">
       <Link>CommandList.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ConstantBuffer.cs">
+      <Link>ConstantBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs">
       <Link>Device.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\IndexBuffer.cs">
+      <Link>IndexBuffer.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Instance.cs">
       <Link>Instance.cs</Link>
@@ -55,8 +61,32 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderPass.cs">
       <Link>RenderPass.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderState.cs">
+      <Link>RenderState.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Shader.cs">
+      <Link>Shader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ShaderEffect.cs">
+      <Link>ShaderEffect.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\SwapChain.cs">
       <Link>SwapChain.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Texture.cs">
+      <Link>Texture.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Texture2D.cs">
+      <Link>Texture2D.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\VertexBuffer.cs">
+      <Link>VertexBuffer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\VertexBufferStreamer.cs">
+      <Link>VertexBufferStreamer.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs">
+      <Link>InteropStructures.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -64,6 +94,10 @@
     <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.IO\Orbital.IO.csproj">
+      <Project>{e618a9ca-0a48-4682-b1b8-44c4f3ecd300}</Project>
+      <Name>Orbital.IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
