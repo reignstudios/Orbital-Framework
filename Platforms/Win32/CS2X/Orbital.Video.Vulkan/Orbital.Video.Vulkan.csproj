@@ -24,13 +24,16 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\IndexBuffer.cs" Link="IndexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ShaderEffect.cs" Link="ShaderEffect.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\SwapChain.cs" Link="SwapChain.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\VertexBuffer.cs" Link="VertexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\VertexBufferStreamer.cs" Link="VertexBufferStreamer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Interop\InteropStructures.cs" Link="InteropStructures.cs" />
   </ItemGroup>
 
