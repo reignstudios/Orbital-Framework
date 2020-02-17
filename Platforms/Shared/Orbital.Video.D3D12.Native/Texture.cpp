@@ -1,25 +1,8 @@
 #include "Texture.h"
+#include "Utils.h"
 
 extern "C"
 {
-	bool TextureFormatToNative(TextureFormat format, DXGI_FORMAT* nativeFormat)
-	{
-		switch (format)
-		{
-			case TextureFormat::TextureFormat_Default:
-			case TextureFormat::TextureFormat_B8G8R8A8:
-				*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
-				break;
-
-			case TextureFormat::TextureFormat_DefaultHDR:
-			case TextureFormat::TextureFormat_R10G10B10A2:
-				*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
-				break;
-			default: return false;
-		}
-		return true;
-	}
-
 	UINT TextureFormatSizePerPixel(DXGI_FORMAT nativeFormat)
 	{
 		switch (nativeFormat)
@@ -28,6 +11,8 @@ extern "C"
 			case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM:
 				return 4;
 
+			case TextureFormat::TextureFormat_R16G16B16A16: return 8;
+			case TextureFormat::TextureFormat_R32G32B32A32: return 16;
 			default: return 0;
 		}
 		return true;
@@ -43,7 +28,7 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data)
 	{
-		if (!TextureFormatToNative(format, &handle->format)) return 0;
+		if (!GetNative_TextureFormat(format, &handle->format)) return 0;
 
 		// create resource
 		D3D12_HEAP_PROPERTIES heapProperties = {};

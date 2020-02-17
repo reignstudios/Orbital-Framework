@@ -301,6 +301,17 @@ namespace Orbital.Video.D3D12
 			}
 			return abstraction;
 		}
+
+		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
+		{
+			var abstraction = new DepthStencil(this, mode);
+			if (!abstraction.Init(format, width, height))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create DepthStencil");
+			}
+			return abstraction;
+		}
 		#endregion
 	}
 }

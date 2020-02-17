@@ -27,15 +27,26 @@ typedef enum TextureFormat
 	TextureFormat_Default,
 	TextureFormat_DefaultHDR,
 	TextureFormat_B8G8R8A8,
-	TextureFormat_R10G10B10A2
+	TextureFormat_R10G10B10A2,
+	TextureFormat_R16G16B16A16,
+	TextureFormat_R32G32B32A32,
 }TextureFormat;
 #pragma endregion
 
 #pragma region Depth Stencil
+typedef enum DepthStencilMode
+{
+	DepthStencilMode_GPUOptimized
+}DepthStencilMode;
+
 typedef enum DepthStencilFormat
 {
-	DepthStencilFormat_Default,
-	DepthStencilFormat_D24S8
+	DepthStencilFormat_DefaultDepth,
+	DepthStencilFormat_DefaultDepthStencil,
+	DepthStencilFormat_D32,
+	DepthStencilFormat_D32S8,
+	DepthStencilFormat_D24S8,
+	DepthStencilFormat_D16
 }DepthStencilFormat;
 #pragma endregion
 

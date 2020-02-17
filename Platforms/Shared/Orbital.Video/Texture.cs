@@ -12,10 +12,35 @@ namespace Orbital.Video
 
 	public enum TextureFormat
 	{
+		/// <summary>
+		/// Let the API choose default non-HDR format
+		/// </summary>
 		Default,
+
+		/// <summary>
+		/// Let the API choose default HDR format
+		/// </summary>
 		DefaultHDR,
+
+		/// <summary>
+		/// 32bit: 8bit for RGBA non-floating point channels
+		/// </summary>
 		B8G8R8A8,
-		R10G10B10A2
+
+		/// <summary>
+		/// 32bit: 10bit for RGB floating point channels + 2bit for alpha as non-floating point channel
+		/// </summary>
+		R10G10B10A2,
+
+		/// <summary>
+		/// 64bit: 16bit for RGBA floating point channels
+		/// </summary>
+		R16G16B16A16,
+
+		/// <summary>
+		/// 128bit: 32bit for RGBA floating point channels
+		/// </summary>
+		R32G32B32A32,
 	}
 
 	public struct TextureMipLevel2D

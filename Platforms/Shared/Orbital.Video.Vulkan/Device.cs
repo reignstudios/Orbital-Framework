@@ -204,6 +204,11 @@ namespace Orbital.Video.Vulkan
 		{
 			throw new NotImplementedException();
 		}
+
+		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }
