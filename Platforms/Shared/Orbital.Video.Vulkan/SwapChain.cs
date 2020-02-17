@@ -83,6 +83,11 @@ namespace Orbital.Video.Vulkan
 			}
 			return abstraction;
 		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase swapChain)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

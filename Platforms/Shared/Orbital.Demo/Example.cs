@@ -39,6 +39,7 @@ namespace Orbital.Demo
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
+		private DepthStencilBase depthStencil;
 
 		private Camera camera;
 		private float rot;
@@ -75,16 +76,16 @@ namespace Orbital.Demo
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
 
+			// create depth-stencil buffer
+			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+			depthStencil = device.CreateDepthStencil(DepthStencilFormat.DefaultDepth, windowSize.width, windowSize.height, DepthStencilMode.GPUOptimized);
+
 			// create command list
 			commandList = device.CreateCommandList();
 
 			// create render pass
-			var renderPassDesc = new RenderPassDesc()
-			{
-				clearColor = true,
-				clearColorValue = new Vec4(0, .2f, .4f, 1)
-			};
-			renderPass = device.CreateRenderPass(renderPassDesc);
+			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1));
+			renderPass = device.CreateRenderPass(renderPassDesc, depthStencil);
 
 			// create texture
 			int textureWidth = 256, textureHeight = 256;
@@ -202,11 +203,16 @@ namespace Orbital.Demo
 			{
 				new Vertex(new Vec3(-1, -1, 0), Color4.red, new Vec2(0, 0)),
 				new Vertex(new Vec3(0, 1, 0), Color4.green, new Vec2(.5f, 1)),
-				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0))
+				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0)),
+
+				new Vertex(new Vec3(-1, -1, 1), Color4.red, new Vec2(0, 0)),
+				new Vertex(new Vec3(0, 1, 1), Color4.green, new Vec2(.5f, 1)),
+				new Vertex(new Vec3(1, -1, 1), Color4.blue, new Vec2(1, 0))
 			};
 			var indices = new ushort[]
 			{
-				0, 1, 2
+				0, 1, 2,
+				3, 4, 5
 			};
 			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, indices, VertexBufferMode.GPUOptimized);
 
@@ -250,7 +256,8 @@ namespace Orbital.Demo
 				textures = new TextureBase[2],
 				vertexBufferTopology = VertexBufferTopology.Triangle,
 				vertexBufferStreamer = vertexBufferStreamer,
-				msaaLevel = MSAALevel.Disabled
+				msaaLevel = MSAALevel.Disabled,
+				depthEnable = true
 			};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
 			renderStateDesc.textures[0] = texture;
@@ -319,6 +326,12 @@ namespace Orbital.Demo
 			{
 				commandList.Dispose();
 				commandList = null;
+			}
+
+			if (depthStencil != null)
+			{
+				depthStencil.Dispose();
+				depthStencil = null;
 			}
 
 			if (device != null)

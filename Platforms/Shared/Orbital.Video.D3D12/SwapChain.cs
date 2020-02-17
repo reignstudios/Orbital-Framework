@@ -75,6 +75,17 @@ namespace Orbital.Video.D3D12
 			}
 			return abstraction;
 		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
+		{
+			var abstraction = new RenderPass(this, (DepthStencil)depthStencil);
+			if (!abstraction.Init(desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderPass");
+			}
+			return abstraction;
+		}
 		#endregion
 	}
 }

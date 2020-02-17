@@ -130,6 +130,11 @@ namespace Orbital.Video.Vulkan
 			return swapChain.CreateRenderPass(desc);
 		}
 
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
 		{
 			throw new NotImplementedException();

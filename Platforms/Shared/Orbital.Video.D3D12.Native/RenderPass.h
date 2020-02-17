@@ -1,12 +1,13 @@
 #pragma once
 #include "Device.h"
 #include "SwapChain.h"
-#include "Texture.h"
+#include "DepthStencil.h"
 
 struct RenderPass
 {
 	Device* device;
 	SwapChain* swapChain;
+	DepthStencil* depthStencil;
 	UINT renderTargetCount;
 	DXGI_FORMAT* renderTargetFormats;
 	DXGI_FORMAT depthStencilFormat;

@@ -3,15 +3,16 @@
 
 extern "C"
 {
-	ORBITAL_EXPORT RenderPass* Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(Device* device, SwapChain* swapChain)
+	ORBITAL_EXPORT RenderPass* Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(Device* device, SwapChain* swapChain, DepthStencil* depthStencil)
 	{
 		RenderPass* handle = (RenderPass*)calloc(1, sizeof(RenderPass));
 		handle->device = device;
 		handle->swapChain = swapChain;
+		handle->depthStencil = depthStencil;
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_Native(RenderPass* handle, RenderPassDesc* desc, DXGI_FORMAT* renderTargetFormats, ID3D12Resource** renderTargetViews, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)//, DXGI_FORMAT depthStencilFormat)
+	int Orbital_Video_D3D12_RenderPass_Init_Base(RenderPass* handle, RenderPassDesc* desc, DXGI_FORMAT* renderTargetFormats, ID3D12Resource** renderTargetViews, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)
 	{
 		// render-pass: render target
 		handle->renderTargetCount = renderTargetCount;
@@ -23,25 +24,44 @@ extern "C"
 			handle->renderTargetFormats[i] = renderTargetFormats[i];
 			handle->renderTargetViews[i] = renderTargetViews[i];
 
-			D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessClear;
-			renderPassBeginningAccessClear.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
-			memcpy(renderPassBeginningAccessClear.Clear.ClearValue.Color, desc->clearColorValue, sizeof(float) * 4);
-			//renderPassBeginningAccessClear.Clear.ClearValue.DepthStencil.Depth = desc->depthValue;
-			//renderPassBeginningAccessClear.Clear.ClearValue.DepthStencil.Stencil = desc->stencilValue;
-
-			D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessPreserve;
-			renderPassEndingAccessPreserve.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
-
 			handle->renderTargetDescs[i].cpuDescriptor = renderTargetHandles[i];
-			handle->renderTargetDescs[i].BeginningAccess = renderPassBeginningAccessClear;
-			handle->renderTargetDescs[i].EndingAccess = renderPassEndingAccessPreserve;
+
+			// begin
+			handle->renderTargetDescs[i].BeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			memcpy(handle->renderTargetDescs[i].BeginningAccess.Clear.ClearValue.Color, desc->clearColorValue, sizeof(float) * 4);
+			handle->renderTargetDescs[i].BeginningAccess.Clear.ClearValue.Format = renderTargetFormats[i];
+
+			// end
+			handle->renderTargetDescs[i].EndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+			//handle->renderTargetDescs[i].EndingAccess.Resolve// TODO: if MSAA: D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_RESOLVE
 		}
 
 		// render-pass: depth stencil
-		//handle->depthStencilFormat = depthStencilFormat;
-		//D3D12_RENDER_PASS_BEGINNING_ACCESS renderPassBeginningAccessNoAccess{ D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_NO_ACCESS, {} };
-		//D3D12_RENDER_PASS_ENDING_ACCESS renderPassEndingAccessNoAccess{ D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_NO_ACCESS, {} };
-		//D3D12_RENDER_PASS_DEPTH_STENCIL_DESC renderPassDepthStencilDesc{ dsvCPUDescriptorHandle, renderPassBeginningAccessNoAccess, renderPassBeginningAccessNoAccess, renderPassEndingAccessNoAccess, renderPassEndingAccessNoAccess };
+		if (handle->depthStencil != NULL)
+		{
+			handle->depthStencilFormat = handle->depthStencil->format;
+
+			handle->depthStencilDesc = (D3D12_RENDER_PASS_DEPTH_STENCIL_DESC*)calloc(1, sizeof(D3D12_RENDER_PASS_DEPTH_STENCIL_DESC));
+			handle->depthStencilDesc->cpuDescriptor = handle->depthStencil->resourceCPUHeapHandle;
+
+			// begin depth
+			handle->depthStencilDesc->DepthBeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			handle->depthStencilDesc->DepthBeginningAccess.Clear.ClearValue.DepthStencil.Depth = desc->depthValue;
+			handle->depthStencilDesc->DepthBeginningAccess.Clear.ClearValue.Format = handle->depthStencil->format;
+
+			// end depth
+			handle->depthStencilDesc->DepthEndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+			//handle->depthStencilDesc->DepthEndingAccess.Resolve// ??
+
+			// begin stencil
+			handle->depthStencilDesc->StencilBeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.DepthStencil.Stencil = desc->stencilValue;
+			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.Format = handle->depthStencil->format;
+
+			// end stencil
+			handle->depthStencilDesc->StencilEndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
+			//handle->depthStencilDesc->StencilEndingAccess.Resolve// ??
+		}
 
 		return 1;
 	}
@@ -52,11 +72,11 @@ extern "C"
 		{
 			DXGI_FORMAT* renderTargetFormatFormats = (DXGI_FORMAT*)alloca(sizeof(DXGI_FORMAT) * handle->swapChain->bufferCount);
 			for (UINT i = 0; i != handle->swapChain->bufferCount; ++i) renderTargetFormatFormats[i] = handle->swapChain->renderTargetFormat;
-			return Orbital_Video_D3D12_RenderPass_Init_Native(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetViews, handle->swapChain->renderTargetDescHandles, handle->swapChain->bufferCount);//, handle->depthStencilFormat);
+			return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetViews, handle->swapChain->renderTargetDescCPUHandles, handle->swapChain->bufferCount);
 		}
 		else
 		{
-			return 0;//Orbital_Video_D3D12_RenderPass_Init_Native(handle, desc, &handle->texture->format, &handle->texture->renderTargetDescHandle, 1);//, handle->depthStencil->format);
+			return 0;//Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, &handle->texture->format, &handle->texture->renderTargetDescHandle, 1);//, handle->depthStencil->format);
 		}
 	}
 

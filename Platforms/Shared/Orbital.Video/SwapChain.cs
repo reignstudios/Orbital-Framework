@@ -25,6 +25,7 @@ namespace Orbital.Video
 
 		#region Create Methods
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
+		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil);
 		#endregion
 	}
 }

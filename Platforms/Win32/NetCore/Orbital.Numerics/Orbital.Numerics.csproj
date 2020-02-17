@@ -8,7 +8,10 @@
     <Compile Include="..\..\..\Shared\Orbital.Numerics\AffineTransform3.cs" Link="AffineTransform3.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound2.cs" Link="Bound2.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound3.cs" Link="Bound3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3.cs" Link="Color3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3F.cs" Link="Color3F.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4.cs" Link="Color4.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4F.cs" Link="Color4F.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Frustum3.cs" Link="Frustum3.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Line2.cs" Link="Line2.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Line3.cs" Link="Line3.cs" />

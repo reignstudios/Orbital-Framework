@@ -50,13 +50,13 @@ extern "C"
 		UINT renderTargetViewHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
-		handle->renderTargetDescHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
+		handle->renderTargetDescCPUHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
 		handle->renderTargetViews = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
 		for (UINT i = 0; i != bufferCount; ++i)
         {
             if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
             handle->device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
-			handle->renderTargetDescHandles[i] = renderTargetDescHandle;
+			handle->renderTargetDescCPUHandles[i] = renderTargetDescHandle;
             renderTargetDescHandle.ptr += renderTargetViewHeapSize;
         }
 
@@ -65,10 +65,10 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_Dispose(SwapChain* handle)
 	{
-		if (handle->renderTargetDescHandles != NULL)
+		if (handle->renderTargetDescCPUHandles != NULL)
 		{
-			free(handle->renderTargetDescHandles);
-			handle->renderTargetDescHandles = NULL;
+			free(handle->renderTargetDescCPUHandles);
+			handle->renderTargetDescCPUHandles = NULL;
 		}
 
 		if (handle->renderTargetViews != NULL)

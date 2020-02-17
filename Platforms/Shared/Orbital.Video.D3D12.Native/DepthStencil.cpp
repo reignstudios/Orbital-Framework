@@ -35,9 +35,9 @@ extern "C"
         resourceDesc.SampleDesc.Count = 1;
         resourceDesc.SampleDesc.Quality = 0;
         resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-        resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+        resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
-		handle->resourceState = D3D12_RESOURCE_STATE_DEPTH_WRITE;
+		handle->resourceState = D3D12_RESOURCE_STATE_DEPTH_READ;
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
 
 		// create resource heap
@@ -46,15 +46,22 @@ extern "C"
         heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
         heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
         if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
-		handle->resourceHeapHandle = handle->resourceHeap->GetGPUDescriptorHandleForHeapStart();
+		handle->resourceCPUHeapHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
 
-		// create resource view
+		// create depth-stencil view
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsDesc = {};
+		dsDesc.Format = handle->format;
+		dsDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsDesc.Texture2D.MipSlice = 0;
+		handle->device->device->CreateDepthStencilView(handle->resource, &dsDesc, handle->resourceCPUHeapHandle);
+
+		/*// create resource view (TODO: requires a D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV heap to create)
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.Format = handle->format;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = 1;
-		handle->device->device->CreateShaderResourceView(handle->resource, &srvDesc, handle->resourceHeap->GetCPUDescriptorHandleForHeapStart());
+		handle->device->device->CreateShaderResourceView(handle->resource, &srvDesc, handle->resourceCPUHeapHandle);*/
 
 		return 1;
 	}

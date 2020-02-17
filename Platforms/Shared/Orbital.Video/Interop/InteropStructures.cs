@@ -13,7 +13,7 @@ namespace Orbital.Video.Vulkan
 	struct RenderPassDesc_NativeInterop
 	{
 		public byte clearColor, clearDepthStencil;
-		public Vec4 clearColorValue;
+		public Color4F clearColorValue;
 		public float depthValue, stencilValue;
 
 		public RenderPassDesc_NativeInterop(ref RenderPassDesc desc)
