@@ -50,8 +50,17 @@
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound3.cs">
       <Link>Bound3.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3.cs">
+      <Link>Color3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3F.cs">
+      <Link>Color3F.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4.cs">
       <Link>Color4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4F.cs">
+      <Link>Color4F.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Frustum3.cs">
       <Link>Frustum3.cs</Link>
@@ -135,6 +144,12 @@
       <Link>Vec4.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj">
+      <Project>{c42b7ef8-3969-49ea-9992-b2ceae3906a8}</Project>
+      <Name>Orbital.NetCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

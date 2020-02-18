@@ -41,6 +41,8 @@ namespace Orbital.Video.Vulkan
 		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
 		public byte depthEnable, stencilEnable;
+		public TriangleCulling triangleCulling;
+		public TriangleFillMode triangleFillMode;
 		public MSAALevel msaaLevel;
 
 		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
@@ -61,6 +63,8 @@ namespace Orbital.Video.Vulkan
 			indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
 			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
 			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
+			triangleCulling = desc.triangleCulling;
+			triangleFillMode = desc.triangleFillMode;
 			msaaLevel = desc.msaaLevel;
 		}
 

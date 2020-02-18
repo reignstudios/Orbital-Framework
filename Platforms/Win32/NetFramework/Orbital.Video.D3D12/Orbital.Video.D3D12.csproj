@@ -49,6 +49,9 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ConstantBuffer.cs">
       <Link>ConstantBuffer.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\DepthStencil.cs">
+      <Link>DepthStencil.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs">
       <Link>Device.cs</Link>
     </Compile>

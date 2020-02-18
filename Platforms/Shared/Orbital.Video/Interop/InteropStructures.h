@@ -142,6 +142,19 @@ typedef enum MSAALevel
 	MSAALevel_X16 = 16
 }MSAALevel;
 
+typedef enum TriangleCulling
+{
+	TriangleCulling_None,
+	TriangleCulling_Back,
+	TriangleCulling_Front
+}TriangleCulling;
+
+typedef enum TriangleFillMode
+{
+	TriangleFillMode_Solid,
+	TriangleFillMode_Wireframe
+}TriangleFillMode;
+
 typedef struct RenderStateDesc
 {
 	intptr_t renderPass;
@@ -154,6 +167,8 @@ typedef struct RenderStateDesc
 	intptr_t vertexBufferStreamer;
 	intptr_t indexBuffer;
 	char depthEnable, stencilEnable;
+	TriangleCulling triangleCulling;
+	TriangleFillMode triangleFillMode;
 	MSAALevel msaaLevel;
 }RenderStateDesc;
 #pragma endregion

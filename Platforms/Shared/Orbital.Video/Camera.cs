@@ -7,16 +7,82 @@ namespace Orbital.Video
 	/// </summary>
 	public class Camera
 	{
+		/// <summary>
+		/// Matrix for transforming projected 3D geometry in a view port
+		/// </summary>
 		public Mat4 matrix;
-		public Mat4 viewMatrix, projMatrix;
+
+		/// <summary>
+		/// View matrix
+		/// </summary>
+		public Mat4 viewMatrix;
+		
+		/// <summary>
+		/// Projection matrix
+		/// </summary>
+		public Mat4 projMatrix;
+
+		/// <summary>
+		/// Matrix for transforming billboard objects
+		/// </summary>
 		public Mat3 billboardMatrix;
-		public Vec3 position, forward, up, right;
-		public float aspect, fov, near, far;
+
+		/// <summary>
+		/// Target forward vector which is used to generate 'forward' in 'Update'.
+		/// This vector does not have to be normalized
+		/// </summary>
+		public Vec3 targetForward;
+		
+		/// <summary>
+		/// Target up vector which is used to generate 'up' in 'Update'.
+		/// This vector does not have to be normalized
+		/// </summary>
+		public Vec3 targetUp;
+
+		/// <summary>
+		/// Position of camera
+		/// </summary>
+		public Vec3 position;
+		
+		/// <summary>
+		/// Normalized forward vector
+		/// </summary>
+		public Vec3 forward;
+		
+		/// <summary>
+		/// Normalized up vector
+		/// </summary>
+		public Vec3 up;
+		
+		/// <summary>
+		/// Normalized right vector
+		/// </summary>
+		public Vec3 right;
+
+		/// <summary>
+		/// Aspect ratio
+		/// </summary>
+		public float aspect;
+		
+		/// <summary>
+		/// Field of view
+		/// </summary>
+		public float fov;
+		
+		/// <summary>
+		/// Near clipping plane
+		/// </summary>
+		public float near;
+		
+		/// <summary>
+		/// Far clipping plane
+		/// </summary>
+		public float far;
 
 		public Camera()
 		{
-			forward = Vec3.forward;
-			up = Vec3.up;
+			targetForward = forward = Vec3.forward;
+			targetUp = up = Vec3.up;
 			right = Vec3.right;
 			aspect = 1;
 			fov = MathTools.DegToRad(45);
@@ -30,6 +96,8 @@ namespace Orbital.Video
 		/// </summary>
 		public void Update()
 		{
+			forward = targetForward;
+			up = targetUp;
 			viewMatrix = Mat4.ViewRH(position, ref forward, ref up, out right);
 			projMatrix = Mat4.Perspective(fov, aspect, near, far);
 			matrix = viewMatrix.Multiply(projMatrix);
@@ -59,7 +127,7 @@ namespace Orbital.Video
 		/// </summary>
 		public void LookAt(Vec3 point)
 		{
-			forward = point - position;
+			targetForward = point - position;
 			Update();
 		}
 
@@ -68,8 +136,8 @@ namespace Orbital.Video
 		/// </summary>
 		public void LookAt(Vec3 forwardPoint, Vec3 upPoint)
 		{
-			forward = forwardPoint - position;
-			up = upPoint - position;
+			targetForward = forwardPoint - position;
+			targetUp = upPoint - position;
 			Update();
 		}
 	}

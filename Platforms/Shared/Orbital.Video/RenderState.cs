@@ -11,6 +11,37 @@ namespace Orbital.Video
 		X16 = 16
 	}
 
+	public enum TriangleCulling
+	{
+		/// <summary>
+		/// Double-sided. Both faces will draw
+		/// </summary>
+		None,
+
+		/// <summary>
+		/// Back faces will not draw
+		/// </summary>
+		Back,
+
+		/// <summary>
+		/// Front faces will not draw
+		/// </summary>
+		Front
+	}
+
+	public enum TriangleFillMode
+	{
+		/// <summary>
+		/// Triangles entire surface will draw
+		/// </summary>
+		Solid,
+
+		/// <summary>
+		/// Triangle edges will draw as lines
+		/// </summary>
+		Wireframe
+	}
+
 	public struct RenderStateDesc
 	{
 		/// <summary>
@@ -58,6 +89,16 @@ namespace Orbital.Video
 		/// Enables stencil read/write
 		/// </summary>
 		public bool stencilEnable;
+
+		/// <summary>
+		/// Vertex buffers face culling method to use
+		/// </summary>
+		public TriangleCulling triangleCulling;
+
+		/// <summary>
+		/// Vertex buffers fill mode to use
+		/// </summary>
+		public TriangleFillMode triangleFillMode;
 
 		/// <summary>
 		/// Multisample anti-aliasing level

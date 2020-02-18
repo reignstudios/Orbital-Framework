@@ -7,6 +7,29 @@
 
 extern "C"
 {
+	bool TriangleCullingToNative(TriangleCulling cull, D3D12_CULL_MODE* nativeCull)
+	{
+		switch (cull)
+		{
+			case TriangleCulling::TriangleCulling_None: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_NONE; break;
+			case TriangleCulling::TriangleCulling_Back: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_BACK; break;
+			case TriangleCulling::TriangleCulling_Front: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT; break;
+			default: return false;
+		}
+		return true;
+	}
+
+	bool TriangleFillModeToNative(TriangleFillMode mode, D3D12_FILL_MODE* nativeMode)
+	{
+		switch (mode)
+		{
+			case TriangleFillMode::TriangleFillMode_Solid: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID; break;
+			case TriangleFillMode::TriangleFillMode_Wireframe: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME; break;
+			default: return false;
+		}
+		return true;
+	}
+
 	ORBITAL_EXPORT RenderState* Orbital_Video_D3D12_RenderState_Create(Device* device)
 	{
 		RenderState* handle = (RenderState*)calloc(1, sizeof(RenderState));
@@ -132,8 +155,8 @@ extern "C"
 		pipelineDesc.DepthStencilState.BackFace = stencilOp;
 
 		// rasterizer state
-		pipelineDesc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
-        pipelineDesc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
+		if (!TriangleCullingToNative(desc->triangleCulling, &pipelineDesc.RasterizerState.CullMode)) return false;
+		if (!TriangleFillModeToNative(desc->triangleFillMode, &pipelineDesc.RasterizerState.FillMode)) return false;
         pipelineDesc.RasterizerState.FrontCounterClockwise = FALSE;
         pipelineDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
         pipelineDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;

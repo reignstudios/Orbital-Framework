@@ -15,11 +15,19 @@ namespace Orbital.Demo
 		public Vec3 position;
 		public Color4 color;
 		public Vec2 uv;
+
 		public Vertex(Vec3 position, Color4 color, Vec2 uv)
 		{
 			this.position = position;
 			this.color = color;
 			this.uv = uv;
+		}
+
+		public Vertex Transform(Mat3 matrix, int repeat)
+		{
+			var result = this;
+			for (int i = 0; i != repeat; ++i) result.position = result.position.Transform(matrix);
+			return result;
 		}
 	}
 
@@ -199,21 +207,49 @@ namespace Orbital.Demo
 			constantBuffer = device.CreateConstantBuffer(shaderEffect.constantBufferMappings[0].size, ConstantBufferMode.Write);
 
 			// create vertex buffer
-			var vertices = new Vertex[]
+			const float size = 1 / 2f;
+			var rotUpAxisMat = Mat3.FromEuler(0, MathTools.DegToRad(90), 0);
+			var rotRightAxisMat = Mat3.FromEuler(MathTools.DegToRad(90), 0, 0);
+			var vertices = new Vertex[4 * 6];// 4 vertices per face
+			var indices = new ushort[6 * 6];// 6 indices per face
+			var colorKey = new Color4[4]
 			{
-				new Vertex(new Vec3(-1, -1, 0), Color4.red, new Vec2(0, 0)),
-				new Vertex(new Vec3(0, 1, 0), Color4.green, new Vec2(.5f, 1)),
-				new Vertex(new Vec3(1, -1, 0), Color4.blue, new Vec2(1, 0)),
-
-				new Vertex(new Vec3(-1, -1, 1), Color4.red, new Vec2(0, 0)),
-				new Vertex(new Vec3(0, 1, 1), Color4.green, new Vec2(.5f, 1)),
-				new Vertex(new Vec3(1, -1, 1), Color4.blue, new Vec2(1, 0))
+				Color4.blue,
+				Color4.red,
+				Color4.white,
+				Color4.white
 			};
-			var indices = new ushort[]
+			for (int v = 0, i = 0, r = 0; v < (4 * 4); v += 4, i += 6, ++r)// caluclate front, right, back, left faces
 			{
-				0, 1, 2,
-				3, 4, 5
+				vertices[v + 0] = new Vertex(new Vec3(-size, -size, size), colorKey[r], new Vec2(0, 0)).Transform(rotUpAxisMat, r);
+				vertices[v + 1] = new Vertex(new Vec3(-size, size, size), colorKey[r], new Vec2(0, 1)).Transform(rotUpAxisMat, r);
+				vertices[v + 2] = new Vertex(new Vec3(size, size, size), colorKey[r], new Vec2(1, 1)).Transform(rotUpAxisMat, r);
+				vertices[v + 3] = new Vertex(new Vec3(size, -size, size), colorKey[r], new Vec2(1, 0)).Transform(rotUpAxisMat, r);
+				indices[i + 0] = (ushort)(v + 0);
+				indices[i + 1] = (ushort)(v + 1);
+				indices[i + 2] = (ushort)(v + 2);
+				indices[i + 3] = (ushort)(v + 0);
+				indices[i + 4] = (ushort)(v + 2);
+				indices[i + 5] = (ushort)(v + 3);
+			}
+			colorKey = new Color4[2]
+			{
+				Color4.green,
+				Color4.white
 			};
+			for (int v = (4 * 4), i = (6 * 4), r = 1; v < (4 * 6); v += 4, i += 6, r = 3)// caluclate top, bottom faces
+			{
+				vertices[v + 0] = new Vertex(new Vec3(-size, -size, size), colorKey[r / 3], new Vec2(0, 0)).Transform(rotRightAxisMat, r);
+				vertices[v + 1] = new Vertex(new Vec3(-size, size, size), colorKey[r / 3], new Vec2(0, 1)).Transform(rotRightAxisMat, r);
+				vertices[v + 2] = new Vertex(new Vec3(size, size, size), colorKey[r / 3], new Vec2(1, 1)).Transform(rotRightAxisMat, r);
+				vertices[v + 3] = new Vertex(new Vec3(size, -size, size), colorKey[r / 3], new Vec2(1, 0)).Transform(rotRightAxisMat, r);
+				indices[i + 0] = (ushort)(v + 0);
+				indices[i + 1] = (ushort)(v + 1);
+				indices[i + 2] = (ushort)(v + 2);
+				indices[i + 3] = (ushort)(v + 0);
+				indices[i + 4] = (ushort)(v + 2);
+				indices[i + 5] = (ushort)(v + 3);
+			}
 			vertexBuffer = device.CreateVertexBuffer<Vertex>(vertices, indices, VertexBufferMode.GPUOptimized);
 
 			// create vertex buffer streamer
@@ -256,6 +292,8 @@ namespace Orbital.Demo
 				textures = new TextureBase[2],
 				vertexBufferTopology = VertexBufferTopology.Triangle,
 				vertexBufferStreamer = vertexBufferStreamer,
+				triangleCulling = TriangleCulling.Back,
+				triangleFillMode = TriangleFillMode.Solid,
 				msaaLevel = MSAALevel.Disabled,
 				depthEnable = true
 			};
@@ -346,7 +384,7 @@ namespace Orbital.Demo
 				instance = null;
 			}
 		}
-
+		
 		public void Run()
 		{
 			application.RunEvents();// run this once before checking window
@@ -357,16 +395,16 @@ namespace Orbital.Demo
 				var viewPort = new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height));
 
 				// update camera
-				camera.position = new Vec3(MathF.Cos(rot), 0, MathF.Sin(rot)) * 5;
+				camera.position = new Vec3(MathF.Cos(rot), .5f, MathF.Sin(rot)) * 3;
+				camera.aspect = viewPort.GetAspect();
 				camera.LookAt(Vec3.zero);
-				camera.Update(viewPort);
 
 				// update constant buffer
 				constantBuffer.BeginUpdate();
 				constantBuffer.Update(MathF.Abs(MathF.Sin(rot * .5f)), shaderEffectVar_Constrast);
 				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
 				constantBuffer.EndUpdate();
-				rot += 0.1f;
+				rot += 0.05f;
 
 				// render frame and present
 				device.BeginFrame();
