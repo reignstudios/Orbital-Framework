@@ -8,7 +8,7 @@ typedef struct RenderPassDesc
 	float depthValue, stencilValue;
 }RenderPassDesc;
 
-#pragma region Texture
+#pragma region Texture / Surface
 typedef enum TextureMode
 {
 	TextureMode_GPUOptimized
@@ -31,6 +31,14 @@ typedef enum TextureFormat
 	TextureFormat_R16G16B16A16,
 	TextureFormat_R32G32B32A32,
 }TextureFormat;
+
+typedef enum SwapChainFormat
+{
+	SwapChainFormat_Default,
+	SwapChainFormat_DefaultHDR,
+	SwapChainFormat_B8G8R8A8,
+	SwapChainFormat_R10G10B10A2,
+}SwapChainFormat;
 #pragma endregion
 
 #pragma region Depth Stencil

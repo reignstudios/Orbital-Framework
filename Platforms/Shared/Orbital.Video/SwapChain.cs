@@ -2,6 +2,29 @@
 
 namespace Orbital.Video
 {
+	public enum SwapChainFormat
+	{
+		/// <summary>
+		/// Let the API choose default non-HDR format
+		/// </summary>
+		Default,
+
+		/// <summary>
+		/// Let the API choose default HDR format
+		/// </summary>
+		DefaultHDR,
+
+		/// <summary>
+		/// 32bit: 8bit for RGBA non-floating point channels
+		/// </summary>
+		B8G8R8A8,
+
+		/// <summary>
+		/// 32bit: 10bit for RGB floating point channels + 2bit for alpha as non-floating point channel
+		/// </summary>
+		R10G10B10A2
+	}
+
 	public abstract class SwapChainBase : IDisposable
 	{
 		public readonly DeviceBase device;

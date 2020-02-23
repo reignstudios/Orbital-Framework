@@ -28,6 +28,11 @@ namespace Orbital.Video.Vulkan
 		public int swapChainBufferCount;
 
 		/// <summary>
+		/// Surface format of the swap-chain
+		/// </summary>
+		public SwapChainFormat swapChainFormat;
+
+		/// <summary>
 		/// True to launch in fullscreen
 		/// </summary>
 		public bool fullscreen;
@@ -120,7 +125,7 @@ namespace Orbital.Video.Vulkan
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format)
 		{
 			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
 			if (!abstraction.Init(window, bufferCount, fullscreen))
@@ -131,7 +136,7 @@ namespace Orbital.Video.Vulkan
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			throw new NotImplementedException();
 		}

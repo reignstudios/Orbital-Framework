@@ -127,7 +127,7 @@ extern "C"
 		if (renderPass->swapChain != NULL)
 		{
 			pipelineDesc.NumRenderTargets = 1;
-			memcpy(pipelineDesc.RTVFormats, &renderPass->swapChain->renderTargetFormat, sizeof(DXGI_FORMAT) * pipelineDesc.NumRenderTargets);
+			memcpy(pipelineDesc.RTVFormats, &renderPass->swapChain->surfaceFormat, sizeof(DXGI_FORMAT) * pipelineDesc.NumRenderTargets);
 		}
 		else
 		{

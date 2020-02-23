@@ -33,6 +33,11 @@ namespace Orbital.Video.D3D12
 		public int swapChainBufferCount;
 
 		/// <summary>
+		/// Surface format of the swap-chain
+		/// </summary>
+		public SwapChainFormat swapChainFormat;
+
+		/// <summary>
 		/// True to launch in fullscreen
 		/// </summary>
 		public bool fullscreen;
@@ -88,8 +93,8 @@ namespace Orbital.Video.D3D12
 			{
 				swapChainD3D12 = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
 				swapChain = swapChainD3D12;
-				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.depthStencilFormat, desc.depthStencilMode);
-				else return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
+				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat, desc.depthStencilFormat, desc.depthStencilMode);
+				else return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat);
 			}
 			else
 			{
@@ -126,10 +131,10 @@ namespace Orbital.Video.D3D12
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format)
 		{
 			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
-			if (!abstraction.Init(window, bufferCount, fullscreen))
+			if (!abstraction.Init(window, bufferCount, fullscreen, format))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create SwapChain");
@@ -137,10 +142,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
-			if (!abstraction.Init(window, bufferCount, fullscreen, depthStencilFormat, depthStencilMode))
+			if (!abstraction.Init(window, bufferCount, fullscreen, format, depthStencilFormat, depthStencilMode))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create SwapChain");

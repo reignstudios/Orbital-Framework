@@ -71,7 +71,7 @@ extern "C"
 		if (handle->swapChain != NULL)
 		{
 			DXGI_FORMAT* renderTargetFormatFormats = (DXGI_FORMAT*)alloca(sizeof(DXGI_FORMAT) * handle->swapChain->bufferCount);
-			for (UINT i = 0; i != handle->swapChain->bufferCount; ++i) renderTargetFormatFormats[i] = handle->swapChain->renderTargetFormat;
+			for (UINT i = 0; i != handle->swapChain->bufferCount; ++i) renderTargetFormatFormats[i] = handle->swapChain->surfaceFormat;
 			return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetViews, handle->swapChain->renderTargetDescCPUHandles, handle->swapChain->bufferCount);
 		}
 		else

@@ -1,6 +1,24 @@
 #pragma once
 #include "Utils.h"
 
+bool GetNative_SwapChainFormat(SwapChainFormat format, DXGI_FORMAT* nativeFormat)
+{
+	switch (format)
+	{
+		case SwapChainFormat::SwapChainFormat_Default:
+		case SwapChainFormat::SwapChainFormat_B8G8R8A8:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM;
+			break;
+
+		case SwapChainFormat::SwapChainFormat_DefaultHDR:
+		case SwapChainFormat::SwapChainFormat_R10G10B10A2:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
+			break;
+		default: return false;
+	}
+	return true;
+}
+
 bool GetNative_TextureFormat(TextureFormat format, DXGI_FORMAT* nativeFormat)
 {
 	switch (format)

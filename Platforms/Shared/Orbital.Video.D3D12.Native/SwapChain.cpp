@@ -1,4 +1,5 @@
 #include "SwapChain.h"
+#include "Utils.h"
 
 extern "C"
 {
@@ -9,14 +10,14 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen, SwapChainFormat format)
 	{
 		handle->bufferCount = bufferCount;
-		handle->renderTargetFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+		if (!GetNative_SwapChainFormat(format, &handle->surfaceFormat)) return false;
 
 		// check format support
 		D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = {};
-		formatInfo.Format = handle->renderTargetFormat;
+		formatInfo.Format = handle->surfaceFormat;
 		if (FAILED(handle->device->device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(D3D12_FEATURE_DATA_FORMAT_INFO)))) return 0;
 
 		// create swap-chain
@@ -24,7 +25,7 @@ extern "C"
 		swapChainDesc.BufferCount = bufferCount;
 		swapChainDesc.Width = width;
 		swapChainDesc.Height = height;
-		swapChainDesc.Format = handle->renderTargetFormat;
+		swapChainDesc.Format = handle->surfaceFormat;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;

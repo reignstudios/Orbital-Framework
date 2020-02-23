@@ -15,7 +15,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen);
+		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen, SwapChainFormat format);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
@@ -34,21 +34,21 @@ namespace Orbital.Video.D3D12
 			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 
-		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			IntPtr hWnd = window.GetHandle();
-			if (Orbital_Video_D3D12_SwapChain_Init(handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0)) == 0) return false;
+			if (Orbital_Video_D3D12_SwapChain_Init(handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0), format) == 0) return false;
 			return true;
 		}
 
-		public bool Init(WindowBase window, int bufferCount, bool fullscreen, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			depthStencilD3D12 = new DepthStencil(deviceD3D12, depthStencilMode);
 			depthStencil = depthStencilD3D12;
 			if (!depthStencilD3D12.Init(depthStencilFormat, size.width, size.height)) return false;
-			return Init(window, bufferCount, fullscreen);
+			return Init(window, bufferCount, fullscreen, format);
 		}
 
 		public override void Dispose()
