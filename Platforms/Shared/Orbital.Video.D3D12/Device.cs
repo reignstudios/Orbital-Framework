@@ -36,14 +36,28 @@ namespace Orbital.Video.D3D12
 		/// True to launch in fullscreen
 		/// </summary>
 		public bool fullscreen;
+
+		/// <summary>
+		/// True to create a depth-buffer managed by the swap-chain 
+		/// </summary>
+		public bool createDepthStencil;
+
+		/// <summary>
+		/// Depth-Stencil format if created
+		/// </summary>
+		public DepthStencilFormat depthStencilFormat;
+		
+		/// <summary>
+		/// Depth-Stencil mode if created
+		/// </summary>
+		public DepthStencilMode depthStencilMode;
 	}
 
 	public sealed class Device : DeviceBase
 	{
 		public readonly Instance instanceD3D12;
 		internal IntPtr handle;
-		internal SwapChain swapChain;
-		private WindowBase window;
+		public SwapChain swapChainD3D12 { get; private set; }
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance);
@@ -69,12 +83,13 @@ namespace Orbital.Video.D3D12
 
 		public bool Init(DeviceDesc desc)
 		{
-			window = desc.window;
 			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
-				swapChain = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
-				return swapChain.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
+				swapChainD3D12 = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
+				swapChain = swapChainD3D12;
+				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.depthStencilFormat, desc.depthStencilMode);
+				else return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
 			}
 			else
 			{
@@ -84,10 +99,11 @@ namespace Orbital.Video.D3D12
 
 		public override void Dispose()
 		{
-			if (swapChain != null)
+			swapChain = null;
+			if (swapChainD3D12 != null)
 			{
-				swapChain.Dispose();
-				swapChain = null;
+				swapChainD3D12.Dispose();
+				swapChainD3D12 = null;
 			}
 
 			if (handle != IntPtr.Zero)
@@ -100,20 +116,31 @@ namespace Orbital.Video.D3D12
 		public override void BeginFrame()
 		{
 			Orbital_Video_D3D12_Device_BeginFrame(handle);
-			if (type == DeviceType.Presentation) swapChain.BeginFrame();
+			if (type == DeviceType.Presentation) swapChainD3D12.BeginFrame();
 		}
 
 		public override void EndFrame()
 		{
-			if (type == DeviceType.Presentation) swapChain.Present();
+			if (type == DeviceType.Presentation) swapChainD3D12.Present();
 			Orbital_Video_D3D12_Device_EndFrame(handle);
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize)
 		{
-			var abstraction = new SwapChain(this, ensureSwapChainMatchesWindowSize);
+			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
 			if (!abstraction.Init(window, bufferCount, fullscreen))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create SwapChain");
+			}
+			return abstraction;
+		}
+
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		{
+			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
+			if (!abstraction.Init(window, bufferCount, fullscreen, depthStencilFormat, depthStencilMode))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create SwapChain");
@@ -134,12 +161,12 @@ namespace Orbital.Video.D3D12
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
-			return swapChain.CreateRenderPass(desc);
+			return swapChainD3D12.CreateRenderPass(desc);
 		}
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
 		{
-			return swapChain.CreateRenderPass(desc, depthStencil);
+			return swapChainD3D12.CreateRenderPass(desc, depthStencil);
 		}
 
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)

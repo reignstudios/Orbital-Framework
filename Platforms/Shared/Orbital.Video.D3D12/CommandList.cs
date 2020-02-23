@@ -96,7 +96,7 @@ namespace Orbital.Video.D3D12
 
 		public override void ClearRenderTarget(float r, float g, float b, float a)
 		{
-			Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(handle, deviceD3D12.swapChain.handle, r, b, g, a);
+			Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(handle, deviceD3D12.swapChainD3D12.handle, r, b, g, a);
 		}
 
 		public override void ClearRenderTarget(SwapChainBase swapChain, float r, float g, float b, float a)

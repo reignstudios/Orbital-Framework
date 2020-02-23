@@ -7,8 +7,9 @@ namespace Orbital.Video.D3D12
 	public sealed class SwapChain : SwapChainBase
 	{
 		public readonly Device deviceD3D12;
+		public DepthStencil depthStencilD3D12 { get; private set; }
 		internal IntPtr handle;
-		private readonly bool ensureSwapChainMatchesWindowSize;
+		private readonly bool ensureSizeMatchesWindowSize;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device);
@@ -25,12 +26,12 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
-		public SwapChain(Device device, bool ensureSwapChainMatchesWindowSize)
+		public SwapChain(Device device, bool ensureSizeMatchesWindowSize)
 		: base(device)
 		{
 			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle);
-			this.ensureSwapChainMatchesWindowSize = ensureSwapChainMatchesWindowSize;
+			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
@@ -41,8 +42,24 @@ namespace Orbital.Video.D3D12
 			return true;
 		}
 
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		{
+			var size = window.GetSize(WindowSizeType.WorkingArea);
+			depthStencilD3D12 = new DepthStencil(deviceD3D12, depthStencilMode);
+			depthStencil = depthStencilD3D12;
+			if (!depthStencilD3D12.Init(depthStencilFormat, size.width, size.height)) return false;
+			return Init(window, bufferCount, fullscreen);
+		}
+
 		public override void Dispose()
 		{
+			depthStencil = null;
+			if (depthStencilD3D12 != null)
+			{
+				depthStencilD3D12.Dispose();
+				depthStencilD3D12 = null;
+			}
+
 			if (handle != IntPtr.Zero)
 			{
 				Orbital_Video_D3D12_SwapChain_Dispose(handle);
@@ -52,7 +69,7 @@ namespace Orbital.Video.D3D12
 
 		public override void BeginFrame()
 		{
-			if (ensureSwapChainMatchesWindowSize)
+			if (ensureSizeMatchesWindowSize)
 			{
 				// TODO: check if window size changed and resize swapchain back-buffer if so to match
 			}

@@ -58,6 +58,7 @@ namespace Orbital.Video.API
 			deviceDescD3D12.adapterIndex = -1;
 			deviceDescD3D12.ensureSwapChainMatchesWindowSize = true;
 			deviceDescD3D12.swapChainBufferCount = 2;
+			deviceDescD3D12.createDepthStencil = true;
 			#endif
 
 			// set Vulkan defualts
@@ -66,6 +67,7 @@ namespace Orbital.Video.API
 			deviceDescVulkan.adapterIndex = -1;
 			deviceDescVulkan.ensureSwapChainMatchesWindowSize = true;
 			deviceDescVulkan.swapChainBufferCount = 2;
+			deviceDescVulkan.createDepthStencil = true;
 			#endif
 		}
 	}

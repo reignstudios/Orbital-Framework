@@ -24,6 +24,7 @@ namespace Orbital.Video
 	{
 		public readonly InstanceBase instance;
 		public readonly DeviceType type;
+		public SwapChainBase swapChain { get; protected set; }
 
 		public DeviceBase(InstanceBase instance, DeviceType type)
 		{
@@ -44,7 +45,8 @@ namespace Orbital.Video
 		public abstract void EndFrame();
 
 		#region Create Methods
-		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSwapChainMatchesWindowSize);
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize);
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
 		public abstract CommandListBase CreateCommandList();
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil);

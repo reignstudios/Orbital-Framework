@@ -79,7 +79,7 @@ namespace Orbital.Video.Vulkan
 
 		public override void ClearRenderTarget(float r, float g, float b, float a)
 		{
-			Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(handle, deviceVulkan.swapChain.handle, r, b, g, a);
+			Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(handle, deviceVulkan.swapChainVulkan.handle, r, b, g, a);
 		}
 
 		public override void ClearRenderTarget(SwapChainBase swapChain, float r, float g, float b, float a)

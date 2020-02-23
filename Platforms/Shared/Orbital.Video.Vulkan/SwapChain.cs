@@ -9,7 +9,7 @@ namespace Orbital.Video.Vulkan
 	{
 		public readonly Device deviceVulkan;
 		internal IntPtr handle;
-		private readonly bool ensureSwapChainMatchesWindowSize;
+		private readonly bool ensureSizeMatchesWindowSize;
 		private bool sizeEnforced;
 		internal List<RenderPass> renderPasses = new List<RenderPass>();
 
@@ -28,12 +28,12 @@ namespace Orbital.Video.Vulkan
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_SwapChain_Present(IntPtr handle);
 
-		public SwapChain(Device device, bool ensureSwapChainMatchesWindowSize)
+		public SwapChain(Device device, bool ensureSizeMatchesWindowSize)
 		: base(device)
 		{
 			deviceVulkan = device;
 			handle = Orbital_Video_Vulkan_SwapChain_Create(device.handle);
-			this.ensureSwapChainMatchesWindowSize = ensureSwapChainMatchesWindowSize;
+			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
@@ -59,7 +59,7 @@ namespace Orbital.Video.Vulkan
 
 		public override void BeginFrame()
 		{
-			if (ensureSwapChainMatchesWindowSize && !sizeEnforced)
+			if (ensureSizeMatchesWindowSize && !sizeEnforced)
 			{
 				// TODO: check if window size changed and resize swapchain back-buffer if so to match
 				foreach (var renderPass in renderPasses) renderPass.ResizeFrameBuffer();

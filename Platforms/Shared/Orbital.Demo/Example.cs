@@ -47,7 +47,6 @@ namespace Orbital.Demo
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
-		private DepthStencilBase depthStencil;
 
 		private Camera camera;
 		private float rot;
@@ -84,16 +83,12 @@ namespace Orbital.Demo
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
 
-			// create depth-stencil buffer
-			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
-			depthStencil = device.CreateDepthStencil(DepthStencilFormat.DefaultDepth, windowSize.width, windowSize.height, DepthStencilMode.GPUOptimized);
-
 			// create command list
 			commandList = device.CreateCommandList();
 
 			// create render pass
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1));
-			renderPass = device.CreateRenderPass(renderPassDesc, depthStencil);
+			renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
 
 			// create texture
 			int textureWidth = 256, textureHeight = 256;
@@ -364,12 +359,6 @@ namespace Orbital.Demo
 			{
 				commandList.Dispose();
 				commandList = null;
-			}
-
-			if (depthStencil != null)
-			{
-				depthStencil.Dispose();
-				depthStencil = null;
 			}
 
 			if (device != null)

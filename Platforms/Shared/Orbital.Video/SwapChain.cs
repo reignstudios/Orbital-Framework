@@ -5,6 +5,7 @@ namespace Orbital.Video
 	public abstract class SwapChainBase : IDisposable
 	{
 		public readonly DeviceBase device;
+		public DepthStencilBase depthStencil { get; protected set; }
 
 		public SwapChainBase(DeviceBase device)
 		{
