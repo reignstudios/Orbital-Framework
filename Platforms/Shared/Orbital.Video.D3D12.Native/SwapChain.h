@@ -6,8 +6,8 @@ struct SwapChain
 	Device* device;
 	UINT bufferCount, currentRenderTargetIndex;
 	IDXGISwapChain3* swapChain;
-	ID3D12DescriptorHeap* renderTargetViewHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetDescCPUHandles;
-	ID3D12Resource** renderTargetViews;
-	DXGI_FORMAT surfaceFormat;
+	ID3D12Resource** resources;
+	ID3D12DescriptorHeap* resourceHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE* resourceDescCPUHandles;
+	DXGI_FORMAT format;
 };

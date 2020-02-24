@@ -17,7 +17,7 @@ extern "C"
 		for (int i = 0; i != layout->descCount; ++i)
 		{
 			handle->vertexBuffers[i] = (VertexBuffer*)layout->descs[i].vertexBuffer;
-			handle->vertexBufferViews[i] = handle->vertexBuffers[i]->vertexBufferView;
+			handle->vertexBufferViews[i] = handle->vertexBuffers[i]->resourceView;
 		}
 
 		// create elements

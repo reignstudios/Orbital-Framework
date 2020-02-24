@@ -88,8 +88,11 @@ namespace Orbital.Video.Vulkan
 			Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(handle, swapChainVulkan.handle, r, b, g, a);
 		}
 
-		public override void ClearRenderTarget(RenderTextureBase renderTarget, float r, float g, float b, float a)
+		public override void ClearRenderTarget(Texture2DBase renderTexture, float r, float g, float b, float a)
 		{
+			#if DEBUG
+			if (!renderTexture.isRenderTexture) throw new Exception("Is not render-texture");
+			#endif
 			throw new NotImplementedException();
 		}
 

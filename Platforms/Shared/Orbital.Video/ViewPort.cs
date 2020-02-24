@@ -21,6 +21,20 @@ namespace Orbital.Video
 			this.maxDepth = maxDepth;
 		}
 
+		public ViewPort(int x, int y, int width, int height)
+		{
+			rect = new Rect2(x, y, width, height);
+			minDepth = 0;
+			maxDepth = 1;
+		}
+
+		public ViewPort(int x, int y, int width, int height, float minDepth, float maxDepth)
+		{
+			rect = new Rect2(x, y, width, height);
+			this.minDepth = minDepth;
+			this.maxDepth = maxDepth;
+		}
+
 		public float GetAspect()
 		{
 			return rect.size.width / rect.size.height;

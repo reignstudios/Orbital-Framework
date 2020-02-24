@@ -50,17 +50,34 @@ namespace Orbital.Video.Vulkan
 			renderPass = ((RenderPass)desc.renderPass).handle;
 			shaderEffect = ((ShaderEffect)desc.shaderEffect).handle;
 
-			constantBufferCount = desc.constantBuffers.Length;
-			constantBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * constantBufferCount);
-			for (int i = 0; i != constantBufferCount; ++i) constantBuffers[i] = ((ConstantBuffer)desc.constantBuffers[i]).handle;
+			if (desc.constantBuffers != null)
+			{
+				constantBufferCount = desc.constantBuffers.Length;
+				constantBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * constantBufferCount);
+				for (int i = 0; i != constantBufferCount; ++i) constantBuffers[i] = ((ConstantBuffer)desc.constantBuffers[i]).handle;
+			}
+			else
+			{
+				constantBufferCount = 0;
+				constantBuffers = null;
+			}
 
-			textureCount = desc.textures.Length;
-			textures = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureCount);
-			for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
+			if (desc.textures != null)
+			{
+				textureCount = desc.textures.Length;
+				textures = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureCount);
+				for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
+			}
+			else
+			{
+				textureCount = 0;
+				textures = null;
+			}
 
 			vertexBufferTopology = desc.vertexBufferTopology;
 			vertexBufferStreamer = ((VertexBufferStreamer)desc.vertexBufferStreamer).handle;
-			indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
+			if (desc.indexBuffer != null) indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
+			else indexBuffer = IntPtr.Zero;
 			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
 			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
 			triangleCulling = desc.triangleCulling;

@@ -31,6 +31,120 @@ namespace Orbital.Demo
 		}
 	}
 
+	class RenderTextureTest
+	{
+		public Texture2DBase renderTexture;
+		public RenderPassBase renderPass;
+		public RenderStateBase renderState;
+		public ShaderEffectBase shaderEffect;
+		public VertexBufferBase vertexBuffer;
+		public VertexBufferStreamerBase vertexBufferStreamer;
+
+		public RenderTextureTest(DeviceBase device)
+		{
+			// create render texture
+			const int size = 256;
+			renderTexture = device.CreateRenderTexture2D(TextureFormat.Default, size, size, TextureMode.GPUOptimized);
+
+			// load shader effect
+			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (var psStream = new FileStream("Shaders\\Triangle_D3D12.ps", FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				var vs = new Video.D3D12.Shader((Video.D3D12.Device)device, ShaderType.VS);
+				var ps = new Video.D3D12.Shader((Video.D3D12.Device)device, ShaderType.PS);
+				if (!vs.Init(vsStream)) throw new Exception("Failed to init VS shader");
+				if (!ps.Init(psStream)) throw new Exception("Failed to init PS shader");
+				var desc = new ShaderEffectDesc();
+				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
+			}
+
+			// create vertex buffer
+			var vertices = new Vec3[3]
+			{
+				new Vec3(-1, -1, 0),
+				new Vec3(0, 1, 0),
+				new Vec3(1, -1, 0)
+			};
+			vertexBuffer = device.CreateVertexBuffer<Vec3>(vertices, VertexBufferMode.GPUOptimized);
+
+			// create vertex buffer streamer
+			var vertexBufferStreamLayout = new VertexBufferStreamLayout()
+			{
+				descs = new VertexBufferStreamDesc[1],
+				elements = new VertexBufferStreamElement[1]
+			};
+			vertexBufferStreamLayout.descs[0] = new VertexBufferStreamDesc()
+			{
+				vertexBuffer = vertexBuffer,
+				type = VertexBufferStreamType.VertexData
+			};
+			vertexBufferStreamLayout.elements[0] = new VertexBufferStreamElement()
+			{
+				type = VertexBufferStreamElementType.Float3,
+				usage = VertexBufferStreamElementUsage.Position,
+				offset = 0
+			};
+			vertexBufferStreamer = device.CreateVertexBufferStreamer(vertexBufferStreamLayout);
+
+			// create render pass
+			var renderPassDesc = RenderPassDesc.CreateDefault(Color4F.black);
+			renderPass = renderTexture.CreateRenderPass(renderPassDesc);
+
+			// create render state
+			var renderStateDesc = new RenderStateDesc()
+			{
+				renderPass = renderPass,
+				shaderEffect = shaderEffect,
+				vertexBufferTopology = VertexBufferTopology.Triangle,
+				vertexBufferStreamer = vertexBufferStreamer,
+				triangleCulling = TriangleCulling.Back,
+				triangleFillMode = TriangleFillMode.Solid,
+				msaaLevel = MSAALevel.Disabled,
+				depthEnable = true
+			};
+			renderState = device.CreateRenderState(renderStateDesc, 0);
+		}
+
+		public void Dispose()
+		{
+			if (renderState != null)
+			{
+				renderState.Dispose();
+				renderState = null;
+			}
+
+			if (renderPass != null)
+			{
+				renderPass.Dispose();
+				renderPass = null;
+			}
+
+			if (renderTexture != null)
+			{
+				renderTexture.Dispose();
+				renderTexture = null;
+			}
+
+			if (shaderEffect != null)
+			{
+				shaderEffect.Dispose();
+				shaderEffect = null;
+			}
+
+			if (vertexBuffer != null)
+			{
+				vertexBuffer.Dispose();
+				vertexBuffer = null;
+			}
+
+			if (vertexBufferStreamer != null)
+			{
+				vertexBufferStreamer.Dispose();
+				vertexBufferStreamer = null;
+			}
+		}
+	}
+
 	public sealed class Example : IDisposable
 	{
 		private ApplicationBase application;
@@ -47,6 +161,7 @@ namespace Orbital.Demo
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
+		private RenderTextureTest renderTextureTest;
 
 		private Camera camera;
 		private float rot;
@@ -82,6 +197,9 @@ namespace Orbital.Demo
 			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
+
+			// create render texture test objects
+			renderTextureTest = new RenderTextureTest(device);
 
 			// create command list
 			commandList = device.CreateCommandList();
@@ -171,7 +289,7 @@ namespace Orbital.Demo
 					name = "camera",
 					type = ShaderEffectVariableType.Float4x4
 				};
-				desc.textures = new ShaderEffectTexture[2];
+				desc.textures = new ShaderEffectTexture[3];
 				desc.textures[0] = new ShaderEffectTexture()
 				{
 					registerIndex = 0,
@@ -180,6 +298,11 @@ namespace Orbital.Demo
 				desc.textures[1] = new ShaderEffectTexture()
 				{
 					registerIndex = 1,
+					usage = ShaderEffectResourceUsage.PS
+				};
+				desc.textures[2] = new ShaderEffectTexture()
+				{
+					registerIndex = 2,
 					usage = ShaderEffectResourceUsage.PS
 				};
 				desc.samplers = new ShaderEffectSampler[1];
@@ -284,7 +407,7 @@ namespace Orbital.Demo
 				renderPass = renderPass,
 				shaderEffect = shaderEffect,
 				constantBuffers = new ConstantBufferBase[1],
-				textures = new TextureBase[2],
+				textures = new TextureBase[3],
 				vertexBufferTopology = VertexBufferTopology.Triangle,
 				vertexBufferStreamer = vertexBufferStreamer,
 				triangleCulling = TriangleCulling.Back,
@@ -295,6 +418,7 @@ namespace Orbital.Demo
 			renderStateDesc.constantBuffers[0] = constantBuffer;
 			renderStateDesc.textures[0] = texture;
 			renderStateDesc.textures[1] = texture2;
+			renderStateDesc.textures[2] = renderTextureTest.renderTexture;
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 
 			// print all GPUs this abstraction supports
@@ -307,6 +431,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (renderTextureTest != null)
+			{
+				renderTextureTest.Dispose();
+				renderTextureTest = null;
+			}
+
 			if (texture != null)
 			{
 				texture.Dispose();
@@ -397,7 +527,17 @@ namespace Orbital.Demo
 
 				// render frame and present
 				device.BeginFrame();
-				commandList.Start();
+
+				commandList.Start();// RENDER INTO: RenderTexture
+				commandList.BeginRenderPass(renderTextureTest.renderPass);
+				commandList.SetViewPort(new ViewPort(0, 0, renderTextureTest.renderTexture.width, renderTextureTest.renderTexture.height));
+				commandList.SetRenderState(renderTextureTest.renderState);
+				commandList.Draw();
+				commandList.EndRenderPass();
+				commandList.Finish();
+				commandList.Execute();
+
+				commandList.Start();// RENDER INTO: SwapChain
 				commandList.BeginRenderPass(renderPass);
 				commandList.SetViewPort(viewPort);
 				commandList.SetRenderState(renderState);

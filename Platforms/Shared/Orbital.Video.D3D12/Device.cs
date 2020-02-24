@@ -339,6 +339,28 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, TextureMode mode)
+		{
+			var abstraction = new RenderTexture2D(this, mode);
+			if (!abstraction.Init(format, width, height))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderTexture2D");
+			}
+			return abstraction;
+		}
+
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode)
+		{
+			var abstraction = new RenderTexture2D(this, mode);
+			if (!abstraction.Init(format, width, height, data))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderTexture2D");
+			}
+			return abstraction;
+		}
+
 		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
 		{
 			var abstraction = new DepthStencil(this, mode);

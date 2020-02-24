@@ -95,7 +95,7 @@ extern "C"
 			for (int i = 0; i != desc->textureCount; ++i)
 			{
 				Texture* texture = (Texture*)desc->textures[i];
-				D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->textureHeap->GetCPUDescriptorHandleForHeapStart();
+				D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
 				handle->device->device->CopyDescriptorsSimple(1, cpuTextureHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				cpuTextureHeap.ptr += heapSize;
 			}
@@ -127,7 +127,7 @@ extern "C"
 		if (renderPass->swapChain != NULL)
 		{
 			pipelineDesc.NumRenderTargets = 1;
-			memcpy(pipelineDesc.RTVFormats, &renderPass->swapChain->surfaceFormat, sizeof(DXGI_FORMAT) * pipelineDesc.NumRenderTargets);
+			memcpy(pipelineDesc.RTVFormats, &renderPass->swapChain->format, sizeof(DXGI_FORMAT) * pipelineDesc.NumRenderTargets);
 		}
 		else
 		{

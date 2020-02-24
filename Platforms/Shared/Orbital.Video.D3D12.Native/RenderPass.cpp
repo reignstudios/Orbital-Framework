@@ -9,27 +9,52 @@ extern "C"
 		handle->device = device;
 		handle->swapChain = swapChain;
 		handle->depthStencil = depthStencil;
+
+		// allocate swap-chain specific resources
+		handle->renderTargetCount = swapChain->bufferCount;
+		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(swapChain->bufferCount, sizeof(DXGI_FORMAT));
+		handle->renderTargetResources = (ID3D12Resource**)calloc(swapChain->bufferCount, sizeof(ID3D12Resource));
+		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(swapChain->bufferCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
+		for (UINT i = 0; i != swapChain->bufferCount; ++i)
+		{
+			handle->renderTargetFormats[i] = swapChain->format;
+			handle->renderTargetResources[i] = swapChain->resources[i];
+			handle->renderTargetDescs[i].cpuDescriptor = swapChain->resourceDescCPUHandles[i];
+		}
+
 		return handle;
 	}
 
-	int Orbital_Video_D3D12_RenderPass_Init_Base(RenderPass* handle, RenderPassDesc* desc, DXGI_FORMAT* renderTargetFormats, ID3D12Resource** renderTargetViews, D3D12_CPU_DESCRIPTOR_HANDLE* renderTargetHandles, UINT renderTargetCount)
+	ORBITAL_EXPORT RenderPass* Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(Device* device, Texture** renderTextures, UINT renderTextureCount, DepthStencil* depthStencil)
+	{
+		RenderPass* handle = (RenderPass*)calloc(1, sizeof(RenderPass));
+		handle->device = device;
+		handle->depthStencil = depthStencil;
+
+		// allocate swap-chain specific resources
+		handle->renderTargetCount = renderTextureCount;
+		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(renderTextureCount, sizeof(DXGI_FORMAT));
+		handle->renderTargetResources = (ID3D12Resource**)calloc(renderTextureCount, sizeof(ID3D12Resource));
+		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(renderTextureCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
+		for (UINT i = 0; i != renderTextureCount; ++i)
+		{
+			handle->renderTargetFormats[i] = renderTextures[i]->format;
+			handle->renderTargetResources[i] = renderTextures[i]->resource;
+			handle->renderTargetDescs[i].cpuDescriptor = renderTextures[i]->renderTargetResourceDescCPUHandle;
+		}
+
+		return handle;
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init(RenderPass* handle, RenderPassDesc* desc)
 	{
 		// render-pass: render target
-		handle->renderTargetCount = renderTargetCount;
-		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(renderTargetCount, sizeof(DXGI_FORMAT));
-		handle->renderTargetViews = (ID3D12Resource**)calloc(renderTargetCount, sizeof(ID3D12Resource));
-		handle->renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(renderTargetCount, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
-		for (UINT i = 0; i != renderTargetCount; ++i)
+		for (UINT i = 0; i != handle->renderTargetCount; ++i)
 		{
-			handle->renderTargetFormats[i] = renderTargetFormats[i];
-			handle->renderTargetViews[i] = renderTargetViews[i];
-
-			handle->renderTargetDescs[i].cpuDescriptor = renderTargetHandles[i];
-
 			// begin
 			handle->renderTargetDescs[i].BeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
 			memcpy(handle->renderTargetDescs[i].BeginningAccess.Clear.ClearValue.Color, desc->clearColorValue, sizeof(float) * 4);
-			handle->renderTargetDescs[i].BeginningAccess.Clear.ClearValue.Format = renderTargetFormats[i];
+			handle->renderTargetDescs[i].BeginningAccess.Clear.ClearValue.Format = handle->renderTargetFormats[i];
 
 			// end
 			handle->renderTargetDescs[i].EndingAccess.Type = D3D12_RENDER_PASS_ENDING_ACCESS_TYPE::D3D12_RENDER_PASS_ENDING_ACCESS_TYPE_PRESERVE;
@@ -66,20 +91,6 @@ extern "C"
 		return 1;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init(RenderPass* handle, RenderPassDesc* desc)
-	{
-		if (handle->swapChain != NULL)
-		{
-			DXGI_FORMAT* renderTargetFormatFormats = (DXGI_FORMAT*)alloca(sizeof(DXGI_FORMAT) * handle->swapChain->bufferCount);
-			for (UINT i = 0; i != handle->swapChain->bufferCount; ++i) renderTargetFormatFormats[i] = handle->swapChain->surfaceFormat;
-			return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, renderTargetFormatFormats, handle->swapChain->renderTargetViews, handle->swapChain->renderTargetDescCPUHandles, handle->swapChain->bufferCount);
-		}
-		else
-		{
-			return 0;//Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, &handle->texture->format, &handle->texture->renderTargetDescHandle, 1);//, handle->depthStencil->format);
-		}
-	}
-
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderPass_Dispose(RenderPass* handle)
 	{
 		if (handle->renderTargetFormats != NULL)
@@ -88,10 +99,10 @@ extern "C"
 			handle->renderTargetFormats = NULL;
 		}
 
-		if (handle->renderTargetViews != NULL)
+		if (handle->renderTargetResources != NULL)
 		{
-			free(handle->renderTargetViews);
-			handle->renderTargetViews = NULL;
+			free(handle->renderTargetResources);
+			handle->renderTargetResources = NULL;
 		}
 
 		if (handle->renderTargetDescs != NULL)

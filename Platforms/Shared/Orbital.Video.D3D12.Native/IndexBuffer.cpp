@@ -42,14 +42,14 @@ extern "C"
 		if (indices != NULL && handle->mode == IndexBufferMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 		else if (handle->mode == IndexBufferMode_Read) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for CPU read
 		else if (handle->mode == IndexBufferMode_Write) handle->resourceState = D3D12_RESOURCE_STATE_GENERIC_READ;// init for frequent cpu writes
-		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, nullptr, IID_PPV_ARGS(&handle->indexBuffer)))) return 0;
+		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, nullptr, IID_PPV_ARGS(&handle->resource)))) return 0;
 
 		// upload cpu buffer to gpu
 		if (indices != NULL)
 		{
 			// allocate gpu upload buffer if needed
 			bool useUploadBuffer = false;
-			ID3D12Resource* uploadResource = handle->indexBuffer;
+			ID3D12Resource* uploadResource = handle->resource;
 			if (heapProperties.Type != D3D12_HEAP_TYPE_UPLOAD)
 			{
 				useUploadBuffer = true;
@@ -75,7 +75,7 @@ extern "C"
 				handle->device->internalMutex->lock();
 				// reset command list and copy resource
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
-				handle->device->internalCommandList->CopyResource(handle->indexBuffer, uploadResource);
+				handle->device->internalCommandList->CopyResource(handle->resource, uploadResource);
 
 				// close command list
 				handle->device->internalCommandList->Close();
@@ -92,19 +92,19 @@ extern "C"
 		}
 
 		// create view
-		handle->indexBufferView.BufferLocation = handle->indexBuffer->GetGPUVirtualAddress();
-        handle->indexBufferView.Format = indexSize == 16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
-        handle->indexBufferView.SizeInBytes = bufferSize;
+		handle->resourceView.BufferLocation = handle->resource->GetGPUVirtualAddress();
+        handle->resourceView.Format = indexSize == 16 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT;
+        handle->resourceView.SizeInBytes = bufferSize;
 
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_IndexBuffer_Dispose(IndexBuffer* handle)
 	{
-		if (handle->indexBuffer != NULL)
+		if (handle->resource != NULL)
 		{
-			handle->indexBuffer->Release();
-			handle->indexBuffer = NULL;
+			handle->resource->Release();
+			handle->resource = NULL;
 		}
 
 		free(handle);
@@ -118,7 +118,7 @@ void Orbital_Video_D3D12_IndexBuffer_ChangeState(IndexBuffer* handle, D3D12_RESO
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = handle->indexBuffer;
+	barrier.Transition.pResource = handle->resource;
 	barrier.Transition.StateBefore = handle->resourceState;
 	barrier.Transition.StateAfter = state;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

@@ -15,7 +15,7 @@ cbuffer ConstantBufferObject : register(b0)
 
 struct VSInput
 {
-    float4 position : POSITION0;
+    float3 position : POSITION0;
     float4 color : COLOR0;
     float2 uv : TEXCOORD0;
 };
@@ -31,7 +31,7 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
 
-    float4 pos = input.position;
+    float4 pos = float4(input.position, 1);
     result.position = mul(pos, camera);
     result.color = input.color * constrast;
     result.uv = input.uv;
@@ -41,9 +41,10 @@ PSInput VSMain(VSInput input)
 
 Texture2D mainTexture : register(t0);
 Texture2D mainTexture2 : register(t1);
+Texture2D triangleTexture : register(t2);
 SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv));
+    return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
 }

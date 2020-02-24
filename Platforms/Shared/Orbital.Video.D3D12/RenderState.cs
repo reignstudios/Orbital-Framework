@@ -30,7 +30,7 @@ namespace Orbital.Video.D3D12
 			InitBase(ref desc);
 			var streamer = (VertexBufferStreamer)desc.vertexBufferStreamer;
 			vertexCount = streamer.vertexCount;
-			indexCount = desc.indexBuffer.indexCount;
+			if (desc.indexBuffer != null) indexCount = desc.indexBuffer.indexCount;
 			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
 			{
 				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;

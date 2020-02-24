@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Orbital.Video.D3D12
 {
-	public sealed class Texture2D : Texture2DBase
+	public class Texture2D : Texture2DBase
 	{
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
@@ -15,17 +15,20 @@ namespace Orbital.Video.D3D12
 			handle = Texture.Orbital_Video_D3D12_Texture_Create(device.handle, mode);
 		}
 
-		public unsafe bool Init(TextureFormat format, int width, int height, byte[] data)
+		public virtual bool Init(TextureFormat format, int width, int height, byte[] data)
+		{
+			return Init(format, width, height, data, false);
+		}
+
+		internal unsafe bool Init(TextureFormat format, int width, int height, byte[] data, bool isRenderTexture)
 		{
 			this.width = width;
 			this.height = height;
-			fixed (byte* dataPtr = data)
-			{
-				uint widthValue = (uint)width;
-				uint heightValue = (uint)height;
-				uint depthValue = 1;
-				return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, &dataPtr) != 0;
-			}
+			uint widthValue = (uint)width;
+			uint heightValue = (uint)height;
+			uint depthValue = 1;
+			if (data == null) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, null, isRenderTexture ? 1 : 0) != 0;
+			fixed (byte* dataPtr = data) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, &dataPtr, isRenderTexture ? 1 : 0) != 0;
 		}
 
 		public override void Dispose()

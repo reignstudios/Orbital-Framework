@@ -13,11 +13,11 @@ extern "C"
 	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen, SwapChainFormat format)
 	{
 		handle->bufferCount = bufferCount;
-		if (!GetNative_SwapChainFormat(format, &handle->surfaceFormat)) return false;
+		if (!GetNative_SwapChainFormat(format, &handle->format)) return false;
 
 		// check format support
 		D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = {};
-		formatInfo.Format = handle->surfaceFormat;
+		formatInfo.Format = handle->format;
 		if (FAILED(handle->device->device->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(D3D12_FEATURE_DATA_FORMAT_INFO)))) return 0;
 
 		// create swap-chain
@@ -25,7 +25,7 @@ extern "C"
 		swapChainDesc.BufferCount = bufferCount;
 		swapChainDesc.Width = width;
 		swapChainDesc.Height = height;
-		swapChainDesc.Format = handle->surfaceFormat;
+		swapChainDesc.Format = handle->format;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;
@@ -47,18 +47,18 @@ extern "C"
 		rtvHeapDesc.NumDescriptors = bufferCount;
 		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->renderTargetViewHeap)))) return 0;
-		UINT renderTargetViewHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+		if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
+		UINT resourceHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetDescHandle = handle->renderTargetViewHeap->GetCPUDescriptorHandleForHeapStart();
-		handle->renderTargetDescCPUHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
-		handle->renderTargetViews = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
+		D3D12_CPU_DESCRIPTOR_HANDLE resourceDescCPUHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
+		handle->resourceDescCPUHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
+		handle->resources = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
 		for (UINT i = 0; i != bufferCount; ++i)
         {
-            if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->renderTargetViews[i])))) return 0;
-            handle->device->device->CreateRenderTargetView(handle->renderTargetViews[i], nullptr, renderTargetDescHandle);
-			handle->renderTargetDescCPUHandles[i] = renderTargetDescHandle;
-            renderTargetDescHandle.ptr += renderTargetViewHeapSize;
+            if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->resources[i])))) return 0;
+            handle->device->device->CreateRenderTargetView(handle->resources[i], nullptr, resourceDescCPUHandle);
+			handle->resourceDescCPUHandles[i] = resourceDescCPUHandle;
+            resourceDescCPUHandle.ptr += resourceHeapSize;
         }
 
 		return 1;
@@ -66,29 +66,29 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_Dispose(SwapChain* handle)
 	{
-		if (handle->renderTargetDescCPUHandles != NULL)
+		if (handle->resourceDescCPUHandles != NULL)
 		{
-			free(handle->renderTargetDescCPUHandles);
-			handle->renderTargetDescCPUHandles = NULL;
+			free(handle->resourceDescCPUHandles);
+			handle->resourceDescCPUHandles = NULL;
 		}
 
-		if (handle->renderTargetViews != NULL)
+		if (handle->resources != NULL)
 		{
 			for (UINT i = 0; i != handle->bufferCount; ++i)
 			{
-				if (handle->renderTargetViews[i] != NULL)
+				if (handle->resources[i] != NULL)
 				{
-					handle->renderTargetViews[i]->Release();
-					handle->renderTargetViews[i] = NULL;
+					handle->resources[i]->Release();
+					handle->resources[i] = NULL;
 				}
 			}
-			handle->renderTargetViews = NULL;
+			handle->resources = NULL;
 		}
 
-		if (handle->renderTargetViewHeap != NULL)
+		if (handle->resourceHeap != NULL)
 		{
-			handle->renderTargetViewHeap->Release();
-			handle->renderTargetViewHeap = NULL;
+			handle->resourceHeap->Release();
+			handle->resourceHeap = NULL;
 		}
 
 		if (handle->swapChain != NULL)

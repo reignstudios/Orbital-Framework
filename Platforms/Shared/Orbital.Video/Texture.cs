@@ -75,9 +75,22 @@ namespace Orbital.Video
 	{
 		public int width { get; protected set; }
 		public int height { get; protected set; }
+		public bool isRenderTexture { get; protected set; }
 
 		public Texture2DBase(DeviceBase device)
 		: base(device)
 		{}
+
+		#region Create Methods
+		public virtual RenderPassBase CreateRenderPass(RenderPassDesc desc)
+		{
+			throw new NotSupportedException("Only render-textures can create render passes");
+		}
+
+		public virtual RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
+		{
+			throw new NotSupportedException("Only render-textures can create render passes");
+		}
+		#endregion
 	}
 }

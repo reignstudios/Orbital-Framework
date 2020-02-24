@@ -5,9 +5,10 @@ struct Texture
 {
 	Device* device;
 	TextureMode mode;
-	ID3D12Resource* texture;
-	ID3D12DescriptorHeap* textureHeap;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureHeapHandle;
+	ID3D12Resource* resource;
+	ID3D12DescriptorHeap* shaderResourceHeap;
+	ID3D12DescriptorHeap* renderTargetResourceHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE renderTargetResourceDescCPUHandle;
 	DXGI_FORMAT format;
 	D3D12_RESOURCE_STATES resourceState;
 };

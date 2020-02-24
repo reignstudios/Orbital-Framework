@@ -237,6 +237,16 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, TextureMode mode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
 		{
 			throw new NotImplementedException();

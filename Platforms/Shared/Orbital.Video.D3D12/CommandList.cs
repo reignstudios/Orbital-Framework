@@ -105,8 +105,11 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(handle, swapChainD3D12.handle, r, b, g, a);
 		}
 
-		public override void ClearRenderTarget(RenderTextureBase renderTarget, float r, float g, float b, float a)
+		public override void ClearRenderTarget(Texture2DBase renderTexture, float r, float g, float b, float a)
 		{
+			#if DEBUG
+			if (!renderTexture.isRenderTexture) throw new Exception("Is not render-texture");
+			#endif
 			throw new NotImplementedException();
 		}
 

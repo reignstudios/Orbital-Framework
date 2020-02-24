@@ -73,7 +73,7 @@ extern "C"
 			D3D12_RESOURCE_BARRIER barriers[2] = {};
 			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-			barriers[0].Transition.pResource = renderPass->renderTargetViews[renderPass->swapChain->currentRenderTargetIndex];
+			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
 			barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
 			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -102,7 +102,7 @@ extern "C"
 			{
 				barriers[i].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barriers[i].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[i].Transition.pResource = renderPass->renderTargetViews[i];
+				barriers[i].Transition.pResource = renderPass->renderTargetResources[i];
 				barriers[i].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 				barriers[i].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 				barriers[i].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -120,7 +120,7 @@ extern "C"
 			D3D12_RESOURCE_BARRIER barriers[2] = {};
 			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-			barriers[0].Transition.pResource = renderPass->renderTargetViews[renderPass->swapChain->currentRenderTargetIndex];
+			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
 			barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
 			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -147,7 +147,7 @@ extern "C"
 			{
 				barriers[i].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barriers[i].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[i].Transition.pResource = renderPass->renderTargetViews[i];
+				barriers[i].Transition.pResource = renderPass->renderTargetResources[i];
 				barriers[i].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 				barriers[i].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 				barriers[i].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -159,7 +159,7 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(CommandList* handle, SwapChain* swapChain, float r, float g, float b, float a)
 	{
 		float rgba[4] = {r, g, b, a};
-		handle->commandList->ClearRenderTargetView(swapChain->renderTargetDescCPUHandles[swapChain->currentRenderTargetIndex], rgba, 0, NULL);
+		handle->commandList->ClearRenderTargetView(swapChain->resourceDescCPUHandles[swapChain->currentRenderTargetIndex], rgba, 0, NULL);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetViewPort(CommandList* handle, UINT x, UINT y, UINT width, UINT height, float minDepth, float maxDepth)
@@ -239,7 +239,7 @@ extern "C"
 		// enable vertex / index buffers
 		handle->commandList->IASetPrimitiveTopology(renderState->topology);
 		handle->commandList->IASetVertexBuffers(0, vertexBufferCount, renderState->vertexBufferStreamer->vertexBufferViews);
-		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->indexBufferView);
+		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->resourceView);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexOffset, UINT vertexCount, UINT instanceCount)
