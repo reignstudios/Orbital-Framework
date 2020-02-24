@@ -3,32 +3,72 @@ using System;
 
 namespace Orbital.Video
 {
-	public struct RenderPassDesc
+	public struct RenderPassRenderTargetDesc
 	{
-		public bool clearColor, clearDepthStencil;
+		public bool clearColor;
 		public Color4F clearColorValue;
-		public float depthValue, stencilValue;
 
-		public static RenderPassDesc CreateDefault(Color4F clearColorValue)
+		public static RenderPassRenderTargetDesc CreateDefault(Color4F clearColorValue)
 		{
-			return new RenderPassDesc()
+			return new RenderPassRenderTargetDesc()
 			{
 				clearColor = true,
-				clearColorValue = clearColorValue,
-				clearDepthStencil = true,
-				depthValue = 1
+				clearColorValue = clearColorValue
 			};
 		}
+	}
 
-		public static RenderPassDesc CreateDefault(Color4F clearColorValue, bool clearDepthStencil)
+	public struct RenderPassDepthStencilDesc
+	{
+		public bool clearDepthStencil;
+		public float depthValue, stencilValue;
+
+		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepthStencil)
 		{
-			return new RenderPassDesc()
+			return new RenderPassDepthStencilDesc()
 			{
-				clearColor = true,
-				clearColorValue = clearColorValue,
 				clearDepthStencil = clearDepthStencil,
 				depthValue = 1
 			};
+		}
+	}
+
+	public struct RenderPassDesc
+	{
+		public RenderPassRenderTargetDesc[] renderTargetDescs;
+		public RenderPassDepthStencilDesc depthStencilDesc;
+
+		public static RenderPassDesc CreateDefault(int renderTargetCount)
+		{
+			var result = new RenderPassDesc()
+			{
+				renderTargetDescs = new RenderPassRenderTargetDesc[renderTargetCount],
+				depthStencilDesc = RenderPassDepthStencilDesc.CreateDefault(true)
+			};
+			for (int i = 0; i != renderTargetCount; ++i) result.renderTargetDescs[i] = RenderPassRenderTargetDesc.CreateDefault(Color4F.black);
+			return result;
+		}
+
+		public static RenderPassDesc CreateDefault(Color4F clearColorValue, int renderTargetCount)
+		{
+			var result = new RenderPassDesc()
+			{
+				renderTargetDescs = new RenderPassRenderTargetDesc[renderTargetCount],
+				depthStencilDesc = RenderPassDepthStencilDesc.CreateDefault(true)
+			};
+			for (int i = 0; i != renderTargetCount; ++i) result.renderTargetDescs[i] = RenderPassRenderTargetDesc.CreateDefault(clearColorValue);
+			return result;
+		}
+
+		public static RenderPassDesc CreateDefault(Color4F clearColorValue, int renderTargetCount, bool clearDepthStencil)
+		{
+			var result = new RenderPassDesc()
+			{
+				renderTargetDescs = new RenderPassRenderTargetDesc[renderTargetCount],
+				depthStencilDesc = RenderPassDepthStencilDesc.CreateDefault(clearDepthStencil)
+			};
+			for (int i = 0; i != renderTargetCount; ++i) result.renderTargetDescs[i] = RenderPassRenderTargetDesc.CreateDefault(clearColorValue);
+			return result;
 		}
 	}
 
@@ -39,6 +79,12 @@ namespace Orbital.Video
 		public RenderPassBase(DeviceBase device)
 		{
 			this.device = device;
+		}
+
+		protected void Validate(ref RenderPassDesc desc, int renderTargetCount)
+		{
+			if (desc.renderTargetDescs == null) throw new Exception("Must contain 'renderTargetDescs'");
+			if (desc.renderTargetDescs.Length != renderTargetCount) throw new Exception("'renderTargetDescs' length must match render targets length");
 		}
 
 		public abstract void Dispose();

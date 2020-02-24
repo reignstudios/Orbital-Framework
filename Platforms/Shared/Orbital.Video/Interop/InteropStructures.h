@@ -1,11 +1,23 @@
 #pragma once
 #include <stdint.h>
 
+typedef struct RenderPassRenderTargetDesc
+{
+	int clearColor;
+	float clearColorValue[4];
+}RenderPassRenderTargetDesc;
+
+typedef struct RenderPassDepthStencilDesc
+{
+	int clearDepthStencil;
+	float depthValue, stencilValue;
+}RenderPassDepthStencilDesc;
+
 typedef struct RenderPassDesc
 {
-	char clearColor, clearDepthStencil;
-	float clearColorValue[4];
-	float depthValue, stencilValue;
+	int renderTargetDescCount;
+	RenderPassRenderTargetDesc* renderTargetDescs;
+	RenderPassDepthStencilDesc depthStencilDesc;
 }RenderPassDesc;
 
 #pragma region Texture / Surface
@@ -31,6 +43,12 @@ typedef enum TextureFormat
 	TextureFormat_R16G16B16A16,
 	TextureFormat_R32G32B32A32,
 }TextureFormat;
+
+typedef enum RenderTextureUsage
+{
+	RenderTextureUsage_Discard,
+	RenderTextureUsage_Preserve
+}RenderTextureUsage;
 
 typedef enum SwapChainFormat
 {

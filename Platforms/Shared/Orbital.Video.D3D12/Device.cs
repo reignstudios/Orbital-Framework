@@ -339,9 +339,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, TextureMode mode)
 		{
-			var abstraction = new RenderTexture2D(this, mode);
+			var abstraction = new RenderTexture2D(this, usage, mode);
 			if (!abstraction.Init(format, width, height))
 			{
 				abstraction.Dispose();
@@ -350,9 +350,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, byte[] data, TextureMode mode)
 		{
-			var abstraction = new RenderTexture2D(this, mode);
+			var abstraction = new RenderTexture2D(this, usage, mode);
 			if (!abstraction.Init(format, width, height, data))
 			{
 				abstraction.Dispose();

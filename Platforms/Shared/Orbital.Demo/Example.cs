@@ -44,7 +44,7 @@ namespace Orbital.Demo
 		{
 			// create render texture
 			const int size = 256;
-			renderTexture = device.CreateRenderTexture2D(TextureFormat.Default, size, size, TextureMode.GPUOptimized);
+			renderTexture = device.CreateRenderTexture2D(TextureFormat.Default, RenderTextureUsage.Discard, size, size, TextureMode.GPUOptimized);
 
 			// load shader effect
 			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -87,7 +87,7 @@ namespace Orbital.Demo
 			vertexBufferStreamer = device.CreateVertexBufferStreamer(vertexBufferStreamLayout);
 
 			// create render pass
-			var renderPassDesc = RenderPassDesc.CreateDefault(Color4F.black);
+			var renderPassDesc = RenderPassDesc.CreateDefault(Color4F.black, 1);
 			renderPass = renderTexture.CreateRenderPass(renderPassDesc);
 
 			// create render state
@@ -205,7 +205,7 @@ namespace Orbital.Demo
 			commandList = device.CreateCommandList();
 
 			// create render pass
-			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1));
+			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
 			renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
 
 			// create texture

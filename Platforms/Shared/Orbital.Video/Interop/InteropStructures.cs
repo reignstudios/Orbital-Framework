@@ -10,19 +10,48 @@ namespace Orbital.Video.Vulkan
 {
 	#region Render Pass
 	[StructLayout(LayoutKind.Sequential)]
-	struct RenderPassDesc_NativeInterop
+	public struct RenderPassRenderTargetDesc_NativeInterop
 	{
-		public byte clearColor, clearDepthStencil;
+		public int clearColor;
 		public Color4F clearColorValue;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct RenderPassDepthStencilDesc_NativeInterop
+	{
+		public int clearDepthStencil;
 		public float depthValue, stencilValue;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct RenderPassDesc_NativeInterop : IDisposable
+	{
+		public int renderTargetDescCount;
+		public RenderPassRenderTargetDesc_NativeInterop* renderTargetDescs;
+		public RenderPassDepthStencilDesc_NativeInterop depthStencilDesc;
 
 		public RenderPassDesc_NativeInterop(ref RenderPassDesc desc)
 		{
-			clearColor = (byte)(desc.clearColor ? 1 : 0);
-			clearDepthStencil = (byte)(desc.clearDepthStencil ? 1 : 0);
-			clearColorValue = desc.clearColorValue;
-			depthValue = desc.depthValue;
-			stencilValue = desc.stencilValue;
+			renderTargetDescCount = desc.renderTargetDescs.Length;
+			renderTargetDescs = (RenderPassRenderTargetDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<RenderPassRenderTargetDesc_NativeInterop>() * desc.renderTargetDescs.Length);
+			for (int i = 0; i != desc.renderTargetDescs.Length; ++i)
+			{
+				renderTargetDescs[i].clearColor = desc.renderTargetDescs[i].clearColor ? 1 : 0;
+				renderTargetDescs[i].clearColorValue = desc.renderTargetDescs[i].clearColorValue;
+			}
+
+			depthStencilDesc.clearDepthStencil = desc.depthStencilDesc.clearDepthStencil ? 1 : 0;
+			depthStencilDesc.depthValue = desc.depthStencilDesc.depthValue;
+			depthStencilDesc.stencilValue = desc.depthStencilDesc.stencilValue;
+		}
+
+		public void Dispose()
+		{
+			if (renderTargetDescs != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)renderTargetDescs);
+				renderTargetDescs = null;
+			}
 		}
 	}
 	#endregion

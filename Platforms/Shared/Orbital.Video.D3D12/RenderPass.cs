@@ -9,71 +9,96 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(IntPtr device, IntPtr swapChain, IntPtr depthStencil);
+		private static extern IntPtr Orbital_Video_D3D12_RenderPass_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private unsafe static extern IntPtr Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(IntPtr device, IntPtr* renderTextures, uint renderTextureCount, IntPtr depthStencil);
+		private unsafe static extern int Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(IntPtr handle, RenderPassDesc_NativeInterop* desc, IntPtr swapChain, IntPtr depthStencil);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_RenderPass_Init(IntPtr handle, RenderPassDesc_NativeInterop* desc);
+		private unsafe static extern int Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(IntPtr handle, RenderPassDesc_NativeInterop* desc, IntPtr* renderTextures, RenderTextureUsage* usages, uint renderTextureCount, IntPtr depthStencil);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_RenderPass_Dispose(IntPtr handle);
 
-		public RenderPass(SwapChain swapChain)
-		: base(swapChain.device)
+		public RenderPass(Device device)
+		: base(device)
 		{
-			deviceD3D12 = swapChain.deviceD3D12;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(deviceD3D12.handle, swapChain.handle, IntPtr.Zero);
+			deviceD3D12 = device;
+			handle = Orbital_Video_D3D12_RenderPass_Create(deviceD3D12.handle);
 		}
 
-		public RenderPass(SwapChain swapChain, DepthStencil depthStencil)
-		: base(swapChain.device)
+		public unsafe bool Init(RenderPassDesc desc, SwapChain swapChain)
 		{
-			deviceD3D12 = swapChain.deviceD3D12;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithSwapChain(deviceD3D12.handle, swapChain.handle, depthStencil.handle);
+			Validate(ref desc, 1);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				return Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(handle, &descNative, swapChain.handle, IntPtr.Zero) != 0;
+			}
 		}
 
-		public unsafe RenderPass(RenderTexture2D renderTexture)
-		: base(renderTexture.device)
+		public unsafe bool Init(RenderPassDesc desc, SwapChain swapChain, DepthStencil depthStencil)
 		{
-			deviceD3D12 = renderTexture.deviceD3D12;
-			var renderTextureHandle = renderTexture.handle;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(deviceD3D12.handle, &renderTextureHandle, 1, IntPtr.Zero);
+			Validate(ref desc, 1);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				return Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(handle, &descNative, swapChain.handle, depthStencil.handle) != 0;
+			}
 		}
 
-		public unsafe RenderPass(RenderTexture2D renderTexture, DepthStencil depthStencil)
-		: base(renderTexture.device)
+		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D renderTexture)
 		{
-			deviceD3D12 = renderTexture.deviceD3D12;
-			var renderTextureHandle = renderTexture.handle;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(deviceD3D12.handle, &renderTextureHandle, 1, depthStencil.handle);
+			Validate(ref desc, 1);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				var renderTextureHandle = renderTexture.handle;
+				var usage = renderTexture.usage;
+				return Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(handle, &descNative, &renderTextureHandle, &usage, 1, IntPtr.Zero) != 0;
+			}
 		}
 
-		public unsafe RenderPass(RenderTexture2D[] renderTextures)
-		: base(renderTextures[0].device)
+		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D renderTexture, DepthStencil depthStencil)
 		{
-			deviceD3D12 = renderTextures[0].deviceD3D12;
+			Validate(ref desc, 1);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				var renderTextureHandle = renderTexture.handle;
+				var usage = renderTexture.usage;
+				return Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(handle, &descNative, &renderTextureHandle, &usage, 1, depthStencil.handle) != 0;
+			}
+		}
+
+		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures)
+		{
 			int length = renderTextures.Length;
-			var renderTextureHandles = stackalloc IntPtr[length];
-			for (int i = 0; i != length; ++i) renderTextureHandles[i] = renderTextures[i].handle;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(deviceD3D12.handle, renderTextureHandles, (uint)length, IntPtr.Zero);
+			Validate(ref desc, length);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				var renderTextureHandles = stackalloc IntPtr[length];
+				var usages = stackalloc RenderTextureUsage[length];
+				for (int i = 0; i != length; ++i)
+				{
+					renderTextureHandles[i] = renderTextures[i].handle;
+					usages[i] = renderTextures[i].usage;
+				}
+				return Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(handle, &descNative, renderTextureHandles, usages, (uint)length, IntPtr.Zero) != 0;
+			}
 		}
 
-		public unsafe RenderPass(RenderTexture2D[] renderTextures, DepthStencil depthStencil)
-		: base(renderTextures[0].device)
+		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures, DepthStencil depthStencil)
 		{
-			deviceD3D12 = renderTextures[0].deviceD3D12;
 			int length = renderTextures.Length;
-			var renderTextureHandles = stackalloc IntPtr[length];
-			for (int i = 0; i != length; ++i) renderTextureHandles[i] = renderTextures[i].handle;
-			handle = Orbital_Video_D3D12_RenderPass_Create_WithRenderTextures(deviceD3D12.handle, renderTextureHandles, (uint)length, depthStencil.handle);
-		}
-
-		public unsafe bool Init(RenderPassDesc desc)
-		{
-			var descNative = new RenderPassDesc_NativeInterop(ref desc);
-			return Orbital_Video_D3D12_RenderPass_Init(handle, &descNative) != 0;
+			Validate(ref desc, length);
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				var renderTextureHandles = stackalloc IntPtr[length];
+				var usages = stackalloc RenderTextureUsage[length];
+				for (int i = 0; i != length; ++i)
+				{
+					renderTextureHandles[i] = renderTextures[i].handle;
+					usages[i] = renderTextures[i].usage;
+				}
+				return Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(handle, &descNative, renderTextureHandles, usages, (uint)length, depthStencil.handle) != 0;
+			}
 		}
 
 		public override void Dispose()

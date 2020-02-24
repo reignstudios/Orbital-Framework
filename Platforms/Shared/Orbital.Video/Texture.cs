@@ -43,10 +43,19 @@ namespace Orbital.Video
 		R32G32B32A32,
 	}
 
-	public struct TextureMipLevel2D
+	public enum RenderTextureUsage
 	{
-		public int width, height;
-		public byte[] data;
+		/// <summary>
+		/// Discards previous image data.
+		/// Can be more optimized on some platforms if previous frame data isn't needed.
+		/// </summary>
+		Discard,
+
+		/// <summary>
+		/// Preserves previous image data.
+		/// Use if blending is enabled.
+		/// </summary>
+		Preserve
 	}
 
 	public abstract class TextureBase : IDisposable

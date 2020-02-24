@@ -29,8 +29,10 @@ namespace Orbital.Video.Vulkan
 
 		public unsafe bool Init(RenderPassDesc desc)
 		{
-			var descNative = new RenderPassDesc_NativeInterop(ref desc);
-			return Orbital_Video_Vulkan_RenderPass_Init(handle, &descNative) != 0;
+			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
+			{
+				return Orbital_Video_Vulkan_RenderPass_Init(handle, &descNative) != 0;
+			}
 		}
 
 		public override void Dispose()

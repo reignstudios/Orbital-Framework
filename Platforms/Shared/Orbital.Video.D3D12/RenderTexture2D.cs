@@ -4,10 +4,13 @@ namespace Orbital.Video.D3D12
 {
 	public sealed class RenderTexture2D : Texture2D
 	{
-		public RenderTexture2D(Device device, TextureMode mode)
+		public readonly RenderTextureUsage usage;
+
+		public RenderTexture2D(Device device, RenderTextureUsage usage, TextureMode mode)
 		: base(device, mode)
 		{
 			isRenderTexture = true;
+			this.usage = usage;
 		}
 
 		public bool Init(TextureFormat format, int width, int height)
@@ -23,8 +26,8 @@ namespace Orbital.Video.D3D12
 		#region Create Methods
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
-			var abstraction = new RenderPass(this);
-			if (!abstraction.Init(desc))
+			var abstraction = new RenderPass(deviceD3D12);
+			if (!abstraction.Init(desc, this))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderPass");
@@ -34,8 +37,8 @@ namespace Orbital.Video.D3D12
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
 		{
-			var abstraction = new RenderPass(this, (DepthStencil)depthStencil);
-			if (!abstraction.Init(desc))
+			var abstraction = new RenderPass(deviceD3D12);
+			if (!abstraction.Init(desc, this, (DepthStencil)depthStencil))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderPass");

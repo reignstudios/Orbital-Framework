@@ -13,8 +13,8 @@ ORBITAL_EXPORT int Orbital_Video_Vulkan_RenderPass_Init_Native(RenderPass* handl
 	handle->width = width;
 	handle->height = height;
 
-	handle->clearColor = desc->clearColor;
-	memcpy(handle->clearColorValue, desc->clearColorValue, sizeof(float) * 4);
+	handle->clearColor = desc->renderTargetDescs[0].clearColor;
+	memcpy(handle->clearColorValue, desc->renderTargetDescs[0].clearColorValue, sizeof(float) * 4);
 
 	// init native desc
 	uint32_t attachmentCount = 1;
