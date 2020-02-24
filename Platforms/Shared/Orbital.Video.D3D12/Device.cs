@@ -174,6 +174,28 @@ namespace Orbital.Video.D3D12
 			return swapChainD3D12.CreateRenderPass(desc, depthStencil);
 		}
 
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures)
+		{
+			var abstraction = new RenderPass(this);
+			if (!abstraction.Init(desc, (RenderTexture2D[])renderTextures))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderState");
+			}
+			return abstraction;
+		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures, DepthStencilBase depthStencil)
+		{
+			var abstraction = new RenderPass(this);
+			if (!abstraction.Init(desc, (RenderTexture2D[])renderTextures, (DepthStencil)depthStencil))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderState");
+			}
+			return abstraction;
+		}
+
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
 		{
 			var abstraction = new RenderState(this);

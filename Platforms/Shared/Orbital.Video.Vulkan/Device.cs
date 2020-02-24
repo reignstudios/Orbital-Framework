@@ -162,6 +162,16 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures, DepthStencilBase depthStencil)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
 		{
 			throw new NotImplementedException();
