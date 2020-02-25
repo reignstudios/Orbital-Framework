@@ -44,7 +44,7 @@ namespace Orbital.Demo
 		{
 			// create render texture
 			const int size = 256;
-			renderTexture = device.CreateRenderTexture2D(TextureFormat.Default, RenderTextureUsage.Discard, size, size, TextureMode.GPUOptimized);
+			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized);
 
 			// load shader effect
 			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -230,7 +230,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
+			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized);
 
 			// create texture 2
 			textureWidth = 100;
@@ -255,7 +255,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture2 = device.CreateTexture2D(TextureFormat.B8G8R8A8, textureWidth, textureHeight, textureData, TextureMode.GPUOptimized);
+			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect

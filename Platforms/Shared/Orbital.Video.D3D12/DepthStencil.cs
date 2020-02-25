@@ -17,14 +17,14 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_DepthStencil_Dispose(IntPtr handle);
 
-		public DepthStencil(Device device, DepthStencilMode mode)
-		: base(device)
+		public DepthStencil(Device device, StencilUsage usage, DepthStencilMode mode)
+		: base(device, usage)
 		{
 			deviceD3D12 = device;
 			handle = Orbital_Video_D3D12_DepthStencil_Create(device.handle, mode);
 		}
 
-		public unsafe bool Init(DepthStencilFormat format, int width, int height)
+		public unsafe bool Init(int width, int height, DepthStencilFormat format)
 		{
 			this.width = width;
 			this.height = height;

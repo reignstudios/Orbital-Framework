@@ -9,7 +9,7 @@ typedef struct RenderPassRenderTargetDesc
 
 typedef struct RenderPassDepthStencilDesc
 {
-	int clearDepthStencil;
+	int clearDepth, clearStencil;
 	float depthValue, stencilValue;
 }RenderPassDepthStencilDesc;
 
@@ -74,6 +74,12 @@ typedef enum DepthStencilFormat
 	DepthStencilFormat_D24S8,
 	DepthStencilFormat_D16
 }DepthStencilFormat;
+
+typedef enum StencilUsage
+{
+	StencilUsage_Discard,
+	StencilUsage_Preserve
+}StencilUsage;
 #pragma endregion
 
 #pragma region Command Buffer

@@ -15,12 +15,12 @@ namespace Orbital.Video.D3D12
 			handle = Texture.Orbital_Video_D3D12_Texture_Create(device.handle, mode);
 		}
 
-		public virtual bool Init(TextureFormat format, int width, int height, byte[] data)
+		public virtual bool Init(int width, int height, TextureFormat format, byte[] data)
 		{
-			return Init(format, width, height, data, false);
+			return Init(width, height, format, data, false);
 		}
 
-		internal unsafe bool Init(TextureFormat format, int width, int height, byte[] data, bool isRenderTexture)
+		internal unsafe bool Init(int width, int height, TextureFormat format, byte[] data, bool isRenderTexture)
 		{
 			this.width = width;
 			this.height = height;

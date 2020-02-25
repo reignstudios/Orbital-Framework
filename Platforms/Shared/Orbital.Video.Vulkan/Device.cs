@@ -43,6 +43,11 @@ namespace Orbital.Video.Vulkan
 		public bool createDepthStencil;
 
 		/// <summary>
+		/// Depth-Stencil stencil specific usage
+		/// </summary>
+		public StencilUsage stencilUsage;
+
+		/// <summary>
 		/// Depth-Stencil format if created
 		/// </summary>
 		public DepthStencilFormat depthStencilFormat;
@@ -136,7 +141,7 @@ namespace Orbital.Video.Vulkan
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			throw new NotImplementedException();
 		}
@@ -242,22 +247,32 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateTexture2D(int width, int height, TextureFormat format, byte[] data, TextureMode mode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override DepthStencilBase CreateDepthStencil(int width, int height, DepthStencilFormat format, StencilUsage stencilUsage, DepthStencilMode mode)
 		{
 			throw new NotImplementedException();
 		}

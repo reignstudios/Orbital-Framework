@@ -42,12 +42,12 @@ namespace Orbital.Video.D3D12
 			return true;
 		}
 
-		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
-			depthStencilD3D12 = new DepthStencil(deviceD3D12, depthStencilMode);
+			depthStencilD3D12 = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			depthStencil = depthStencilD3D12;
-			if (!depthStencilD3D12.Init(depthStencilFormat, size.width, size.height)) return false;
+			if (!depthStencilD3D12.Init(size.width, size.height, depthStencilFormat)) return false;
 			return Init(window, bufferCount, fullscreen, format);
 		}
 

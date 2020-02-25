@@ -10,7 +10,7 @@ extern "C"
 		return handle;
 	}
 
-	int Orbital_Video_D3D12_RenderPass_Init_Base(RenderPass* handle, RenderPassDesc* desc, RenderTextureUsage* usages, bool onlyUseFirstRenderTargetDesc)
+	int Orbital_Video_D3D12_RenderPass_Init_Base(RenderPass* handle, RenderPassDesc* desc, RenderTextureUsage* usages, StencilUsage stencilUsage, bool onlyUseFirstRenderTargetDesc)
 	{
 		// render-pass: render target
 		for (UINT i = 0, d = 0; i != handle->renderTargetCount; ++i)
@@ -55,8 +55,29 @@ extern "C"
 			handle->depthStencilDesc = (D3D12_RENDER_PASS_DEPTH_STENCIL_DESC*)calloc(1, sizeof(D3D12_RENDER_PASS_DEPTH_STENCIL_DESC));
 			handle->depthStencilDesc->cpuDescriptor = handle->depthStencil->resourceCPUHeapHandle;
 
+			// determine what depth access type to use
+			D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE depthAccessType;
+			if (desc->depthStencilDesc.clearDepth) depthAccessType = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			else depthAccessType = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE;
+
+			// determine what stencil access type to use
+			D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE stencilAccessType;
+			if (desc->depthStencilDesc.clearStencil)
+			{
+				stencilAccessType = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			}
+			else
+			{
+				switch (stencilUsage)
+				{
+					case StencilUsage::StencilUsage_Discard: stencilAccessType = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_DISCARD; break;
+					case StencilUsage::StencilUsage_Preserve: stencilAccessType = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_PRESERVE; break;
+					default: return 0;
+				}
+			}
+
 			// begin depth
-			handle->depthStencilDesc->DepthBeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			handle->depthStencilDesc->DepthBeginningAccess.Type = depthAccessType;
 			handle->depthStencilDesc->DepthBeginningAccess.Clear.ClearValue.DepthStencil.Depth = desc->depthStencilDesc.depthValue;
 			handle->depthStencilDesc->DepthBeginningAccess.Clear.ClearValue.Format = handle->depthStencil->format;
 
@@ -65,7 +86,7 @@ extern "C"
 			//handle->depthStencilDesc->DepthEndingAccess.Resolve// ??
 
 			// begin stencil
-			handle->depthStencilDesc->StencilBeginningAccess.Type = D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE::D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE_CLEAR;
+			handle->depthStencilDesc->StencilBeginningAccess.Type = stencilAccessType;
 			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.DepthStencil.Stencil = desc->depthStencilDesc.stencilValue;
 			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.Format = handle->depthStencil->format;
 
@@ -77,7 +98,7 @@ extern "C"
 		return 1;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(RenderPass* handle, RenderPassDesc* desc, SwapChain* swapChain, DepthStencil* depthStencil)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(RenderPass* handle, RenderPassDesc* desc, SwapChain* swapChain, DepthStencil* depthStencil, StencilUsage stencilUsage)
 	{
 		handle->renderTargetCount = swapChain->bufferCount;
 		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(swapChain->bufferCount, sizeof(DXGI_FORMAT));
@@ -92,10 +113,10 @@ extern "C"
 
 		handle->swapChain = swapChain;
 		handle->depthStencil = depthStencil;
-		return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, NULL, true);
+		return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, NULL, stencilUsage, true);
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(RenderPass* handle, RenderPassDesc* desc, Texture** renderTextures, RenderTextureUsage* usages, UINT renderTextureCount, DepthStencil* depthStencil)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_WithRenderTextures(RenderPass* handle, RenderPassDesc* desc, Texture** renderTextures, RenderTextureUsage* usages, UINT renderTextureCount, DepthStencil* depthStencil, StencilUsage stencilUsage)
 	{
 		handle->renderTargetCount = renderTextureCount;
 		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(renderTextureCount, sizeof(DXGI_FORMAT));
@@ -109,7 +130,7 @@ extern "C"
 		}
 
 		handle->depthStencil = depthStencil;
-		return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, usages, false);
+		return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, usages, stencilUsage, false);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderPass_Dispose(RenderPass* handle)

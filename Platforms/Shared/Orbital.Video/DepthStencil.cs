@@ -43,15 +43,31 @@ namespace Orbital.Video
 		D16
 	}
 
+	public enum StencilUsage
+	{
+		/// <summary>
+		/// Discards previous stencil data.
+		/// Can be more optimized if stencil is not used.
+		/// </summary>
+		Discard,
+
+		/// <summary>
+		/// Preserves previous stencil data.
+		/// </summary>
+		Preserve
+	}
+
 	public abstract class DepthStencilBase : IDisposable
 	{
 		public readonly DeviceBase device;
 		public int width { get; protected set; }
 		public int height { get; protected set; }
+		public readonly StencilUsage stencilUsage;
 
-		public DepthStencilBase(DeviceBase device)
+		public DepthStencilBase(DeviceBase device, StencilUsage usage)
 		{
 			this.device = device;
+			this.stencilUsage = usage;
 		}
 
 		public abstract void Dispose();

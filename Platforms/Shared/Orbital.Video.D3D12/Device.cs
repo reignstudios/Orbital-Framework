@@ -48,6 +48,11 @@ namespace Orbital.Video.D3D12
 		public bool createDepthStencil;
 
 		/// <summary>
+		/// Depth-Stencil stencil specific usage
+		/// </summary>
+		public StencilUsage stencilUsage;
+
+		/// <summary>
 		/// Depth-Stencil format if created
 		/// </summary>
 		public DepthStencilFormat depthStencilFormat;
@@ -93,7 +98,7 @@ namespace Orbital.Video.D3D12
 			{
 				swapChainD3D12 = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
 				swapChain = swapChainD3D12;
-				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat, desc.depthStencilFormat, desc.depthStencilMode);
+				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat, desc.stencilUsage, desc.depthStencilFormat, desc.depthStencilMode);
 				else return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat);
 			}
 			else
@@ -142,10 +147,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
-			if (!abstraction.Init(window, bufferCount, fullscreen, format, depthStencilFormat, depthStencilMode))
+			if (!abstraction.Init(window, bufferCount, fullscreen, format, stencilUsage, depthStencilFormat, depthStencilMode))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create SwapChain");
@@ -350,10 +355,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateTexture2D(int width, int height, TextureFormat format, byte[] data, TextureMode mode)
 		{
 			var abstraction = new Texture2D(this, mode);
-			if (!abstraction.Init(format, width, height, data))
+			if (!abstraction.Init(width, height, format, data))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create Texture2D");
@@ -361,10 +366,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(format, width, height))
+			if (!abstraction.Init(width, height, format))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");
@@ -372,10 +377,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(format, width, height, data))
+			if (!abstraction.Init(width, height, format, data))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");
@@ -383,10 +388,32 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
-			var abstraction = new DepthStencil(this, mode);
-			if (!abstraction.Init(format, width, height))
+			var abstraction = new RenderTexture2D(this, usage, mode);
+			if (!abstraction.Init(width, height, format, stencilUsage, depthStencilFormat, depthStencilMode))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderTexture2D");
+			}
+			return abstraction;
+		}
+
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		{
+			var abstraction = new RenderTexture2D(this, usage, mode);
+			if (!abstraction.Init(width, height, format, data, stencilUsage, depthStencilFormat, depthStencilMode))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderTexture2D");
+			}
+			return abstraction;
+		}
+
+		public override DepthStencilBase CreateDepthStencil(int width, int height, DepthStencilFormat format, StencilUsage stencilUsage, DepthStencilMode mode)
+		{
+			var abstraction = new DepthStencil(this, stencilUsage, mode);
+			if (!abstraction.Init(width, height, format))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create DepthStencil");

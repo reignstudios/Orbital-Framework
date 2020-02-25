@@ -19,7 +19,7 @@ namespace Orbital.Video.Vulkan
 	[StructLayout(LayoutKind.Sequential)]
 	public struct RenderPassDepthStencilDesc_NativeInterop
 	{
-		public int clearDepthStencil;
+		public int clearDepth, clearStencil;
 		public float depthValue, stencilValue;
 	}
 
@@ -40,7 +40,8 @@ namespace Orbital.Video.Vulkan
 				renderTargetDescs[i].clearColorValue = desc.renderTargetDescs[i].clearColorValue;
 			}
 
-			depthStencilDesc.clearDepthStencil = desc.depthStencilDesc.clearDepthStencil ? 1 : 0;
+			depthStencilDesc.clearDepth = desc.depthStencilDesc.clearDepth ? 1 : 0;
+			depthStencilDesc.clearStencil = desc.depthStencilDesc.clearStencil ? 1 : 0;
 			depthStencilDesc.depthValue = desc.depthStencilDesc.depthValue;
 			depthStencilDesc.stencilValue = desc.depthStencilDesc.stencilValue;
 		}

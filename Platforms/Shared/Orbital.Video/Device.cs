@@ -46,7 +46,7 @@ namespace Orbital.Video
 
 		#region Create Methods
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format);
-		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
 		public abstract CommandListBase CreateCommandList();
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil);
@@ -84,10 +84,12 @@ namespace Orbital.Video
 		public abstract VertexBufferStreamerBase CreateVertexBufferStreamer(VertexBufferStreamLayout layout);
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(ConstantBufferMode mode) where T : struct;
 		public abstract ConstantBufferBase CreateConstantBuffer(int size, ConstantBufferMode mode);
-		public abstract Texture2DBase CreateTexture2D(TextureFormat format, int width, int height, byte[] data, TextureMode mode);
-		public abstract Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, TextureMode mode);
-		public abstract Texture2DBase CreateRenderTexture2D(TextureFormat format, RenderTextureUsage usage, int width, int height, byte[] data, TextureMode mode);
-		public abstract DepthStencilBase CreateDepthStencil(DepthStencilFormat format, int width, int height, DepthStencilMode mode);
+		public abstract Texture2DBase CreateTexture2D(int width, int height, TextureFormat format, byte[] data, TextureMode mode);
+		public abstract Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode);
+		public abstract Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode);
+		public abstract Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
+		public abstract Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
+		public abstract DepthStencilBase CreateDepthStencil(int width, int height, DepthStencilFormat format, StencilUsage stencilUsage, DepthStencilMode mode);
 		#endregion
 	}
 }

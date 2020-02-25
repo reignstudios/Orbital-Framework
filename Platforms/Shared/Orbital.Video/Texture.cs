@@ -90,7 +90,12 @@ namespace Orbital.Video
 		: base(device)
 		{}
 
-		#region Create Methods
+		#region RenderTexture Methods
+		public virtual DepthStencilBase GetDepthStencil()
+		{
+			throw new NotSupportedException("Only render-textures can have optional depth-stencil buffers");
+		}
+
 		public virtual RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
 			throw new NotSupportedException("Only render-textures can create render passes");

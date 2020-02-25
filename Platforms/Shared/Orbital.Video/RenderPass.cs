@@ -20,14 +20,24 @@ namespace Orbital.Video
 
 	public struct RenderPassDepthStencilDesc
 	{
-		public bool clearDepthStencil;
+		public bool clearDepth, clearStencil;
 		public float depthValue, stencilValue;
 
-		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepthStencil)
+		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth)
 		{
 			return new RenderPassDepthStencilDesc()
 			{
-				clearDepthStencil = clearDepthStencil,
+				clearDepth = clearDepth,
+				depthValue = 1
+			};
+		}
+
+		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth, bool clearStencil)
+		{
+			return new RenderPassDepthStencilDesc()
+			{
+				clearDepth = clearDepth,
+				clearStencil = clearStencil,
 				depthValue = 1
 			};
 		}
