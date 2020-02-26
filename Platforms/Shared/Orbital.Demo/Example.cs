@@ -87,7 +87,7 @@ namespace Orbital.Demo
 			vertexBufferStreamer = device.CreateVertexBufferStreamer(vertexBufferStreamLayout);
 
 			// create render pass
-			var renderPassDesc = RenderPassDesc.CreateDefault(Color4F.black, 1);
+			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, 0, 0, 0), 1);
 			renderPass = renderTexture.CreateRenderPass(renderPassDesc);
 
 			// create render state
@@ -415,6 +415,7 @@ namespace Orbital.Demo
 				msaaLevel = MSAALevel.Disabled,
 				depthEnable = true
 			};
+			renderStateDesc.blendDesc.renderTargetBlendDescs = new RenderTargetBlendDesc[1] {RenderTargetBlendDesc.AlphaBlending()};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
 			renderStateDesc.textures[0] = texture;
 			renderStateDesc.textures[1] = texture2;

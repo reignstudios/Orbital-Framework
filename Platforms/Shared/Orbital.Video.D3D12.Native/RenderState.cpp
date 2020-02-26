@@ -30,6 +30,69 @@ extern "C"
 		return true;
 	}
 
+	bool BlendFactorToNative(BlendFactor factor, D3D12_BLEND* nativeFactor)
+	{
+		switch (factor)
+		{
+			case BlendFactor::BlendFactor_Zero: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ZERO; break;
+			case BlendFactor::BlendFactor_One: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ONE; break;
+			case BlendFactor::BlendFactor_SourceColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
+			case BlendFactor::BlendFactor_SourceColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
+			case BlendFactor::BlendFactor_SourceAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA; break;
+			case BlendFactor::BlendFactor_SourceAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_ALPHA; break;
+			case BlendFactor::BlendFactor_DestinationColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_COLOR; break;
+			case BlendFactor::BlendFactor_DestinationColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_COLOR; break;
+			case BlendFactor::BlendFactor_DestinationAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_ALPHA; break;
+			case BlendFactor::BlendFactor_DestinationAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_ALPHA; break;
+			case BlendFactor::BlendFactor_SourceAlphaSaturate: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA_SAT; break;
+			case BlendFactor::BlendFactor_SourceColor2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_COLOR; break;
+			case BlendFactor::BlendFactor_SourceColorInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_COLOR; break;
+			case BlendFactor::BlendFactor_SourceAlpha2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_ALPHA; break;
+			case BlendFactor::BlendFactor_SourceAlphaInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_ALPHA; break;
+			default: return false;
+		}
+		return true;
+	}
+
+	bool BlendOperationToNative(BlendOperation operation, D3D12_BLEND_OP* nativeOperation)
+	{
+		switch (operation)
+		{
+			case BlendOperation::BlendOperation_Add: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_ADD; break;
+			case BlendOperation::BlendOperation_Subtract: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_SUBTRACT; break;
+			case BlendOperation::BlendOperation_SubtractReversed: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_REV_SUBTRACT; break;
+			case BlendOperation::BlendOperation_Minimum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MIN; break;
+			case BlendOperation::BlendOperation_Maximum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MAX; break;
+			default: return false;
+		}
+		return true;
+	}
+
+	bool LogicalBlendOperationToNative(LogicalBlendOperation operation, D3D12_LOGIC_OP* nativeOperation)
+	{
+		switch (operation)
+		{
+			case LogicalBlendOperation::LogicalBlendOperation_Clear: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_CLEAR; break;
+			case LogicalBlendOperation::LogicalBlendOperation_Set: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_SET; break;
+			case LogicalBlendOperation::LogicalBlendOperation_Copy: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY; break;
+			case LogicalBlendOperation::LogicalBlendOperation_CopyInverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY_INVERTED; break;
+			case LogicalBlendOperation::LogicalBlendOperation_NoOperation: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOOP; break;
+			case LogicalBlendOperation::LogicalBlendOperation_Invert: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_INVERT; break;
+			case LogicalBlendOperation::LogicalBlendOperation_AND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND; break;
+			case LogicalBlendOperation::LogicalBlendOperation_NAND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NAND; break;
+			case LogicalBlendOperation::LogicalBlendOperation_OR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR; break;
+			case LogicalBlendOperation::LogicalBlendOperation_NOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOR; break;
+			case LogicalBlendOperation::LogicalBlendOperation_XOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_XOR; break;
+			case LogicalBlendOperation::LogicalBlendOperation_Equivalent: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_EQUIV; break;
+			case LogicalBlendOperation::LogicalBlendOperation_AND_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_REVERSE; break;
+			case LogicalBlendOperation::LogicalBlendOperation_AND_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_INVERTED; break;
+			case LogicalBlendOperation::LogicalBlendOperation_OR_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_REVERSE; break;
+			case LogicalBlendOperation::LogicalBlendOperation_OR_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_INVERTED; break;
+			default: return false;
+		}
+		return true;
+	}
+
 	ORBITAL_EXPORT RenderState* Orbital_Video_D3D12_RenderState_Create(Device* device)
 	{
 		RenderState* handle = (RenderState*)calloc(1, sizeof(RenderState));
@@ -155,8 +218,8 @@ extern "C"
 		pipelineDesc.DepthStencilState.BackFace = stencilOp;
 
 		// rasterizer state
-		if (!TriangleCullingToNative(desc->triangleCulling, &pipelineDesc.RasterizerState.CullMode)) return false;
-		if (!TriangleFillModeToNative(desc->triangleFillMode, &pipelineDesc.RasterizerState.FillMode)) return false;
+		if (!TriangleCullingToNative(desc->triangleCulling, &pipelineDesc.RasterizerState.CullMode)) return 0;
+		if (!TriangleFillModeToNative(desc->triangleFillMode, &pipelineDesc.RasterizerState.FillMode)) return 0;
         pipelineDesc.RasterizerState.FrontCounterClockwise = FALSE;
         pipelineDesc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
         pipelineDesc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
@@ -168,21 +231,53 @@ extern "C"
         pipelineDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
 		// blend state
-		pipelineDesc.BlendState.AlphaToCoverageEnable = FALSE;
-        pipelineDesc.BlendState.IndependentBlendEnable = FALSE;
-        D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {};
-		blendDesc.BlendEnable = false;
-		blendDesc.LogicOpEnable = false;
-		blendDesc.SrcBlend = D3D12_BLEND_ONE;
-		blendDesc.DestBlend = D3D12_BLEND_ZERO;
-		blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
-		blendDesc.SrcBlendAlpha = D3D12_BLEND_ONE;
-		blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
-		blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
-		blendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
-		blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-        for (int i = 0; i != pipelineDesc.NumRenderTargets; ++i)
-        {
+		pipelineDesc.BlendState.AlphaToCoverageEnable = desc->blendDesc.alphaToCoverageEnable;
+        pipelineDesc.BlendState.IndependentBlendEnable = desc->blendDesc.independentBlendEnable;
+
+		for (int i = 0; i != pipelineDesc.NumRenderTargets; ++i)// ensure valid render-target blend settings in case no custom ones present
+		{
+			D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {};
+			blendDesc.BlendEnable = false;
+			blendDesc.LogicOpEnable = false;
+			blendDesc.SrcBlend = D3D12_BLEND_ZERO;
+			blendDesc.DestBlend = D3D12_BLEND_ZERO;
+			blendDesc.BlendOp = D3D12_BLEND_OP_ADD;
+			blendDesc.SrcBlendAlpha = D3D12_BLEND_ZERO;
+			blendDesc.DestBlendAlpha = D3D12_BLEND_ZERO;
+			blendDesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+			blendDesc.LogicOp = D3D12_LOGIC_OP_NOOP;
+			blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+			pipelineDesc.BlendState.RenderTarget[i] = blendDesc;
+		}
+
+		for (int i = 0; i != desc->blendDesc.renderTargetBlendDescCount; ++i)// set custom blending states
+		{
+			auto renderTargetBlendDesc = desc->blendDesc.renderTargetBlendDescs[i];
+			D3D12_RENDER_TARGET_BLEND_DESC blendDesc = {};
+
+			blendDesc.BlendEnable = renderTargetBlendDesc.blendingEnabled;
+			blendDesc.LogicOpEnable = renderTargetBlendDesc.logicOperationEnabled;
+
+			if (!BlendFactorToNative(renderTargetBlendDesc.sourceFactor, &blendDesc.SrcBlend)) return 0;
+			if (!BlendFactorToNative(renderTargetBlendDesc.destinationFactor, &blendDesc.DestBlend)) return 0;
+			if (!BlendOperationToNative(renderTargetBlendDesc.operation, &blendDesc.BlendOp)) return 0;
+
+			if (renderTargetBlendDesc.alphaBlendingSeparated)
+			{
+				if (!BlendFactorToNative(renderTargetBlendDesc.sourceAlphaFactor, &blendDesc.SrcBlendAlpha)) return 0;
+				if (!BlendFactorToNative(renderTargetBlendDesc.destinationAlphaFactor, &blendDesc.DestBlendAlpha)) return 0;
+				if (!BlendOperationToNative(renderTargetBlendDesc.alphaOperation, &blendDesc.BlendOpAlpha)) return 0;
+			}
+			else
+			{
+				blendDesc.SrcBlendAlpha = blendDesc.SrcBlend;
+				blendDesc.DestBlendAlpha = blendDesc.DestBlend;
+				blendDesc.BlendOpAlpha = blendDesc.BlendOp;
+			}
+
+			if (!LogicalBlendOperationToNative(renderTargetBlendDesc.logicalOperation, &blendDesc.LogicOp)) return 0;
+			blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;//(D3D12_COLOR_WRITE_ENABLE)renderTargetBlendDesc.writeMask;
+
 			pipelineDesc.BlendState.RenderTarget[i] = blendDesc;
 		}
 

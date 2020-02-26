@@ -151,6 +151,11 @@ namespace Orbital.Video
 	public enum LogicalBlendOperation
 	{
 		/// <summary>
+		/// No operation is performed on the render target
+		/// </summary>
+		NoOperation,
+
+		/// <summary>
 		/// Clears the render target to 0
 		/// </summary>
 		Clear,
@@ -169,11 +174,6 @@ namespace Orbital.Video
 		/// Performs an inverted-copy of the render target
 		/// </summary>
 		CopyInverted,
-
-		/// <summary>
-		/// No operation is performed on the render target
-		/// </summary>
-		NoOperation,
 
 		/// <summary>
 		/// Inverts the render target
@@ -231,6 +231,35 @@ namespace Orbital.Video
 		OR_Inverted
 	}
 
+	[Flags]
+	public enum BlendWriteMask
+	{
+		/// <summary>
+		/// Write red color channel
+		/// </summary>
+		Red = 1,
+
+		/// <summary>
+		/// Write green color channel
+		/// </summary>
+		Green = 2,
+
+		/// <summary>
+		/// Write blue color channel
+		/// </summary>
+		Blue = 4,
+
+		/// <summary>
+		/// Write alpha color channel
+		/// </summary>
+		Alpha = 8,
+
+		/// <summary>
+		/// Write all color channels
+		/// </summary>
+		All = Red | Green | Blue | Alpha
+	}
+
 	public struct RenderTargetBlendDesc
 	{
 		/// <summary>
@@ -251,32 +280,32 @@ namespace Orbital.Video
 		public bool alphaBlendingSeparated;
 
 		/// <summary>
-		/// Factor 1 used in blending operation
+		/// Source factor used in blending operation
 		/// </summary>
-		public BlendFactor factor1;
+		public BlendFactor sourceFactor;
 
 		/// <summary>
-		/// Factor 2 used in blending operation
+		/// Destination factor used in blending operation
 		/// </summary>
-		public BlendFactor factor2;
+		public BlendFactor destinationFactor;
 
 		/// <summary>
-		/// Blending operation between factors
+		/// Blending operation between factors 'result = ((src * srcFactor) OP (dst * dstFactor))'
 		/// </summary>
 		public BlendOperation operation;
 
 		/// <summary>
-		/// Alpha-Factor 1 used in blending operation
+		/// Source Alpha-Factor used in blending operation
 		/// </summary>
-		public BlendFactor alphaFactor1;
+		public BlendFactor sourceAlphaFactor;
 
 		/// <summary>
-		/// Alpha-Factor 2 used in blending operation
+		/// Destination Alpha-Factor used in blending operation
 		/// </summary>
-		public BlendFactor alphaFactor2;
+		public BlendFactor destinationAlphaFactor;
 
 		/// <summary>
-		/// Blending operation between alpha-factors
+		/// Blending operation between alpha-factors 'result = ((srcAlpha * srcAlphaFactor) OP (dstAlpha * dstAlphaFactor))'
 		/// </summary>
 		public BlendOperation alphaOperation;
 
@@ -284,6 +313,56 @@ namespace Orbital.Video
 		/// Logical operation which produces: 'result = (source OP destination)'
 		/// </summary>
 		public LogicalBlendOperation logicalOperation;
+
+		/// <summary>
+		/// What color channels to write
+		/// </summary>
+		public BlendWriteMask writeMask;
+
+		public static RenderTargetBlendDesc BlendingDisabled()
+		{
+			return new RenderTargetBlendDesc()
+			{
+				blendingEnabled = false,
+				writeMask = BlendWriteMask.All
+			};
+		}
+
+		public static RenderTargetBlendDesc AlphaBlending()
+		{
+			return new RenderTargetBlendDesc()
+			{
+				blendingEnabled = true,
+				sourceFactor = BlendFactor.SourceAlpha,
+				destinationFactor = BlendFactor.SourceAlphaInverse,
+				operation = BlendOperation.Add,
+				writeMask = BlendWriteMask.All
+			};
+		}
+
+		public static RenderTargetBlendDesc AdditiveBlending()
+		{
+			return new RenderTargetBlendDesc()
+			{
+				blendingEnabled = true,
+				sourceFactor = BlendFactor.One,
+				destinationFactor = BlendFactor.One,
+				operation = BlendOperation.Add,
+				writeMask = BlendWriteMask.All
+			};
+		}
+
+		public static RenderTargetBlendDesc SubtractiveBlending()
+		{
+			return new RenderTargetBlendDesc()
+			{
+				blendingEnabled = true,
+				sourceFactor = BlendFactor.One,
+				destinationFactor = BlendFactor.One,
+				operation = BlendOperation.Subtract,
+				writeMask = BlendWriteMask.All
+			};
+		}
 	}
 
 	public struct BlendDesc
@@ -368,6 +447,11 @@ namespace Orbital.Video
 		/// Multisample anti-aliasing level
 		/// </summary>
 		public MSAALevel msaaLevel;
+
+		/// <summary>
+		/// Blending description
+		/// </summary>
+		public BlendDesc blendDesc;
 	}
 
 	public abstract class RenderStateBase : IDisposable
@@ -389,6 +473,41 @@ namespace Orbital.Video
 			int textureCount = desc.textures != null ? desc.textures.Length : 0;
 			if (desc.shaderEffect.textureCount != textureCount) throw new ArgumentException("RenderState texture count doesn't match ShaderEffect requirements");
 
+			// validate independentBlendEnable is true settings
+			if (desc.blendDesc.independentBlendEnable)
+			{
+				// validate render-target blend descriptions length matches render-pass render-target count
+				if (desc.blendDesc.renderTargetBlendDescs == null || desc.blendDesc.renderTargetBlendDescs.Length != desc.renderPass.renderTargetCount)
+				{
+					throw new ArgumentException("'independentBlendEnable' requires 'renderTargetBlendDescs' length to match RenderPass render-target count");
+				}
+
+				// validate 'logicOperationEnabled' is not enabled when 'independentBlendEnable' is
+				if (desc.blendDesc.renderTargetBlendDescs != null)
+				{
+					foreach (var blendDesc in desc.blendDesc.renderTargetBlendDescs)
+					{
+						if (blendDesc.logicOperationEnabled) throw new ArgumentException("'logicOperationEnabled' cannot be enabled when 'independentBlendEnable' is enabled");
+					}
+				}
+			}
+
+			// validate 'renderTargetBlendDescs' is null or length = 1 when 'independentBlendEnable' is disabled
+			if (!desc.blendDesc.independentBlendEnable && desc.blendDesc.renderTargetBlendDescs != null && desc.blendDesc.renderTargetBlendDescs.Length != 1)
+			{
+				throw new ArgumentException("'independentBlendEnable' set to false requires 'renderTargetBlendDescs' length to equal 1");
+			}
+
+			// validate both 'blendingEnabled' and 'logicOperationEnabled' are not enabled at the same time
+			if (desc.blendDesc.renderTargetBlendDescs != null)
+			{
+				foreach (var blendDesc in desc.blendDesc.renderTargetBlendDescs)
+				{
+					if (blendDesc.blendingEnabled && blendDesc.logicOperationEnabled) throw new ArgumentException("Only 'blendingEnabled' or 'logicOperationEnabled' can be enabled not both");
+				}
+			}
+
+			// if index-buffer override is null, use built in vertex-buffer one
 			if (desc.indexBuffer == null)
 			{
 				var vertexBuffer = desc.vertexBufferStreamer.vertexBuffers[0];

@@ -29,7 +29,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, SwapChain swapChain)
 		{
-			Validate(ref desc, 1);
+			InitBase(ref desc, 1);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				var depthStencilHandle = IntPtr.Zero;
@@ -45,7 +45,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, SwapChain swapChain, DepthStencil depthStencil)
 		{
-			Validate(ref desc, 1);
+			InitBase(ref desc, 1);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				return Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(handle, &descNative, swapChain.handle, depthStencil.handle, depthStencil.stencilUsage) != 0;
@@ -54,7 +54,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D renderTexture)
 		{
-			Validate(ref desc, 1);
+			InitBase(ref desc, 1);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				var renderTextureHandle = renderTexture.handle;
@@ -72,7 +72,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D renderTexture, DepthStencil depthStencil)
 		{
-			Validate(ref desc, 1);
+			InitBase(ref desc, 1);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				var renderTextureHandle = renderTexture.handle;
@@ -84,7 +84,7 @@ namespace Orbital.Video.D3D12
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures)
 		{
 			int length = renderTextures.Length;
-			Validate(ref desc, length);
+			InitBase(ref desc, length);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				var renderTextureHandles = stackalloc IntPtr[length];
@@ -108,7 +108,7 @@ namespace Orbital.Video.D3D12
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures, DepthStencil depthStencil)
 		{
 			int length = renderTextures.Length;
-			Validate(ref desc, length);
+			InitBase(ref desc, length);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
 			{
 				var renderTextureHandles = stackalloc IntPtr[length];

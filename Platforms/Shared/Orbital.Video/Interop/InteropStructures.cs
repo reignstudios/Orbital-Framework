@@ -12,14 +12,14 @@ namespace Orbital.Video.Vulkan
 	[StructLayout(LayoutKind.Sequential)]
 	public struct RenderPassRenderTargetDesc_NativeInterop
 	{
-		public int clearColor;
+		public byte clearColor;
 		public Color4F clearColorValue;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct RenderPassDepthStencilDesc_NativeInterop
 	{
-		public int clearDepth, clearStencil;
+		public byte clearDepth, clearStencil;
 		public float depthValue, stencilValue;
 	}
 
@@ -36,12 +36,12 @@ namespace Orbital.Video.Vulkan
 			renderTargetDescs = (RenderPassRenderTargetDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<RenderPassRenderTargetDesc_NativeInterop>() * desc.renderTargetDescs.Length);
 			for (int i = 0; i != desc.renderTargetDescs.Length; ++i)
 			{
-				renderTargetDescs[i].clearColor = desc.renderTargetDescs[i].clearColor ? 1 : 0;
+				renderTargetDescs[i].clearColor = (byte)(desc.renderTargetDescs[i].clearColor ? 1 : 0);
 				renderTargetDescs[i].clearColorValue = desc.renderTargetDescs[i].clearColorValue;
 			}
 
-			depthStencilDesc.clearDepth = desc.depthStencilDesc.clearDepth ? 1 : 0;
-			depthStencilDesc.clearStencil = desc.depthStencilDesc.clearStencil ? 1 : 0;
+			depthStencilDesc.clearDepth = (byte)(desc.depthStencilDesc.clearDepth ? 1 : 0);
+			depthStencilDesc.clearStencil = (byte)(desc.depthStencilDesc.clearStencil ? 1 : 0);
 			depthStencilDesc.depthValue = desc.depthStencilDesc.depthValue;
 			depthStencilDesc.stencilValue = desc.depthStencilDesc.stencilValue;
 		}
@@ -59,6 +59,72 @@ namespace Orbital.Video.Vulkan
 
 	#region Render State
 	[StructLayout(LayoutKind.Sequential)]
+	struct RenderTargetBlendDesc_NativeInterop
+	{
+		public byte blendingEnabled;
+		public byte logicOperationEnabled;
+		public byte alphaBlendingSeparated;
+		public BlendFactor sourceFactor;
+		public BlendFactor destinationFactor;
+		public BlendOperation operation;
+		public BlendFactor sourceAlphaFactor;
+		public BlendFactor destinationAlphaFactor;
+		public BlendOperation alphaOperation;
+		public LogicalBlendOperation logicalOperation;
+		public BlendWriteMask writeMask;
+
+		public RenderTargetBlendDesc_NativeInterop(ref RenderTargetBlendDesc desc)
+		{
+			blendingEnabled = (byte)(desc.blendingEnabled ? 1 : 0);
+			logicOperationEnabled = (byte)(desc.logicOperationEnabled ? 1 : 0);
+			alphaBlendingSeparated = (byte)(desc.alphaBlendingSeparated ? 1 : 0);
+			sourceFactor = desc.sourceFactor;
+			destinationFactor = desc.destinationFactor;
+			operation = desc.operation;
+			sourceAlphaFactor = desc.sourceAlphaFactor;
+			destinationAlphaFactor = desc.destinationAlphaFactor;
+			alphaOperation = desc.alphaOperation;
+			logicalOperation = desc.logicalOperation;
+			writeMask = desc.writeMask;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct BlendDesc_NativeInterop : IDisposable
+	{
+		public byte alphaToCoverageEnable;
+		public byte independentBlendEnable;
+		public int renderTargetBlendDescCount;
+		public RenderTargetBlendDesc_NativeInterop* renderTargetBlendDescs;
+
+		public BlendDesc_NativeInterop(ref BlendDesc desc)
+		{
+			alphaToCoverageEnable = (byte)(desc.alphaToCoverageEnable ? 1 : 0);
+			independentBlendEnable = (byte)(desc.independentBlendEnable ? 1 : 0);
+			if (desc.renderTargetBlendDescs != null)
+			{
+				renderTargetBlendDescCount = desc.renderTargetBlendDescs.Length;
+				renderTargetBlendDescs = (RenderTargetBlendDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<RenderTargetBlendDesc_NativeInterop>());
+				for (int i = 0; i != renderTargetBlendDescCount; ++i) renderTargetBlendDescs[i] = new RenderTargetBlendDesc_NativeInterop(ref desc.renderTargetBlendDescs[i]);
+			}
+			else
+			{
+				renderTargetBlendDescCount = 0;
+				renderTargetBlendDescs = null;
+			}
+		}
+
+		public void Dispose()
+		{
+			if (renderTargetBlendDescs != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)renderTargetBlendDescs);
+				renderTargetBlendDescs = null;
+			}
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct RenderStateDesc_NativeInterop : IDisposable
 	{
 		public IntPtr renderPass;
@@ -74,6 +140,7 @@ namespace Orbital.Video.Vulkan
 		public TriangleCulling triangleCulling;
 		public TriangleFillMode triangleFillMode;
 		public MSAALevel msaaLevel;
+		public BlendDesc_NativeInterop blendDesc;
 
 		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
 		{
@@ -113,6 +180,7 @@ namespace Orbital.Video.Vulkan
 			triangleCulling = desc.triangleCulling;
 			triangleFillMode = desc.triangleFillMode;
 			msaaLevel = desc.msaaLevel;
+			blendDesc = new BlendDesc_NativeInterop(ref desc.blendDesc);
 		}
 
 		public void Dispose()
@@ -128,6 +196,8 @@ namespace Orbital.Video.Vulkan
 				Marshal.FreeHGlobal((IntPtr)textures);
 				textures = null;
 			}
+
+			blendDesc.Dispose();
 		}
 	}
 	#endregion

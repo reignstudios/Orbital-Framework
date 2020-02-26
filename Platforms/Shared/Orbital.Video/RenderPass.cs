@@ -85,16 +85,18 @@ namespace Orbital.Video
 	public abstract class RenderPassBase : IDisposable
 	{
 		public readonly DeviceBase device;
+		public int renderTargetCount { get; private set; }
 
 		public RenderPassBase(DeviceBase device)
 		{
 			this.device = device;
 		}
 
-		protected void Validate(ref RenderPassDesc desc, int renderTargetCount)
+		protected void InitBase(ref RenderPassDesc desc, int renderTargetCount)
 		{
 			if (desc.renderTargetDescs == null) throw new Exception("Must contain 'renderTargetDescs'");
 			if (desc.renderTargetDescs.Length != renderTargetCount) throw new Exception("'renderTargetDescs' length must match render targets length");
+			this.renderTargetCount = renderTargetCount;
 		}
 
 		public abstract void Dispose();
