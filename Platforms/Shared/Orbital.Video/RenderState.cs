@@ -234,12 +234,14 @@ namespace Orbital.Video
 	public struct RenderTargetBlendDesc
 	{
 		/// <summary>
-		/// Enables blending
+		/// Enables blending.
+		/// Must be set to false if logicOperationEnabled is true
 		/// </summary>
 		public bool blendingEnabled;
 		
 		/// <summary>
-		/// Enables logical operations
+		/// Enables logical operations.
+		/// Must be set to false if blendingEnabled is true
 		/// </summary>
 		public bool logicOperationEnabled;
 
@@ -293,7 +295,8 @@ namespace Orbital.Video
 		
 		/// <summary>
 		/// True to enable unique blending descriptions/operations per render target.
-		/// Otherwise only first render target will use blending if enabled
+		/// Otherwise only first render target will use blending if enabled.
+		/// This must be set to false if logicOperationEnabled is true
 		/// </summary>
 		public bool independentBlendEnable;
 
