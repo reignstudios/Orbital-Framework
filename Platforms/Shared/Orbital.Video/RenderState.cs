@@ -19,12 +19,12 @@ namespace Orbital.Video
 		None,
 
 		/// <summary>
-		/// Back faces will not draw
+		/// Back faces will not draw. Counter-Clockwise faces.
 		/// </summary>
 		Back,
 
 		/// <summary>
-		/// Front faces will not draw
+		/// Front faces will not draw. Clockwise faces.
 		/// </summary>
 		Front
 	}
@@ -319,6 +319,9 @@ namespace Orbital.Video
 		/// </summary>
 		public BlendWriteMask writeMask;
 
+		/// <summary>
+		/// Disables blending
+		/// </summary>
 		public static RenderTargetBlendDesc BlendingDisabled()
 		{
 			return new RenderTargetBlendDesc()
@@ -328,6 +331,9 @@ namespace Orbital.Video
 			};
 		}
 
+		/// <summary>
+		/// Standard alpha blending
+		/// </summary>
 		public static RenderTargetBlendDesc AlphaBlending()
 		{
 			return new RenderTargetBlendDesc()
@@ -340,6 +346,9 @@ namespace Orbital.Video
 			};
 		}
 
+		/// <summary>
+		/// Standard additive blending
+		/// </summary>
 		public static RenderTargetBlendDesc AdditiveBlending()
 		{
 			return new RenderTargetBlendDesc()
@@ -352,6 +361,9 @@ namespace Orbital.Video
 			};
 		}
 
+		/// <summary>
+		/// Standard subtractive blending
+		/// </summary>
 		public static RenderTargetBlendDesc SubtractiveBlending()
 		{
 			return new RenderTargetBlendDesc()
@@ -383,6 +395,194 @@ namespace Orbital.Video
 		/// Render target blend descriptions
 		/// </summary>
 		public RenderTargetBlendDesc[] renderTargetBlendDescs;
+	}
+
+	public enum DepthStencilTestFunction
+	{
+		/// <summary>
+		/// Always pass the comparison
+		/// </summary>
+		Always,
+
+		/// <summary>
+		/// Never pass the comparison
+		/// </summary>
+		Never,
+
+		/// <summary>
+		/// If the source data is equal to the destination data, the comparison passes
+		/// </summary>
+		Equal,
+
+		/// <summary>
+		/// If the source data is not equal to the destination data, the comparison passes
+		/// </summary>
+		NotEqual,
+
+		/// <summary>
+		/// If the source data is less than the destination data, the comparison passes
+		/// </summary>
+		LessThan,
+
+		/// <summary>
+		/// If the source data is less than or equal to the destination data, the comparison passes
+		/// </summary>
+		LessThanOrEqual,
+
+		/// <summary>
+		/// If the source data is greater than the destination data, the comparison passes
+		/// </summary>
+		GreaterThan,
+
+		/// <summary>
+		/// If the source data is greater than or equal to the destination data, the comparison passes
+		/// </summary>
+		GreaterThanOrEqual
+	}
+
+	public enum StencilOperation
+	{
+		/// <summary>
+		/// Keep the existing stencil data
+		/// </summary>
+		Keep,
+
+		/// <summary>
+		/// Set the stencil data to 0
+		/// </summary>
+		Zero,
+
+		/// <summary>
+		/// Invert the stencil data
+		/// </summary>
+		Invert,
+
+		/// <summary>
+		/// Increment the stencil value by 1, and wrap the result if necessary
+		/// </summary>
+		IncrementWrap,
+
+		/// <summary>
+		/// Decrement the stencil value by 1, and wrap the result if necessary
+		/// </summary>
+		DecrementWrap,
+
+		/// <summary>
+		/// Increment the stencil value by 1, and clamp the result
+		/// </summary>
+		IncrementClamp,
+
+		/// <summary>
+		/// Decrement the stencil value by 1, and clamp the result
+		/// </summary>
+		DecrementClamp
+	}
+
+	public struct StencilTestOperationDesc
+	{
+		/// <summary>
+		/// Depth clipping function to use when 'stencilTestEnable' is enabled
+		/// </summary>
+		public DepthStencilTestFunction stencilTestFunction;
+
+		/// <summary>
+		/// The stencil operation to perform when stencil testing and depth testing both pass
+		/// </summary>
+		public StencilOperation stencilPassOperation;
+
+		/// <summary>
+		/// The stencil operation to perform when stencil testing fails
+		/// </summary>
+		public StencilOperation stencilFailOperation;
+
+		/// <summary>
+		/// The stencil operation to perform when stencil testing passes and depth testing fails
+		/// </summary>
+		public StencilOperation stencilDepthFailOperation;
+	}
+
+	public struct DepthStencilDesc
+	{
+		/// <summary>
+		/// Enables depth read and test-function
+		/// </summary>
+		public bool depthTestEnable;
+
+		/// <summary>
+		/// Enables depth write
+		/// </summary>
+		public bool depthWriteEnable;
+
+		/// <summary>
+		/// Clipping function to use when 'depthTestEnable' is enabled
+		/// </summary>
+		public DepthStencilTestFunction depthTestFunction;
+
+		/// <summary>
+		/// Enables stencil read and test-function
+		/// </summary>
+		public bool stencilTestEnable;
+
+		/// <summary>
+		/// Enables stencil write
+		/// </summary>
+		public bool stencilWriteEnable;
+
+		/// <summary>
+		/// Stencil description for front facing operations. Clockwise faces.
+		/// </summary>
+		public StencilTestOperationDesc stencilFrontFacingDesc;
+
+		/// <summary>
+		/// Stencil description for back facing operations. Counter-Clockwise faces.
+		/// </summary>
+		public StencilTestOperationDesc stencilBackFacingDesc;
+
+		/// <summary>
+		/// Standard depth testing. Stencil disabled.
+		/// </summary>
+		public static DepthStencilDesc StandardDepthTesting()
+		{
+			return new DepthStencilDesc()
+			{
+				depthTestEnable = true,
+				depthWriteEnable = true,
+				depthTestFunction = DepthStencilTestFunction.LessThan
+			};
+		}
+
+		/// <summary>
+		/// Basic stencil clipping. Depth disabled.
+		/// This assumes the stencil was cleared with 'RenderPassDepthStencilDesc.stencilValue = 1'
+		/// </summary>
+		/// <param name="stencilClip">True to clip or false to write clipping mask</param>
+		/// <param name="doubleSidedFacing">False to only use front-faces or True for both front and back faces</param>
+		public static DepthStencilDesc BasicStencilTesting(bool stencilClip, bool doubleSidedFacing)
+		{
+			var result = new DepthStencilDesc()
+			{
+				stencilTestEnable = stencilClip,
+				stencilWriteEnable = !stencilClip
+			};
+			
+			result.stencilFrontFacingDesc.stencilTestFunction = stencilClip ? DepthStencilTestFunction.LessThan : DepthStencilTestFunction.Always;
+			result.stencilFrontFacingDesc.stencilFailOperation = StencilOperation.Keep;
+			result.stencilFrontFacingDesc.stencilDepthFailOperation = StencilOperation.Keep;
+			result.stencilFrontFacingDesc.stencilPassOperation = stencilClip ? StencilOperation.Keep : StencilOperation.Zero;
+			if (doubleSidedFacing)
+			{
+				result.stencilBackFacingDesc = result.stencilFrontFacingDesc;
+			}
+			else
+			{
+				result.stencilBackFacingDesc.stencilTestFunction = DepthStencilTestFunction.Never;
+				result.stencilBackFacingDesc.stencilFailOperation = StencilOperation.Keep;
+				result.stencilBackFacingDesc.stencilDepthFailOperation = StencilOperation.Keep;
+				result.stencilBackFacingDesc.stencilPassOperation = StencilOperation.Keep;
+			}
+
+			return result;
+		}
 	}
 
 	public struct RenderStateDesc
@@ -424,16 +624,6 @@ namespace Orbital.Video
 		public IndexBufferBase indexBuffer;
 
 		/// <summary>
-		/// Enables depth read/write
-		/// </summary>
-		public bool depthEnable;
-		
-		/// <summary>
-		/// Enables stencil read/write
-		/// </summary>
-		public bool stencilEnable;
-
-		/// <summary>
 		/// Vertex buffers face culling method to use
 		/// </summary>
 		public TriangleCulling triangleCulling;
@@ -452,6 +642,11 @@ namespace Orbital.Video
 		/// Blending description
 		/// </summary>
 		public BlendDesc blendDesc;
+
+		/// <summary>
+		/// Depth-Stencil description
+		/// </summary>
+		public DepthStencilDesc depthStencilDesc;
 	}
 
 	public abstract class RenderStateBase : IDisposable

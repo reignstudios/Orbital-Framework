@@ -5,7 +5,14 @@ namespace Orbital.Video
 {
 	public struct RenderPassRenderTargetDesc
 	{
+		/// <summary>
+		/// Clear render-target if true
+		/// </summary>
 		public bool clearColor;
+
+		/// <summary>
+		/// Color to clear render-target with
+		/// </summary>
 		public Color4F clearColorValue;
 
 		public static RenderPassRenderTargetDesc CreateDefault(Color4F clearColorValue)
@@ -20,25 +27,55 @@ namespace Orbital.Video
 
 	public struct RenderPassDepthStencilDesc
 	{
-		public bool clearDepth, clearStencil;
-		public float depthValue, stencilValue;
+		/// <summary>
+		/// Clear depth if true
+		/// </summary>
+		public bool clearDepth;
 
+		/// <summary>
+		/// Clear stencil if true
+		/// </summary>
+		public bool clearStencil;
+
+		/// <summary>
+		/// 0-1 depth value to clear depth with.
+		/// This is normally set to 1.
+		/// </summary>
+		public float depthValue;
+		
+		/// <summary>
+		/// 0-1 stencil value to clear stencil with.
+		/// This is normally set to 255.
+		/// </summary>
+		public float stencilValue;
+
+		/// <summary>
+		/// Creates default settings for standard depth testing.
+		/// </summary>
+		/// <param name="clearDepth">True to clear depth</param>
 		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth)
 		{
 			return new RenderPassDepthStencilDesc()
 			{
 				clearDepth = clearDepth,
-				depthValue = 1
+				depthValue = 1,
+				stencilValue = 1
 			};
 		}
 
+		/// <summary>
+		/// Creates default settings for standard depth and stencil testing.
+		/// </summary>
+		/// <param name="clearDepth">True to clear depth</param>
+		/// <param name="clearStencil">True to clear stencil</param>
 		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth, bool clearStencil)
 		{
 			return new RenderPassDepthStencilDesc()
 			{
 				clearDepth = clearDepth,
 				clearStencil = clearStencil,
-				depthValue = 1
+				depthValue = 1,
+				stencilValue = 1
 			};
 		}
 	}

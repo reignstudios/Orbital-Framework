@@ -99,8 +99,7 @@ namespace Orbital.Demo
 				vertexBufferStreamer = vertexBufferStreamer,
 				triangleCulling = TriangleCulling.Back,
 				triangleFillMode = TriangleFillMode.Solid,
-				msaaLevel = MSAALevel.Disabled,
-				depthEnable = true
+				msaaLevel = MSAALevel.Disabled
 			};
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 		}
@@ -413,7 +412,7 @@ namespace Orbital.Demo
 				triangleCulling = TriangleCulling.Back,
 				triangleFillMode = TriangleFillMode.Solid,
 				msaaLevel = MSAALevel.Disabled,
-				depthEnable = true
+				depthStencilDesc = DepthStencilDesc.StandardDepthTesting()
 			};
 			renderStateDesc.blendDesc.renderTargetBlendDescs = new RenderTargetBlendDesc[1] {RenderTargetBlendDesc.AlphaBlending()};
 			renderStateDesc.constantBuffers[0] = constantBuffer;

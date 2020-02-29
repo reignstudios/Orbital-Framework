@@ -10,17 +10,19 @@ namespace Orbital.Video.Vulkan
 {
 	#region Render Pass
 	[StructLayout(LayoutKind.Sequential)]
-	public struct RenderPassRenderTargetDesc_NativeInterop
+	struct RenderPassRenderTargetDesc_NativeInterop
 	{
 		public byte clearColor;
 		public Color4F clearColorValue;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct RenderPassDepthStencilDesc_NativeInterop
+	struct RenderPassDepthStencilDesc_NativeInterop
 	{
-		public byte clearDepth, clearStencil;
-		public float depthValue, stencilValue;
+		public byte clearDepth;
+		public byte clearStencil;
+		public float depthValue;
+		public float stencilValue;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -125,6 +127,46 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	struct StencilTestOperationDesc_NativeInterop
+	{
+		public DepthStencilTestFunction stencilTestFunction;
+		public StencilOperation stencilPassOperation;
+		public StencilOperation stencilFailOperation;
+		public StencilOperation stencilDepthFailOperation;
+
+		public StencilTestOperationDesc_NativeInterop(ref StencilTestOperationDesc desc)
+		{
+			stencilTestFunction = desc.stencilTestFunction;
+			stencilFailOperation = desc.stencilFailOperation;
+			stencilDepthFailOperation = desc.stencilDepthFailOperation;
+			stencilPassOperation = desc.stencilPassOperation;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	struct DepthStencilDesc_NativeInterop
+	{
+		public byte depthTestEnable;
+		public byte depthWriteEnable;
+		public DepthStencilTestFunction depthTestFunction;
+		public byte stencilTestEnable;
+		public byte stencilWriteEnable;
+		public StencilTestOperationDesc_NativeInterop stencilFrontFacingDesc;
+		public StencilTestOperationDesc_NativeInterop stencilBackFacingDesc;
+
+		public DepthStencilDesc_NativeInterop(ref DepthStencilDesc desc)
+		{
+			depthTestEnable = (byte)(desc.depthTestEnable ? 1 : 0);
+			depthWriteEnable = (byte)(desc.depthWriteEnable ? 1 : 0);
+			depthTestFunction = desc.depthTestFunction;
+			stencilTestEnable = (byte)(desc.stencilTestEnable ? 1 : 0);
+			stencilWriteEnable = (byte)(desc.stencilWriteEnable ? 1 : 0);
+			stencilFrontFacingDesc = new StencilTestOperationDesc_NativeInterop(ref desc.stencilFrontFacingDesc);
+			stencilBackFacingDesc = new StencilTestOperationDesc_NativeInterop(ref desc.stencilBackFacingDesc);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct RenderStateDesc_NativeInterop : IDisposable
 	{
 		public IntPtr renderPass;
@@ -136,11 +178,11 @@ namespace Orbital.Video.Vulkan
 		public VertexBufferTopology vertexBufferTopology;
 		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
-		public byte depthEnable, stencilEnable;
 		public TriangleCulling triangleCulling;
 		public TriangleFillMode triangleFillMode;
 		public MSAALevel msaaLevel;
 		public BlendDesc_NativeInterop blendDesc;
+		public DepthStencilDesc_NativeInterop depthStencilDesc;
 
 		public RenderStateDesc_NativeInterop(ref RenderStateDesc desc)
 		{
@@ -175,12 +217,11 @@ namespace Orbital.Video.Vulkan
 			vertexBufferStreamer = ((VertexBufferStreamer)desc.vertexBufferStreamer).handle;
 			if (desc.indexBuffer != null) indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
 			else indexBuffer = IntPtr.Zero;
-			depthEnable = (byte)(desc.depthEnable ? 1 : 0);
-			stencilEnable = (byte)(desc.stencilEnable ? 1 : 0);
 			triangleCulling = desc.triangleCulling;
 			triangleFillMode = desc.triangleFillMode;
 			msaaLevel = desc.msaaLevel;
 			blendDesc = new BlendDesc_NativeInterop(ref desc.blendDesc);
+			depthStencilDesc = new DepthStencilDesc_NativeInterop(ref desc.depthStencilDesc);
 		}
 
 		public void Dispose()

@@ -87,7 +87,7 @@ extern "C"
 
 			// begin stencil
 			handle->depthStencilDesc->StencilBeginningAccess.Type = stencilAccessType;
-			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.DepthStencil.Stencil = desc->depthStencilDesc.stencilValue;
+			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.DepthStencil.Stencil = (UINT8)(desc->depthStencilDesc.stencilValue * UINT8_MAX);
 			handle->depthStencilDesc->StencilBeginningAccess.Clear.ClearValue.Format = handle->depthStencil->format;
 
 			// end stencil

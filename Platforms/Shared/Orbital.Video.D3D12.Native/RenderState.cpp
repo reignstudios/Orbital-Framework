@@ -93,6 +93,39 @@ extern "C"
 		return true;
 	}
 
+	bool DepthStencilTestFunctionToNative(DepthStencilTestFunction function, D3D12_COMPARISON_FUNC* nativeFunction)
+	{
+		switch (function)
+		{
+			case DepthStencilTestFunction::DepthStencilTestFunction_Always: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_ALWAYS; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_Never: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_Equal: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_EQUAL; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_NotEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_LessThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_LessThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER; break;
+			case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
+			default: return false;
+		}
+		return true;
+	}
+
+	bool StencilOperationToNative(StencilOperation operation, D3D12_STENCIL_OP* nativeOperation)
+	{
+		switch (operation)
+		{
+			case StencilOperation::StencilOperation_Keep: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_KEEP; break;
+			case StencilOperation::StencilOperation_Zero: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_ZERO; break;
+			case StencilOperation::StencilOperation_Invert: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INVERT; break;
+			case StencilOperation::StencilOperation_IncrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR; break;
+			case StencilOperation::StencilOperation_DecrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR; break;
+			case StencilOperation::StencilOperation_IncrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR_SAT; break;
+			case StencilOperation::StencilOperation_DecrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR_SAT; break;
+			default: return false;
+		}
+		return true;
+	}
+
 	ORBITAL_EXPORT RenderState* Orbital_Video_D3D12_RenderState_Create(Device* device)
 	{
 		RenderState* handle = (RenderState*)calloc(1, sizeof(RenderState));
@@ -200,21 +233,26 @@ extern "C"
 
 		// depth stencil
 		pipelineDesc.DSVFormat = renderPass->depthStencilFormat;
+		
+        pipelineDesc.DepthStencilState.DepthEnable = desc->depthStencilDesc.depthTestEnable && renderPass->depthStencilDesc != NULL;
+		pipelineDesc.DepthStencilState.DepthWriteMask = desc->depthStencilDesc.depthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
+		if (!DepthStencilTestFunctionToNative(desc->depthStencilDesc.depthTestFunction, &pipelineDesc.DepthStencilState.DepthFunc)) return 0;
 
-        pipelineDesc.DepthStencilState.DepthEnable = desc->depthEnable && renderPass->depthStencilDesc != NULL;
-		pipelineDesc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-		pipelineDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-
-        pipelineDesc.DepthStencilState.StencilEnable = desc->stencilEnable && renderPass->depthStencilDesc != NULL;
+        pipelineDesc.DepthStencilState.StencilEnable = desc->depthStencilDesc.stencilTestEnable && renderPass->depthStencilDesc != NULL;
 		pipelineDesc.DepthStencilState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
-        pipelineDesc.DepthStencilState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+        pipelineDesc.DepthStencilState.StencilWriteMask = desc->depthStencilDesc.stencilWriteEnable ? D3D12_DEFAULT_STENCIL_WRITE_MASK : 0;
 
 		D3D12_DEPTH_STENCILOP_DESC stencilOp = {};
-		stencilOp.StencilFailOp = D3D12_STENCIL_OP_KEEP;
-		stencilOp.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
-		stencilOp.StencilPassOp = D3D12_STENCIL_OP_KEEP;
-		stencilOp.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		if (!DepthStencilTestFunctionToNative(desc->depthStencilDesc.stencilFrontFacingDesc.stencilTestFunction, &stencilOp.StencilFunc)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilFrontFacingDesc.stencilPassOperation, &stencilOp.StencilPassOp)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilFrontFacingDesc.stencilFailOperation, &stencilOp.StencilFailOp)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilFrontFacingDesc.stencilDepthFailOperation, &stencilOp.StencilDepthFailOp)) return 0;
 		pipelineDesc.DepthStencilState.FrontFace = stencilOp;
+
+		if (!DepthStencilTestFunctionToNative(desc->depthStencilDesc.stencilBackFacingDesc.stencilTestFunction, &stencilOp.StencilFunc)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilBackFacingDesc.stencilPassOperation, &stencilOp.StencilPassOp)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilBackFacingDesc.stencilFailOperation, &stencilOp.StencilFailOp)) return 0;
+		if (!StencilOperationToNative(desc->depthStencilDesc.stencilBackFacingDesc.stencilDepthFailOperation, &stencilOp.StencilDepthFailOp)) return 0;
 		pipelineDesc.DepthStencilState.BackFace = stencilOp;
 
 		// rasterizer state

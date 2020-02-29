@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+// ensures enums compile as 32-bit regardess of C compiler
 #define ENUM_BIT INT_MAX
 
 typedef struct RenderPassRenderTargetDesc
@@ -11,8 +12,10 @@ typedef struct RenderPassRenderTargetDesc
 
 typedef struct RenderPassDepthStencilDesc
 {
-	byte clearDepth, clearStencil;
-	float depthValue, stencilValue;
+	byte clearDepth;
+	byte clearStencil;
+	float depthValue;
+	float stencilValue;
 }RenderPassDepthStencilDesc;
 
 typedef struct RenderPassDesc
@@ -264,7 +267,8 @@ typedef enum BlendWriteMask
 	BlendWriteMask_Green = 2,
 	BlendWriteMask_Blue = 3,
 	BlendWriteMask_Alpha = 4,
-	BlendWriteMask_All = BlendWriteMask_Red | BlendWriteMask_Green | BlendWriteMask_Blue | BlendWriteMask_Alpha
+	BlendWriteMask_All = BlendWriteMask_Red | BlendWriteMask_Green | BlendWriteMask_Blue | BlendWriteMask_Alpha,
+	BlendWriteMask_BIT = ENUM_BIT
 }BlendWriteMask;
 
 typedef struct RenderTargetBlendDesc
@@ -290,6 +294,50 @@ typedef struct BlendDesc
 	RenderTargetBlendDesc* renderTargetBlendDescs;
 }BlendDesc;
 
+typedef enum DepthStencilTestFunction
+{
+	DepthStencilTestFunction_Always,
+	DepthStencilTestFunction_Never,
+	DepthStencilTestFunction_Equal,
+	DepthStencilTestFunction_NotEqual,
+	DepthStencilTestFunction_LessThan,
+	DepthStencilTestFunction_LessThanOrEqual,
+	DepthStencilTestFunction_GreaterThan,
+	DepthStencilTestFunction_GreaterThanOrEqual,
+	DepthStencilTestFunction_BIT = ENUM_BIT
+}DepthStencilTestFunction;
+
+typedef enum StencilOperation
+{
+	StencilOperation_Keep,
+	StencilOperation_Zero,
+	StencilOperation_Invert,
+	StencilOperation_IncrementWrap,
+	StencilOperation_DecrementWrap,
+	StencilOperation_IncrementClamp,
+	StencilOperation_DecrementClamp,
+	StencilOperation_BIT = ENUM_BIT
+}StencilOperation;
+
+typedef struct StencilTestOperationDesc
+{
+	DepthStencilTestFunction stencilTestFunction;
+	StencilOperation stencilPassOperation;
+	StencilOperation stencilFailOperation;
+	StencilOperation stencilDepthFailOperation;
+}StencilTestOperationDesc;
+
+typedef struct DepthStencilDesc
+{
+	byte depthTestEnable;
+	byte depthWriteEnable;
+	DepthStencilTestFunction depthTestFunction;
+	byte stencilTestEnable;
+	byte stencilWriteEnable;
+	StencilTestOperationDesc stencilFrontFacingDesc;
+	StencilTestOperationDesc stencilBackFacingDesc;
+}DepthStencilDesc;
+
 typedef struct RenderStateDesc
 {
 	intptr_t renderPass;
@@ -301,11 +349,11 @@ typedef struct RenderStateDesc
 	VertexBufferTopology vertexBufferTopology;
 	intptr_t vertexBufferStreamer;
 	intptr_t indexBuffer;
-	char depthEnable, stencilEnable;
 	TriangleCulling triangleCulling;
 	TriangleFillMode triangleFillMode;
 	MSAALevel msaaLevel;
 	BlendDesc blendDesc;
+	DepthStencilDesc depthStencilDesc;
 }RenderStateDesc;
 #pragma endregion
 
