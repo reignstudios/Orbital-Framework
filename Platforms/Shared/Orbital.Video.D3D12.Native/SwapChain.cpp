@@ -41,6 +41,7 @@ extern "C"
 		if (FAILED(handle->device->instance->factory->CreateSwapChainForHwnd(handle->device->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return 0;
 		handle->swapChain = (IDXGISwapChain3*)swapChain;
 		if (FAILED(handle->device->instance->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
+		handle->resourceState = D3D12_RESOURCE_STATE_PRESENT;// set default state
 
 		// create render targets views
 		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};

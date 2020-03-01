@@ -39,5 +39,10 @@ namespace Orbital.Video.D3D12
 				handle = IntPtr.Zero;
 			}
 		}
+
+		public override IntPtr GetHandle()
+		{
+			return handle;
+		}
 	}
 }

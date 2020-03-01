@@ -40,38 +40,51 @@ extern "C"
 		handle->resourceState = D3D12_RESOURCE_STATE_DEPTH_READ;
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
 
-		// create resource heap
-		D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-        heapDesc.NumDescriptors = 1;
-        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
-        if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->resourceHeap)))) return 0;
-		handle->resourceCPUHeapHandle = handle->resourceHeap->GetCPUDescriptorHandleForHeapStart();
+		// create depth-stencil resource heap
+		D3D12_DESCRIPTOR_HEAP_DESC depthStencilHeapDesc = {};
+        depthStencilHeapDesc.NumDescriptors = 1;
+        depthStencilHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        depthStencilHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
+        if (FAILED(handle->device->device->CreateDescriptorHeap(&depthStencilHeapDesc, IID_PPV_ARGS(&handle->depthStencilResourceHeap)))) return 0;
+		handle->depthStencilResourceCPUHeapHandle = handle->depthStencilResourceHeap->GetCPUDescriptorHandleForHeapStart();
 
 		// create depth-stencil view
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsDesc = {};
 		dsDesc.Format = handle->format;
 		dsDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 		dsDesc.Texture2D.MipSlice = 0;
-		handle->device->device->CreateDepthStencilView(handle->resource, &dsDesc, handle->resourceCPUHeapHandle);
+		handle->device->device->CreateDepthStencilView(handle->resource, &dsDesc, handle->depthStencilResourceCPUHeapHandle);
 
-		/*// create resource view (TODO: requires a D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV heap to create)
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-		srvDesc.Format = handle->format;
-		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
-		handle->device->device->CreateShaderResourceView(handle->resource, &srvDesc, handle->resourceCPUHeapHandle);*/
+		// create shader resource heap
+		D3D12_DESCRIPTOR_HEAP_DESC shaderHeapDesc = {};
+        shaderHeapDesc.NumDescriptors = 1;
+        shaderHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        shaderHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
+        if (FAILED(handle->device->device->CreateDescriptorHeap(&shaderHeapDesc, IID_PPV_ARGS(&handle->shaderResourceHeap)))) return 0;
+
+		// create shader resource view
+		D3D12_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
+		shaderResourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		if (!GetNative_DepthStencilShaderResourceFormat(format, &shaderResourceDesc.Format)) return 0;
+		shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceDesc.Texture2D.MipLevels = 1;
+		handle->device->device->CreateShaderResourceView(handle->resource, &shaderResourceDesc, handle->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
 
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_DepthStencil_Dispose(DepthStencil* handle)
 	{
-		if (handle->resourceHeap != NULL)
+		if (handle->shaderResourceHeap != NULL)
 		{
-			handle->resourceHeap->Release();
-			handle->resourceHeap = NULL;
+			handle->shaderResourceHeap->Release();
+			handle->shaderResourceHeap = NULL;
+		}
+
+		if (handle->depthStencilResourceHeap != NULL)
+		{
+			handle->depthStencilResourceHeap->Release();
+			handle->depthStencilResourceHeap = NULL;
 		}
 
 		if (handle->resource != NULL)

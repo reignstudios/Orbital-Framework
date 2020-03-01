@@ -10,4 +10,5 @@ struct SwapChain
 	ID3D12DescriptorHeap* resourceHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE* resourceDescCPUHandles;
 	DXGI_FORMAT format;
+	D3D12_RESOURCE_STATES resourceState;
 };

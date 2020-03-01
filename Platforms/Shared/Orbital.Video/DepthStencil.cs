@@ -71,5 +71,10 @@ namespace Orbital.Video
 		}
 
 		public abstract void Dispose();
+
+		/// <summary>
+		/// Returns pointer to platform specific native handle
+		/// </summary>
+		public abstract IntPtr GetHandle();
 	}
 }

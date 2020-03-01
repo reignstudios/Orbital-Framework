@@ -346,6 +346,8 @@ typedef struct RenderStateDesc
 	intptr_t* constantBuffers;
 	int textureCount;
 	intptr_t* textures;
+	int textureDepthStencilCount;
+	intptr_t* textureDepthStencils;
 	VertexBufferTopology vertexBufferTopology;
 	intptr_t vertexBufferStreamer;
 	intptr_t indexBuffer;

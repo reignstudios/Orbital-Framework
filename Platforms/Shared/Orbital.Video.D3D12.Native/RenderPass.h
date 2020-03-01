@@ -8,6 +8,7 @@ struct RenderPass
 {
 	Device* device;
 	SwapChain* swapChain;
+	Texture** renderTextures;
 	DepthStencil* depthStencil;
 	UINT renderTargetCount;
 	DXGI_FORMAT* renderTargetFormats;

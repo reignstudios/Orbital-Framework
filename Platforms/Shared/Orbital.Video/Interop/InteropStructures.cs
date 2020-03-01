@@ -175,6 +175,8 @@ namespace Orbital.Video.Vulkan
 		public IntPtr* constantBuffers;
 		public int textureCount;
 		public IntPtr* textures;
+		public int textureDepthStencilCount;
+		public IntPtr* textureDepthStencils;
 		public VertexBufferTopology vertexBufferTopology;
 		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
@@ -211,6 +213,18 @@ namespace Orbital.Video.Vulkan
 			{
 				textureCount = 0;
 				textures = null;
+			}
+
+			if (desc.textureDepthStencils != null)
+			{
+				textureDepthStencilCount = desc.textureDepthStencils.Length;
+				textureDepthStencils = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureDepthStencilCount);
+				for (int i = 0; i != textureDepthStencilCount; ++i) textureDepthStencils[i] = desc.textureDepthStencils[i].GetHandle();
+			}
+			else
+			{
+				textureDepthStencilCount = 0;
+				textureDepthStencils = null;
 			}
 
 			vertexBufferTopology = desc.vertexBufferTopology;

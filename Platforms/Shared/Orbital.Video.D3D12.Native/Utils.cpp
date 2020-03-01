@@ -61,6 +61,27 @@ bool GetNative_DepthStencilFormat(DepthStencilFormat format, DXGI_FORMAT* native
 	return true;;
 }
 
+bool GetNative_DepthStencilShaderResourceFormat(DepthStencilFormat format, DXGI_FORMAT* nativeFormat)
+{
+	switch (format)
+	{
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepth:
+		case DepthStencilFormat::DepthStencilFormat_D32:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
+			break;
+
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepthStencil:
+		case DepthStencilFormat::DepthStencilFormat_D32S8:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+			break;
+
+		case DepthStencilFormat::DepthStencilFormat_D24S8: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
+		case DepthStencilFormat::DepthStencilFormat_D16: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R16_UNORM; break;
+		default: return false;
+	}
+	return true;;
+}
+
 bool GetNative_VertexBufferTopology(VertexBufferTopology topology, D3D12_PRIMITIVE_TOPOLOGY_TYPE* nativeTopology)
 {
 	switch (topology)

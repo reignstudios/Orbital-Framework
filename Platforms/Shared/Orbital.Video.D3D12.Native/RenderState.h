@@ -3,6 +3,7 @@
 #include "ShaderEffect.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
+#include "DepthStencil.h"
 #include "VertexBufferStreamer.h"
 #include "IndexBuffer.h"
 
@@ -19,6 +20,8 @@ struct RenderState
 
 	UINT textureCount;
 	Texture** textures;
+	UINT textureDepthStencilCount;
+	DepthStencil** textureDepthStencils;
 	ID3D12DescriptorHeap* textureHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureGPUDescHandle;
 

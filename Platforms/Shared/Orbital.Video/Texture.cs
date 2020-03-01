@@ -73,11 +73,6 @@ namespace Orbital.Video
 		/// Returns pointer to platform specific native handle
 		/// </summary>
 		public abstract IntPtr GetHandle();
-
-		/// <summary>
-		/// Returns pointer to platform specific managed handle
-		/// </summary>
-		public abstract object GetManagedHandle();
 	}
 
 	public abstract class Texture2DBase : TextureBase

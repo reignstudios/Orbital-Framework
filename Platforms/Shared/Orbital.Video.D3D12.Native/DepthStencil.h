@@ -6,8 +6,9 @@ struct DepthStencil
 	Device* device;
 	DepthStencilMode mode;
 	ID3D12Resource* resource;
-	ID3D12DescriptorHeap* resourceHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE resourceCPUHeapHandle;
+	ID3D12DescriptorHeap* shaderResourceHeap;
+	ID3D12DescriptorHeap* depthStencilResourceHeap;
+	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilResourceCPUHeapHandle;
 	DXGI_FORMAT format;
 	D3D12_RESOURCE_STATES resourceState;
 };

@@ -613,6 +613,12 @@ namespace Orbital.Video
 		public TextureBase[] textures;
 
 		/// <summary>
+		/// Depth-Stencils to use as texture resources.
+		/// NOTE: Register indicies will come after 'textures'.
+		/// </summary>
+		public DepthStencilBase[] textureDepthStencils;
+
+		/// <summary>
 		/// How the geometry will appear
 		/// </summary>
 		public VertexBufferTopology vertexBufferTopology;

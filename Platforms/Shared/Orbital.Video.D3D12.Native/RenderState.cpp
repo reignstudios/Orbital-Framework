@@ -173,25 +173,39 @@ extern "C"
 		}
 
 		// add texture heaps
-		if (desc->textureCount != 0)
+		if (desc->textureCount != 0 || desc->textureDepthStencilCount != 0)
 		{
 			handle->textureCount = desc->textureCount;
-			UINT size = sizeof(Texture*) * handle->textureCount;
+			UINT size = sizeof(Texture*) * desc->textureCount;
 			handle->textures = (Texture**)malloc(size);
 			memcpy(handle->textures, desc->textures, size);
 
+			handle->textureDepthStencilCount = desc->textureDepthStencilCount;
+			size = sizeof(DepthStencil*) * desc->textureDepthStencilCount;
+			handle->textureDepthStencils = (DepthStencil**)malloc(size);
+			memcpy(handle->textureDepthStencils, desc->textureDepthStencils, size);
+
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-			heapDesc.NumDescriptors = desc->textureCount;
+			heapDesc.NumDescriptors = handle->textureCount + handle->textureDepthStencilCount;
 			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->textureHeap)))) return 0;
 			handle->textureGPUDescHandle = handle->textureHeap->GetGPUDescriptorHandleForHeapStart();
 			D3D12_CPU_DESCRIPTOR_HANDLE cpuTextureHeap = handle->textureHeap->GetCPUDescriptorHandleForHeapStart();
 			UINT heapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
 			for (int i = 0; i != desc->textureCount; ++i)
 			{
 				Texture* texture = (Texture*)desc->textures[i];
 				D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
+				handle->device->device->CopyDescriptorsSimple(1, cpuTextureHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+				cpuTextureHeap.ptr += heapSize;
+			}
+
+			for (int i = 0; i != desc->textureDepthStencilCount; ++i)
+			{
+				DepthStencil* depthStencil = (DepthStencil*)desc->textureDepthStencils[i];
+				D3D12_CPU_DESCRIPTOR_HANDLE heap = depthStencil->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
 				handle->device->device->CopyDescriptorsSimple(1, cpuTextureHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				cpuTextureHeap.ptr += heapSize;
 			}

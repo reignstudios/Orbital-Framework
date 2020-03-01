@@ -74,19 +74,20 @@ extern "C"
 			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
-			barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
+			barriers[0].Transition.StateBefore = renderPass->swapChain->resourceState;
 			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			renderPass->swapChain->resourceState = barriers[0].Transition.StateAfter;
 			if (renderPass->depthStencil != NULL)
 			{
 				barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 				barriers[1].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[1].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_READ;
+				barriers[1].Transition.StateBefore = renderPass->depthStencil->resourceState;
 				barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
 				barriers[1].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				handle->commandList->ResourceBarrier(2, barriers);
 				renderPass->depthStencil->resourceState = barriers[1].Transition.StateAfter;
+				handle->commandList->ResourceBarrier(2, barriers);
 			}
 			else
 			{
@@ -97,17 +98,32 @@ extern "C"
 		}
 		else
 		{
-			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
-			for (UINT i = 0; i != renderPass->renderTargetCount; ++i)
+			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT + 1] = {};
+			UINT barrierCount = 0;
+			for (; barrierCount != renderPass->renderTargetCount; ++barrierCount)
 			{
-				barriers[i].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[i].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[i].Transition.pResource = renderPass->renderTargetResources[i];
-				barriers[i].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-				barriers[i].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
-				barriers[i].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barriers[barrierCount].Transition.pResource = renderPass->renderTargetResources[barrierCount];
+				barriers[barrierCount].Transition.StateBefore = renderPass->renderTextures[barrierCount]->resourceState;
+				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->renderTextures[barrierCount]->resourceState = barriers[barrierCount].Transition.StateAfter;
 			}
-			handle->commandList->ResourceBarrier(renderPass->renderTargetCount, barriers);
+
+			if (renderPass->depthStencil != NULL)
+			{
+				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barriers[barrierCount].Transition.pResource = renderPass->depthStencil->resource;
+				barriers[barrierCount].Transition.StateBefore = renderPass->depthStencil->resourceState;
+				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
+				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->depthStencil->resourceState = barriers[barrierCount].Transition.StateAfter;
+				++barrierCount;
+			}
+			
+			handle->commandList->ResourceBarrier(barrierCount, barriers);
 			handle->commandList->BeginRenderPass(renderPass->renderTargetCount, renderPass->renderTargetDescs, renderPass->depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
 		}
 	}
@@ -121,19 +137,20 @@ extern "C"
 			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
-			barriers[0].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+			barriers[0].Transition.StateBefore = renderPass->swapChain->resourceState;
 			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
 			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			renderPass->swapChain->resourceState = barriers[0].Transition.StateAfter;
 			if (renderPass->depthStencil != NULL)
 			{
 				barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 				barriers[1].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[1].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
+				barriers[1].Transition.StateBefore = renderPass->depthStencil->resourceState;
 				barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_READ;
 				barriers[1].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				handle->commandList->ResourceBarrier(2, barriers);
 				renderPass->depthStencil->resourceState = barriers[1].Transition.StateAfter;
+				handle->commandList->ResourceBarrier(2, barriers);
 			}
 			else
 			{
@@ -142,17 +159,32 @@ extern "C"
 		}
 		else
 		{
-			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT] = {};
-			for (UINT i = 0; i != renderPass->renderTargetCount; ++i)
+			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT + 1] = {};
+			UINT barrierCount = 0;
+			for (; barrierCount != renderPass->renderTargetCount; ++barrierCount)
 			{
-				barriers[i].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[i].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[i].Transition.pResource = renderPass->renderTargetResources[i];
-				barriers[i].Transition.StateBefore = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
-				barriers[i].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-				barriers[i].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barriers[barrierCount].Transition.pResource = renderPass->renderTargetResources[barrierCount];
+				barriers[barrierCount].Transition.StateBefore = renderPass->renderTextures[barrierCount]->resourceState;
+				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->renderTextures[barrierCount]->resourceState = barriers[barrierCount].Transition.StateAfter;
 			}
-			handle->commandList->ResourceBarrier(renderPass->renderTargetCount, barriers);
+
+			if (renderPass->depthStencil != NULL)
+			{
+				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barriers[barrierCount].Transition.pResource = renderPass->depthStencil->resource;
+				barriers[barrierCount].Transition.StateBefore = renderPass->depthStencil->resourceState;
+				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_READ;
+				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->depthStencil->resourceState = barriers[barrierCount].Transition.StateAfter;
+				++barrierCount;
+			}
+
+			handle->commandList->ResourceBarrier(barrierCount, barriers);
 		}
 	}
 
@@ -191,20 +223,39 @@ extern "C"
 		}
 
 		// set texture states
+		UINT t = 0;
 		for (UINT i = 0; i != renderState->textureCount; ++i)
 		{
 			Texture* texture = renderState->textures[i];
 			D3D12_RESOURCE_STATES state = {};
-			if (renderState->shaderEffect->textures[i].usage == ShaderEffectResourceUsage_PS)
+			if (renderState->shaderEffect->textures[t].usage == ShaderEffectResourceUsage_PS)
 			{
 				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			else
 			{
 				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-				if ((renderState->shaderEffect->textures[i].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				if ((renderState->shaderEffect->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList);
+			++t;
+		}
+
+		for (UINT i = 0; i != renderState->textureDepthStencilCount; ++i)
+		{
+			DepthStencil* depthStencil = renderState->textureDepthStencils[i];
+			D3D12_RESOURCE_STATES state = {};
+			if (renderState->shaderEffect->textures[t].usage == ShaderEffectResourceUsage_PS)
+			{
+				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+			}
+			else
+			{
+				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+				if ((renderState->shaderEffect->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+			}
+			Orbital_Video_D3D12_DepthStencil_ChangeState(depthStencil, state, handle->commandList);
+			++t;
 		}
 
 		// set vertex buffer states

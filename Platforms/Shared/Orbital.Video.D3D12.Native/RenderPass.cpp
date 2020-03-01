@@ -53,7 +53,7 @@ extern "C"
 			handle->depthStencilFormat = handle->depthStencil->format;
 
 			handle->depthStencilDesc = (D3D12_RENDER_PASS_DEPTH_STENCIL_DESC*)calloc(1, sizeof(D3D12_RENDER_PASS_DEPTH_STENCIL_DESC));
-			handle->depthStencilDesc->cpuDescriptor = handle->depthStencil->resourceCPUHeapHandle;
+			handle->depthStencilDesc->cpuDescriptor = handle->depthStencil->depthStencilResourceCPUHeapHandle;
 
 			// determine what depth access type to use
 			D3D12_RENDER_PASS_BEGINNING_ACCESS_TYPE depthAccessType;
@@ -129,12 +129,21 @@ extern "C"
 			handle->renderTargetDescs[i].cpuDescriptor = renderTextures[i]->renderTargetResourceDescCPUHandle;
 		}
 
+		handle->renderTextures = (Texture**)calloc(renderTextureCount, sizeof(Texture*));
+		memcpy(handle->renderTextures, renderTextures, sizeof(Texture*) * renderTextureCount);
+
 		handle->depthStencil = depthStencil;
 		return Orbital_Video_D3D12_RenderPass_Init_Base(handle, desc, usages, stencilUsage, false);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_RenderPass_Dispose(RenderPass* handle)
 	{
+		if (handle->renderTextures != NULL)
+		{
+			free(handle->renderTextures);
+			handle->renderTextures = NULL;
+		}
+
 		if (handle->renderTargetFormats != NULL)
 		{
 			free(handle->renderTargetFormats);

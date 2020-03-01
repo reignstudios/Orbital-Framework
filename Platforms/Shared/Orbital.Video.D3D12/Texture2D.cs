@@ -44,10 +44,5 @@ namespace Orbital.Video.D3D12
 		{
 			return handle;
 		}
-
-		public override object GetManagedHandle()
-		{
-			return this;
-		}
 	}
 }
