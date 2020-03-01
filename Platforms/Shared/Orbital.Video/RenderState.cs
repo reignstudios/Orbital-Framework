@@ -324,11 +324,12 @@ namespace Orbital.Video
 		/// </summary>
 		public static RenderTargetBlendDesc BlendingDisabled()
 		{
-			return new RenderTargetBlendDesc()
+			var result = new RenderTargetBlendDesc()
 			{
 				blendingEnabled = false,
 				writeMask = BlendWriteMask.All
 			};
+			return result;
 		}
 
 		/// <summary>
@@ -336,7 +337,7 @@ namespace Orbital.Video
 		/// </summary>
 		public static RenderTargetBlendDesc AlphaBlending()
 		{
-			return new RenderTargetBlendDesc()
+			var result = new RenderTargetBlendDesc()
 			{
 				blendingEnabled = true,
 				sourceFactor = BlendFactor.SourceAlpha,
@@ -344,6 +345,7 @@ namespace Orbital.Video
 				operation = BlendOperation.Add,
 				writeMask = BlendWriteMask.All
 			};
+			return result;
 		}
 
 		/// <summary>
@@ -351,7 +353,7 @@ namespace Orbital.Video
 		/// </summary>
 		public static RenderTargetBlendDesc AdditiveBlending()
 		{
-			return new RenderTargetBlendDesc()
+			var result = new RenderTargetBlendDesc()
 			{
 				blendingEnabled = true,
 				sourceFactor = BlendFactor.One,
@@ -359,6 +361,7 @@ namespace Orbital.Video
 				operation = BlendOperation.Add,
 				writeMask = BlendWriteMask.All
 			};
+			return result;
 		}
 
 		/// <summary>
@@ -366,7 +369,7 @@ namespace Orbital.Video
 		/// </summary>
 		public static RenderTargetBlendDesc SubtractiveBlending()
 		{
-			return new RenderTargetBlendDesc()
+			var result = new RenderTargetBlendDesc()
 			{
 				blendingEnabled = true,
 				sourceFactor = BlendFactor.One,
@@ -374,6 +377,7 @@ namespace Orbital.Video
 				operation = BlendOperation.Subtract,
 				writeMask = BlendWriteMask.All
 			};
+			return result;
 		}
 	}
 
@@ -543,12 +547,13 @@ namespace Orbital.Video
 		/// </summary>
 		public static DepthStencilDesc StandardDepthTesting()
 		{
-			return new DepthStencilDesc()
+			var result = new DepthStencilDesc()
 			{
 				depthTestEnable = true,
 				depthWriteEnable = true,
 				depthTestFunction = DepthStencilTestFunction.LessThan
 			};
+			return result;
 		}
 
 		/// <summary>

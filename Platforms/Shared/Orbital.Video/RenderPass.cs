@@ -17,11 +17,12 @@ namespace Orbital.Video
 
 		public static RenderPassRenderTargetDesc CreateDefault(Color4F clearColorValue)
 		{
-			return new RenderPassRenderTargetDesc()
+			var result = new RenderPassRenderTargetDesc()
 			{
 				clearColor = true,
 				clearColorValue = clearColorValue
 			};
+			return result;
 		}
 	}
 
@@ -55,12 +56,13 @@ namespace Orbital.Video
 		/// <param name="clearDepth">True to clear depth</param>
 		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth)
 		{
-			return new RenderPassDepthStencilDesc()
+			var result = new RenderPassDepthStencilDesc()
 			{
 				clearDepth = clearDepth,
 				depthValue = 1,
 				stencilValue = 1
 			};
+			return result;
 		}
 
 		/// <summary>
@@ -70,13 +72,14 @@ namespace Orbital.Video
 		/// <param name="clearStencil">True to clear stencil</param>
 		public static RenderPassDepthStencilDesc CreateDefault(bool clearDepth, bool clearStencil)
 		{
-			return new RenderPassDepthStencilDesc()
+			var result = new RenderPassDepthStencilDesc()
 			{
 				clearDepth = clearDepth,
 				clearStencil = clearStencil,
 				depthValue = 1,
 				stencilValue = 1
 			};
+			return result;
 		}
 	}
 
