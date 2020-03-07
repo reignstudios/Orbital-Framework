@@ -274,6 +274,28 @@ extern "C"
 		handle->commandList->ResolveSubresource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], 0, srcRenderTexture->resource, 0, srcRenderTexture->format);
 	}
 
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTexture(CommandList* handle, Texture* srcTexture, Texture* dstTexture)
+	{
+		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->commandList);
+		Orbital_Video_D3D12_Texture_ChangeState(dstTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->commandList);
+		D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+		dstLoc.pResource = dstTexture->resource;
+		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+		srcLoc.pResource = srcTexture->resource;
+		handle->commandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, NULL);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(CommandList* handle, Texture* srcTexture, SwapChain* dstSwapChain)
+	{
+		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->commandList);
+		Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->commandList);
+		D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
+		dstLoc.pResource = dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex];
+		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
+		srcLoc.pResource = srcTexture->resource;
+		handle->commandList->CopyTextureRegion(&dstLoc, 0, 0, 0, &srcLoc, NULL);
+	}
+
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)
 	{
 		ID3D12CommandList* commandLists[1] = { handle->commandList };

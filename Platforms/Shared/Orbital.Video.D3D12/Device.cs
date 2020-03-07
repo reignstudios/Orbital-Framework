@@ -84,6 +84,9 @@ namespace Orbital.Video.D3D12
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_EndFrame(IntPtr handle);
 
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private unsafe static extern int Orbital_Video_D3D12_Device_GetMaxMSAALevel(IntPtr handle, TextureFormat format, MSAALevel* msaaLevel);
+
 		public Device(Instance instance, DeviceType type)
 		: base(instance, type)
 		{
@@ -133,6 +136,18 @@ namespace Orbital.Video.D3D12
 		{
 			if (type == DeviceType.Presentation) swapChainD3D12.Present();
 			Orbital_Video_D3D12_Device_EndFrame(handle);
+		}
+
+		public unsafe override bool GetMaxMSAALevel(TextureFormat format, out MSAALevel msaaLevel)
+		{
+			var result = MSAALevel.Disabled;
+			if (Orbital_Video_D3D12_Device_GetMaxMSAALevel(handle, format, &result) != 0)
+			{
+				msaaLevel = result;
+				return true;
+			}
+			msaaLevel = MSAALevel.Disabled;
+			return false;
 		}
 
 		#region Create Methods

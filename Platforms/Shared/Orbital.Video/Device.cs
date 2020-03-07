@@ -44,6 +44,11 @@ namespace Orbital.Video
 		/// </summary>
 		public abstract void EndFrame();
 
+		/// <summary>
+		/// Gets max msaa level.
+		/// </summary>
+		public abstract bool GetMaxMSAALevel(TextureFormat format, out MSAALevel msaaLevel);
+
 		#region Create Methods
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format);
 		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);

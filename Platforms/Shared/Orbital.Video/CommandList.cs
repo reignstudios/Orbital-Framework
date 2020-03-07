@@ -74,6 +74,16 @@ namespace Orbital.Video
 		public abstract void ResolveMSAA(Texture2DBase sourceRenderTexture, SwapChainBase destinationSwapChain);
 
 		/// <summary>
+		/// Copies texture to texture of the same size
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture);
+
+		/// <summary>
+		/// Copies texture to swap-chain of the same size
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain);
+
+		/// <summary>
 		/// Executes command-list operations
 		/// </summary>
 		public abstract void Execute();

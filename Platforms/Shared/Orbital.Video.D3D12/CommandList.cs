@@ -54,6 +54,12 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_CopyTexture(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstRenderTexture);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
 
 		internal CommandList(Device device)
@@ -148,6 +154,20 @@ namespace Orbital.Video.D3D12
 			var src = (RenderTexture2D)sourceRenderTexture;
 			var dst = (SwapChain)destinationSwapChain;
 			Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(handle, src.handle, dst.handle);
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture)
+		{
+			var src = (RenderTexture2D)sourceTexture;
+			var dst = (RenderTexture2D)destinationTexture;
+			Orbital_Video_D3D12_CommandList_CopyTexture(handle, src.handle, dst.handle);
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain)
+		{
+			var src = (RenderTexture2D)sourceTexture;
+			var dst = (SwapChain)destinationSwapChain;
+			Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(handle, src.handle, dst.handle);
 		}
 
 		public override void Execute()

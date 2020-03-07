@@ -1,5 +1,6 @@
 #include "Device.h"
 #include "CommandList.h"
+#include "Utils.h"
 
 extern "C"
 {
@@ -165,6 +166,26 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
 	{
 		WaitForFence(handle, handle->fence, handle->fenceEvent, handle->fenceValue);
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_GetMaxMSAALevel(Device* handle, TextureFormat format, MSAALevel* msaaLevel)
+	{
+		DXGI_FORMAT nativeFormat;
+		if (!GetNative_TextureFormat(format, &nativeFormat)) return 0;
+		*msaaLevel = MSAALevel::MSAALevel_Disabled;
+		UINT lvl = 2;
+		for (UINT i = 0; i != 4; ++i)
+		{
+			D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS featureData = {};
+			featureData.SampleCount = lvl;
+			lvl *= 2;
+			featureData.NumQualityLevels = 0;
+			featureData.Format = nativeFormat;
+			if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &featureData, sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS)))) return 0;
+			if (featureData.NumQualityLevels == 0) return 1;// max reached
+			*msaaLevel = (MSAALevel)featureData.SampleCount;
+		}
+		return 1;
 	}
 }
 

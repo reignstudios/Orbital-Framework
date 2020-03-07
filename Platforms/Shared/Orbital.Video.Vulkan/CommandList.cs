@@ -121,6 +121,16 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Execute()
 		{
 			Orbital_Video_Vulkan_CommandList_Execute(handle);

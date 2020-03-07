@@ -201,8 +201,9 @@ namespace Orbital.Demo
 			renderTextureTest = new RenderTextureTest(device);
 
 			// create msaa render texture
+			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
-			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, MSAALevel.X8);
+			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel);
 
 			// create command list
 			commandList = device.CreateCommandList();
@@ -553,7 +554,8 @@ namespace Orbital.Demo
 				commandList.SetRenderState(renderState);
 				commandList.Draw();
 				commandList.EndRenderPass();
-				commandList.ResolveMSAA(renderTextureMSAA, device.swapChain);
+				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) commandList.ResolveMSAA(renderTextureMSAA, device.swapChain);
+				else commandList.CopyTexture(renderTextureMSAA, device.swapChain);
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();

@@ -129,6 +129,11 @@ namespace Orbital.Video.Vulkan
 			Orbital_Video_Vulkan_Device_EndFrame(handle);
 		}
 
+		public override bool GetMaxMSAALevel(TextureFormat format, out MSAALevel msaaLevel)
+		{
+			throw new NotImplementedException();
+		}
+
 		#region Create Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format)
 		{
