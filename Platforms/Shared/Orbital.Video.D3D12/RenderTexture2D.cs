@@ -14,28 +14,28 @@ namespace Orbital.Video.D3D12
 			this.usage = usage;
 		}
 
-		public bool Init(int width, int height, TextureFormat format)
+		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel)
 		{
-			return Init(width, height, format, null, true);
+			return Init(width, height, format, null, true, msaaLevel);
 		}
 
 		public override bool Init(int width, int height, TextureFormat format, byte[] data)
 		{
-			return Init(width, height, format, data, true);
+			return Init(width, height, format, data, true, MSAALevel.Disabled);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
-			if (!depthStencil.Init(width, height, depthStencilFormat)) return false;
-			return Init(width, height, format, null, true);
+			if (!depthStencil.Init(width, height, depthStencilFormat, msaaLevel)) return false;
+			return Init(width, height, format, null, true, msaaLevel);
 		}
 
 		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
-			if (!depthStencil.Init(width, height, depthStencilFormat)) return false;
-			return Init(width, height, format, data, true);
+			if (!depthStencil.Init(width, height, depthStencilFormat, MSAALevel.Disabled)) return false;
+			return Init(width, height, format, data, true, MSAALevel.Disabled);
 		}
 
 		#region RenderTexture Methods

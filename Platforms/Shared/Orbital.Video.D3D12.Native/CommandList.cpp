@@ -71,59 +71,71 @@ extern "C"
 		if (renderPass->swapChain != NULL)
 		{
 			D3D12_RESOURCE_BARRIER barriers[2] = {};
-			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
-			barriers[0].Transition.StateBefore = renderPass->swapChain->resourceState;
-			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
-			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-			renderPass->swapChain->resourceState = barriers[0].Transition.StateAfter;
-			if (renderPass->depthStencil != NULL)
+			int barrierCount = 0;
+			if (renderPass->swapChain->resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
 			{
-				barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[1].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[1].Transition.StateBefore = renderPass->depthStencil->resourceState;
-				barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
-				barriers[1].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->depthStencil->resourceState = barriers[1].Transition.StateAfter;
-				handle->commandList->ResourceBarrier(2, barriers);
-			}
-			else
-			{
-				handle->commandList->ResourceBarrier(1, barriers);
+				auto barrier = &barriers[barrierCount];
+				barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barrier->Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
+				barrier->Transition.StateBefore = renderPass->swapChain->resourceState;
+				barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+				barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->swapChain->resourceState = barrier->Transition.StateAfter;
+				++barrierCount;
 			}
 
+			if (renderPass->depthStencil != NULL && renderPass->depthStencil->resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE)
+			{
+				auto barrier = &barriers[barrierCount];
+				barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barrier->Transition.pResource = renderPass->depthStencil->resource;
+				barrier->Transition.StateBefore = renderPass->depthStencil->resourceState;
+				barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
+				barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->depthStencil->resourceState = barrier->Transition.StateAfter;
+				++barrierCount;
+			}
+			
+			if (barrierCount != 0) handle->commandList->ResourceBarrier(barrierCount, barriers);
 			handle->commandList->BeginRenderPass(1, &renderPass->renderTargetDescs[renderPass->swapChain->currentRenderTargetIndex], renderPass->depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
 		}
 		else
 		{
 			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT + 1] = {};
 			UINT barrierCount = 0;
-			for (; barrierCount != renderPass->renderTargetCount; ++barrierCount)
+			for (UINT i = 0; i != renderPass->renderTargetCount; ++i)
 			{
-				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[barrierCount].Transition.pResource = renderPass->renderTargetResources[barrierCount];
-				barriers[barrierCount].Transition.StateBefore = renderPass->renderTextures[barrierCount]->resourceState;
-				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
-				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->renderTextures[barrierCount]->resourceState = barriers[barrierCount].Transition.StateAfter;
+				auto renderTexture = renderPass->renderTextures[barrierCount];
+				if (renderTexture->resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
+				{
+					auto barrier = &barriers[barrierCount];
+					barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+					barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+					barrier->Transition.pResource = renderPass->renderTargetResources[barrierCount];
+					barrier->Transition.StateBefore = renderTexture->resourceState;
+					barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
+					barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+					renderTexture->resourceState = barrier->Transition.StateAfter;
+					++barrierCount;
+				}
 			}
 
-			if (renderPass->depthStencil != NULL)
+			if (renderPass->depthStencil != NULL && renderPass->depthStencil->resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE)
 			{
-				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[barrierCount].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[barrierCount].Transition.StateBefore = renderPass->depthStencil->resourceState;
-				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
-				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->depthStencil->resourceState = barriers[barrierCount].Transition.StateAfter;
+				auto barrier = &barriers[barrierCount];
+				barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barrier->Transition.pResource = renderPass->depthStencil->resource;
+				barrier->Transition.StateBefore = renderPass->depthStencil->resourceState;
+				barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE;
+				barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				renderPass->depthStencil->resourceState = barrier->Transition.StateAfter;
 				++barrierCount;
 			}
 			
-			handle->commandList->ResourceBarrier(barrierCount, barriers);
+			if (barrierCount != 0) handle->commandList->ResourceBarrier(barrierCount, barriers);
 			handle->commandList->BeginRenderPass(renderPass->renderTargetCount, renderPass->renderTargetDescs, renderPass->depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
 		}
 	}
@@ -131,61 +143,6 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_EndRenderPass(CommandList* handle, RenderPass* renderPass)
 	{
 		handle->commandList->EndRenderPass();
-		if (renderPass->swapChain != NULL)
-		{
-			D3D12_RESOURCE_BARRIER barriers[2] = {};
-			barriers[0].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-			barriers[0].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-			barriers[0].Transition.pResource = renderPass->renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
-			barriers[0].Transition.StateBefore = renderPass->swapChain->resourceState;
-			barriers[0].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
-			barriers[0].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-			renderPass->swapChain->resourceState = barriers[0].Transition.StateAfter;
-			if (renderPass->depthStencil != NULL)
-			{
-				barriers[1].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[1].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[1].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[1].Transition.StateBefore = renderPass->depthStencil->resourceState;
-				barriers[1].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_READ;
-				barriers[1].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->depthStencil->resourceState = barriers[1].Transition.StateAfter;
-				handle->commandList->ResourceBarrier(2, barriers);
-			}
-			else
-			{
-				handle->commandList->ResourceBarrier(1, barriers);
-			}
-		}
-		else
-		{
-			D3D12_RESOURCE_BARRIER barriers[D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT + 1] = {};
-			UINT barrierCount = 0;
-			for (; barrierCount != renderPass->renderTargetCount; ++barrierCount)
-			{
-				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[barrierCount].Transition.pResource = renderPass->renderTargetResources[barrierCount];
-				barriers[barrierCount].Transition.StateBefore = renderPass->renderTextures[barrierCount]->resourceState;
-				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->renderTextures[barrierCount]->resourceState = barriers[barrierCount].Transition.StateAfter;
-			}
-
-			if (renderPass->depthStencil != NULL)
-			{
-				barriers[barrierCount].Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-				barriers[barrierCount].Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
-				barriers[barrierCount].Transition.pResource = renderPass->depthStencil->resource;
-				barriers[barrierCount].Transition.StateBefore = renderPass->depthStencil->resourceState;
-				barriers[barrierCount].Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_READ;
-				barriers[barrierCount].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->depthStencil->resourceState = barriers[barrierCount].Transition.StateAfter;
-				++barrierCount;
-			}
-
-			handle->commandList->ResourceBarrier(barrierCount, barriers);
-		}
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ClearSwapChainRenderTarget(CommandList* handle, SwapChain* swapChain, float r, float g, float b, float a)
@@ -301,6 +258,20 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(CommandList* handle, UINT vertexOffset, UINT indexOffset, UINT indexCount, UINT instanceCount)
 	{
 		handle->commandList->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, vertexOffset, 0);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ResolveRenderTexture(CommandList* handle, Texture* srcRenderTexture, Texture* dstRenderTexture)
+	{
+		Orbital_Video_D3D12_Texture_ChangeState(srcRenderTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_SOURCE, handle->commandList);
+		Orbital_Video_D3D12_Texture_ChangeState(dstRenderTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_DEST, handle->commandList);
+		handle->commandList->ResolveSubresource(dstRenderTexture->resource, 0, srcRenderTexture->resource, 0, srcRenderTexture->format);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(CommandList* handle, Texture* srcRenderTexture, SwapChain* dstSwapChain)
+	{
+		Orbital_Video_D3D12_Texture_ChangeState(srcRenderTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_SOURCE, handle->commandList);
+		Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_DEST, handle->commandList);
+		handle->commandList->ResolveSubresource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], 0, srcRenderTexture->resource, 0, srcRenderTexture->format);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)

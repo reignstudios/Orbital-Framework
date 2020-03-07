@@ -83,6 +83,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures)
 		{
+			ValidateMSAARenderTextures(renderTextures);
 			int length = renderTextures.Length;
 			InitBase(ref desc, length);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))
@@ -107,6 +108,7 @@ namespace Orbital.Video.D3D12
 
 		public unsafe bool Init(RenderPassDesc desc, RenderTexture2D[] renderTextures, DepthStencil depthStencil)
 		{
+			ValidateMSAARenderTextures(renderTextures);
 			int length = renderTextures.Length;
 			InitBase(ref desc, length);
 			using (var descNative = new RenderPassDesc_NativeInterop(ref desc))

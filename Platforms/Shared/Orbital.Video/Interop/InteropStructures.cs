@@ -182,7 +182,6 @@ namespace Orbital.Video.Vulkan
 		public IntPtr indexBuffer;
 		public TriangleCulling triangleCulling;
 		public TriangleFillMode triangleFillMode;
-		public MSAALevel msaaLevel;
 		public BlendDesc_NativeInterop blendDesc;
 		public DepthStencilDesc_NativeInterop depthStencilDesc;
 
@@ -233,7 +232,6 @@ namespace Orbital.Video.Vulkan
 			else indexBuffer = IntPtr.Zero;
 			triangleCulling = desc.triangleCulling;
 			triangleFillMode = desc.triangleFillMode;
-			msaaLevel = desc.msaaLevel;
 			blendDesc = new BlendDesc_NativeInterop(ref desc.blendDesc);
 			depthStencilDesc = new DepthStencilDesc_NativeInterop(ref desc.depthStencilDesc);
 		}

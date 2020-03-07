@@ -44,7 +44,7 @@ namespace Orbital.Demo
 		{
 			// create render texture
 			const int size = 256;
-			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized);
+			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, MSAALevel.Disabled);
 
 			// load shader effect
 			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -98,8 +98,7 @@ namespace Orbital.Demo
 				vertexBufferTopology = VertexBufferTopology.Triangle,
 				vertexBufferStreamer = vertexBufferStreamer,
 				triangleCulling = TriangleCulling.Back,
-				triangleFillMode = TriangleFillMode.Solid,
-				msaaLevel = MSAALevel.Disabled
+				triangleFillMode = TriangleFillMode.Solid
 			};
 			renderState = device.CreateRenderState(renderStateDesc, 0);
 		}
@@ -160,10 +159,11 @@ namespace Orbital.Demo
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
 		private Texture2DBase texture, texture2;
+		private Texture2DBase renderTextureMSAA;
 		private RenderTextureTest renderTextureTest;
 
 		private Camera camera;
-		private float rot;
+		private float rot = .85f;
 
 		public Example(ApplicationBase application, WindowBase window)
 		{
@@ -200,12 +200,17 @@ namespace Orbital.Demo
 			// create render texture test objects
 			renderTextureTest = new RenderTextureTest(device);
 
+			// create msaa render texture
+			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, MSAALevel.X8);
+
 			// create command list
 			commandList = device.CreateCommandList();
 
 			// create render pass
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
-			renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
+			//renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
+			renderPass = renderTextureMSAA.CreateRenderPass(renderPassDesc, renderTextureMSAA.GetDepthStencil());
 
 			// create texture
 			int textureWidth = 256, textureHeight = 256;
@@ -411,10 +416,9 @@ namespace Orbital.Demo
 				vertexBufferStreamer = vertexBufferStreamer,
 				triangleCulling = TriangleCulling.Back,
 				triangleFillMode = TriangleFillMode.Solid,
-				msaaLevel = MSAALevel.Disabled,
 				depthStencilDesc = DepthStencilDesc.StandardDepthTesting()
 			};
-			renderStateDesc.blendDesc.renderTargetBlendDescs = new RenderTargetBlendDesc[1] {RenderTargetBlendDesc.AlphaBlending()};
+			//renderStateDesc.blendDesc.renderTargetBlendDescs = new RenderTargetBlendDesc[1] {RenderTargetBlendDesc.AlphaBlending()};
 			renderStateDesc.constantBuffers[0] = constantBuffer;
 			renderStateDesc.textures[0] = texture;
 			renderStateDesc.textures[1] = texture2;
@@ -431,6 +435,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (renderTextureMSAA != null)
+			{
+				renderTextureMSAA.Dispose();
+				renderTextureMSAA = null;
+			}
+
 			if (renderTextureTest != null)
 			{
 				renderTextureTest.Dispose();
@@ -520,10 +530,10 @@ namespace Orbital.Demo
 
 				// update constant buffer
 				constantBuffer.BeginUpdate();
-				constantBuffer.Update(MathF.Abs(MathF.Sin(rot * .5f)), shaderEffectVar_Constrast);
+				constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
 				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
 				constantBuffer.EndUpdate();
-				rot += 0.05f;
+				rot += 0.01f;
 
 				// render frame and present
 				device.BeginFrame();
@@ -543,6 +553,7 @@ namespace Orbital.Demo
 				commandList.SetRenderState(renderState);
 				commandList.Draw();
 				commandList.EndRenderPass();
+				commandList.ResolveMSAA(renderTextureMSAA, device.swapChain);
 				commandList.Finish();
 				commandList.Execute();
 				device.EndFrame();

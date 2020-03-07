@@ -111,6 +111,16 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, Texture2DBase destinationRenderTexture)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, SwapChainBase destinationSwapChain)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Execute()
 		{
 			Orbital_Video_Vulkan_CommandList_Execute(handle);

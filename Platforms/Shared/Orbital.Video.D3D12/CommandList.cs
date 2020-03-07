@@ -48,6 +48,12 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(IntPtr handle, uint vertexOffset, uint indexOffset, uint indexCount, uint instanceCount);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_ResolveRenderTexture(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstRenderTexture);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
 
 		internal CommandList(Device device)
@@ -128,6 +134,20 @@ namespace Orbital.Video.D3D12
 		{
 			if (lastRenderState.indexCount == 0) Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastRenderState.vertexCount, 1);
 			else Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastRenderState.indexCount, 1);
+		}
+
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, Texture2DBase destinationRenderTexture)
+		{
+			var src = (RenderTexture2D)sourceRenderTexture;
+			var dst = (RenderTexture2D)destinationRenderTexture;
+			Orbital_Video_D3D12_CommandList_ResolveRenderTexture(handle, src.handle, dst.handle);
+		}
+
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, SwapChainBase destinationSwapChain)
+		{
+			var src = (RenderTexture2D)sourceRenderTexture;
+			var dst = (SwapChain)destinationSwapChain;
+			Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(handle, src.handle, dst.handle);
 		}
 
 		public override void Execute()

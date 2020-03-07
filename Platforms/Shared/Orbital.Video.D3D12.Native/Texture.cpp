@@ -26,7 +26,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, MSAALevel msaaLevel)
 	{
 		if (!GetNative_TextureFormat(format, &handle->format)) return 0;
 
@@ -51,11 +51,21 @@ extern "C"
         resourceDesc.DepthOrArraySize = *depth;
         resourceDesc.MipLevels = mipLevels;
         resourceDesc.Format = handle->format;
-        resourceDesc.SampleDesc.Count = 1;
-        resourceDesc.SampleDesc.Quality = 0;
         resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         resourceDesc.Flags = isRenderTexture ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_NONE;
 
+		if (msaaLevel != MSAALevel::MSAALevel_Disabled)// get msaa quality levels
+		{
+			resourceDesc.SampleDesc.Count = (UINT)msaaLevel;
+			resourceDesc.SampleDesc.Quality = DXGI_STANDARD_MULTISAMPLE_QUALITY_PATTERN;
+		}
+		else
+		{
+			resourceDesc.SampleDesc.Count = 1;
+			resourceDesc.SampleDesc.Quality = 0;
+		}
+
+		handle->msaaSampleDesc = resourceDesc.SampleDesc;
 		handle->resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 		if (data != NULL && handle->mode == TextureMode_GPUOptimized) handle->resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
@@ -72,7 +82,7 @@ extern "C"
 		shaderResourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		shaderResourceDesc.Format = handle->format;
 		if (type == TextureType::TextureType_1D) shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE1D;
-		else if (type == TextureType::TextureType_2D) shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		else if (type == TextureType::TextureType_2D) shaderResourceDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURE2DMS;
 		else if (type == TextureType::TextureType_3D) shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
 		else if (type == TextureType::TextureType_Cube) shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
 		else return 0;
@@ -91,7 +101,7 @@ extern "C"
 			D3D12_RENDER_TARGET_VIEW_DESC renderTargetDesc = {};
 			renderTargetDesc.Format = handle->format;
 			if (type == TextureType::TextureType_1D) renderTargetDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE1D;
-			else if (type == TextureType::TextureType_2D) renderTargetDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+			else if (type == TextureType::TextureType_2D) renderTargetDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_RTV_DIMENSION_TEXTURE2D : D3D12_RTV_DIMENSION_TEXTURE2DMS;
 			else if (type == TextureType::TextureType_3D) renderTargetDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE3D;
 			else return 0;
 			handle->renderTargetResourceDescCPUHandle = handle->renderTargetResourceHeap->GetCPUDescriptorHandleForHeapStart();
@@ -121,10 +131,10 @@ extern "C"
 				resourceDesc.DepthOrArraySize = 1;
 				resourceDesc.MipLevels = 1;
 				resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-				resourceDesc.SampleDesc.Count = 1;
-				resourceDesc.SampleDesc.Quality = 0;
 				resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 				resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+				resourceDesc.SampleDesc.Count = 1;
+				resourceDesc.SampleDesc.Quality = 0;
 
 				if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, IID_PPV_ARGS(&uploadResource)))) return 0;
 			}
@@ -154,8 +164,8 @@ extern "C"
 			// copy upload buffer to default buffer
 			if (useUploadBuffer)
 			{
-				handle->device->internalMutex->lock();
 				// reset command list and copy resource
+				handle->device->internalMutex->lock();
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
 
 				// copy all mip levels

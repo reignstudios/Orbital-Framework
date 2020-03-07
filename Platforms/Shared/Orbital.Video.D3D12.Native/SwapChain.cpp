@@ -28,7 +28,8 @@ extern "C"
 		swapChainDesc.Format = handle->format;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
-		swapChainDesc.SampleDesc.Count = 1;
+		swapChainDesc.SampleDesc.Count = 1;// swap-chains do not support msaa
+		swapChainDesc.SampleDesc.Quality = 0;
 
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDesc = {};
 		fullscreenDesc.Windowed = fullscreen == 0;
@@ -61,6 +62,17 @@ extern "C"
 			handle->resourceDescCPUHandles[i] = resourceDescCPUHandle;
             resourceDescCPUHandle.ptr += resourceHeapSize;
         }
+
+		// create helpers for synchronous buffer operations
+		if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
+		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+
+		if (FAILED(handle->device->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
+		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		if (handle->internalFenceEvent == NULL) return 0;
+
+		// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
+		handle->internalFenceValue = 1;
 
 		return 1;
 	}
@@ -98,6 +110,25 @@ extern "C"
 			handle->swapChain = NULL;
 		}
 
+		// dispose present helpers
+		if (handle->internalFenceEvent != NULL)
+		{
+			CloseHandle(handle->internalFenceEvent);
+			handle->internalFenceEvent = NULL;
+		}
+
+		if (handle->internalFence != NULL)
+		{
+			handle->internalFence->Release();
+			handle->internalFence = NULL;
+		}
+
+		if (handle->internalCommandList != NULL)
+		{
+			handle->internalCommandList->Release();
+			handle->internalCommandList = NULL;
+		}
+
 		free(handle);
 	}
 
@@ -108,6 +139,44 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_Present(SwapChain* handle)
 	{
+		if (handle->resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT)
+		{
+			// reset command list and copy resource
+			handle->internalCommandList->Reset(handle->device->commandAllocator, NULL);
+
+			// change resource state to present
+			D3D12_RESOURCE_BARRIER barrier = {};
+			barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+			barrier.Transition.pResource = handle->resources[handle->currentRenderTargetIndex];
+			barrier.Transition.StateBefore = handle->resourceState;
+			barrier.Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT;
+			barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+			handle->resourceState = barrier.Transition.StateAfter;
+			handle->internalCommandList->ResourceBarrier(1, &barrier);
+
+			// close command list
+			handle->internalCommandList->Close();
+
+			// execute operations
+			ID3D12CommandList* commandLists[1] = { handle->internalCommandList };
+			handle->device->commandQueue->ExecuteCommandLists(1, commandLists);
+			WaitForFence(handle->device, handle->internalFence, handle->internalFenceEvent, handle->internalFenceValue);
+		}
 		handle->swapChain->Present(1, 0);
 	}
+}
+
+void Orbital_Video_D3D12_SwapChain_ChangeState(SwapChain* handle, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList5* commandList)
+{
+	if (handle->resourceState == state) return;
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = handle->resources[handle->currentRenderTargetIndex];
+	barrier.Transition.StateBefore = handle->resourceState;
+	barrier.Transition.StateAfter = state;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	commandList->ResourceBarrier(1, &barrier);
+	handle->resourceState = state;
 }

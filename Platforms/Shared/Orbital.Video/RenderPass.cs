@@ -134,9 +134,18 @@ namespace Orbital.Video
 
 		protected void InitBase(ref RenderPassDesc desc, int renderTargetCount)
 		{
-			if (desc.renderTargetDescs == null) throw new Exception("Must contain 'renderTargetDescs'");
-			if (desc.renderTargetDescs.Length != renderTargetCount) throw new Exception("'renderTargetDescs' length must match render targets length");
+			if (desc.renderTargetDescs == null) throw new ArgumentException("Must contain 'renderTargetDescs'");
+			if (desc.renderTargetDescs.Length != renderTargetCount) throw new ArgumentException("'renderTargetDescs' length must match render targets length");
 			this.renderTargetCount = renderTargetCount;
+		}
+
+		protected void ValidateMSAARenderTextures(Texture2DBase[] renderTextures)
+		{
+			var level = renderTextures[0].msaaLevel;
+			for (int i = 1; i < renderTextures.Length; ++i)
+			{
+				if (renderTextures[i].msaaLevel != level) throw new ArgumentException("All render-texture MSAA-Levels must match");
+			}
 		}
 
 		public abstract void Dispose();

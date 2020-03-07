@@ -87,8 +87,8 @@ extern "C"
 			// copy upload buffer to default buffer
 			if (useUploadBuffer)
 			{
-				handle->device->internalMutex->lock();
 				// reset command list and copy resource
+				handle->device->internalMutex->lock();
 				handle->device->internalCommandList->Reset(handle->device->commandAllocator, NULL);
 				handle->device->internalCommandList->CopyResource(handle->resource, uploadResource);
 

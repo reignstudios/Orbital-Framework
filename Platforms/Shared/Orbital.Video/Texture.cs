@@ -80,6 +80,7 @@ namespace Orbital.Video
 		public int width { get; protected set; }
 		public int height { get; protected set; }
 		public bool isRenderTexture { get; protected set; }
+		public MSAALevel msaaLevel { get; protected set; }
 
 		public Texture2DBase(DeviceBase device)
 		: base(device)

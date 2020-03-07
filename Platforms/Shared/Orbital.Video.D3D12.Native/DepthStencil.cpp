@@ -11,7 +11,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_DepthStencil_Init(DepthStencil* handle, DepthStencilFormat format, UINT32 width, UINT32 height)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_DepthStencil_Init(DepthStencil* handle, DepthStencilFormat format, UINT32 width, UINT32 height, MSAALevel msaaLevel)
 	{
 		if (!GetNative_DepthStencilFormat(format, &handle->format)) return 0;
 
@@ -32,10 +32,19 @@ extern "C"
         resourceDesc.DepthOrArraySize = 1;
         resourceDesc.MipLevels = 1;
         resourceDesc.Format = handle->format;
-        resourceDesc.SampleDesc.Count = 1;
-        resourceDesc.SampleDesc.Quality = 0;
         resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+		if (msaaLevel != MSAALevel::MSAALevel_Disabled)
+		{
+			resourceDesc.SampleDesc.Count = (UINT)msaaLevel;
+			resourceDesc.SampleDesc.Quality = DXGI_STANDARD_MULTISAMPLE_QUALITY_PATTERN;
+		}
+		else
+		{
+			resourceDesc.SampleDesc.Count = 1;
+			resourceDesc.SampleDesc.Quality = 0;
+		}
 
 		handle->resourceState = D3D12_RESOURCE_STATE_DEPTH_READ;
 		if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->resourceState, NULL, IID_PPV_ARGS(&handle->resource)))) return 0;
@@ -51,7 +60,7 @@ extern "C"
 		// create depth-stencil view
 		D3D12_DEPTH_STENCIL_VIEW_DESC dsDesc = {};
 		dsDesc.Format = handle->format;
-		dsDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+		dsDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_DSV_DIMENSION_TEXTURE2D : D3D12_DSV_DIMENSION_TEXTURE2DMS;
 		dsDesc.Texture2D.MipSlice = 0;
 		handle->device->device->CreateDepthStencilView(handle->resource, &dsDesc, handle->depthStencilResourceCPUHeapHandle);
 
@@ -66,7 +75,7 @@ extern "C"
 		D3D12_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
 		shaderResourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		if (!GetNative_DepthStencilShaderResourceFormat(format, &shaderResourceDesc.Format)) return 0;
-		shaderResourceDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURE2DMS;
 		shaderResourceDesc.Texture2D.MipLevels = 1;
 		handle->device->device->CreateShaderResourceView(handle->resource, &shaderResourceDesc, handle->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
 

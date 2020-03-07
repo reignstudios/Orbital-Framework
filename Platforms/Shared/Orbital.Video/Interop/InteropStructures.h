@@ -353,7 +353,6 @@ typedef struct RenderStateDesc
 	intptr_t indexBuffer;
 	TriangleCulling triangleCulling;
 	TriangleFillMode triangleFillMode;
-	MSAALevel msaaLevel;
 	BlendDesc blendDesc;
 	DepthStencilDesc depthStencilDesc;
 }RenderStateDesc;

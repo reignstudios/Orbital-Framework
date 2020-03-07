@@ -47,7 +47,7 @@ namespace Orbital.Video.D3D12
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			depthStencilD3D12 = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			depthStencil = depthStencilD3D12;
-			if (!depthStencilD3D12.Init(size.width, size.height, depthStencilFormat)) return false;
+			if (!depthStencilD3D12.Init(size.width, size.height, depthStencilFormat, MSAALevel.Disabled)) return false;
 			return Init(window, bufferCount, fullscreen, format);
 		}
 

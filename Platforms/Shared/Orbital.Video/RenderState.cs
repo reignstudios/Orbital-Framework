@@ -645,11 +645,6 @@ namespace Orbital.Video
 		public TriangleFillMode triangleFillMode;
 
 		/// <summary>
-		/// Multisample anti-aliasing level
-		/// </summary>
-		public MSAALevel msaaLevel;
-
-		/// <summary>
 		/// Blending description
 		/// </summary>
 		public BlendDesc blendDesc;

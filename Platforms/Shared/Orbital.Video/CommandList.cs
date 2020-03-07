@@ -64,6 +64,16 @@ namespace Orbital.Video
 		public abstract void Draw();
 
 		/// <summary>
+		/// Resolves/Copies MSAA render-texture to non-MSAA texture
+		/// </summary>
+		public abstract void ResolveMSAA(Texture2DBase sourceRenderTexture, Texture2DBase destinationRenderTexture);
+
+		/// <summary>
+		/// Resolves/Copies MSAA render-texture to non-MSAA swap-chain
+		/// </summary>
+		public abstract void ResolveMSAA(Texture2DBase sourceRenderTexture, SwapChainBase destinationSwapChain);
+
+		/// <summary>
 		/// Executes command-list operations
 		/// </summary>
 		public abstract void Execute();

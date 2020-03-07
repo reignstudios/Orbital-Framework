@@ -283,6 +283,7 @@ extern "C"
         pipelineDesc.RasterizerState.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
 		// blend state
+		pipelineDesc.SampleMask = UINT_MAX;
 		pipelineDesc.BlendState.AlphaToCoverageEnable = desc->blendDesc.alphaToCoverageEnable;
         pipelineDesc.BlendState.IndependentBlendEnable = desc->blendDesc.independentBlendEnable;
 
@@ -328,15 +329,21 @@ extern "C"
 			}
 
 			if (!LogicalBlendOperationToNative(renderTargetBlendDesc.logicalOperation, &blendDesc.LogicOp)) return 0;
-			blendDesc.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;//(D3D12_COLOR_WRITE_ENABLE)renderTargetBlendDesc.writeMask;
+			blendDesc.RenderTargetWriteMask = (D3D12_COLOR_WRITE_ENABLE)renderTargetBlendDesc.writeMask;
 
 			pipelineDesc.BlendState.RenderTarget[i] = blendDesc;
 		}
 
 		// msaa
-        pipelineDesc.SampleMask = UINT_MAX;
-        pipelineDesc.SampleDesc.Count = desc->msaaLevel == MSAALevel_Disabled ? 1 : (UINT)desc->msaaLevel;
-		pipelineDesc.SampleDesc.Quality = 0;// default MSAA quality
+		if (renderPass->renderTextures != NULL && renderPass->renderTargetCount != 0)
+		{
+			pipelineDesc.SampleDesc = renderPass->renderTextures[0]->msaaSampleDesc;
+		}
+		else
+		{
+			pipelineDesc.SampleDesc.Count = 1;
+			pipelineDesc.SampleDesc.Quality = 0;
+		}
 
 		// create pipeline state
         if (FAILED(handle->device->device->CreateGraphicsPipelineState(&pipelineDesc, IID_PPV_ARGS(&handle->state)))) return 0;

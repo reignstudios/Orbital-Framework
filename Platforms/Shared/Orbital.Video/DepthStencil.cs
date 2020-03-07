@@ -60,9 +60,10 @@ namespace Orbital.Video
 	public abstract class DepthStencilBase : IDisposable
 	{
 		public readonly DeviceBase device;
+		public readonly StencilUsage stencilUsage;
 		public int width { get; protected set; }
 		public int height { get; protected set; }
-		public readonly StencilUsage stencilUsage;
+		public MSAALevel msaaLevel { get; protected set; }
 
 		public DepthStencilBase(DeviceBase device, StencilUsage usage)
 		{
