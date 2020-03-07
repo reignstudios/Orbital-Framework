@@ -1,4 +1,5 @@
 ﻿using System;
+using Orbital.Numerics;
 
 namespace Orbital.Video
 {
@@ -82,6 +83,16 @@ namespace Orbital.Video
 		/// Copies texture to swap-chain of the same size
 		/// </summary>
 		public abstract void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain);
+
+		/// <summary>
+		/// Copies texture to texture region
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel);
+
+		/// <summary>
+		/// Copies texture to swap-chain region
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel);
 
 		/// <summary>
 		/// Executes command-list operations

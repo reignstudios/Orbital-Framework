@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orbital.Numerics;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Orbital.Video.Vulkan
@@ -127,6 +128,16 @@ namespace Orbital.Video.Vulkan
 		}
 
 		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
 		{
 			throw new NotImplementedException();
 		}
