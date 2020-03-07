@@ -38,6 +38,16 @@ namespace Orbital.Video.D3D12
 			return Init(width, height, format, data, true, MSAALevel.Disabled);
 		}
 
+		public override void Dispose()
+		{
+			if (depthStencil != null)
+			{
+				depthStencil.Dispose();
+				depthStencil = null;
+			}
+			base.Dispose();
+		}
+
 		#region RenderTexture Methods
 		public override DepthStencilBase GetDepthStencil()
 		{

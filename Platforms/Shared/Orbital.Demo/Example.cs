@@ -196,7 +196,7 @@ namespace Orbital.Demo
 			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
 			
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance, out device)) throw new Exception("Failed to init abstraction");
-
+			
 			// create render texture test objects
 			renderTextureTest = new RenderTextureTest(device);
 
@@ -204,7 +204,7 @@ namespace Orbital.Demo
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel);
-
+			
 			// create command list
 			commandList = device.CreateCommandList();
 

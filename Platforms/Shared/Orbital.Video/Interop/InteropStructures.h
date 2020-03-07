@@ -419,12 +419,26 @@ typedef enum ShaderEffectSamplerAnisotropy
 	ShaderEffectSamplerAnisotropy_BIT = ENUM_BIT
 }ShaderEffectSamplerAnisotropy;
 
+typedef enum ShaderEffectComparisonFunction
+{
+	ShaderEffectComparisonFunction_Never,
+	ShaderEffectComparisonFunction_Always,
+	ShaderEffectComparisonFunction_Equal,
+	ShaderEffectComparisonFunction_NotEqual,
+	ShaderEffectComparisonFunction_LessThan,
+	ShaderEffectComparisonFunction_LessThanOrEqual,
+	ShaderEffectComparisonFunction_GreaterThan,
+	ShaderEffectComparisonFunction_GreaterThanOrEqual,
+	ShaderEffectComparisonFunction_BIT = ENUM_BIT
+}ShaderEffectComparisonFunction;
+
 typedef struct ShaderEffectSampler
 {
 	int registerIndex;
 	ShaderEffectSamplerFilter filter;
 	ShaderEffectSamplerAnisotropy anisotropy;
 	ShaderEffectSamplerAddress addressU, addressV, addressW;
+	ShaderEffectComparisonFunction comparisonFunction;
 }ShaderEffectSampler;
 
 typedef struct ShaderEffectDesc

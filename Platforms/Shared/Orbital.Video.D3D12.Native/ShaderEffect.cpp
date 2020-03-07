@@ -25,22 +25,39 @@ extern "C"
 		return *nativeAnisotropy >= 1 && *nativeAnisotropy <= 16;
 	}
 
-	bool SamplerFilterToNative(ShaderEffectSamplerFilter filter, D3D12_FILTER* nativeFilter)
+	bool SamplerFilterToNative(ShaderEffectSamplerFilter filter, D3D12_FILTER* nativeFilter, bool useComparison)
 	{
 		switch (filter)
 		{
 			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Point:
-				*nativeFilter = D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_POINT;
+				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT : D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_POINT;
 				break;
 
 			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Bilinear:
-				*nativeFilter = D3D12_FILTER::D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT : D3D12_FILTER::D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 				break;
 
 			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Default:
 			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Trilinear:
-				*nativeFilter = D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 				break;
+			default: return false;
+		}
+		return true;
+	}
+
+	bool ComparisonFunctionToNative(ShaderEffectComparisonFunction function, D3D12_COMPARISON_FUNC* nativeFunction)
+	{
+		switch (function)
+		{
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Never: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Always: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_ALWAYS; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Equal: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_EQUAL; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_NotEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_LessThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_LessThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_GreaterThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER; break;
+			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_GreaterThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
 			default: return false;
 		}
 		return true;
@@ -92,11 +109,12 @@ extern "C"
 
 			samplerDesc.ShaderRegister = sampler.registerIndex;
 			samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL;
+			samplerDesc.MipLODBias = 0;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-			samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER;// TODO: add option for comparison. 'SamplerFilterToNative' needs to be updated for this too
+			if (!ComparisonFunctionToNative(sampler.comparisonFunction, &samplerDesc.ComparisonFunc)) return 0;
 
-			if (!SamplerFilterToNative(sampler.filter, &samplerDesc.Filter)) return 0;
+			if (!SamplerFilterToNative(sampler.filter, &samplerDesc.Filter, sampler.comparisonFunction != ShaderEffectComparisonFunction_Never)) return 0;
 			if (!SamplerAddressToNative(sampler.addressU, &samplerDesc.AddressU)) return 0;
 			if (!SamplerAddressToNative(sampler.addressV, &samplerDesc.AddressV)) return 0;
 			if (!SamplerAddressToNative(sampler.addressW, &samplerDesc.AddressW)) return 0;

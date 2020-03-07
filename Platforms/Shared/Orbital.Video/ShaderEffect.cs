@@ -187,6 +187,49 @@ namespace Orbital.Video
 		Clamp
 	}
 
+	public enum ShaderEffectComparisonFunction
+	{
+		/// <summary>
+		/// Never pass the comparison / disable comparision function
+		/// </summary>
+		Never,
+
+		/// <summary>
+		/// Always pass the comparison
+		/// </summary>
+		Always,
+
+		/// <summary>
+		/// If the source data is equal to the destination data, the comparison passes
+		/// </summary>
+		Equal,
+
+		/// <summary>
+		/// If the source data is not equal to the destination data, the comparison passes
+		/// </summary>
+		NotEqual,
+
+		/// <summary>
+		/// If the source data is less than the destination data, the comparison passes
+		/// </summary>
+		LessThan,
+
+		/// <summary>
+		/// If the source data is less than or equal to the destination data, the comparison passes
+		/// </summary>
+		LessThanOrEqual,
+
+		/// <summary>
+		/// If the source data is greater than the destination data, the comparison passes
+		/// </summary>
+		GreaterThan,
+
+		/// <summary>
+		/// If the source data is greater than or equal to the destination data, the comparison passes
+		/// </summary>
+		GreaterThanOrEqual
+	}
+
 	public struct ShaderEffectSampler
 	{
 		/// <summary>
@@ -208,6 +251,12 @@ namespace Orbital.Video
 		/// Texture address mode
 		/// </summary>
 		public ShaderEffectSamplerAddress addressU, addressV, addressW;
+
+		/// <summary>
+		/// Use with special shader sampler method to compare against custom value.
+		/// Useful for PCF shadows.
+		/// </summary>
+		public ShaderEffectComparisonFunction comparisonFunction;
 	}
 
 	public struct ShaderEffectDesc

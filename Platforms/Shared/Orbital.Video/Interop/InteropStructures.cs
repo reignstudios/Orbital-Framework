@@ -14,6 +14,12 @@ namespace Orbital.Video.Vulkan
 	{
 		public byte clearColor;
 		public Color4F clearColorValue;
+
+		public RenderPassRenderTargetDesc_NativeInterop(ref RenderPassRenderTargetDesc desc)
+		{
+			clearColor = (byte)(desc.clearColor ? 1 : 0);
+			clearColorValue = desc.clearColorValue;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -23,6 +29,14 @@ namespace Orbital.Video.Vulkan
 		public byte clearStencil;
 		public float depthValue;
 		public float stencilValue;
+
+		public RenderPassDepthStencilDesc_NativeInterop(ref RenderPassDepthStencilDesc desc)
+		{
+			clearDepth = (byte)(desc.clearDepth ? 1 : 0);
+			clearStencil = (byte)(desc.clearStencil ? 1 : 0);
+			depthValue = desc.depthValue;
+			stencilValue = desc.stencilValue;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -38,14 +52,10 @@ namespace Orbital.Video.Vulkan
 			renderTargetDescs = (RenderPassRenderTargetDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<RenderPassRenderTargetDesc_NativeInterop>() * desc.renderTargetDescs.Length);
 			for (int i = 0; i != desc.renderTargetDescs.Length; ++i)
 			{
-				renderTargetDescs[i].clearColor = (byte)(desc.renderTargetDescs[i].clearColor ? 1 : 0);
-				renderTargetDescs[i].clearColorValue = desc.renderTargetDescs[i].clearColorValue;
+				renderTargetDescs[i] = new RenderPassRenderTargetDesc_NativeInterop(ref desc.renderTargetDescs[i]);
 			}
 
-			depthStencilDesc.clearDepth = (byte)(desc.depthStencilDesc.clearDepth ? 1 : 0);
-			depthStencilDesc.clearStencil = (byte)(desc.depthStencilDesc.clearStencil ? 1 : 0);
-			depthStencilDesc.depthValue = desc.depthStencilDesc.depthValue;
-			depthStencilDesc.stencilValue = desc.depthStencilDesc.stencilValue;
+			depthStencilDesc = new RenderPassDepthStencilDesc_NativeInterop(ref desc.depthStencilDesc);
 		}
 
 		public void Dispose()
@@ -271,6 +281,12 @@ namespace Orbital.Video.Vulkan
 	{
 		public IntPtr vertexBuffer;
 		public VertexBufferStreamType type;
+
+		public VertexBufferStreamDesc_NativeInterop(ref VertexBufferStreamDesc desc)
+		{
+			vertexBuffer = ((VertexBuffer)desc.vertexBuffer).handle;
+			type = desc.type;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -281,6 +297,15 @@ namespace Orbital.Video.Vulkan
 		public VertexBufferStreamElementUsage usage;
 		public int usageIndex;
 		public int offset;
+
+		public VertexBufferStreamElement_NativeInterop(ref VertexBufferStreamElement element)
+		{
+			index = element.index;
+			type = element.type;
+			usage = element.usage;
+			usageIndex = element.usageIndex;
+			offset = element.offset;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -307,9 +332,7 @@ namespace Orbital.Video.Vulkan
 				descs = (VertexBufferStreamDesc_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferStreamDesc_NativeInterop>() * descCount);
 				for (int i = 0; i != descCount; ++i)
 				{
-					var vertexBuffer = (VertexBuffer)layout.descs[i].vertexBuffer;
-					descs[i].vertexBuffer = vertexBuffer.handle;
-					descs[i].type = layout.descs[i].type;
+					descs[i] = new VertexBufferStreamDesc_NativeInterop(ref layout.descs[i]);
 				}
 			}
 
@@ -320,11 +343,7 @@ namespace Orbital.Video.Vulkan
 				elements = (VertexBufferStreamElement_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<VertexBufferStreamElement_NativeInterop>() * elementCount);
 				for (int i = 0; i != elementCount; ++i)
 				{
-					elements[i].index = layout.elements[i].index;
-					elements[i].type = layout.elements[i].type;
-					elements[i].usage = layout.elements[i].usage;
-					elements[i].usageIndex = layout.elements[i].usageIndex;
-					elements[i].offset = layout.elements[i].offset;
+					elements[i] = new VertexBufferStreamElement_NativeInterop(ref layout.elements[i]);
 				}
 			}
 		}
@@ -346,6 +365,12 @@ namespace Orbital.Video.Vulkan
 	{
 		public int registerIndex;
 		public ShaderEffectResourceUsage usage;
+
+		public ShaderEffectConstantBuffer_NativeInterop(ref ShaderEffectConstantBuffer buffer)
+		{
+			registerIndex = buffer.registerIndex;
+			usage = buffer.usage;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -353,6 +378,12 @@ namespace Orbital.Video.Vulkan
 	{
 		public int registerIndex;
 		public ShaderEffectResourceUsage usage;
+
+		public ShaderEffectTexture_NativeInterop(ref ShaderEffectTexture texture)
+		{
+			registerIndex = texture.registerIndex;
+			usage = texture.usage;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -362,6 +393,18 @@ namespace Orbital.Video.Vulkan
 		public ShaderEffectSamplerFilter filter;
 		public ShaderEffectSamplerAnisotropy anisotropy;
 		public ShaderEffectSamplerAddress addressU, addressV, addressW;
+		public ShaderEffectComparisonFunction comparisonFunction;
+
+		public ShaderEffectSampler_NativeInterop(ref ShaderEffectSampler sampler)
+		{
+			registerIndex = sampler.registerIndex;
+			filter = sampler.filter;
+			addressU = sampler.addressU;
+			addressV = sampler.addressV;
+			addressW = sampler.addressW;
+			anisotropy = sampler.anisotropy;
+			comparisonFunction = sampler.comparisonFunction;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -389,8 +432,7 @@ namespace Orbital.Video.Vulkan
 				constantBuffers = (ShaderEffectConstantBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectConstantBuffer_NativeInterop>() * constantBufferCount);
 				for (int i = 0; i != constantBufferCount; ++i)
 				{
-					constantBuffers[i].registerIndex = desc.constantBuffers[i].registerIndex;
-					constantBuffers[i].usage = desc.constantBuffers[i].usage;
+					constantBuffers[i] = new ShaderEffectConstantBuffer_NativeInterop(ref desc.constantBuffers[i]);
 				}
 			}
 
@@ -401,8 +443,7 @@ namespace Orbital.Video.Vulkan
 				textures = (ShaderEffectTexture_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectTexture_NativeInterop>() * textureCount);
 				for (int i = 0; i != textureCount; ++i)
 				{
-					textures[i].registerIndex = desc.textures[i].registerIndex;
-					textures[i].usage = desc.textures[i].usage;
+					textures[i] = new ShaderEffectTexture_NativeInterop(ref desc.textures[i]);
 				}
 			}
 
@@ -413,12 +454,7 @@ namespace Orbital.Video.Vulkan
 				samplers = (ShaderEffectSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectSampler_NativeInterop>() * samplersCount);
 				for (int i = 0; i != samplersCount; ++i)
 				{
-					samplers[i].registerIndex = desc.samplers[i].registerIndex;
-					samplers[i].filter = desc.samplers[i].filter;
-					samplers[i].addressU = desc.samplers[i].addressU;
-					samplers[i].addressV = desc.samplers[i].addressV;
-					samplers[i].addressW = desc.samplers[i].addressW;
-					samplers[i].anisotropy = desc.samplers[i].anisotropy;
+					samplers[i] = new ShaderEffectSampler_NativeInterop(ref desc.samplers[i]);
 				}
 			}
 		}

@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandList.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Common.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ComputeShader.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ConstantBuffer.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\DepthStencil.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.h" />
@@ -182,6 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\CommandList.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ComputeShader.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ConstantBuffer.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\DepthStencil.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp" />
