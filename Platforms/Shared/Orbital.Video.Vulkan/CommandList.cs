@@ -132,12 +132,12 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
+		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel, int destinationMipmapLevel)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
+		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel)
 		{
 			throw new NotImplementedException();
 		}

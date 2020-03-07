@@ -288,18 +288,18 @@ extern "C"
 		handle->commandList->CopyResource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], srcTexture->resource);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureRegion(CommandList* handle, Texture* srcTexture, Texture* dstTexture, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT mipmapLevel)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureRegion(CommandList* handle, Texture* srcTexture, Texture* dstTexture, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT srcMipmapLevel, UINT dstMipmapLevel)
 	{
 		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->commandList);
 		Orbital_Video_D3D12_Texture_ChangeState(dstTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->commandList);
 
 		D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
 		dstLoc.pResource = dstTexture->resource;
-		dstLoc.SubresourceIndex = mipmapLevel;
+		dstLoc.SubresourceIndex = dstMipmapLevel;
 
 		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
 		srcLoc.pResource = srcTexture->resource;
-		srcLoc.SubresourceIndex = mipmapLevel;
+		srcLoc.SubresourceIndex = srcMipmapLevel;
 
 		D3D12_BOX srcBox;
 		srcBox.left = srcX;
@@ -312,7 +312,7 @@ extern "C"
 		handle->commandList->CopyTextureRegion(&dstLoc, dstX, dstY, dstZ, &srcLoc, &srcBox);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(CommandList* handle, Texture* srcTexture, SwapChain* dstSwapChain, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT mipmapLevel)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(CommandList* handle, Texture* srcTexture, SwapChain* dstSwapChain, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT srcMipmapLevel)
 	{
 		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->commandList);
 		Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->commandList);
@@ -322,7 +322,7 @@ extern "C"
 
 		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
 		srcLoc.pResource = srcTexture->resource;
-		srcLoc.SubresourceIndex = mipmapLevel;
+		srcLoc.SubresourceIndex = srcMipmapLevel;
 
 		D3D12_BOX srcBox;
 		srcBox.left = srcX;

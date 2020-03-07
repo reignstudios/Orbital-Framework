@@ -87,12 +87,12 @@ namespace Orbital.Video
 		/// <summary>
 		/// Copies texture to texture region
 		/// </summary>
-		public abstract void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel);
+		public abstract void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel, int destinationMipmapLevel);
 
 		/// <summary>
 		/// Copies texture to swap-chain region
 		/// </summary>
-		public abstract void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel);
+		public abstract void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel);
 
 		/// <summary>
 		/// Executes command-list operations

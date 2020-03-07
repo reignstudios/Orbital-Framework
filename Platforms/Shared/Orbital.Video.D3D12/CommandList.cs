@@ -61,10 +61,10 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureRegion(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstRenderTexture, uint srcX, uint srcY, uint srcZ, uint dstX, uint dstY, uint dstZ, uint width, uint height, uint depth, uint mipmapLevel);
+		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureRegion(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstRenderTexture, uint srcX, uint srcY, uint srcZ, uint dstX, uint dstY, uint dstZ, uint width, uint height, uint depth, uint srcMipmapLevel, uint dstMipmapLevel);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain, uint srcX, uint srcY, uint srcZ, uint dstX, uint dstY, uint dstZ, uint width, uint height, uint depth, uint mipmapLevel);
+		private static extern void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(IntPtr handle, IntPtr srcRenderTexture, IntPtr dstSwapChain, uint srcX, uint srcY, uint srcZ, uint dstX, uint dstY, uint dstZ, uint width, uint height, uint depth, uint srcMipmapLevel);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Execute(IntPtr handle);
@@ -177,18 +177,18 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(handle, src.handle, dst.handle);
 		}
 
-		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
+		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel, int destinationMipmapLevel)
 		{
 			var src = (RenderTexture2D)sourceTexture;
 			var dst = (RenderTexture2D)destinationTexture;
-			Orbital_Video_D3D12_CommandList_CopyTextureRegion(handle, src.handle, dst.handle, (uint)sourceOffset.x, (uint)sourceOffset.y, 0, (uint)destinationOffset.x, (uint)destinationOffset.y, 0, (uint)size.width, (uint)size.height, 1, (uint)mipmapLevel);
+			Orbital_Video_D3D12_CommandList_CopyTextureRegion(handle, src.handle, dst.handle, (uint)sourceOffset.x, (uint)sourceOffset.y, 0, (uint)destinationOffset.x, (uint)destinationOffset.y, 0, (uint)size.width, (uint)size.height, 1, (uint)sourceMipmapLevel, (uint)destinationMipmapLevel);
 		}
 
-		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int mipmapLevel)
+		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel)
 		{
 			var src = (RenderTexture2D)sourceTexture;
 			var dst = (SwapChain)destinationSwapChain;
-			Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(handle, src.handle, dst.handle, (uint)sourceOffset.x, (uint)sourceOffset.y, 0, (uint)destinationOffset.x, (uint)destinationOffset.y, 0, (uint)size.width, (uint)size.height, 1, (uint)mipmapLevel);
+			Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(handle, src.handle, dst.handle, (uint)sourceOffset.x, (uint)sourceOffset.y, 0, (uint)destinationOffset.x, (uint)destinationOffset.y, 0, (uint)size.width, (uint)size.height, 1, (uint)sourceMipmapLevel);
 		}
 
 		public override void Execute()
