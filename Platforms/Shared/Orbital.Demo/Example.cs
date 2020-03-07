@@ -100,7 +100,7 @@ namespace Orbital.Demo
 				triangleCulling = TriangleCulling.Back,
 				triangleFillMode = TriangleFillMode.Solid
 			};
-			renderState = device.CreateRenderState(renderStateDesc, 0);
+			renderState = device.CreateRenderState(renderStateDesc);
 		}
 
 		public void Dispose()
@@ -424,7 +424,7 @@ namespace Orbital.Demo
 			renderStateDesc.textures[0] = texture;
 			renderStateDesc.textures[1] = texture2;
 			renderStateDesc.textures[2] = renderTextureTest.renderTexture;
-			renderState = device.CreateRenderState(renderStateDesc, 0);
+			renderState = device.CreateRenderState(renderStateDesc);
 
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");

@@ -235,12 +235,7 @@ extern "C"
 		if (FAILED(D3D12SerializeVersionedRootSignature(&signatureDesc, &serializedDesc, &error))) goto FAIL_EXIT;
 
 		// create signature per physical GPU node
-		handle->signatureCount = 1;//handle->device->nodeCount// TODO: handle multi-gpu
-		handle->signatures = (ID3D12RootSignature**)calloc(handle->signatureCount, sizeof(ID3D12RootSignature*));
-		for (UINT i = 0; i != handle->signatureCount; ++i)
-		{
-			 if (FAILED(handle->device->device->CreateRootSignature(i, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signatures[i])))) goto FAIL_EXIT;
-		}
+		if (FAILED(handle->device->device->CreateRootSignature(0, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signature)))) goto FAIL_EXIT;
 
 		// return success
 		return 1;
@@ -270,18 +265,10 @@ extern "C"
 			handle->textures = NULL;
 		}
 
-		if (handle->signatures != NULL)
+		if (handle->signature != NULL)
 		{
-			for (UINT i = 0; i != handle->signatureCount; ++i)
-			{
-				if (handle->signatures[i] != NULL)
-				{
-					handle->signatures[i]->Release();
-					handle->signatures[i] = NULL;
-				}
-			}
-			free(handle->signatures);
-			handle->signatures = NULL;
+			handle->signature->Release();
+			handle->signature = NULL;
 		}
 
 		free(handle);

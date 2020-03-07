@@ -13,7 +13,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_RenderState_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_RenderState_Init(IntPtr handle, RenderStateDesc_NativeInterop* desc, uint gpuIndex);
+		private static unsafe extern int Orbital_Video_D3D12_RenderState_Init(IntPtr handle, RenderStateDesc_NativeInterop* desc);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_RenderState_Dispose(IntPtr handle);
@@ -25,7 +25,7 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_RenderState_Create(device.handle);
 		}
 
-		public unsafe bool Init(RenderStateDesc desc, int gpuIndex)
+		public unsafe bool Init(RenderStateDesc desc)
 		{
 			InitBase(ref desc);
 			var streamer = (VertexBufferStreamer)desc.vertexBufferStreamer;
@@ -33,7 +33,7 @@ namespace Orbital.Video.D3D12
 			if (desc.indexBuffer != null) indexCount = desc.indexBuffer.indexCount;
 			using (var nativeDesc = new RenderStateDesc_NativeInterop(ref desc))
 			{
-				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc, (uint)gpuIndex) != 0;
+				return Orbital_Video_D3D12_RenderState_Init(handle, &nativeDesc) != 0;
 			}
 		}
 

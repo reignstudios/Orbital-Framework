@@ -133,7 +133,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderState_Init(RenderState* handle, RenderStateDesc* desc, UINT gpuIndex)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderState_Init(RenderState* handle, RenderStateDesc* desc)
 	{
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDesc = {};
 
@@ -145,7 +145,7 @@ extern "C"
 		if (shaderEffect->hs != NULL) pipelineDesc.HS = shaderEffect->hs->bytecode;
 		if (shaderEffect->ds != NULL) pipelineDesc.DS = shaderEffect->ds->bytecode;
 		if (shaderEffect->gs != NULL) pipelineDesc.GS = shaderEffect->gs->bytecode;
-		pipelineDesc.pRootSignature = shaderEffect->signatures[gpuIndex];
+		pipelineDesc.pRootSignature = shaderEffect->signature;
 
 		// add constant buffer heaps
 		if (desc->constantBufferCount != 0)

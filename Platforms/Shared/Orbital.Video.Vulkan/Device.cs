@@ -182,7 +182,7 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
+		public override RenderStateBase CreateRenderState(RenderStateDesc desc)
 		{
 			throw new NotImplementedException();
 		}

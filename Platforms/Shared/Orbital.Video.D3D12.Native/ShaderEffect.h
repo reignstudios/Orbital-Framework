@@ -6,8 +6,7 @@ struct ShaderEffect
 	Device* device;
 	Shader *vs, *ps, *hs, *ds, *gs;
 
-	UINT signatureCount;
-	ID3D12RootSignature** signatures;// signature per GPU node
+	ID3D12RootSignature* signature;
 
 	UINT constantBufferCount;
 	ShaderEffectConstantBuffer* constantBuffers;

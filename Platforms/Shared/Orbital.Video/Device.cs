@@ -57,7 +57,7 @@ namespace Orbital.Video
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil);
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures);
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures, DepthStencilBase depthStencil);
-		public abstract RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex);
+		public abstract RenderStateBase CreateRenderState(RenderStateDesc desc);
 		public abstract ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride);
 		public abstract ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders);
 		#if CS_7_3

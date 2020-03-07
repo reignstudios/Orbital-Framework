@@ -216,10 +216,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override RenderStateBase CreateRenderState(RenderStateDesc desc, int gpuIndex)
+		public override RenderStateBase CreateRenderState(RenderStateDesc desc)
 		{
 			var abstraction = new RenderState(this);
-			if (!abstraction.Init(desc, gpuIndex))
+			if (!abstraction.Init(desc))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderState");

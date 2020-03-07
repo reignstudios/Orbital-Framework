@@ -225,7 +225,7 @@ extern "C"
 		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList);
 
 		// bind shader resources
-		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signatures[0]);// TODO: handle multi-gpu
+		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signature);
 
 		UINT descIndex = 0;
 		if (renderState->constantBufferHeap != NULL)
