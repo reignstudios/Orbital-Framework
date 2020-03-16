@@ -5,127 +5,127 @@
 #include "Texture.h"
 #include "Utils.h"
 
+bool TriangleCullingToNative(TriangleCulling cull, D3D12_CULL_MODE* nativeCull)
+{
+	switch (cull)
+	{
+		case TriangleCulling::TriangleCulling_None: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_NONE; break;
+		case TriangleCulling::TriangleCulling_Back: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_BACK; break;
+		case TriangleCulling::TriangleCulling_Front: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool TriangleFillModeToNative(TriangleFillMode mode, D3D12_FILL_MODE* nativeMode)
+{
+	switch (mode)
+	{
+		case TriangleFillMode::TriangleFillMode_Solid: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID; break;
+		case TriangleFillMode::TriangleFillMode_Wireframe: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool BlendFactorToNative(BlendFactor factor, D3D12_BLEND* nativeFactor)
+{
+	switch (factor)
+	{
+		case BlendFactor::BlendFactor_Zero: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ZERO; break;
+		case BlendFactor::BlendFactor_One: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ONE; break;
+		case BlendFactor::BlendFactor_SourceColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
+		case BlendFactor::BlendFactor_SourceColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
+		case BlendFactor::BlendFactor_SourceAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA; break;
+		case BlendFactor::BlendFactor_SourceAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_ALPHA; break;
+		case BlendFactor::BlendFactor_DestinationColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_COLOR; break;
+		case BlendFactor::BlendFactor_DestinationColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_COLOR; break;
+		case BlendFactor::BlendFactor_DestinationAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_ALPHA; break;
+		case BlendFactor::BlendFactor_DestinationAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_ALPHA; break;
+		case BlendFactor::BlendFactor_SourceAlphaSaturate: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA_SAT; break;
+		case BlendFactor::BlendFactor_SourceColor2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_COLOR; break;
+		case BlendFactor::BlendFactor_SourceColorInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_COLOR; break;
+		case BlendFactor::BlendFactor_SourceAlpha2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_ALPHA; break;
+		case BlendFactor::BlendFactor_SourceAlphaInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_ALPHA; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool BlendOperationToNative(BlendOperation operation, D3D12_BLEND_OP* nativeOperation)
+{
+	switch (operation)
+	{
+		case BlendOperation::BlendOperation_Add: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_ADD; break;
+		case BlendOperation::BlendOperation_Subtract: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_SUBTRACT; break;
+		case BlendOperation::BlendOperation_SubtractReversed: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_REV_SUBTRACT; break;
+		case BlendOperation::BlendOperation_Minimum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MIN; break;
+		case BlendOperation::BlendOperation_Maximum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MAX; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool LogicalBlendOperationToNative(LogicalBlendOperation operation, D3D12_LOGIC_OP* nativeOperation)
+{
+	switch (operation)
+	{
+		case LogicalBlendOperation::LogicalBlendOperation_Clear: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_CLEAR; break;
+		case LogicalBlendOperation::LogicalBlendOperation_Set: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_SET; break;
+		case LogicalBlendOperation::LogicalBlendOperation_Copy: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY; break;
+		case LogicalBlendOperation::LogicalBlendOperation_CopyInverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY_INVERTED; break;
+		case LogicalBlendOperation::LogicalBlendOperation_NoOperation: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOOP; break;
+		case LogicalBlendOperation::LogicalBlendOperation_Invert: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_INVERT; break;
+		case LogicalBlendOperation::LogicalBlendOperation_AND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND; break;
+		case LogicalBlendOperation::LogicalBlendOperation_NAND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NAND; break;
+		case LogicalBlendOperation::LogicalBlendOperation_OR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR; break;
+		case LogicalBlendOperation::LogicalBlendOperation_NOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOR; break;
+		case LogicalBlendOperation::LogicalBlendOperation_XOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_XOR; break;
+		case LogicalBlendOperation::LogicalBlendOperation_Equivalent: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_EQUIV; break;
+		case LogicalBlendOperation::LogicalBlendOperation_AND_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_REVERSE; break;
+		case LogicalBlendOperation::LogicalBlendOperation_AND_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_INVERTED; break;
+		case LogicalBlendOperation::LogicalBlendOperation_OR_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_REVERSE; break;
+		case LogicalBlendOperation::LogicalBlendOperation_OR_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_INVERTED; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool DepthStencilTestFunctionToNative(DepthStencilTestFunction function, D3D12_COMPARISON_FUNC* nativeFunction)
+{
+	switch (function)
+	{
+		case DepthStencilTestFunction::DepthStencilTestFunction_Always: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_ALWAYS; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_Never: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_Equal: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_EQUAL; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_NotEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_LessThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_LessThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER; break;
+		case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
+		default: return false;
+	}
+	return true;
+}
+
+bool StencilOperationToNative(StencilOperation operation, D3D12_STENCIL_OP* nativeOperation)
+{
+	switch (operation)
+	{
+		case StencilOperation::StencilOperation_Keep: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_KEEP; break;
+		case StencilOperation::StencilOperation_Zero: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_ZERO; break;
+		case StencilOperation::StencilOperation_Invert: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INVERT; break;
+		case StencilOperation::StencilOperation_IncrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR; break;
+		case StencilOperation::StencilOperation_DecrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR; break;
+		case StencilOperation::StencilOperation_IncrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR_SAT; break;
+		case StencilOperation::StencilOperation_DecrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR_SAT; break;
+		default: return false;
+	}
+	return true;
+}
+
 extern "C"
 {
-	bool TriangleCullingToNative(TriangleCulling cull, D3D12_CULL_MODE* nativeCull)
-	{
-		switch (cull)
-		{
-			case TriangleCulling::TriangleCulling_None: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_NONE; break;
-			case TriangleCulling::TriangleCulling_Back: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_BACK; break;
-			case TriangleCulling::TriangleCulling_Front: *nativeCull = D3D12_CULL_MODE::D3D12_CULL_MODE_FRONT; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool TriangleFillModeToNative(TriangleFillMode mode, D3D12_FILL_MODE* nativeMode)
-	{
-		switch (mode)
-		{
-			case TriangleFillMode::TriangleFillMode_Solid: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_SOLID; break;
-			case TriangleFillMode::TriangleFillMode_Wireframe: *nativeMode = D3D12_FILL_MODE::D3D12_FILL_MODE_WIREFRAME; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool BlendFactorToNative(BlendFactor factor, D3D12_BLEND* nativeFactor)
-	{
-		switch (factor)
-		{
-			case BlendFactor::BlendFactor_Zero: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ZERO; break;
-			case BlendFactor::BlendFactor_One: *nativeFactor = D3D12_BLEND::D3D12_BLEND_ONE; break;
-			case BlendFactor::BlendFactor_SourceColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
-			case BlendFactor::BlendFactor_SourceColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_COLOR; break;
-			case BlendFactor::BlendFactor_SourceAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA; break;
-			case BlendFactor::BlendFactor_SourceAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC_ALPHA; break;
-			case BlendFactor::BlendFactor_DestinationColor: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_COLOR; break;
-			case BlendFactor::BlendFactor_DestinationColorInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_COLOR; break;
-			case BlendFactor::BlendFactor_DestinationAlpha: *nativeFactor = D3D12_BLEND::D3D12_BLEND_DEST_ALPHA; break;
-			case BlendFactor::BlendFactor_DestinationAlphaInverse: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_DEST_ALPHA; break;
-			case BlendFactor::BlendFactor_SourceAlphaSaturate: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC_ALPHA_SAT; break;
-			case BlendFactor::BlendFactor_SourceColor2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_COLOR; break;
-			case BlendFactor::BlendFactor_SourceColorInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_COLOR; break;
-			case BlendFactor::BlendFactor_SourceAlpha2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_SRC1_ALPHA; break;
-			case BlendFactor::BlendFactor_SourceAlphaInverse2: *nativeFactor = D3D12_BLEND::D3D12_BLEND_INV_SRC1_ALPHA; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool BlendOperationToNative(BlendOperation operation, D3D12_BLEND_OP* nativeOperation)
-	{
-		switch (operation)
-		{
-			case BlendOperation::BlendOperation_Add: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_ADD; break;
-			case BlendOperation::BlendOperation_Subtract: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_SUBTRACT; break;
-			case BlendOperation::BlendOperation_SubtractReversed: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_REV_SUBTRACT; break;
-			case BlendOperation::BlendOperation_Minimum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MIN; break;
-			case BlendOperation::BlendOperation_Maximum: *nativeOperation = D3D12_BLEND_OP::D3D12_BLEND_OP_MAX; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool LogicalBlendOperationToNative(LogicalBlendOperation operation, D3D12_LOGIC_OP* nativeOperation)
-	{
-		switch (operation)
-		{
-			case LogicalBlendOperation::LogicalBlendOperation_Clear: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_CLEAR; break;
-			case LogicalBlendOperation::LogicalBlendOperation_Set: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_SET; break;
-			case LogicalBlendOperation::LogicalBlendOperation_Copy: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY; break;
-			case LogicalBlendOperation::LogicalBlendOperation_CopyInverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_COPY_INVERTED; break;
-			case LogicalBlendOperation::LogicalBlendOperation_NoOperation: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOOP; break;
-			case LogicalBlendOperation::LogicalBlendOperation_Invert: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_INVERT; break;
-			case LogicalBlendOperation::LogicalBlendOperation_AND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND; break;
-			case LogicalBlendOperation::LogicalBlendOperation_NAND: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NAND; break;
-			case LogicalBlendOperation::LogicalBlendOperation_OR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR; break;
-			case LogicalBlendOperation::LogicalBlendOperation_NOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_NOR; break;
-			case LogicalBlendOperation::LogicalBlendOperation_XOR: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_XOR; break;
-			case LogicalBlendOperation::LogicalBlendOperation_Equivalent: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_EQUIV; break;
-			case LogicalBlendOperation::LogicalBlendOperation_AND_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_REVERSE; break;
-			case LogicalBlendOperation::LogicalBlendOperation_AND_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_AND_INVERTED; break;
-			case LogicalBlendOperation::LogicalBlendOperation_OR_Reverse: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_REVERSE; break;
-			case LogicalBlendOperation::LogicalBlendOperation_OR_Inverted: *nativeOperation = D3D12_LOGIC_OP::D3D12_LOGIC_OP_OR_INVERTED; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool DepthStencilTestFunctionToNative(DepthStencilTestFunction function, D3D12_COMPARISON_FUNC* nativeFunction)
-	{
-		switch (function)
-		{
-			case DepthStencilTestFunction::DepthStencilTestFunction_Always: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_ALWAYS; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_Never: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_Equal: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_EQUAL; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_NotEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_LessThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_LessThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER; break;
-			case DepthStencilTestFunction::DepthStencilTestFunction_GreaterThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool StencilOperationToNative(StencilOperation operation, D3D12_STENCIL_OP* nativeOperation)
-	{
-		switch (operation)
-		{
-			case StencilOperation::StencilOperation_Keep: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_KEEP; break;
-			case StencilOperation::StencilOperation_Zero: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_ZERO; break;
-			case StencilOperation::StencilOperation_Invert: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INVERT; break;
-			case StencilOperation::StencilOperation_IncrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR; break;
-			case StencilOperation::StencilOperation_DecrementWrap: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR; break;
-			case StencilOperation::StencilOperation_IncrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_INCR_SAT; break;
-			case StencilOperation::StencilOperation_DecrementClamp: *nativeOperation = D3D12_STENCIL_OP::D3D12_STENCIL_OP_DECR_SAT; break;
-			default: return false;
-		}
-		return true;
-	}
-
 	ORBITAL_EXPORT RenderState* Orbital_Video_D3D12_RenderState_Create(Device* device)
 	{
 		RenderState* handle = (RenderState*)calloc(1, sizeof(RenderState));

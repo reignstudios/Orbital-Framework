@@ -1,83 +1,23 @@
 #include "ShaderEffect.h"
+#include "Utils.h"
+
+bool ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBILITY* nativeUsage)
+{
+	switch (usage)
+	{
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_VS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_VERTEX; break;
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_PS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_PIXEL; break;
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_HS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_HULL; break;
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_DS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_DOMAIN; break;
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_GS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_GEOMETRY; break;
+		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_All: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL; break;
+		default: return false;
+	}
+	return true;
+}
 
 extern "C"
 {
-	bool SamplerAddressToNative(ShaderEffectSamplerAddress address, D3D12_TEXTURE_ADDRESS_MODE* nativeAddress)
-	{
-		switch (address)
-		{
-			case ShaderEffectSamplerAddress::ShaderEffectSamplerAddress_Wrap:
-				*nativeAddress = D3D12_TEXTURE_ADDRESS_MODE::D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-				break;
-
-			case ShaderEffectSamplerAddress::ShaderEffectSamplerAddress_Clamp:
-				*nativeAddress = D3D12_TEXTURE_ADDRESS_MODE::D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-				break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool SamplerAnisotropyToNative(ShaderEffectSamplerAnisotropy anisotropy, UINT* nativeAnisotropy)
-	{
-		if (anisotropy == ShaderEffectSamplerAnisotropy::ShaderEffectSamplerAnisotropy_Default) *nativeAnisotropy = 16;
-		else *nativeAnisotropy = (UINT)anisotropy;
-		return *nativeAnisotropy >= 1 && *nativeAnisotropy <= 16;
-	}
-
-	bool SamplerFilterToNative(ShaderEffectSamplerFilter filter, D3D12_FILTER* nativeFilter, bool useComparison)
-	{
-		switch (filter)
-		{
-			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Point:
-				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT : D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_POINT;
-				break;
-
-			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Bilinear:
-				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT : D3D12_FILTER::D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-				break;
-
-			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Default:
-			case ShaderEffectSamplerFilter::ShaderEffectSamplerFilter_Trilinear:
-				*nativeFilter = useComparison ? D3D12_FILTER::D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR : D3D12_FILTER::D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-				break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool ComparisonFunctionToNative(ShaderEffectComparisonFunction function, D3D12_COMPARISON_FUNC* nativeFunction)
-	{
-		switch (function)
-		{
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Never: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NEVER; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Always: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_ALWAYS; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_Equal: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_EQUAL; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_NotEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_NOT_EQUAL; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_LessThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_LessThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_LESS_EQUAL; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_GreaterThan: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER; break;
-			case ShaderEffectComparisonFunction::ShaderEffectComparisonFunction_GreaterThanOrEqual: *nativeFunction = D3D12_COMPARISON_FUNC::D3D12_COMPARISON_FUNC_GREATER_EQUAL; break;
-			default: return false;
-		}
-		return true;
-	}
-
-	bool ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBILITY* nativeUsage)
-	{
-		switch (usage)
-		{
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_VS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_VERTEX; break;
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_PS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_PIXEL; break;
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_HS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_HULL; break;
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_DS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_DOMAIN; break;
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_GS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_GEOMETRY; break;
-			case ShaderEffectResourceUsage::ShaderEffectResourceUsage_All: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL; break;
-			default: return false;
-		}
-		return true;
-	}
-
 	ORBITAL_EXPORT ShaderEffect* Orbital_Video_D3D12_ShaderEffect_Create(Device* device)
 	{
 		ShaderEffect* handle = (ShaderEffect*)calloc(1, sizeof(ShaderEffect));
@@ -104,7 +44,7 @@ extern "C"
 		signatureDesc.Desc_1_1.pStaticSamplers = (D3D12_STATIC_SAMPLER_DESC*)alloca(sizeof(D3D12_STATIC_SAMPLER_DESC) * desc->samplersCount);
 		for (int i = 0; i != desc->samplersCount; ++i)
 		{
-			ShaderEffectSampler sampler = desc->samplers[i];
+			ShaderSampler sampler = desc->samplers[i];
 			D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
 
 			samplerDesc.ShaderRegister = sampler.registerIndex;
@@ -112,13 +52,13 @@ extern "C"
 			samplerDesc.MipLODBias = 0;
 			samplerDesc.MinLOD = 0;
 			samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-			if (!ComparisonFunctionToNative(sampler.comparisonFunction, &samplerDesc.ComparisonFunc)) return 0;
+			if (!GetNative_ShaderComparisonFunction(sampler.comparisonFunction, &samplerDesc.ComparisonFunc)) return 0;
 
-			if (!SamplerFilterToNative(sampler.filter, &samplerDesc.Filter, sampler.comparisonFunction != ShaderEffectComparisonFunction_Never)) return 0;
-			if (!SamplerAddressToNative(sampler.addressU, &samplerDesc.AddressU)) return 0;
-			if (!SamplerAddressToNative(sampler.addressV, &samplerDesc.AddressV)) return 0;
-			if (!SamplerAddressToNative(sampler.addressW, &samplerDesc.AddressW)) return 0;
-			if (!SamplerAnisotropyToNative(sampler.anisotropy, &samplerDesc.MaxAnisotropy)) return 0;
+			if (!GetNative_ShaderSamplerFilter(sampler.filter, &samplerDesc.Filter, sampler.comparisonFunction != ShaderComparisonFunction_Never)) return 0;
+			if (!GetNative_ShaderSamplerAddress(sampler.addressU, &samplerDesc.AddressU)) return 0;
+			if (!GetNative_ShaderSamplerAddress(sampler.addressV, &samplerDesc.AddressV)) return 0;
+			if (!GetNative_ShaderSamplerAddress(sampler.addressW, &samplerDesc.AddressW)) return 0;
+			if (!GetNative_ShaderSamplerAnisotropy(sampler.anisotropy, &samplerDesc.MaxAnisotropy)) return 0;
 
 			memcpy((void*)&signatureDesc.Desc_1_1.pStaticSamplers[i], &samplerDesc, sizeof(D3D12_STATIC_SAMPLER_DESC));
 		}

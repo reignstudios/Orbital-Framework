@@ -9,7 +9,6 @@ namespace Orbital.Video.Vulkan
 	{
 		public readonly Device deviceVulkan;
 		internal IntPtr handle;
-		private readonly ShaderType type;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_Vulkan_Shader_Create(IntPtr device);
@@ -21,10 +20,9 @@ namespace Orbital.Video.Vulkan
 		private static extern void Orbital_Video_Vulkan_Shader_Dispose(IntPtr handle);
 
 		public Shader(Device device, ShaderType type)
-		: base(device)
+		: base(device, type)
 		{
 			deviceVulkan = device;
-			this.type = type;
 			handle = Orbital_Video_Vulkan_Shader_Create(device.handle);
 		}
 
@@ -50,11 +48,6 @@ namespace Orbital.Video.Vulkan
 			{
 				Orbital_Video_Vulkan_Shader_Dispose(handle);
 			}
-		}
-
-		public override ShaderType GetShaderType()
-		{
-			return type;
 		}
 	}
 }

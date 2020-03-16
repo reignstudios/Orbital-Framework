@@ -1,23 +1,23 @@
 #include "Texture.h"
 #include "Utils.h"
 
+UINT TextureFormatSizePerPixel(DXGI_FORMAT nativeFormat)
+{
+	switch (nativeFormat)
+	{
+		case DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM:
+		case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM:
+			return 4;
+
+		case TextureFormat::TextureFormat_R16G16B16A16: return 8;
+		case TextureFormat::TextureFormat_R32G32B32A32: return 16;
+		default: return 0;
+	}
+	return true;
+}
+
 extern "C"
 {
-	UINT TextureFormatSizePerPixel(DXGI_FORMAT nativeFormat)
-	{
-		switch (nativeFormat)
-		{
-			case DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM:
-			case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM:
-				return 4;
-
-			case TextureFormat::TextureFormat_R16G16B16A16: return 8;
-			case TextureFormat::TextureFormat_R32G32B32A32: return 16;
-			default: return 0;
-		}
-		return true;
-	}
-
 	ORBITAL_EXPORT Texture* Orbital_Video_D3D12_Texture_Create(Device* device, TextureMode mode)
 	{
 		Texture* handle = (Texture*)calloc(1, sizeof(Texture));

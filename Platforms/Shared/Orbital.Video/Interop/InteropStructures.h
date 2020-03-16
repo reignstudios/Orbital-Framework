@@ -366,9 +366,61 @@ typedef enum ShaderType
 	ShaderType_HS,
 	ShaderType_DS,
 	ShaderType_GS,
+	ShaderType_CS,
 	ShaderType_BIT = ENUM_BIT
 }ShaderType;
 
+typedef enum ShaderSamplerFilter
+{
+	ShaderSamplerFilter_Default,
+	ShaderSamplerFilter_Point,
+	ShaderSamplerFilter_Bilinear,
+	ShaderSamplerFilter_Trilinear,
+	ShaderSamplerFilter_BIT = ENUM_BIT
+}ShaderSamplerFilter;
+
+typedef enum ShaderSamplerAddress
+{
+	ShaderSamplerAddress_Wrap,
+	ShaderSamplerAddress_Clamp,
+	ShaderSamplerAddress_BIT = ENUM_BIT
+}ShaderSamplerAddress;
+
+typedef enum ShaderSamplerAnisotropy
+{
+	ShaderSamplerAnisotropy_Default = 0,
+	ShaderSamplerAnisotropy_X1 = 1,
+	ShaderSamplerAnisotropy_X2 = 2,
+	ShaderSamplerAnisotropy_X4 = 4,
+	ShaderSamplerAnisotropy_X8 = 8,
+	ShaderSamplerAnisotropy_X16 = 16,
+	ShaderSamplerAnisotropy_BIT = ENUM_BIT
+}ShaderSamplerAnisotropy;
+
+typedef enum ShaderComparisonFunction
+{
+	ShaderComparisonFunction_Never,
+	ShaderComparisonFunction_Always,
+	ShaderComparisonFunction_Equal,
+	ShaderComparisonFunction_NotEqual,
+	ShaderComparisonFunction_LessThan,
+	ShaderComparisonFunction_LessThanOrEqual,
+	ShaderComparisonFunction_GreaterThan,
+	ShaderComparisonFunction_GreaterThanOrEqual,
+	ShaderComparisonFunction_BIT = ENUM_BIT
+}ShaderComparisonFunction;
+
+typedef struct ShaderSampler
+{
+	int registerIndex;
+	ShaderSamplerFilter filter;
+	ShaderSamplerAnisotropy anisotropy;
+	ShaderSamplerAddress addressU, addressV, addressW;
+	ShaderComparisonFunction comparisonFunction;
+}ShaderSampler;
+#pragma endregion
+
+#pragma region ShaderEffect
 typedef enum ShaderEffectResourceUsage
 {
 	ShaderEffectResourceUsage_VS = 1,
@@ -392,60 +444,11 @@ typedef struct ShaderEffectTexture
 	ShaderEffectResourceUsage usage;
 }ShaderEffectTexture;
 
-typedef enum ShaderEffectSamplerFilter
-{
-	ShaderEffectSamplerFilter_Default,
-	ShaderEffectSamplerFilter_Point,
-	ShaderEffectSamplerFilter_Bilinear,
-	ShaderEffectSamplerFilter_Trilinear,
-	ShaderEffectSamplerFilter_BIT = ENUM_BIT
-}ShaderEffectSamplerFilter;
-
-typedef enum ShaderEffectSamplerAddress
-{
-	ShaderEffectSamplerAddress_Wrap,
-	ShaderEffectSamplerAddress_Clamp,
-	ShaderEffectSamplerAddress_BIT = ENUM_BIT
-}ShaderEffectSamplerAddress;
-
-typedef enum ShaderEffectSamplerAnisotropy
-{
-	ShaderEffectSamplerAnisotropy_Default = 0,
-	ShaderEffectSamplerAnisotropy_X1 = 1,
-	ShaderEffectSamplerAnisotropy_X2 = 2,
-	ShaderEffectSamplerAnisotropy_X4 = 4,
-	ShaderEffectSamplerAnisotropy_X8 = 8,
-	ShaderEffectSamplerAnisotropy_X16 = 16,
-	ShaderEffectSamplerAnisotropy_BIT = ENUM_BIT
-}ShaderEffectSamplerAnisotropy;
-
-typedef enum ShaderEffectComparisonFunction
-{
-	ShaderEffectComparisonFunction_Never,
-	ShaderEffectComparisonFunction_Always,
-	ShaderEffectComparisonFunction_Equal,
-	ShaderEffectComparisonFunction_NotEqual,
-	ShaderEffectComparisonFunction_LessThan,
-	ShaderEffectComparisonFunction_LessThanOrEqual,
-	ShaderEffectComparisonFunction_GreaterThan,
-	ShaderEffectComparisonFunction_GreaterThanOrEqual,
-	ShaderEffectComparisonFunction_BIT = ENUM_BIT
-}ShaderEffectComparisonFunction;
-
-typedef struct ShaderEffectSampler
-{
-	int registerIndex;
-	ShaderEffectSamplerFilter filter;
-	ShaderEffectSamplerAnisotropy anisotropy;
-	ShaderEffectSamplerAddress addressU, addressV, addressW;
-	ShaderEffectComparisonFunction comparisonFunction;
-}ShaderEffectSampler;
-
 typedef struct ShaderEffectDesc
 {
 	int constantBufferCount, textureCount, samplersCount;
 	ShaderEffectConstantBuffer* constantBuffers;
 	ShaderEffectTexture* textures;
-	ShaderEffectSampler* samplers;
+	ShaderSampler* samplers;
 }ShaderEffectDesc;
 #pragma endregion

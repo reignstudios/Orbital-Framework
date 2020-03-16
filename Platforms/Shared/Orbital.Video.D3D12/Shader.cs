@@ -9,7 +9,6 @@ namespace Orbital.Video.D3D12
 	{
 		public readonly Device deviceD3D12;
 		internal IntPtr handle;
-		private readonly ShaderType type;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern IntPtr Orbital_Video_D3D12_Shader_Create(IntPtr device);
@@ -21,10 +20,9 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_Shader_Dispose(IntPtr handle);
 
 		public Shader(Device device, ShaderType type)
-		: base(device)
+		: base(device, type)
 		{
 			deviceD3D12 = device;
-			this.type = type;
 			handle = Orbital_Video_D3D12_Shader_Create(device.handle);
 		}
 
@@ -50,11 +48,6 @@ namespace Orbital.Video.D3D12
 			{
 				Orbital_Video_D3D12_Shader_Dispose(handle);
 			}
-		}
-
-		public override ShaderType GetShaderType()
-		{
-			return type;
 		}
 	}
 }

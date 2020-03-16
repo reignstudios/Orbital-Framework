@@ -154,7 +154,7 @@ namespace Orbital.Demo
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
-		private ShaderEffectVariableMapping shaderEffectVar_Constrast, shaderEffectVar_Camera;
+		private ShaderVariableMapping shaderEffectVar_Constrast, shaderEffectVar_Camera;
 		private VertexBufferBase vertexBuffer;
 		private VertexBufferStreamerBase vertexBufferStreamer;
 		private ConstantBufferBase constantBuffer;
@@ -282,17 +282,17 @@ namespace Orbital.Demo
 				{
 					registerIndex = 0,
 					usage = ShaderEffectResourceUsage.VS,
-					variables = new ShaderEffectVariable[2]
+					variables = new ShaderVariable[2]
 				};
-				desc.constantBuffers[0].variables[0] = new ShaderEffectVariable()
+				desc.constantBuffers[0].variables[0] = new ShaderVariable()
 				{
 					name = "constrast",
-					type = ShaderEffectVariableType.Float
+					type = ShaderVariableType.Float
 				};
-				desc.constantBuffers[0].variables[1] = new ShaderEffectVariable()
+				desc.constantBuffers[0].variables[1] = new ShaderVariable()
 				{
 					name = "camera",
-					type = ShaderEffectVariableType.Float4x4
+					type = ShaderVariableType.Float4x4
 				};
 				desc.textures = new ShaderEffectTexture[3];
 				desc.textures[0] = new ShaderEffectTexture()
@@ -310,15 +310,15 @@ namespace Orbital.Demo
 					registerIndex = 2,
 					usage = ShaderEffectResourceUsage.PS
 				};
-				desc.samplers = new ShaderEffectSampler[1];
-				desc.samplers[0] = new ShaderEffectSampler()
+				desc.samplers = new ShaderSampler[1];
+				desc.samplers[0] = new ShaderSampler()
 				{
 					registerIndex = 0,
-					filter = ShaderEffectSamplerFilter.Default,
-					anisotropy = ShaderEffectSamplerAnisotropy.Default,
-					addressU = ShaderEffectSamplerAddress.Wrap,
-					addressV = ShaderEffectSamplerAddress.Wrap,
-					addressW = ShaderEffectSamplerAddress.Wrap
+					filter = ShaderSamplerFilter.Default,
+					anisotropy = ShaderSamplerAnisotropy.Default,
+					addressU = ShaderSamplerAddress.Wrap,
+					addressV = ShaderSamplerAddress.Wrap,
+					addressW = ShaderSamplerAddress.Wrap
 				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}

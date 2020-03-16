@@ -227,7 +227,7 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderEffectSamplerAnisotropy anisotropyOverride)
+		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderSamplerAnisotropy anisotropyOverride)
 		{
 			var abstraction = new ShaderEffect(this);
 			if (!abstraction.Init(stream, anisotropyOverride))
