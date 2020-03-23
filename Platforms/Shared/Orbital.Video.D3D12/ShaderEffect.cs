@@ -68,6 +68,18 @@ namespace Orbital.Video.D3D12
 					ps = new Shader(deviceD3D12, type);
 					return ps.Init(data);
 
+				case ShaderType.HS:
+					ps = new Shader(deviceD3D12, type);
+					return ps.Init(data);
+
+				case ShaderType.DS:
+					ps = new Shader(deviceD3D12, type);
+					return ps.Init(data);
+
+				case ShaderType.GS:
+					ps = new Shader(deviceD3D12, type);
+					return ps.Init(data);
+
 				default: throw new NotSupportedException("Shader type not supported: " + type.ToString());
 			}
 		}

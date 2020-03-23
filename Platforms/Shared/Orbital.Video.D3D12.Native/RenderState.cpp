@@ -145,7 +145,7 @@ extern "C"
 		if (shaderEffect->hs != NULL) pipelineDesc.HS = shaderEffect->hs->bytecode;
 		if (shaderEffect->ds != NULL) pipelineDesc.DS = shaderEffect->ds->bytecode;
 		if (shaderEffect->gs != NULL) pipelineDesc.GS = shaderEffect->gs->bytecode;
-		pipelineDesc.pRootSignature = shaderEffect->signature;
+		pipelineDesc.pRootSignature = shaderEffect->signature.signature;
 
 		// add constant buffer heaps
 		if (desc->constantBufferCount != 0)

@@ -185,14 +185,14 @@ extern "C"
 		{
 			Texture* texture = renderState->textures[i];
 			D3D12_RESOURCE_STATES state = {};
-			if (renderState->shaderEffect->textures[t].usage == ShaderEffectResourceUsage_PS)
+			if (renderState->shaderEffect->signature.textures[t].usage == ShaderEffectResourceUsage_PS)
 			{
 				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			else
 			{
 				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-				if ((renderState->shaderEffect->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				if ((renderState->shaderEffect->signature.textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList);
 			++t;
@@ -202,14 +202,14 @@ extern "C"
 		{
 			DepthStencil* depthStencil = renderState->textureDepthStencils[i];
 			D3D12_RESOURCE_STATES state = {};
-			if (renderState->shaderEffect->textures[t].usage == ShaderEffectResourceUsage_PS)
+			if (renderState->shaderEffect->signature.textures[t].usage == ShaderEffectResourceUsage_PS)
 			{
 				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			else
 			{
 				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-				if ((renderState->shaderEffect->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				if ((renderState->shaderEffect->signature.textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			Orbital_Video_D3D12_DepthStencil_ChangeState(depthStencil, state, handle->commandList);
 			++t;
@@ -225,7 +225,7 @@ extern "C"
 		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList);
 
 		// bind shader resources
-		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signature);
+		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signature.signature);
 
 		UINT descIndex = 0;
 		if (renderState->constantBufferHeap != NULL)

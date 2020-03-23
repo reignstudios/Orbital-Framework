@@ -1,14 +1,10 @@
 #pragma once
-#include "Device.h"
+#include "Shader.h"
+#include "ShaderSignature.h"
 
 struct ComputeShader
 {
 	Device* device;
-	ID3D12RootSignature* signature;
-
-	UINT constantBufferCount;
-	ShaderEffectConstantBuffer* constantBuffers;
-
-	UINT textureCount;
-	ShaderEffectTexture* textures;
+	D3D12_SHADER_BYTECODE bytecode;
+	ShaderSignature signature;
 };

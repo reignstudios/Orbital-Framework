@@ -1,12 +1,6 @@
 #pragma once
 #include "Instance.h"
 
-typedef enum DeviceType
-{
-	DeviceType_Presentation,
-	DeviceType_Background
-} DeviceType;
-
 typedef struct Device
 {
 	DeviceType type;

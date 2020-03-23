@@ -70,11 +70,25 @@ namespace Orbital.Video
 		public ShaderEffectResourceUsage usage;
 	}
 
+	public struct ShaderEffectReadWriteBuffer
+	{
+		/// <summary>
+		/// Register index of the texture
+		/// </summary>
+		public int registerIndex;
+
+		/// <summary>
+		/// Shader types the texture is used in
+		/// </summary>
+		public ShaderEffectResourceUsage usage;
+	}
+
 	public struct ShaderEffectDesc
 	{
 		public ShaderEffectConstantBuffer[] constantBuffers;
 		public ShaderEffectTexture[] textures;
 		public ShaderSampler[] samplers;
+		public ShaderEffectReadWriteBuffer[] readWriteBuffers;
 	}
 
 	public abstract class ShaderEffectBase : IDisposable

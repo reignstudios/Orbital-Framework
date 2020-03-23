@@ -197,6 +197,21 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override ComputeShaderBase CreateComputeShader(byte[] bytecode, ComputeShaderDesc desc)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override ComputeShaderBase CreateComputeShader(byte[] bytecode, int offset, int length, ComputeShaderDesc desc)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override VertexBufferBase CreateVertexBuffer(uint vertexCount, uint vertexSize, VertexBufferMode mode)
 		{
 			throw new NotImplementedException();

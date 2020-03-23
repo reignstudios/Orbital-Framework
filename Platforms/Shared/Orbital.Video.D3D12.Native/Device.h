@@ -8,6 +8,7 @@ struct Device
 	D3D_ROOT_SIGNATURE_VERSION maxRootSignatureVersion;
 
 	Instance* instance;
+	DeviceType type;
 	IDXGIAdapter* adapter;
 	ID3D12Device* device;
 	UINT nodeCount;

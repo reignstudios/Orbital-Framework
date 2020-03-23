@@ -5,7 +5,6 @@ extern "C"
 	ORBITAL_EXPORT Shader* Orbital_Video_D3D12_Shader_Create(Device* device)
 	{
 		Shader* handle = (Shader*)calloc(1, sizeof(Shader));
-		handle->device = device;
 		return handle;
 	}
 

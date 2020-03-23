@@ -70,7 +70,7 @@ namespace Orbital.Video.D3D12
 		public SwapChain swapChainD3D12 { get; private set; }
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance);
+		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance, DeviceType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, int softwareRasterizer);
@@ -91,7 +91,7 @@ namespace Orbital.Video.D3D12
 		: base(instance, type)
 		{
 			instanceD3D12 = instance;
-			handle = Orbital_Video_D3D12_Device_Create(instance.handle);
+			handle = Orbital_Video_D3D12_Device_Create(instance.handle, type);
 		}
 
 		public bool Init(DeviceDesc desc)
@@ -245,6 +245,39 @@ namespace Orbital.Video.D3D12
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create ShaderEffect");
+			}
+			return abstraction;
+		}
+
+		public override ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc)
+		{
+			var abstraction = new ComputeShader(this);
+			if (!abstraction.Init(stream, desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ComputeShader");
+			}
+			return abstraction;
+		}
+
+		public override ComputeShaderBase CreateComputeShader(byte[] bytecode, ComputeShaderDesc desc)
+		{
+			var abstraction = new ComputeShader(this);
+			if (!abstraction.Init(bytecode, desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ComputeShader");
+			}
+			return abstraction;
+		}
+
+		public override ComputeShaderBase CreateComputeShader(byte[] bytecode, int offset, int length, ComputeShaderDesc desc)
+		{
+			var abstraction = new ComputeShader(this);
+			if (!abstraction.Init(bytecode, offset, length, desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ComputeShader");
 			}
 			return abstraction;
 		}

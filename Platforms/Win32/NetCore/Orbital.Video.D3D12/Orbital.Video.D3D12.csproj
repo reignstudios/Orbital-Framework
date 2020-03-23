@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ComputeShader.cs" Link="ComputeShader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\DepthStencil.cs" Link="DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Device.cs" Link="Device.cs" />

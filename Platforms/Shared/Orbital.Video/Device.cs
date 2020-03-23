@@ -60,6 +60,9 @@ namespace Orbital.Video
 		public abstract RenderStateBase CreateRenderState(RenderStateDesc desc);
 		public abstract ShaderEffectBase CreateShaderEffect(Stream stream, ShaderSamplerAnisotropy anisotropyOverride);
 		public abstract ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders);
+		public abstract ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc);
+		public abstract ComputeShaderBase CreateComputeShader(byte[] bytecode, ComputeShaderDesc desc);
+		public abstract ComputeShaderBase CreateComputeShader(byte[] bytecode, int offset, int length, ComputeShaderDesc desc);
 		#if CS_7_3
 		public abstract VertexBufferBase CreateVertexBuffer<T>(T[] vertices, VertexBufferMode mode) where T : unmanaged;
 		public abstract ConstantBufferBase CreateConstantBuffer<T>(T initialData, ConstantBufferMode mode) where T : unmanaged;

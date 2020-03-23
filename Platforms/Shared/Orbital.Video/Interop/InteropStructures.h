@@ -4,6 +4,13 @@
 // ensures enums compile as 32-bit regardess of C compiler
 #define ENUM_BIT INT_MAX
 
+typedef enum DeviceType
+{
+	DeviceType_Presentation,
+	DeviceType_Background,
+	DeviceType_BIT = ENUM_BIT
+}DeviceType;
+
 typedef struct RenderPassRenderTargetDesc
 {
 	byte clearColor;
@@ -444,11 +451,44 @@ typedef struct ShaderEffectTexture
 	ShaderEffectResourceUsage usage;
 }ShaderEffectTexture;
 
+typedef struct ShaderEffectReadWriteBuffer
+{
+	int registerIndex;
+	ShaderEffectResourceUsage usage;
+}ShaderEffectReadWriteBuffer;
+
 typedef struct ShaderEffectDesc
 {
-	int constantBufferCount, textureCount, samplersCount;
+	int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
 	ShaderEffectConstantBuffer* constantBuffers;
 	ShaderEffectTexture* textures;
 	ShaderSampler* samplers;
+	ShaderEffectReadWriteBuffer* readWriteBuffers;
 }ShaderEffectDesc;
+#pragma endregion
+
+#pragma region ComputeShader
+typedef struct ComputeShaderConstantBuffer
+{
+	int registerIndex;
+}ComputeShaderConstantBuffer;
+
+typedef struct ComputeShaderTexture
+{
+	int registerIndex;
+}ComputeShaderTexture;
+
+typedef struct ComputeShaderReadWriteBuffer
+{
+	int registerIndex;
+}ComputeShaderReadWriteBuffer;
+
+typedef struct ComputeShaderDesc
+{
+	int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+	ComputeShaderConstantBuffer* constantBuffers;
+	ComputeShaderTexture* textures;
+	ShaderSampler* samplers;
+	ComputeShaderReadWriteBuffer* readWriteBuffers;
+}ComputeShaderDesc;
 #pragma endregion

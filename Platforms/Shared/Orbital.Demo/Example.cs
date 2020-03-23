@@ -161,6 +161,7 @@ namespace Orbital.Demo
 		private Texture2DBase texture, texture2;
 		private Texture2DBase renderTextureMSAA;
 		private RenderTextureTest renderTextureTest;
+		private ComputeShaderBase computeShader;
 
 		private Camera camera;
 		private float rot = .85f;
@@ -426,6 +427,20 @@ namespace Orbital.Demo
 			renderStateDesc.textures[2] = renderTextureTest.renderTexture;
 			renderState = device.CreateRenderState(renderStateDesc);
 
+			// create compute shader
+			using (var csStream = new FileStream("Shaders\\Compute_D3D12.cs", FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				var csDesc = new ComputeShaderDesc()
+				{
+					readWriteBuffers = new ComputeShaderReadWriteBuffer[1]
+				};
+				csDesc.readWriteBuffers[0] = new ComputeShaderReadWriteBuffer()
+				{
+					registerIndex = 0
+				};
+				computeShader = device.CreateComputeShader(csStream, csDesc);
+			}
+
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
 			foreach (var adapter in adapters) Debug.WriteLine(adapter.name);
@@ -436,6 +451,12 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
+			if (computeShader != null)
+			{
+				computeShader.Dispose();
+				computeShader = null;
+			}
+
 			if (renderTextureMSAA != null)
 			{
 				renderTextureMSAA.Dispose();

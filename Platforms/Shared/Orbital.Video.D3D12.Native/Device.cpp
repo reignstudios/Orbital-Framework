@@ -4,10 +4,11 @@
 
 extern "C"
 {
-	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create(Instance* instance)
+	ORBITAL_EXPORT Device* Orbital_Video_D3D12_Device_Create(Instance* instance, DeviceType type)
 	{
 		Device* handle = (Device*)calloc(1, sizeof(Device));
 		handle->instance = instance;
+		handle->type = type;
 		handle->internalMutex = new std::mutex();
 		return handle;
 	}
@@ -60,14 +61,21 @@ extern "C"
 		// create command queues
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
+
+		if (handle->type == DeviceType::DeviceType_Presentation)
+		{
+			queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+			if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
+		}
 
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
 		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->computeCommandQueue)))) return 0;
 
 		// create command allocators
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
+		if (handle->type == DeviceType::DeviceType_Presentation)
+		{
+			if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
+		}
 		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&handle->computeCommandAllocator)))) return 0;
 
 		// create fence
@@ -76,8 +84,11 @@ extern "C"
 		if (handle->fenceEvent == NULL) return 0;
 
 		// create helpers for synchronous buffer operations
-		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
-		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+		if (handle->type == DeviceType::DeviceType_Presentation)
+		{
+			if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
+			if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+		}
 
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
 		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);

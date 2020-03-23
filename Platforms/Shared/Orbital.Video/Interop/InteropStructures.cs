@@ -361,6 +361,29 @@ namespace Orbital.Video.Vulkan
 
 	#region Shaders
 	[StructLayout(LayoutKind.Sequential)]
+	struct ShaderSampler_NativeInterop
+	{
+		public int registerIndex;
+		public ShaderSamplerFilter filter;
+		public ShaderSamplerAnisotropy anisotropy;
+		public ShaderSamplerAddress addressU, addressV, addressW;
+		public ShaderComparisonFunction comparisonFunction;
+
+		public ShaderSampler_NativeInterop(ref ShaderSampler sampler)
+		{
+			registerIndex = sampler.registerIndex;
+			filter = sampler.filter;
+			addressU = sampler.addressU;
+			addressV = sampler.addressV;
+			addressW = sampler.addressW;
+			anisotropy = sampler.anisotropy;
+			comparisonFunction = sampler.comparisonFunction;
+		}
+	}
+	#endregion
+
+	#region ShaderEffect
+	[StructLayout(LayoutKind.Sequential)]
 	struct ShaderEffectConstantBuffer_NativeInterop
 	{
 		public int registerIndex;
@@ -387,33 +410,26 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	struct ShaderSampler_NativeInterop
+	unsafe struct ShaderEffectReadWriteBuffer_NativeInterop
 	{
 		public int registerIndex;
-		public ShaderSamplerFilter filter;
-		public ShaderSamplerAnisotropy anisotropy;
-		public ShaderSamplerAddress addressU, addressV, addressW;
-		public ShaderComparisonFunction comparisonFunction;
+		public ShaderEffectResourceUsage usage;
 
-		public ShaderSampler_NativeInterop(ref ShaderSampler sampler)
+		public ShaderEffectReadWriteBuffer_NativeInterop(ref ShaderEffectReadWriteBuffer buffer)
 		{
-			registerIndex = sampler.registerIndex;
-			filter = sampler.filter;
-			addressU = sampler.addressU;
-			addressV = sampler.addressV;
-			addressW = sampler.addressW;
-			anisotropy = sampler.anisotropy;
-			comparisonFunction = sampler.comparisonFunction;
+			registerIndex = buffer.registerIndex;
+			usage = buffer.usage;
 		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectDesc_NativeInterop : IDisposable
 	{
-		public int constantBufferCount, textureCount, samplersCount;
+		public int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
 		public ShaderEffectConstantBuffer_NativeInterop* constantBuffers;
 		public ShaderEffectTexture_NativeInterop* textures;
 		public ShaderSampler_NativeInterop* samplers;
+		public ShaderEffectReadWriteBuffer_NativeInterop* readWriteBuffers;
 
 		public ShaderEffectDesc_NativeInterop(ref ShaderEffectDesc desc)
 		{
@@ -421,9 +437,11 @@ namespace Orbital.Video.Vulkan
 			constantBufferCount = 0;
 			textureCount = 0;
 			samplersCount = 0;
+			readWriteBufferCount = 0;
 			constantBuffers = null;
 			textures = null;
 			samplers = null;
+			readWriteBuffers = null;
 
 			// allocate constant buffer heaps
 			if (desc.constantBuffers != null)
@@ -457,6 +475,17 @@ namespace Orbital.Video.Vulkan
 					samplers[i] = new ShaderSampler_NativeInterop(ref desc.samplers[i]);
 				}
 			}
+
+			// allocate read-write-buffer heaps
+			if (desc.readWriteBuffers != null)
+			{
+				readWriteBufferCount = desc.readWriteBuffers.Length;
+				readWriteBuffers = (ShaderEffectReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
+				for (int i = 0; i != samplersCount; ++i)
+				{
+					readWriteBuffers[i] = new ShaderEffectReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
+				}
+			}
 		}
 
 		public void Dispose()
@@ -477,6 +506,141 @@ namespace Orbital.Video.Vulkan
 			{
 				Marshal.FreeHGlobal((IntPtr)samplers);
 				samplers = null;
+			}
+
+			if (readWriteBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)readWriteBuffers);
+				readWriteBuffers = null;
+			}
+		}
+	}
+	#endregion
+
+	#region ComputeShader
+	[StructLayout(LayoutKind.Sequential)]
+	struct ComputeShaderConstantBuffer_NativeInterop
+	{
+		public int registerIndex;
+
+		public ComputeShaderConstantBuffer_NativeInterop(ref ComputeShaderConstantBuffer buffer)
+		{
+			registerIndex = buffer.registerIndex;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct ComputeShaderTexture_NativeInterop
+	{
+		public int registerIndex;
+
+		public ComputeShaderTexture_NativeInterop(ref ComputeShaderTexture texture)
+		{
+			registerIndex = texture.registerIndex;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct ComputeShaderReadWriteBuffer_NativeInterop
+	{
+		public int registerIndex;
+
+		public ComputeShaderReadWriteBuffer_NativeInterop(ref ComputeShaderReadWriteBuffer buffer)
+		{
+			registerIndex = buffer.registerIndex;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct ComputeShaderDesc_NativeInterop : IDisposable
+	{
+		public int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+		public ComputeShaderConstantBuffer_NativeInterop* constantBuffers;
+		public ComputeShaderTexture_NativeInterop* textures;
+		public ShaderSampler_NativeInterop* samplers;
+		public ComputeShaderReadWriteBuffer_NativeInterop* readWriteBuffers;
+
+		public ComputeShaderDesc_NativeInterop(ref ComputeShaderDesc desc)
+		{
+			// init defaults
+			constantBufferCount = 0;
+			textureCount = 0;
+			samplersCount = 0;
+			readWriteBufferCount = 0;
+			constantBuffers = null;
+			textures = null;
+			samplers = null;
+			readWriteBuffers = null;
+
+			// allocate constant buffer heaps
+			if (desc.constantBuffers != null)
+			{
+				constantBufferCount = desc.constantBuffers.Length;
+				constantBuffers = (ComputeShaderConstantBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderConstantBuffer_NativeInterop>() * constantBufferCount);
+				for (int i = 0; i != constantBufferCount; ++i)
+				{
+					constantBuffers[i] = new ComputeShaderConstantBuffer_NativeInterop(ref desc.constantBuffers[i]);
+				}
+			}
+
+			// allocate texture heaps
+			if (desc.textures != null)
+			{
+				textureCount = desc.textures.Length;
+				textures = (ComputeShaderTexture_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderTexture_NativeInterop>() * textureCount);
+				for (int i = 0; i != textureCount; ++i)
+				{
+					textures[i] = new ComputeShaderTexture_NativeInterop(ref desc.textures[i]);
+				}
+			}
+
+			// allocate sampler heaps
+			if (desc.samplers != null)
+			{
+				samplersCount = desc.samplers.Length;
+				samplers = (ShaderSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderSampler_NativeInterop>() * samplersCount);
+				for (int i = 0; i != samplersCount; ++i)
+				{
+					samplers[i] = new ShaderSampler_NativeInterop(ref desc.samplers[i]);
+				}
+			}
+
+			// allocate read-write-buffer heaps
+			if (desc.readWriteBuffers != null)
+			{
+				readWriteBufferCount = desc.readWriteBuffers.Length;
+				readWriteBuffers = (ComputeShaderReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
+				for (int i = 0; i != samplersCount; ++i)
+				{
+					readWriteBuffers[i] = new ComputeShaderReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			if (constantBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)constantBuffers);
+				constantBuffers = null;
+			}
+
+			if (textures != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textures);
+				textures = null;
+			}
+
+			if (samplers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)samplers);
+				samplers = null;
+			}
+
+			if (readWriteBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)readWriteBuffers);
+				readWriteBuffers = null;
 			}
 		}
 	}
