@@ -18,6 +18,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\Camera.cs" Link="Camera.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs" Link="CommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ComputeShader.cs" Link="ComputeShader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ComputeState.cs" Link="ComputeState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\DepthStencil.cs" Link="DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />

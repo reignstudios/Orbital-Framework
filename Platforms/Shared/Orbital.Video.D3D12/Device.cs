@@ -249,6 +249,17 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
+		public override ComputeStateBase CreateComputeState(ComputeStateDesc desc)
+		{
+			var abstraction = new ComputeState(this);
+			if (!abstraction.Init(desc))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create ComputeState");
+			}
+			return abstraction;
+		}
+
 		public override ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc)
 		{
 			var abstraction = new ComputeShader(this);

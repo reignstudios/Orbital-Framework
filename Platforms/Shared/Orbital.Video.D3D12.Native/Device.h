@@ -14,8 +14,6 @@ struct Device
 	UINT nodeCount;
 	ID3D12CommandQueue* commandQueue;
 	ID3D12CommandAllocator* commandAllocator;
-	ID3D12CommandQueue* computeCommandQueue;
-	ID3D12CommandAllocator* computeCommandAllocator;
 	ID3D12Fence* fence;
 	HANDLE fenceEvent;
 	UINT64 fenceValue;

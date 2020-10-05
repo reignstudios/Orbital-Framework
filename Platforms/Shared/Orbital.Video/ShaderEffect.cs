@@ -96,6 +96,8 @@ namespace Orbital.Video
 		public readonly DeviceBase device;
 		public int constantBufferCount { get; protected set; }
 		public int textureCount { get; protected set; }
+		public int samplerCount { get; protected set; }
+		public int readWriteBufferCount { get; protected set; }
 		public ReadOnlyCollection<ShaderConstantBufferMapping> constantBufferMappings { get; private set; }
 
 		public ShaderEffectBase(DeviceBase device)
@@ -139,6 +141,8 @@ namespace Orbital.Video
 		{
 			if (desc.constantBuffers != null) constantBufferCount = desc.constantBuffers.Length;
 			if (desc.textures != null) textureCount = desc.textures.Length;
+			if (desc.samplers != null) samplerCount = desc.samplers.Length;
+			if (desc.readWriteBuffers != null) readWriteBufferCount = desc.readWriteBuffers.Length;
 
 			// calculate constant buffer variable mappings
 			if (desc.constantBuffers != null && desc.constantBuffers.Length != 0)

@@ -49,6 +49,12 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs">
       <Link>CommandList.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\ComputeShader.cs">
+      <Link>ComputeShader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video\ComputeState.cs">
+      <Link>ComputeState.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs">
       <Link>ConstantBuffer.cs</Link>
     </Compile>

@@ -197,6 +197,11 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override ComputeStateBase CreateComputeState(ComputeStateDesc desc)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc)
 		{
 			throw new NotImplementedException();

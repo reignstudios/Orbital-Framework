@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeShader.cs" Link="ComputeShader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeState.cs" Link="ComputeState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\IndexBuffer.cs" Link="IndexBuffer.cs" />

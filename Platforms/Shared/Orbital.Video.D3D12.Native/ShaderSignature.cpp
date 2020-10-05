@@ -165,17 +165,7 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 		auto readWriteBuffers = desc->readWriteBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
 		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		if (!ResourceUsageToNative(readWriteBuffers[0].usage, &parameter.ShaderVisibility)) return 0;// get first visibility
-		for (int i = 0; i != desc->readWriteBufferCount; ++i)
-		{
-			D3D12_SHADER_VISIBILITY visibility;
-			if (!ResourceUsageToNative(readWriteBuffers[i].usage, &visibility)) return 0;
-			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
-			{
-				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-				break;
-			}
-		}
+		parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 		parameter.DescriptorTable.NumDescriptorRanges = desc->readWriteBufferCount;
 		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
@@ -206,23 +196,20 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	// serialize desc
 	ID3DBlob* serializedDesc = NULL;
 	ID3DBlob* error = NULL;
-	if (FAILED(D3D12SerializeVersionedRootSignature(&signatureDesc, &serializedDesc, &error))) goto FAIL_EXIT;
+	int result = 1;
+	if (FAILED(D3D12SerializeVersionedRootSignature(&signatureDesc, &serializedDesc, &error))) result = 0;
 
 	// create signature per physical GPU node
-	if (FAILED(device->device->CreateRootSignature(0, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signature)))) goto FAIL_EXIT;
-
-	// return success
-	return 1;
+	if (result == 1 && FAILED(device->device->CreateRootSignature(0, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signature)))) result = 0;
 
 	// dispose and return failed
-	FAIL_EXIT:;
 	if (serializedDesc != NULL) serializedDesc->Release();
 	if (error != NULL)
 	{
 		OutputDebugStringA((char*)error->GetBufferPointer());
 		error->Release();
 	}
-	return 0;
+	return result;
 }
 
 void Orbital_Video_D3D12_ShaderSignature_Dispose(ShaderSignature* handle)

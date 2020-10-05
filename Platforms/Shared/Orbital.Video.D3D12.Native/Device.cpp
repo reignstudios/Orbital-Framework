@@ -61,22 +61,11 @@ extern "C"
 		// create command queues
 		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
 		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-
-		if (handle->type == DeviceType::DeviceType_Presentation)
-		{
-			queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-			if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
-		}
-
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->computeCommandQueue)))) return 0;
+		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
 
 		// create command allocators
-		if (handle->type == DeviceType::DeviceType_Presentation)
-		{
-			if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
-		}
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&handle->computeCommandAllocator)))) return 0;
+		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
 
 		// create fence
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
@@ -84,11 +73,8 @@ extern "C"
 		if (handle->fenceEvent == NULL) return 0;
 
 		// create helpers for synchronous buffer operations
-		if (handle->type == DeviceType::DeviceType_Presentation)
-		{
-			if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
-			if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
-		}
+		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
+		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
 		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -145,18 +131,6 @@ extern "C"
 		{
 			handle->commandQueue->Release();
 			handle->commandQueue = NULL;
-		}
-
-		if (handle->computeCommandAllocator != NULL)
-		{
-			handle->computeCommandAllocator->Release();
-			handle->computeCommandAllocator = NULL;
-		}
-
-		if (handle->computeCommandQueue != NULL)
-		{
-			handle->computeCommandQueue->Release();
-			handle->computeCommandQueue = NULL;
 		}
 
 		if (handle != NULL)

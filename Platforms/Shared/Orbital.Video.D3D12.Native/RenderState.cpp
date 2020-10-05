@@ -1,6 +1,5 @@
 #include "RenderState.h"
 #include "RenderPass.h"
-#include "ShaderEffect.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
 #include "Utils.h"
@@ -208,6 +207,39 @@ extern "C"
 				D3D12_CPU_DESCRIPTOR_HANDLE heap = depthStencil->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
 				handle->device->device->CopyDescriptorsSimple(1, cpuTextureHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 				cpuTextureHeap.ptr += heapSize;
+			}
+		}
+
+		// add read/write buffer heaps
+		if (desc->readWriteBufferCount != 0)
+		{
+			handle->readWriteBufferCount = desc->readWriteBufferCount;
+			UINT size = sizeof(intptr_t) * desc->readWriteBufferCount;
+			handle->readWriteBuffers = (intptr_t*)malloc(size);
+			memcpy(handle->readWriteBuffers, desc->readWriteBuffers, size);
+
+			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+			heapDesc.NumDescriptors = handle->readWriteBufferCount;
+			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->readWriteBufferHeap)))) return 0;
+			handle->readWriteBufferGPUDescHandle = handle->readWriteBufferHeap->GetGPUDescriptorHandleForHeapStart();
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuReadWriteBufferHeap = handle->readWriteBufferHeap->GetCPUDescriptorHandleForHeapStart();
+			UINT heapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			for (int i = 0; i != desc->readWriteBufferCount; ++i)
+			{
+				if (desc->readWriteTypes[i] == ReadWriteBufferType::ReadWriteBufferType_Texture)
+				{
+					Texture* texture = (Texture*)desc->readWriteBuffers[i];
+					D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
+					handle->device->device->CopyDescriptorsSimple(1, cpuReadWriteBufferHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					cpuReadWriteBufferHeap.ptr += heapSize;
+				}
+				else
+				{
+					return 0;
+				}
 			}
 		}
 

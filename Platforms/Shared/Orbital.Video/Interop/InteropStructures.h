@@ -32,6 +32,12 @@ typedef struct RenderPassDesc
 	RenderPassDepthStencilDesc depthStencilDesc;
 }RenderPassDesc;
 
+typedef enum ReadWriteBufferType
+{
+	ReadWriteBufferType_Texture,
+	ReadWriteBufferType_BIT = ENUM_BIT
+}ReadWriteBufferType;
+
 #pragma region Texture / Surface
 typedef enum TextureMode
 {
@@ -355,6 +361,9 @@ typedef struct RenderStateDesc
 	intptr_t* textures;
 	int textureDepthStencilCount;
 	intptr_t* textureDepthStencils;
+	int readWriteBufferCount;
+	intptr_t* readWriteBuffers;
+	ReadWriteBufferType* readWriteTypes;
 	VertexBufferTopology vertexBufferTopology;
 	intptr_t vertexBufferStreamer;
 	intptr_t indexBuffer;
@@ -363,6 +372,22 @@ typedef struct RenderStateDesc
 	BlendDesc blendDesc;
 	DepthStencilDesc depthStencilDesc;
 }RenderStateDesc;
+#pragma endregion
+
+#pragma region Compute State
+typedef struct ComputeStateDesc
+{
+	intptr_t computeShader;
+	int constantBufferCount;
+	intptr_t* constantBuffers;
+	int textureCount;
+	intptr_t* textures;
+	int textureDepthStencilCount;
+	intptr_t* textureDepthStencils;
+	int readWriteBufferCount;
+	intptr_t* readWriteBuffers;
+	ReadWriteBufferType* readWriteTypes;
+}ComputeStateDesc;
 #pragma endregion
 
 #pragma region Shaders

@@ -41,8 +41,13 @@ namespace Orbital.Video.D3D12
 		{
 			using (var nativeDesc = new ComputeShaderDesc_NativeInterop(ref desc))
 			{
-				fixed (byte* bytecodePtr = bytecode) return Orbital_Video_D3D12_ComputeShader_Init(handle, bytecodePtr + offset, (uint)length, &nativeDesc) != 0;
+				fixed (byte* bytecodePtr = bytecode)
+				{
+					if (Orbital_Video_D3D12_ComputeShader_Init(handle, bytecodePtr + offset, (uint)length, &nativeDesc) == 0) return false;
+				}
 			}
+			InitFinish(ref desc);
+			return true;
 		}
 
 		public override void Dispose()

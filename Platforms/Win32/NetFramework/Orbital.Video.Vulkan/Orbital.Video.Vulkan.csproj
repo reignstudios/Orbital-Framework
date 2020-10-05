@@ -46,6 +46,12 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs">
       <Link>CommandList.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeShader.cs">
+      <Link>ComputeShader.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeState.cs">
+      <Link>ComputeState.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ConstantBuffer.cs">
       <Link>ConstantBuffer.cs</Link>
     </Compile>

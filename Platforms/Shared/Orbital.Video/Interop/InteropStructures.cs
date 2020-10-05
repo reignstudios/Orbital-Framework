@@ -8,6 +8,11 @@ namespace Orbital.Video.D3D12
 namespace Orbital.Video.Vulkan
 #endif
 {
+	enum ReadWriteBufferType
+	{
+		Texture
+	}
+
 	#region Render Pass
 	[StructLayout(LayoutKind.Sequential)]
 	struct RenderPassRenderTargetDesc_NativeInterop
@@ -187,6 +192,9 @@ namespace Orbital.Video.Vulkan
 		public IntPtr* textures;
 		public int textureDepthStencilCount;
 		public IntPtr* textureDepthStencils;
+		public int readWriteBufferCount;
+		public IntPtr* readWriteBuffers;
+		public ReadWriteBufferType* readWriteTypes;
 		public VertexBufferTopology vertexBufferTopology;
 		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
@@ -236,6 +244,33 @@ namespace Orbital.Video.Vulkan
 				textureDepthStencils = null;
 			}
 
+			if (desc.readWriteBuffers != null)
+			{
+				readWriteBufferCount = desc.readWriteBuffers.Length;
+				readWriteBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * readWriteBufferCount);
+				readWriteTypes = (ReadWriteBufferType*)Marshal.AllocHGlobal(sizeof(ReadWriteBufferType) * readWriteBufferCount);
+				for (int i = 0; i != readWriteBufferCount; ++i)
+				{
+					var buffer = desc.readWriteBuffers[i];
+					var type = buffer.GetType();
+					if (typeof(Texture2DBase).IsAssignableFrom(type))
+					{
+						readWriteBuffers[i] = ((Texture2DBase)buffer).GetHandle();
+						readWriteTypes[i] = ReadWriteBufferType.Texture;
+					}
+					else
+					{
+						throw new NotSupportedException("Unsupported ComputeShader Read/Write buffer type: " + type.ToString());
+					}
+				}
+			}
+			else
+			{
+				readWriteBufferCount = 0;
+				readWriteBuffers = null;
+				readWriteTypes = null;
+			}
+
 			vertexBufferTopology = desc.vertexBufferTopology;
 			vertexBufferStreamer = ((VertexBufferStreamer)desc.vertexBufferStreamer).handle;
 			if (desc.indexBuffer != null) indexBuffer = ((IndexBuffer)desc.indexBuffer).handle;
@@ -260,7 +295,131 @@ namespace Orbital.Video.Vulkan
 				textures = null;
 			}
 
+			if (textureDepthStencils != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textureDepthStencils);
+				textureDepthStencils = null;
+			}
+
+			if (readWriteTypes != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)readWriteTypes);
+				readWriteTypes = null;
+			}
+
 			blendDesc.Dispose();
+		}
+	}
+	#endregion
+
+	#region Compute State
+	[StructLayout(LayoutKind.Sequential)]
+	unsafe struct ComputeStateDesc_NativeInterop : IDisposable
+	{
+		public IntPtr computeShader;
+		public int constantBufferCount;
+		public IntPtr* constantBuffers;
+		public int textureCount;
+		public IntPtr* textures;
+		public int textureDepthStencilCount;
+		public IntPtr* textureDepthStencils;
+		public int readWriteBufferCount;
+		public IntPtr* readWriteBuffers;
+		public ReadWriteBufferType* readWriteTypes;
+
+		public ComputeStateDesc_NativeInterop(ref ComputeStateDesc desc)
+		{
+			computeShader = ((ComputeShader)desc.computeShader).handle;
+
+			if (desc.constantBuffers != null)
+			{
+				constantBufferCount = desc.constantBuffers.Length;
+				constantBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * constantBufferCount);
+				for (int i = 0; i != constantBufferCount; ++i) constantBuffers[i] = ((ConstantBuffer)desc.constantBuffers[i]).handle;
+			}
+			else
+			{
+				constantBufferCount = 0;
+				constantBuffers = null;
+			}
+
+			if (desc.textures != null)
+			{
+				textureCount = desc.textures.Length;
+				textures = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureCount);
+				for (int i = 0; i != textureCount; ++i) textures[i] = desc.textures[i].GetHandle();
+			}
+			else
+			{
+				textureCount = 0;
+				textures = null;
+			}
+
+			if (desc.textureDepthStencils != null)
+			{
+				textureDepthStencilCount = desc.textureDepthStencils.Length;
+				textureDepthStencils = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * textureDepthStencilCount);
+				for (int i = 0; i != textureDepthStencilCount; ++i) textureDepthStencils[i] = desc.textureDepthStencils[i].GetHandle();
+			}
+			else
+			{
+				textureDepthStencilCount = 0;
+				textureDepthStencils = null;
+			}
+
+			if (desc.readWriteBuffers != null)
+			{
+				readWriteBufferCount = desc.readWriteBuffers.Length;
+				readWriteBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * readWriteBufferCount);
+				readWriteTypes = (ReadWriteBufferType*)Marshal.AllocHGlobal(sizeof(ReadWriteBufferType) * readWriteBufferCount);
+				for (int i = 0; i != readWriteBufferCount; ++i)
+				{
+					var buffer = desc.readWriteBuffers[i];
+					var type = buffer.GetType();
+					if (typeof(Texture2DBase).IsAssignableFrom(type))
+					{
+						readWriteBuffers[i] = ((Texture2DBase)buffer).GetHandle();
+						readWriteTypes[i] = ReadWriteBufferType.Texture;
+					}
+					else
+					{
+						throw new NotSupportedException("Unsupported ComputeShader Read/Write buffer type: " + type.ToString());
+					}
+				}
+			}
+			else
+			{
+				readWriteBufferCount = 0;
+				readWriteBuffers = null;
+				readWriteTypes = null;
+			}
+		}
+
+		public void Dispose()
+		{
+			if (constantBuffers != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)constantBuffers);
+				constantBuffers = null;
+			}
+
+			if (textures != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textures);
+				textures = null;
+			}
+
+			if (textureDepthStencils != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)textureDepthStencils);
+				textureDepthStencils = null;
+			}
+
+			if (readWriteTypes != null)
+			{
+				Marshal.FreeHGlobal((IntPtr)readWriteTypes);
+				readWriteTypes = null;
+			}
 		}
 	}
 	#endregion
@@ -481,7 +640,7 @@ namespace Orbital.Video.Vulkan
 			{
 				readWriteBufferCount = desc.readWriteBuffers.Length;
 				readWriteBuffers = (ShaderEffectReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
-				for (int i = 0; i != samplersCount; ++i)
+				for (int i = 0; i != readWriteBufferCount; ++i)
 				{
 					readWriteBuffers[i] = new ShaderEffectReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
 				}
@@ -610,7 +769,7 @@ namespace Orbital.Video.Vulkan
 			{
 				readWriteBufferCount = desc.readWriteBuffers.Length;
 				readWriteBuffers = (ComputeShaderReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
-				for (int i = 0; i != samplersCount; ++i)
+				for (int i = 0; i != readWriteBufferCount; ++i)
 				{
 					readWriteBuffers[i] = new ComputeShaderReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
 				}

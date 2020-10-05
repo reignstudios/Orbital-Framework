@@ -619,6 +619,11 @@ namespace Orbital.Video
 		public DepthStencilBase[] textureDepthStencils;
 
 		/// <summary>
+		/// Read/Write buffers to be accessed in compute shader
+		/// </summary>
+		public object[] readWriteBuffers;
+
+		/// <summary>
 		/// How the geometry will appear
 		/// </summary>
 		public VertexBufferTopology vertexBufferTopology;
@@ -669,10 +674,13 @@ namespace Orbital.Video
 		protected void InitBase(ref RenderStateDesc desc)
 		{
 			int constantBufferCount = desc.constantBuffers != null ? desc.constantBuffers.Length : 0;
-			if (desc.shaderEffect.constantBufferCount != constantBufferCount) throw new ArgumentException("RenderState constant-buffer count doesn't match ShaderEffect requirements");
+			if (desc.shaderEffect.constantBufferCount != constantBufferCount) throw new ArgumentException("RenderStateDesc constant-buffer count doesn't match ShaderEffect requirements");
 
 			int textureCount = desc.textures != null ? desc.textures.Length : 0;
-			if (desc.shaderEffect.textureCount != textureCount) throw new ArgumentException("RenderState texture count doesn't match ShaderEffect requirements");
+			if (desc.shaderEffect.textureCount != textureCount) throw new ArgumentException("RenderStateDesc texture count doesn't match ShaderEffect requirements");
+
+			int readWriteBufferCount = desc.readWriteBuffers != null ? desc.readWriteBuffers.Length : 0;
+			if (desc.shaderEffect.readWriteBufferCount != readWriteBufferCount) throw new ArgumentException("RenderStateDesc read/write buffer count doesn't match ShaderEffect requirements");
 
 			// validate independentBlendEnable is true settings
 			if (desc.blendDesc.independentBlendEnable)

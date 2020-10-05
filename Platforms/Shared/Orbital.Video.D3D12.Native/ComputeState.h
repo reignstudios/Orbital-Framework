@@ -1,17 +1,17 @@
 #pragma once
 #include "Device.h"
-#include "ShaderEffect.h"
+#include "ComputeShader.h"
 #include "ConstantBuffer.h"
 #include "Texture.h"
 #include "DepthStencil.h"
 #include "VertexBufferStreamer.h"
 #include "IndexBuffer.h"
 
-struct RenderState
+struct ComputeState
 {
 	Device* device;
 	ID3D12PipelineState* state;
-	ShaderEffect* shaderEffect;
+	ComputeShader* computeShader;
 
 	UINT constantBufferCount;
 	ConstantBuffer** constantBuffers;
@@ -29,8 +29,4 @@ struct RenderState
 	intptr_t* readWriteBuffers;
 	ID3D12DescriptorHeap* readWriteBufferHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE readWriteBufferGPUDescHandle;
-
-	D3D_PRIMITIVE_TOPOLOGY topology;
-	VertexBufferStreamer* vertexBufferStreamer;
-	IndexBuffer* indexBuffer;
 };
