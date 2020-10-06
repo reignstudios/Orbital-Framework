@@ -109,7 +109,7 @@ extern "C"
 				if (desc->readWriteTypes[i] == ReadWriteBufferType::ReadWriteBufferType_Texture)
 				{
 					Texture* texture = (Texture*)desc->readWriteBuffers[i];
-					D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->shaderResourceHeap->GetCPUDescriptorHandleForHeapStart();
+					D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->readWriteResourceHeap->GetCPUDescriptorHandleForHeapStart();
 					handle->device->device->CopyDescriptorsSimple(1, cpuReadWriteBufferHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 					cpuReadWriteBufferHeap.ptr += heapSize;
 				}
@@ -118,6 +118,10 @@ extern "C"
 					return 0;
 				}
 			}
+
+			size_t readWriteBufferSize = desc->readWriteBufferCount * sizeof(ReadWriteBufferType);
+			handle->readWriteTypes = (ReadWriteBufferType*)malloc(readWriteBufferSize);
+			memcpy(handle->readWriteTypes, desc->readWriteTypes, readWriteBufferSize);
 		}
 
 		// create pipeline state
@@ -139,6 +143,18 @@ extern "C"
 			handle->textures = NULL;
 		}
 
+		if (handle->readWriteBuffers != NULL)
+		{
+			free(handle->readWriteBuffers);
+			handle->readWriteBuffers = NULL;
+		}
+
+		if (handle->readWriteTypes != NULL)
+		{
+			free(handle->readWriteTypes);
+			handle->readWriteTypes = NULL;
+		}
+
 		if (handle->constantBufferHeap != NULL)
 		{
 			handle->constantBufferHeap->Release();
@@ -149,6 +165,12 @@ extern "C"
 		{
 			handle->textureHeap->Release();
 			handle->textureHeap = NULL;
+		}
+
+		if (handle->readWriteBufferHeap != NULL)
+		{
+			handle->readWriteBufferHeap->Release();
+			handle->readWriteBufferHeap = NULL;
 		}
 
 		if (handle->state != NULL)

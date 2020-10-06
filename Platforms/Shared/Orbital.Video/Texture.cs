@@ -86,6 +86,11 @@ namespace Orbital.Video
 		: base(device)
 		{}
 
+		public void ValidateParams(bool allowReadWrite, MSAALevel msaaLevel)
+		{
+			if (allowReadWrite && msaaLevel != MSAALevel.Disabled) throw new NotSupportedException("Texture can't be Read/Write with MSAA enabled");
+		}
+
 		#region RenderTexture Methods
 		public virtual DepthStencilBase GetDepthStencil()
 		{

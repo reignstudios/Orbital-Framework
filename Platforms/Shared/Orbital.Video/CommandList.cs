@@ -3,6 +3,12 @@ using Orbital.Numerics;
 
 namespace Orbital.Video
 {
+	public enum CommandListType
+	{
+		Rasterize,
+		Compute
+	}
+
 	public abstract class CommandListBase : IDisposable
 	{
 		public readonly DeviceBase device;
@@ -60,9 +66,19 @@ namespace Orbital.Video
 		public abstract void SetRenderState(RenderStateBase renderState);
 
 		/// <summary>
+		/// Sets compute state
+		/// </summary>
+		public abstract void SetComputeState(ComputeStateBase computeState);
+
+		/// <summary>
 		/// Draw actively set vertex buffer
 		/// </summary>
 		public abstract void Draw();
+
+		/// <summary>
+		/// Executes compute shader last set with "SetComputeState"
+		/// </summary>
+		public abstract void ExecuteComputeShader(int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ);
 
 		/// <summary>
 		/// Resolves/Copies MSAA render-texture to non-MSAA texture

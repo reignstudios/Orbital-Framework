@@ -27,6 +27,7 @@ struct RenderState
 
 	UINT readWriteBufferCount;
 	intptr_t* readWriteBuffers;
+	ReadWriteBufferType* readWriteTypes;
 	ID3D12DescriptorHeap* readWriteBufferHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE readWriteBufferGPUDescHandle;
 

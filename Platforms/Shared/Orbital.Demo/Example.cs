@@ -44,7 +44,7 @@ namespace Orbital.Demo
 		{
 			// create render texture
 			const int size = 256;
-			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, MSAALevel.Disabled);
+			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, MSAALevel.Disabled, true);
 
 			// load shader effect
 			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -150,7 +150,7 @@ namespace Orbital.Demo
 
 		private InstanceBase instance;
 		private DeviceBase device;
-		private CommandListBase commandList;
+		private CommandListBase commandList, commandList_Compute;
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
@@ -205,10 +205,11 @@ namespace Orbital.Demo
 			// create msaa render texture
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
-			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel);
+			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false);
 			
 			// create command list
-			commandList = device.CreateCommandList();
+			commandList = device.CreateCommandList(CommandListType.Rasterize);
+			commandList_Compute = device.CreateCommandList(CommandListType.Compute);
 
 			// create render pass
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
@@ -539,6 +540,12 @@ namespace Orbital.Demo
 				commandList = null;
 			}
 
+			if (commandList_Compute != null)
+			{
+				commandList_Compute.Dispose();
+				commandList_Compute = null;
+			}
+
 			if (device != null)
 			{
 				device.Dispose();
@@ -584,6 +591,13 @@ namespace Orbital.Demo
 				commandList.EndRenderPass();
 				commandList.Finish();
 				commandList.Execute();
+
+				// execute compute shader
+				commandList_Compute.Start();
+				commandList_Compute.SetComputeState(computeState);
+				commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
+				commandList_Compute.Finish();
+				commandList_Compute.Execute();
 
 				commandList.Start();// RENDER INTO: SwapChain
 				commandList.BeginRenderPass(renderPass);

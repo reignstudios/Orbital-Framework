@@ -108,7 +108,7 @@ typedef enum StencilUsage
 }StencilUsage;
 #pragma endregion
 
-#pragma region Command Buffer
+#pragma region Constant Buffer
 typedef enum ConstantBufferMode
 {
 	ConstantBufferMode_GPUOptimized,
@@ -116,6 +116,15 @@ typedef enum ConstantBufferMode
 	ConstantBufferMode_Read,
 	ConstantBufferMode_BIT = ENUM_BIT
 }ConstantBufferMode;
+#pragma endregion
+
+#pragma region Command List
+typedef enum CommandListType
+{
+	CommandListType_Rasterize,
+	CommandListType_Compute,
+	CommandListType_BIT = ENUM_BIT
+}CommandListType;
 #pragma endregion
 
 #pragma region Vertex Buffer

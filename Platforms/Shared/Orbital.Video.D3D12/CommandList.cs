@@ -16,13 +16,13 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_CommandList_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_CommandList_Init(IntPtr handle);
+		private static extern int Orbital_Video_D3D12_CommandList_Init(IntPtr handle, CommandListType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_CommandList_Start(IntPtr handle, IntPtr device);
+		private static extern void Orbital_Video_D3D12_CommandList_Start(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_Finish(IntPtr handle);
@@ -41,6 +41,12 @@ namespace Orbital.Video.D3D12
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_SetRenderState(IntPtr handle, IntPtr renderState);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_SetComputeState(IntPtr handle, IntPtr computeState);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_CommandList_ExecuteComputeShader(IntPtr handle, uint threadGroupCountX, uint threadGroupCountY, uint threadGroupCountZ);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_CommandList_DrawInstanced(IntPtr handle, uint vertexOffset, uint vertexCount, uint instanceCount);
@@ -76,9 +82,9 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_CommandList_Create(device.handle);
 		}
 
-		public bool Init()
+		public bool Init(CommandListType type)
 		{
-			return Orbital_Video_D3D12_CommandList_Init(handle) != 0;
+			return Orbital_Video_D3D12_CommandList_Init(handle, type) != 0;
 		}
 
 		public override void Dispose()
@@ -92,7 +98,7 @@ namespace Orbital.Video.D3D12
 
 		public override void Start()
 		{
-			Orbital_Video_D3D12_CommandList_Start(handle, deviceD3D12.handle);
+			Orbital_Video_D3D12_CommandList_Start(handle);
 		}
 
 		public override void Finish()
@@ -143,10 +149,21 @@ namespace Orbital.Video.D3D12
 			Orbital_Video_D3D12_CommandList_SetRenderState(handle, lastRenderState.handle);
 		}
 
+		public override void SetComputeState(ComputeStateBase computeState)
+		{
+			var computeStateD3D12 = (ComputeState)computeState;
+			Orbital_Video_D3D12_CommandList_SetComputeState(handle, computeStateD3D12.handle);
+		}
+
 		public override void Draw()
 		{
 			if (lastRenderState.indexCount == 0) Orbital_Video_D3D12_CommandList_DrawInstanced(handle, 0, (uint)lastRenderState.vertexCount, 1);
 			else Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(handle, 0, 0, (uint)lastRenderState.indexCount, 1);
+		}
+
+		public override void ExecuteComputeShader(int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
+		{
+			Orbital_Video_D3D12_CommandList_ExecuteComputeShader(handle, (uint)threadGroupCountX, (uint)threadGroupCountY, (uint)threadGroupCountZ);
 		}
 
 		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, Texture2DBase destinationRenderTexture)

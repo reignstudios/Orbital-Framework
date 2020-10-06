@@ -43,7 +43,7 @@ ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Dispose(CommandList* handle
 	}
 }
 
-ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Start(CommandList* handle, Device* device)
+ORBITAL_EXPORT void Orbital_Video_Vulkan_CommandList_Start(CommandList* handle)
 {
 	vkResetCommandBuffer(handle->commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 

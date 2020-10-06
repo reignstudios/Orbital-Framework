@@ -13,13 +13,13 @@ namespace Orbital.Video.Vulkan
 		private static extern IntPtr Orbital_Video_Vulkan_CommandList_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_Vulkan_CommandList_Init(IntPtr handle);
+		private static extern int Orbital_Video_Vulkan_CommandList_Init(IntPtr handle, CommandListType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_CommandList_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_Start(IntPtr handle, IntPtr device);
+		private static extern void Orbital_Video_Vulkan_CommandList_Start(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_CommandList_Finish(IntPtr handle);
@@ -43,9 +43,9 @@ namespace Orbital.Video.Vulkan
 			handle = Orbital_Video_Vulkan_CommandList_Create(device.handle);
 		}
 
-		public bool Init()
+		public bool Init(CommandListType type)
 		{
-			return Orbital_Video_Vulkan_CommandList_Init(handle) != 0;
+			return Orbital_Video_Vulkan_CommandList_Init(handle, type) != 0;
 		}
 
 		public override void Dispose()
@@ -59,7 +59,7 @@ namespace Orbital.Video.Vulkan
 
 		public override void Start()
 		{
-			Orbital_Video_Vulkan_CommandList_Start(handle, deviceVulkan.handle);
+			Orbital_Video_Vulkan_CommandList_Start(handle);
 		}
 
 		public override void Finish()
@@ -107,7 +107,17 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
+		public override void SetComputeState(ComputeStateBase computeState)
+		{
+			throw new NotImplementedException();
+		}
+
 		public override void Draw()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void ExecuteComputeShader(int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
 		{
 			throw new NotImplementedException();
 		}

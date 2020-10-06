@@ -64,8 +64,12 @@ extern "C"
 		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
 
+		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue_Compute)))) return 0;
+
 		// create command allocators
 		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
+		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&handle->commandAllocator_Compute)))) return 0;
 
 		// create fence
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
@@ -75,6 +79,9 @@ extern "C"
 		// create helpers for synchronous buffer operations
 		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
 		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+
+		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, handle->commandAllocator_Compute, nullptr, IID_PPV_ARGS(&handle->internalCommandList_Compute)))) return 0;
+		if (FAILED(handle->internalCommandList_Compute->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
 		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
 		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -108,6 +115,12 @@ extern "C"
 			handle->internalCommandList = NULL;
 		}
 
+		if (handle->internalCommandList_Compute != NULL)
+		{
+			handle->internalCommandList_Compute->Release();
+			handle->internalCommandList_Compute = NULL;
+		}
+
 		// dispose normal
 		if (handle->fenceEvent != NULL)
 		{
@@ -127,10 +140,22 @@ extern "C"
 			handle->commandAllocator = NULL;
 		}
 
+		if (handle->commandAllocator_Compute != NULL)
+		{
+			handle->commandAllocator_Compute->Release();
+			handle->commandAllocator_Compute = NULL;
+		}
+
 		if (handle->commandQueue != NULL)
 		{
 			handle->commandQueue->Release();
 			handle->commandQueue = NULL;
+		}
+
+		if (handle->commandQueue_Compute != NULL)
+		{
+			handle->commandQueue_Compute->Release();
+			handle->commandQueue_Compute = NULL;
 		}
 
 		if (handle != NULL)
@@ -157,6 +182,7 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_BeginFrame(Device* handle)
 	{
 		handle->commandAllocator->Reset();
+		handle->commandAllocator_Compute->Reset();
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
@@ -185,14 +211,14 @@ extern "C"
 	}
 }
 
-void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
+void WaitForFence_CommandQueue(ID3D12CommandQueue* commandQueue, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
 {
 	// increment for next frame
 	++fenceValue;
 	if (fenceValue == UINT64_MAX) fenceValue = 0;// UINT64_MAX is reserved
 
 	// set current fence value
-	if (FAILED(handle->commandQueue->Signal(fence, fenceValue))) return;
+	if (FAILED(commandQueue->Signal(fence, fenceValue))) return;
 
 	// wait for frame to finish
 	if (fence->GetCompletedValue() != fenceValue)
@@ -200,4 +226,10 @@ void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64&
 		if (FAILED(fence->SetEventOnCompletion(fenceValue, fenceEvent))) return;
 		WaitForSingleObject(fenceEvent, INFINITE);
 	}
+}
+
+void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
+{
+	WaitForFence_CommandQueue(handle->commandQueue, fence, fenceEvent, fenceValue);
+	WaitForFence_CommandQueue(handle->commandQueue_Compute, fence, fenceEvent, fenceValue);
 }

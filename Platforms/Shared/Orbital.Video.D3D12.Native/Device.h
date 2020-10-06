@@ -12,18 +12,19 @@ struct Device
 	IDXGIAdapter* adapter;
 	ID3D12Device* device;
 	UINT nodeCount;
-	ID3D12CommandQueue* commandQueue;
-	ID3D12CommandAllocator* commandAllocator;
+	ID3D12CommandQueue *commandQueue, *commandQueue_Compute;
+	ID3D12CommandAllocator *commandAllocator, *commandAllocator_Compute;
 	ID3D12Fence* fence;
 	HANDLE fenceEvent;
 	UINT64 fenceValue;
 
 	// used for special synchronous buffer operations
-	ID3D12GraphicsCommandList5* internalCommandList;
+	ID3D12GraphicsCommandList5 *internalCommandList, *internalCommandList_Compute;
 	ID3D12Fence* internalFence;
 	HANDLE internalFenceEvent;
 	UINT64 internalFenceValue;
 	std::mutex* internalMutex;
 };
 
+void WaitForFence_CommandQueue(ID3D12CommandQueue* commandQueue, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue);
 void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue);

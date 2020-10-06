@@ -2,6 +2,8 @@
 #include "SwapChain.h"
 #include "RenderPass.h"
 #include "RenderState.h"
+#include "ComputeState.h"
+#include "ComputeShader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "ShaderEffect.h"
@@ -16,11 +18,41 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandList_Init(CommandList* handle)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_CommandList_Init(CommandList* handle, CommandListType type)
 	{
 		// create command list
-		if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
+		D3D12_COMMAND_LIST_TYPE nativeType;
+		handle->commandAllocatorRef_Direct = handle->device->commandAllocator;
+		handle->commandQueueRef_Direct = handle->device->commandQueue;
+		if (type == CommandListType::CommandListType_Rasterize)
+		{
+			nativeType = D3D12_COMMAND_LIST_TYPE_DIRECT;
+			handle->commandAllocatorRef = handle->device->commandAllocator;
+			handle->commandQueueRef = handle->device->commandQueue;
+		}
+		else if (type == CommandListType::CommandListType_Compute)
+		{
+			nativeType = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+			handle->commandAllocatorRef = handle->device->commandAllocator_Compute;
+			handle->commandQueueRef = handle->device->commandQueue_Compute;
+		}
+		else
+		{
+			return 0;
+		}
+		if (FAILED(handle->device->device->CreateCommandList(0, nativeType, handle->commandAllocatorRef, nullptr, IID_PPV_ARGS(&handle->commandList)))) return 0;
 		if (FAILED(handle->commandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+
+		// create extra direct command list for resource transisions that compute command lists don't support if needed
+		if (type == CommandListType::CommandListType_Compute)
+		{
+			if (FAILED(handle->device->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->commandAllocator, nullptr, IID_PPV_ARGS(&handle->commandList_Direct)))) return 0;
+			if (FAILED(handle->commandList_Direct->Close())) return 0;// make sure this is closed as it defaults to open for writing
+		}
+		else
+		{
+			handle->commandList_Direct = handle->commandList;
+		}
 
 		// create fence
 		if (FAILED(handle->device->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
@@ -35,6 +67,16 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Dispose(CommandList* handle)
 	{
+		if (handle->commandList_Direct != NULL && handle->commandList_Direct != handle->commandList)
+		{
+			handle->commandList_Direct->Release();
+			handle->commandList_Direct = NULL;
+		}
+		else
+		{
+			handle->commandList_Direct = NULL;
+		}
+
 		if (handle->commandList != NULL)
 		{
 			handle->commandList->Release();
@@ -56,14 +98,16 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Start(CommandList* handle, Device* device)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Start(CommandList* handle)
 	{
-		handle->commandList->Reset(device->commandAllocator, NULL);
+		handle->commandList->Reset(handle->commandAllocatorRef, NULL);
+		if (handle->commandList_Direct != handle->commandList) handle->commandList_Direct->Reset(handle->commandAllocatorRef_Direct, NULL);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Finish(CommandList* handle)
 	{
 		handle->commandList->Close();
+		if (handle->commandList_Direct != handle->commandList) handle->commandList_Direct->Close();
 	}
 	
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_BeginRenderPass(CommandList* handle, RenderPass* renderPass)
@@ -170,59 +214,92 @@ extern "C"
 		handle->commandList->RSSetScissorRects(1, &rect);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetRenderState(CommandList* handle, RenderState* renderState)
+	void UpdateStateResources
+	(
+		CommandList* handle,
+		ShaderSignature* signature,
+		UINT constantBufferCount, ConstantBuffer** constantBuffers,
+		UINT textureCount, Texture** textures,
+		UINT textureDepthStencilCount, DepthStencil** textureDepthStencils,
+		UINT readWriteBufferCount, intptr_t* readWriteBuffers, ReadWriteBufferType* readWriteTypes
+	)
 	{
 		// set constant buffer states
-		for (UINT i = 0; i != renderState->constantBufferCount; ++i)
+		for (UINT i = 0; i != constantBufferCount; ++i)
 		{
-			ConstantBuffer* constantBuffer = renderState->constantBuffers[i];
-			Orbital_Video_D3D12_ConstantBuffer_ChangeState(constantBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+			ConstantBuffer* constantBuffer = constantBuffers[i];
+			Orbital_Video_D3D12_ConstantBuffer_ChangeState(constantBuffer, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList_Direct);
 		}
 
 		// set texture states
 		UINT t = 0;
-		for (UINT i = 0; i != renderState->textureCount; ++i)
+		for (UINT i = 0; i != textureCount; ++i)
 		{
-			Texture* texture = renderState->textures[i];
+			Texture* texture = textures[i];
 			D3D12_RESOURCE_STATES state = {};
-			if (renderState->shaderEffect->signature.textures[t].usage == ShaderEffectResourceUsage_PS)
+			if (signature->textures[t].usage == ShaderEffectResourceUsage_PS)
 			{
 				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			else
 			{
 				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-				if ((renderState->shaderEffect->signature.textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				if ((signature->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
-			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList);
+			Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList_Direct);
 			++t;
 		}
 
-		for (UINT i = 0; i != renderState->textureDepthStencilCount; ++i)
+		for (UINT i = 0; i != textureDepthStencilCount; ++i)
 		{
-			DepthStencil* depthStencil = renderState->textureDepthStencils[i];
+			DepthStencil* depthStencil = textureDepthStencils[i];
 			D3D12_RESOURCE_STATES state = {};
-			if (renderState->shaderEffect->signature.textures[t].usage == ShaderEffectResourceUsage_PS)
+			if (signature->textures[t].usage == ShaderEffectResourceUsage_PS)
 			{
 				state = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
 			else
 			{
 				state = D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
-				if ((renderState->shaderEffect->signature.textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				if ((signature->textures[t].usage | ShaderEffectResourceUsage_PS) != 0) state |= D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			}
-			Orbital_Video_D3D12_DepthStencil_ChangeState(depthStencil, state, handle->commandList);
+			Orbital_Video_D3D12_DepthStencil_ChangeState(depthStencil, state, handle->commandList_Direct);
 			++t;
 		}
+
+		// set read/write buffer states
+		for (UINT i = 0; i != readWriteBufferCount; ++i)
+		{
+			if (readWriteTypes[i] == ReadWriteBufferType::ReadWriteBufferType_Texture)
+			{
+				Texture* texture = (Texture*)readWriteBuffers[i];
+				D3D12_RESOURCE_STATES state = {};
+				state = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
+				Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList_Direct);
+			}
+		}
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetRenderState(CommandList* handle, RenderState* renderState)
+	{
+		// update resources
+		UpdateStateResources
+		(
+			handle, &renderState->shaderEffect->signature,
+			renderState->constantBufferCount, renderState->constantBuffers,
+			renderState->textureCount, renderState->textures,
+			renderState->textureDepthStencilCount, renderState->textureDepthStencils,
+			renderState->readWriteBufferCount, renderState->readWriteBuffers, renderState->readWriteTypes
+		);
 
 		// set vertex buffer states
 		UINT vertexBufferCount = renderState->vertexBufferStreamer->vertexBufferCount;
 		VertexBuffer** vertexBuffers = renderState->vertexBufferStreamer->vertexBuffers;
-		for (UINT i = 0; i != vertexBufferCount; ++i) Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffers[i], D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList);
+		for (UINT i = 0; i != vertexBufferCount; ++i) Orbital_Video_D3D12_VertexBuffer_ChangeState(vertexBuffers[i], D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, handle->commandList_Direct);
 
 		// set index buffer states
 		IndexBuffer* indexBuffer = renderState->indexBuffer;
-		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList);
+		if (indexBuffer != NULL) Orbital_Video_D3D12_IndexBuffer_ChangeState(indexBuffer, D3D12_RESOURCE_STATE_INDEX_BUFFER, handle->commandList_Direct);
 
 		// bind shader resources
 		handle->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signature.signature);
@@ -239,6 +316,13 @@ extern "C"
 		{
 			handle->commandList->SetDescriptorHeaps(1, &renderState->textureHeap);
 			handle->commandList->SetGraphicsRootDescriptorTable(descIndex, renderState->textureGPUDescHandle);
+			++descIndex;
+		}
+
+		if (renderState->readWriteBufferHeap != NULL)
+		{
+			handle->commandList->SetDescriptorHeaps(1, &renderState->readWriteBufferHeap);
+			handle->commandList->SetComputeRootDescriptorTable(descIndex, renderState->readWriteBufferGPUDescHandle);
 		}
 
 		// enable render state
@@ -250,6 +334,46 @@ extern "C"
 		if (indexBuffer != NULL) handle->commandList->IASetIndexBuffer(&indexBuffer->resourceView);
 	}
 
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_SetComputeState(CommandList* handle, ComputeState* computeState)
+	{
+		// update resources
+		UpdateStateResources
+		(
+			handle, &computeState->computeShader->signature,
+			computeState->constantBufferCount, computeState->constantBuffers,
+			computeState->textureCount, computeState->textures,
+			computeState->textureDepthStencilCount, computeState->textureDepthStencils,
+			computeState->readWriteBufferCount, computeState->readWriteBuffers, computeState->readWriteTypes
+		);
+
+		// bind shader resources
+		handle->commandList->SetComputeRootSignature(computeState->computeShader->signature.signature);
+
+		UINT descIndex = 0;
+		if (computeState->constantBufferHeap != NULL)
+		{
+			handle->commandList->SetDescriptorHeaps(1, &computeState->constantBufferHeap);
+			handle->commandList->SetComputeRootDescriptorTable(descIndex, computeState->constantBufferGPUDescHandle);
+			++descIndex;
+		}
+
+		if (computeState->textureHeap != NULL)
+		{
+			handle->commandList->SetDescriptorHeaps(1, &computeState->textureHeap);
+			handle->commandList->SetComputeRootDescriptorTable(descIndex, computeState->textureGPUDescHandle);
+			++descIndex;
+		}
+
+		if (computeState->readWriteBufferHeap != NULL)
+		{
+			handle->commandList->SetDescriptorHeaps(1, &computeState->readWriteBufferHeap);
+			handle->commandList->SetComputeRootDescriptorTable(descIndex, computeState->readWriteBufferGPUDescHandle);
+		}
+
+		// enable render state
+		handle->commandList->SetPipelineState(computeState->state);
+	}
+
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawInstanced(CommandList* handle, UINT vertexOffset, UINT vertexCount, UINT instanceCount)
 	{
 		handle->commandList->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);
@@ -258,6 +382,11 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_DrawIndexedInstanced(CommandList* handle, UINT vertexOffset, UINT indexOffset, UINT indexCount, UINT instanceCount)
 	{
 		handle->commandList->DrawIndexedInstanced(indexCount, instanceCount, indexOffset, vertexOffset, 0);
+	}
+
+	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ExecuteComputeShader(CommandList* handle, UINT threadGroupCountX, UINT threadGroupCountY, UINT threadGroupCountZ)
+	{
+		handle->commandList->Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ResolveRenderTexture(CommandList* handle, Texture* srcRenderTexture, Texture* dstRenderTexture)
@@ -337,8 +466,15 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)
 	{
+		if (handle->commandList_Direct != handle->commandList)
+		{
+			ID3D12CommandList* commandLists[1] = { handle->commandList_Direct };
+			handle->commandQueueRef_Direct->ExecuteCommandLists(1, commandLists);
+			WaitForFence_CommandQueue(handle->commandQueueRef_Direct, handle->fence, handle->fenceEvent, handle->fenceValue);// make sure gpu has finished before we continue
+		}
+
 		ID3D12CommandList* commandLists[1] = { handle->commandList };
-		handle->device->commandQueue->ExecuteCommandLists(1, commandLists);
-		WaitForFence(handle->device, handle->fence, handle->fenceEvent, handle->fenceValue);// make sure gpu has finished before we continue
+		handle->commandQueueRef->ExecuteCommandLists(1, commandLists);
+		WaitForFence_CommandQueue(handle->commandQueueRef, handle->fence, handle->fenceEvent, handle->fenceValue);// make sure gpu has finished before we continue
 	}
 }

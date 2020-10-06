@@ -14,28 +14,28 @@ namespace Orbital.Video.D3D12
 			this.usage = usage;
 		}
 
-		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel)
+		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel, bool allowReadWrite)
 		{
-			return Init(width, height, format, null, true, msaaLevel);
+			return Init(width, height, format, null, true, allowReadWrite, msaaLevel);
 		}
 
 		public override bool Init(int width, int height, TextureFormat format, byte[] data)
 		{
-			return Init(width, height, format, data, true, MSAALevel.Disabled);
+			return Init(width, height, format, data, true, false, MSAALevel.Disabled);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel)
+		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowReadWrite)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, msaaLevel)) return false;
-			return Init(width, height, format, null, true, msaaLevel);
+			return Init(width, height, format, null, true, allowReadWrite, msaaLevel);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowReadWrite)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, MSAALevel.Disabled)) return false;
-			return Init(width, height, format, data, true, MSAALevel.Disabled);
+			return Init(width, height, format, data, true, allowReadWrite, MSAALevel.Disabled);
 		}
 
 		public override void Dispose()
