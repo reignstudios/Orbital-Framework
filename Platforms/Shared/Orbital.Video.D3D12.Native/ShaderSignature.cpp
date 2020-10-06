@@ -52,7 +52,7 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	signatureDesc.Desc_1_1.NumParameters = 0;
 	if (desc->constantBufferCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
 	if (desc->textureCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
-	if (desc->readWriteBufferCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
+	if (desc->randomAccessBufferCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
 	size_t paramSize;
 	if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) paramSize = sizeof(D3D12_ROOT_PARAMETER);
 	else paramSize = sizeof(D3D12_ROOT_PARAMETER1);
@@ -155,28 +155,28 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 		++parameterIndex;
 	}
 
-	if (desc->readWriteBufferCount != 0)
+	if (desc->randomAccessBufferCount != 0)
 	{
-		handle->readWriteBufferCount = desc->readWriteBufferCount;
-		size_t size = sizeof(ShaderSignatureReadWriteBuffer) * desc->readWriteBufferCount;
-		handle->readWriteBuffers = (ShaderSignatureReadWriteBuffer*)malloc(size);
-		memcpy(handle->readWriteBuffers, desc->readWriteBuffers, size);
+		handle->randomAccessBufferCount = desc->randomAccessBufferCount;
+		size_t size = sizeof(ShaderSignatureRandomAccessBuffer) * desc->randomAccessBufferCount;
+		handle->randomAccessBuffers = (ShaderSignatureRandomAccessBuffer*)malloc(size);
+		memcpy(handle->randomAccessBuffers, desc->randomAccessBuffers, size);
 
-		auto readWriteBuffers = desc->readWriteBuffers;
+		auto randomAccessBuffers = desc->randomAccessBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
 		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-		parameter.DescriptorTable.NumDescriptorRanges = desc->readWriteBufferCount;
+		parameter.DescriptorTable.NumDescriptorRanges = desc->randomAccessBufferCount;
 		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
 		else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
-		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->readWriteBufferCount);
-		for (int i = 0; i != desc->readWriteBufferCount; ++i)
+		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->randomAccessBufferCount);
+		for (int i = 0; i != desc->randomAccessBufferCount; ++i)
 		{
 			D3D12_DESCRIPTOR_RANGE1 range = {};
 			range.NumDescriptors = 1;
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
-			range.BaseShaderRegister = readWriteBuffers[i].registerIndex;
+			range.BaseShaderRegister = randomAccessBuffers[i].registerIndex;
 			range.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE;
 			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
@@ -226,10 +226,10 @@ void Orbital_Video_D3D12_ShaderSignature_Dispose(ShaderSignature* handle)
 		handle->textures = NULL;
 	}
 
-	if (handle->readWriteBuffers != NULL)
+	if (handle->randomAccessBuffers != NULL)
 	{
-		free(handle->readWriteBuffers);
-		handle->readWriteBuffers = NULL;
+		free(handle->randomAccessBuffers);
+		handle->randomAccessBuffers = NULL;
 	}
 
 	if (handle->signature != NULL)

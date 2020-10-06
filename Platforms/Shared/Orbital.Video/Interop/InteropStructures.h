@@ -32,11 +32,11 @@ typedef struct RenderPassDesc
 	RenderPassDepthStencilDesc depthStencilDesc;
 }RenderPassDesc;
 
-typedef enum ReadWriteBufferType
+typedef enum RandomAccessBufferType
 {
-	ReadWriteBufferType_Texture,
-	ReadWriteBufferType_BIT = ENUM_BIT
-}ReadWriteBufferType;
+	RandomAccessBufferType_Texture,
+	RandomAccessBufferType_BIT = ENUM_BIT
+}RandomAccessBufferType;
 
 #pragma region Texture / Surface
 typedef enum TextureMode
@@ -370,9 +370,9 @@ typedef struct RenderStateDesc
 	intptr_t* textures;
 	int textureDepthStencilCount;
 	intptr_t* textureDepthStencils;
-	int readWriteBufferCount;
-	intptr_t* readWriteBuffers;
-	ReadWriteBufferType* readWriteTypes;
+	int randomAccessBufferCount;
+	intptr_t* randomAccessBuffers;
+	RandomAccessBufferType* randomAccessTypes;
 	VertexBufferTopology vertexBufferTopology;
 	intptr_t vertexBufferStreamer;
 	intptr_t indexBuffer;
@@ -393,9 +393,9 @@ typedef struct ComputeStateDesc
 	intptr_t* textures;
 	int textureDepthStencilCount;
 	intptr_t* textureDepthStencils;
-	int readWriteBufferCount;
-	intptr_t* readWriteBuffers;
-	ReadWriteBufferType* readWriteTypes;
+	int randomAccessBufferCount;
+	intptr_t* randomAccessBuffers;
+	RandomAccessBufferType* randomAccessTypes;
 }ComputeStateDesc;
 #pragma endregion
 
@@ -485,11 +485,11 @@ typedef struct ShaderEffectTexture
 	ShaderEffectResourceUsage usage;
 }ShaderEffectTexture;
 
-typedef struct ShaderEffectReadWriteBuffer
+typedef struct ShaderEffectRandomAccessBuffer
 {
 	int registerIndex;
 	ShaderEffectResourceUsage usage;
-}ShaderEffectReadWriteBuffer;
+}ShaderEffectRandomAccessBuffer;
 
 typedef struct ShaderEffectDesc
 {
@@ -497,7 +497,7 @@ typedef struct ShaderEffectDesc
 	ShaderEffectConstantBuffer* constantBuffers;
 	ShaderEffectTexture* textures;
 	ShaderSampler* samplers;
-	ShaderEffectReadWriteBuffer* readWriteBuffers;
+	ShaderEffectRandomAccessBuffer* randomAccessBuffers;
 }ShaderEffectDesc;
 #pragma endregion
 
@@ -512,17 +512,17 @@ typedef struct ComputeShaderTexture
 	int registerIndex;
 }ComputeShaderTexture;
 
-typedef struct ComputeShaderReadWriteBuffer
+typedef struct ComputeShaderRandomAccessBuffer
 {
 	int registerIndex;
-}ComputeShaderReadWriteBuffer;
+}ComputeShaderRandomAccessBuffer;
 
 typedef struct ComputeShaderDesc
 {
-	int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+	int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 	ComputeShaderConstantBuffer* constantBuffers;
 	ComputeShaderTexture* textures;
 	ShaderSampler* samplers;
-	ComputeShaderReadWriteBuffer* readWriteBuffers;
+	ComputeShaderRandomAccessBuffer* randomAccessBuffers;
 }ComputeShaderDesc;
 #pragma endregion

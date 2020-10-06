@@ -70,7 +70,7 @@ namespace Orbital.Video
 		public ShaderEffectResourceUsage usage;
 	}
 
-	public struct ShaderEffectReadWriteBuffer
+	public struct ShaderEffectRandomAccessBuffer
 	{
 		/// <summary>
 		/// Register index of the texture
@@ -88,7 +88,7 @@ namespace Orbital.Video
 		public ShaderEffectConstantBuffer[] constantBuffers;
 		public ShaderEffectTexture[] textures;
 		public ShaderSampler[] samplers;
-		public ShaderEffectReadWriteBuffer[] readWriteBuffers;
+		public ShaderEffectRandomAccessBuffer[] randomAccessBuffers;
 	}
 
 	public abstract class ShaderEffectBase : IDisposable
@@ -97,7 +97,7 @@ namespace Orbital.Video
 		public int constantBufferCount { get; protected set; }
 		public int textureCount { get; protected set; }
 		public int samplerCount { get; protected set; }
-		public int readWriteBufferCount { get; protected set; }
+		public int randomAccessBufferCount { get; protected set; }
 		public ReadOnlyCollection<ShaderConstantBufferMapping> constantBufferMappings { get; private set; }
 
 		public ShaderEffectBase(DeviceBase device)
@@ -142,7 +142,7 @@ namespace Orbital.Video
 			if (desc.constantBuffers != null) constantBufferCount = desc.constantBuffers.Length;
 			if (desc.textures != null) textureCount = desc.textures.Length;
 			if (desc.samplers != null) samplerCount = desc.samplers.Length;
-			if (desc.readWriteBuffers != null) readWriteBufferCount = desc.readWriteBuffers.Length;
+			if (desc.randomAccessBuffers != null) randomAccessBufferCount = desc.randomAccessBuffers.Length;
 
 			// calculate constant buffer variable mappings
 			if (desc.constantBuffers != null && desc.constantBuffers.Length != 0)

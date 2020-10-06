@@ -8,7 +8,7 @@ namespace Orbital.Video.D3D12
 namespace Orbital.Video.Vulkan
 #endif
 {
-	enum ReadWriteBufferType
+	enum RandomAccessBufferType
 	{
 		Texture
 	}
@@ -192,9 +192,9 @@ namespace Orbital.Video.Vulkan
 		public IntPtr* textures;
 		public int textureDepthStencilCount;
 		public IntPtr* textureDepthStencils;
-		public int readWriteBufferCount;
-		public IntPtr* readWriteBuffers;
-		public ReadWriteBufferType* readWriteTypes;
+		public int randomAccessBufferCount;
+		public IntPtr* randomAccessBuffers;
+		public RandomAccessBufferType* randomAccessTypes;
 		public VertexBufferTopology vertexBufferTopology;
 		public IntPtr vertexBufferStreamer;
 		public IntPtr indexBuffer;
@@ -244,31 +244,31 @@ namespace Orbital.Video.Vulkan
 				textureDepthStencils = null;
 			}
 
-			if (desc.readWriteBuffers != null)
+			if (desc.randomAccessBuffers != null)
 			{
-				readWriteBufferCount = desc.readWriteBuffers.Length;
-				readWriteBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * readWriteBufferCount);
-				readWriteTypes = (ReadWriteBufferType*)Marshal.AllocHGlobal(sizeof(ReadWriteBufferType) * readWriteBufferCount);
-				for (int i = 0; i != readWriteBufferCount; ++i)
+				randomAccessBufferCount = desc.randomAccessBuffers.Length;
+				randomAccessBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * randomAccessBufferCount);
+				randomAccessTypes = (RandomAccessBufferType*)Marshal.AllocHGlobal(sizeof(RandomAccessBufferType) * randomAccessBufferCount);
+				for (int i = 0; i != randomAccessBufferCount; ++i)
 				{
-					var buffer = desc.readWriteBuffers[i];
+					var buffer = desc.randomAccessBuffers[i];
 					var type = buffer.GetType();
 					if (typeof(Texture2DBase).IsAssignableFrom(type))
 					{
-						readWriteBuffers[i] = ((Texture2DBase)buffer).GetHandle();
-						readWriteTypes[i] = ReadWriteBufferType.Texture;
+						randomAccessBuffers[i] = ((Texture2DBase)buffer).GetHandle();
+						randomAccessTypes[i] = RandomAccessBufferType.Texture;
 					}
 					else
 					{
-						throw new NotSupportedException("Unsupported ComputeShader Read/Write buffer type: " + type.ToString());
+						throw new NotSupportedException("Unsupported ComputeShader random access buffer type: " + type.ToString());
 					}
 				}
 			}
 			else
 			{
-				readWriteBufferCount = 0;
-				readWriteBuffers = null;
-				readWriteTypes = null;
+				randomAccessBufferCount = 0;
+				randomAccessBuffers = null;
+				randomAccessTypes = null;
 			}
 
 			vertexBufferTopology = desc.vertexBufferTopology;
@@ -301,10 +301,10 @@ namespace Orbital.Video.Vulkan
 				textureDepthStencils = null;
 			}
 
-			if (readWriteTypes != null)
+			if (randomAccessTypes != null)
 			{
-				Marshal.FreeHGlobal((IntPtr)readWriteTypes);
-				readWriteTypes = null;
+				Marshal.FreeHGlobal((IntPtr)randomAccessTypes);
+				randomAccessTypes = null;
 			}
 
 			blendDesc.Dispose();
@@ -323,9 +323,9 @@ namespace Orbital.Video.Vulkan
 		public IntPtr* textures;
 		public int textureDepthStencilCount;
 		public IntPtr* textureDepthStencils;
-		public int readWriteBufferCount;
-		public IntPtr* readWriteBuffers;
-		public ReadWriteBufferType* readWriteTypes;
+		public int randomAccessBufferCount;
+		public IntPtr* randomAccessBuffers;
+		public RandomAccessBufferType* randomAccessTypes;
 
 		public ComputeStateDesc_NativeInterop(ref ComputeStateDesc desc)
 		{
@@ -367,31 +367,31 @@ namespace Orbital.Video.Vulkan
 				textureDepthStencils = null;
 			}
 
-			if (desc.readWriteBuffers != null)
+			if (desc.randomAccessBuffers != null)
 			{
-				readWriteBufferCount = desc.readWriteBuffers.Length;
-				readWriteBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * readWriteBufferCount);
-				readWriteTypes = (ReadWriteBufferType*)Marshal.AllocHGlobal(sizeof(ReadWriteBufferType) * readWriteBufferCount);
-				for (int i = 0; i != readWriteBufferCount; ++i)
+				randomAccessBufferCount = desc.randomAccessBuffers.Length;
+				randomAccessBuffers = (IntPtr*)Marshal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * randomAccessBufferCount);
+				randomAccessTypes = (RandomAccessBufferType*)Marshal.AllocHGlobal(sizeof(RandomAccessBufferType) * randomAccessBufferCount);
+				for (int i = 0; i != randomAccessBufferCount; ++i)
 				{
-					var buffer = desc.readWriteBuffers[i];
+					var buffer = desc.randomAccessBuffers[i];
 					var type = buffer.GetType();
 					if (typeof(Texture2DBase).IsAssignableFrom(type))
 					{
-						readWriteBuffers[i] = ((Texture2DBase)buffer).GetHandle();
-						readWriteTypes[i] = ReadWriteBufferType.Texture;
+						randomAccessBuffers[i] = ((Texture2DBase)buffer).GetHandle();
+						randomAccessTypes[i] = RandomAccessBufferType.Texture;
 					}
 					else
 					{
-						throw new NotSupportedException("Unsupported ComputeShader Read/Write buffer type: " + type.ToString());
+						throw new NotSupportedException("Unsupported ComputeShader random access buffer type: " + type.ToString());
 					}
 				}
 			}
 			else
 			{
-				readWriteBufferCount = 0;
-				readWriteBuffers = null;
-				readWriteTypes = null;
+				randomAccessBufferCount = 0;
+				randomAccessBuffers = null;
+				randomAccessTypes = null;
 			}
 		}
 
@@ -415,10 +415,10 @@ namespace Orbital.Video.Vulkan
 				textureDepthStencils = null;
 			}
 
-			if (readWriteTypes != null)
+			if (randomAccessTypes != null)
 			{
-				Marshal.FreeHGlobal((IntPtr)readWriteTypes);
-				readWriteTypes = null;
+				Marshal.FreeHGlobal((IntPtr)randomAccessTypes);
+				randomAccessTypes = null;
 			}
 		}
 	}
@@ -569,12 +569,12 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	unsafe struct ShaderEffectReadWriteBuffer_NativeInterop
+	unsafe struct ShaderEffectRandomAccessBuffer_NativeInterop
 	{
 		public int registerIndex;
 		public ShaderEffectResourceUsage usage;
 
-		public ShaderEffectReadWriteBuffer_NativeInterop(ref ShaderEffectReadWriteBuffer buffer)
+		public ShaderEffectRandomAccessBuffer_NativeInterop(ref ShaderEffectRandomAccessBuffer buffer)
 		{
 			registerIndex = buffer.registerIndex;
 			usage = buffer.usage;
@@ -584,11 +584,11 @@ namespace Orbital.Video.Vulkan
 	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectDesc_NativeInterop : IDisposable
 	{
-		public int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+		public int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 		public ShaderEffectConstantBuffer_NativeInterop* constantBuffers;
 		public ShaderEffectTexture_NativeInterop* textures;
 		public ShaderSampler_NativeInterop* samplers;
-		public ShaderEffectReadWriteBuffer_NativeInterop* readWriteBuffers;
+		public ShaderEffectRandomAccessBuffer_NativeInterop* randomAccessBuffers;
 
 		public ShaderEffectDesc_NativeInterop(ref ShaderEffectDesc desc)
 		{
@@ -596,11 +596,11 @@ namespace Orbital.Video.Vulkan
 			constantBufferCount = 0;
 			textureCount = 0;
 			samplersCount = 0;
-			readWriteBufferCount = 0;
+			randomAccessBufferCount = 0;
 			constantBuffers = null;
 			textures = null;
 			samplers = null;
-			readWriteBuffers = null;
+			randomAccessBuffers = null;
 
 			// allocate constant buffer heaps
 			if (desc.constantBuffers != null)
@@ -636,13 +636,13 @@ namespace Orbital.Video.Vulkan
 			}
 
 			// allocate read-write-buffer heaps
-			if (desc.readWriteBuffers != null)
+			if (desc.randomAccessBuffers != null)
 			{
-				readWriteBufferCount = desc.readWriteBuffers.Length;
-				readWriteBuffers = (ShaderEffectReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
-				for (int i = 0; i != readWriteBufferCount; ++i)
+				randomAccessBufferCount = desc.randomAccessBuffers.Length;
+				randomAccessBuffers = (ShaderEffectRandomAccessBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectRandomAccessBuffer_NativeInterop>() * randomAccessBufferCount);
+				for (int i = 0; i != randomAccessBufferCount; ++i)
 				{
-					readWriteBuffers[i] = new ShaderEffectReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
+					randomAccessBuffers[i] = new ShaderEffectRandomAccessBuffer_NativeInterop(ref desc.randomAccessBuffers[i]);
 				}
 			}
 		}
@@ -667,10 +667,10 @@ namespace Orbital.Video.Vulkan
 				samplers = null;
 			}
 
-			if (readWriteBuffers != null)
+			if (randomAccessBuffers != null)
 			{
-				Marshal.FreeHGlobal((IntPtr)readWriteBuffers);
-				readWriteBuffers = null;
+				Marshal.FreeHGlobal((IntPtr)randomAccessBuffers);
+				randomAccessBuffers = null;
 			}
 		}
 	}
@@ -700,11 +700,11 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	unsafe struct ComputeShaderReadWriteBuffer_NativeInterop
+	unsafe struct ComputeShaderRandomAccessBuffer_NativeInterop
 	{
 		public int registerIndex;
 
-		public ComputeShaderReadWriteBuffer_NativeInterop(ref ComputeShaderReadWriteBuffer buffer)
+		public ComputeShaderRandomAccessBuffer_NativeInterop(ref ComputeShaderRandomAccessBuffer buffer)
 		{
 			registerIndex = buffer.registerIndex;
 		}
@@ -713,11 +713,11 @@ namespace Orbital.Video.Vulkan
 	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ComputeShaderDesc_NativeInterop : IDisposable
 	{
-		public int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+		public int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 		public ComputeShaderConstantBuffer_NativeInterop* constantBuffers;
 		public ComputeShaderTexture_NativeInterop* textures;
 		public ShaderSampler_NativeInterop* samplers;
-		public ComputeShaderReadWriteBuffer_NativeInterop* readWriteBuffers;
+		public ComputeShaderRandomAccessBuffer_NativeInterop* randomAccessBuffers;
 
 		public ComputeShaderDesc_NativeInterop(ref ComputeShaderDesc desc)
 		{
@@ -725,11 +725,11 @@ namespace Orbital.Video.Vulkan
 			constantBufferCount = 0;
 			textureCount = 0;
 			samplersCount = 0;
-			readWriteBufferCount = 0;
+			randomAccessBufferCount = 0;
 			constantBuffers = null;
 			textures = null;
 			samplers = null;
-			readWriteBuffers = null;
+			randomAccessBuffers = null;
 
 			// allocate constant buffer heaps
 			if (desc.constantBuffers != null)
@@ -765,13 +765,13 @@ namespace Orbital.Video.Vulkan
 			}
 
 			// allocate read-write-buffer heaps
-			if (desc.readWriteBuffers != null)
+			if (desc.randomAccessBuffers != null)
 			{
-				readWriteBufferCount = desc.readWriteBuffers.Length;
-				readWriteBuffers = (ComputeShaderReadWriteBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderReadWriteBuffer_NativeInterop>() * readWriteBufferCount);
-				for (int i = 0; i != readWriteBufferCount; ++i)
+				randomAccessBufferCount = desc.randomAccessBuffers.Length;
+				randomAccessBuffers = (ComputeShaderRandomAccessBuffer_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderRandomAccessBuffer_NativeInterop>() * randomAccessBufferCount);
+				for (int i = 0; i != randomAccessBufferCount; ++i)
 				{
-					readWriteBuffers[i] = new ComputeShaderReadWriteBuffer_NativeInterop(ref desc.readWriteBuffers[i]);
+					randomAccessBuffers[i] = new ComputeShaderRandomAccessBuffer_NativeInterop(ref desc.randomAccessBuffers[i]);
 				}
 			}
 		}
@@ -796,10 +796,10 @@ namespace Orbital.Video.Vulkan
 				samplers = null;
 			}
 
-			if (readWriteBuffers != null)
+			if (randomAccessBuffers != null)
 			{
-				Marshal.FreeHGlobal((IntPtr)readWriteBuffers);
-				readWriteBuffers = null;
+				Marshal.FreeHGlobal((IntPtr)randomAccessBuffers);
+				randomAccessBuffers = null;
 			}
 		}
 	}

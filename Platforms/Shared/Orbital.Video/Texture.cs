@@ -86,9 +86,9 @@ namespace Orbital.Video
 		: base(device)
 		{}
 
-		public void ValidateParams(bool allowReadWrite, MSAALevel msaaLevel)
+		public void ValidateParams(bool allowRandomAccess, MSAALevel msaaLevel)
 		{
-			if (allowReadWrite && msaaLevel != MSAALevel.Disabled) throw new NotSupportedException("Texture can't be Read/Write with MSAA enabled");
+			if (allowRandomAccess && msaaLevel != MSAALevel.Disabled) throw new NotSupportedException("Texture can't be random access with MSAA enabled");
 		}
 
 		#region RenderTexture Methods

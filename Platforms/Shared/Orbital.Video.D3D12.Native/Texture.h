@@ -8,7 +8,7 @@ struct Texture
 	ID3D12Resource* resource;
 	ID3D12DescriptorHeap* shaderResourceHeap;
 	ID3D12DescriptorHeap* renderTargetResourceHeap;
-	ID3D12DescriptorHeap* readWriteResourceHeap;
+	ID3D12DescriptorHeap* randomAccessResourceHeap;
 	D3D12_CPU_DESCRIPTOR_HANDLE renderTargetResourceDescCPUHandle;
 	DXGI_FORMAT format;
 	D3D12_RESOURCE_STATES resourceState;

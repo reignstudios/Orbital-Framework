@@ -15,7 +15,7 @@ struct ShaderSignatureTexture
 	ShaderEffectResourceUsage usage;// ignore for compute shaders
 };
 
-struct ShaderSignatureReadWriteBuffer
+struct ShaderSignatureRandomAccessBuffer
 {
 	int registerIndex;
 	ShaderEffectResourceUsage usage;// ignore for compute shaders
@@ -23,11 +23,11 @@ struct ShaderSignatureReadWriteBuffer
 
 struct ShaderSignatureDesc
 {
-	int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
+	int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 	ShaderSignatureConstantBuffer* constantBuffers;
 	ShaderSignatureTexture* textures;
 	ShaderSampler* samplers;
-	ShaderSignatureReadWriteBuffer* readWriteBuffers;
+	ShaderSignatureRandomAccessBuffer* randomAccessBuffers;
 };
 
 struct ShaderSignature
@@ -40,8 +40,8 @@ struct ShaderSignature
 	UINT textureCount;
 	ShaderSignatureTexture* textures;
 
-	UINT readWriteBufferCount;
-	ShaderSignatureReadWriteBuffer* readWriteBuffers;
+	UINT randomAccessBufferCount;
+	ShaderSignatureRandomAccessBuffer* randomAccessBuffers;
 };
 
 int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* device, ShaderSignatureDesc* desc);

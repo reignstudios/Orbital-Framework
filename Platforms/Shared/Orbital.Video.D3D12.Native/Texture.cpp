@@ -26,7 +26,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, int allowReadWrite, MSAALevel msaaLevel)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, int allowRandomAccess, MSAALevel msaaLevel)
 	{
 		if (!GetNative_TextureFormat(format, &handle->format)) return 0;
 
@@ -53,7 +53,7 @@ extern "C"
         resourceDesc.Format = handle->format;
         resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         resourceDesc.Flags = isRenderTexture ? D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET : D3D12_RESOURCE_FLAG_NONE;
-		if (allowReadWrite) resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+		if (allowRandomAccess) resourceDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
 		if (msaaLevel != MSAALevel::MSAALevel_Disabled)// get msaa quality levels
 		{
@@ -109,13 +109,13 @@ extern "C"
 			handle->device->device->CreateRenderTargetView(handle->resource, &renderTargetDesc, handle->renderTargetResourceDescCPUHandle);
 		}
 
-		if (allowReadWrite)
+		if (allowRandomAccess)
 		{
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 			heapDesc.NumDescriptors = 1;
 			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;// set to none so it can be copied in RenderState
-			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->readWriteResourceHeap)))) return 0;
+			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->randomAccessResourceHeap)))) return 0;
 
 			D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 			uavDesc.Format = handle->format;
@@ -123,7 +123,7 @@ extern "C"
 			else if (type == TextureType::TextureType_2D) uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
 			else if (type == TextureType::TextureType_3D) uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
 			else return 0;
-			D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = handle->readWriteResourceHeap->GetCPUDescriptorHandleForHeapStart();
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = handle->randomAccessResourceHeap->GetCPUDescriptorHandleForHeapStart();
 			handle->device->device->CreateUnorderedAccessView(handle->resource, nullptr, &uavDesc, cpuHandle);
 		}
 
@@ -241,10 +241,10 @@ extern "C"
 			handle->renderTargetResourceHeap = NULL;
 		}
 
-		if (handle->readWriteResourceHeap != NULL)
+		if (handle->randomAccessResourceHeap != NULL)
 		{
-			handle->readWriteResourceHeap->Release();
-			handle->readWriteResourceHeap = NULL;
+			handle->randomAccessResourceHeap->Release();
+			handle->randomAccessResourceHeap = NULL;
 		}
 
 		if (handle->resource != NULL)

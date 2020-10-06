@@ -221,7 +221,7 @@ extern "C"
 		UINT constantBufferCount, ConstantBuffer** constantBuffers,
 		UINT textureCount, Texture** textures,
 		UINT textureDepthStencilCount, DepthStencil** textureDepthStencils,
-		UINT readWriteBufferCount, intptr_t* readWriteBuffers, ReadWriteBufferType* readWriteTypes
+		UINT randomAccessBufferCount, intptr_t* randomAccessBuffers, RandomAccessBufferType* randomAccessTypes
 	)
 	{
 		// set constant buffer states
@@ -268,11 +268,11 @@ extern "C"
 		}
 
 		// set read/write buffer states
-		for (UINT i = 0; i != readWriteBufferCount; ++i)
+		for (UINT i = 0; i != randomAccessBufferCount; ++i)
 		{
-			if (readWriteTypes[i] == ReadWriteBufferType::ReadWriteBufferType_Texture)
+			if (randomAccessTypes[i] == RandomAccessBufferType::RandomAccessBufferType_Texture)
 			{
-				Texture* texture = (Texture*)readWriteBuffers[i];
+				Texture* texture = (Texture*)randomAccessBuffers[i];
 				D3D12_RESOURCE_STATES state = {};
 				state = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
 				Orbital_Video_D3D12_Texture_ChangeState(texture, state, handle->commandList_Direct);
@@ -289,7 +289,7 @@ extern "C"
 			renderState->constantBufferCount, renderState->constantBuffers,
 			renderState->textureCount, renderState->textures,
 			renderState->textureDepthStencilCount, renderState->textureDepthStencils,
-			renderState->readWriteBufferCount, renderState->readWriteBuffers, renderState->readWriteTypes
+			renderState->randomAccessBufferCount, renderState->randomAccessBuffers, renderState->randomAccessTypes
 		);
 
 		// set vertex buffer states
@@ -319,10 +319,10 @@ extern "C"
 			++descIndex;
 		}
 
-		if (renderState->readWriteBufferHeap != NULL)
+		if (renderState->randomAccessBufferHeap != NULL)
 		{
-			handle->commandList->SetDescriptorHeaps(1, &renderState->readWriteBufferHeap);
-			handle->commandList->SetComputeRootDescriptorTable(descIndex, renderState->readWriteBufferGPUDescHandle);
+			handle->commandList->SetDescriptorHeaps(1, &renderState->randomAccessBufferHeap);
+			handle->commandList->SetGraphicsRootDescriptorTable(descIndex, renderState->randomAccessBufferGPUDescHandle);
 		}
 
 		// enable render state
@@ -343,7 +343,7 @@ extern "C"
 			computeState->constantBufferCount, computeState->constantBuffers,
 			computeState->textureCount, computeState->textures,
 			computeState->textureDepthStencilCount, computeState->textureDepthStencils,
-			computeState->readWriteBufferCount, computeState->readWriteBuffers, computeState->readWriteTypes
+			computeState->randomAccessBufferCount, computeState->randomAccessBuffers, computeState->randomAccessTypes
 		);
 
 		// bind shader resources
@@ -364,10 +364,10 @@ extern "C"
 			++descIndex;
 		}
 
-		if (computeState->readWriteBufferHeap != NULL)
+		if (computeState->randomAccessBufferHeap != NULL)
 		{
-			handle->commandList->SetDescriptorHeaps(1, &computeState->readWriteBufferHeap);
-			handle->commandList->SetComputeRootDescriptorTable(descIndex, computeState->readWriteBufferGPUDescHandle);
+			handle->commandList->SetDescriptorHeaps(1, &computeState->randomAccessBufferHeap);
+			handle->commandList->SetComputeRootDescriptorTable(descIndex, computeState->randomAccessBufferGPUDescHandle);
 		}
 
 		// enable render state

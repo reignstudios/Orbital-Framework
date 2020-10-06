@@ -434,9 +434,9 @@ namespace Orbital.Demo
 			{
 				var csDesc = new ComputeShaderDesc()
 				{
-					readWriteBuffers = new ComputeShaderReadWriteBuffer[1]
+					randomAccessBuffers = new ComputeShaderRandomAccessBuffer[1]
 				};
-				csDesc.readWriteBuffers[0] = new ComputeShaderReadWriteBuffer()
+				csDesc.randomAccessBuffers[0] = new ComputeShaderRandomAccessBuffer()
 				{
 					registerIndex = 0
 				};
@@ -447,9 +447,9 @@ namespace Orbital.Demo
 			var computeStateDesc = new ComputeStateDesc()
 			{
 				computeShader = computeShader,
-				readWriteBuffers = new object[1]
+				randomAccessBuffers = new object[1]
 			};
-			computeStateDesc.readWriteBuffers[0] = renderTextureTest.renderTexture;
+			computeStateDesc.randomAccessBuffers[0] = renderTextureTest.renderTexture;
 			computeState = device.CreateComputeState(computeStateDesc);
 
 			// print all GPUs this abstraction supports

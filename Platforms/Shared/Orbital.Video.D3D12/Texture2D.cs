@@ -20,17 +20,17 @@ namespace Orbital.Video.D3D12
 			return Init(width, height, format, data, false, false, MSAALevel.Disabled);
 		}
 
-		internal unsafe bool Init(int width, int height, TextureFormat format, byte[] data, bool isRenderTexture, bool allowReadWrite, MSAALevel msaaLevel)
+		internal unsafe bool Init(int width, int height, TextureFormat format, byte[] data, bool isRenderTexture, bool allowRandomAccess, MSAALevel msaaLevel)
 		{
-			ValidateParams(allowReadWrite, msaaLevel);
+			ValidateParams(allowRandomAccess, msaaLevel);
 			this.msaaLevel = msaaLevel;
 			this.width = width;
 			this.height = height;
 			uint widthValue = (uint)width;
 			uint heightValue = (uint)height;
 			uint depthValue = 1;
-			if (data == null) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, null, isRenderTexture ? 1 : 0, allowReadWrite ? 1 : 0, msaaLevel) != 0;
-			fixed (byte* dataPtr = data) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, &dataPtr, isRenderTexture ? 1 : 0, allowReadWrite ? 1 : 0, msaaLevel) != 0;
+			if (data == null) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, null, isRenderTexture ? 1 : 0, allowRandomAccess ? 1 : 0, msaaLevel) != 0;
+			fixed (byte* dataPtr = data) return Texture.Orbital_Video_D3D12_Texture_Init(handle, format, TextureType_NativeInterop._2D, 1, &widthValue, &heightValue, &depthValue, &dataPtr, isRenderTexture ? 1 : 0, allowRandomAccess ? 1 : 0, msaaLevel) != 0;
 		}
 
 		public override void Dispose()

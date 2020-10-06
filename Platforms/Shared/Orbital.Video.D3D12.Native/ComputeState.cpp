@@ -87,31 +87,31 @@ extern "C"
 			}
 		}
 
-		// add read/write buffer heaps
-		if (desc->readWriteBufferCount != 0)
+		// add random-access buffer heaps
+		if (desc->randomAccessBufferCount != 0)
 		{
-			handle->readWriteBufferCount = desc->readWriteBufferCount;
-			UINT size = sizeof(intptr_t) * desc->readWriteBufferCount;
-			handle->readWriteBuffers = (intptr_t*)malloc(size);
-			memcpy(handle->readWriteBuffers, desc->readWriteBuffers, size);
+			handle->randomAccessBufferCount = desc->randomAccessBufferCount;
+			UINT size = sizeof(intptr_t) * desc->randomAccessBufferCount;
+			handle->randomAccessBuffers = (intptr_t*)malloc(size);
+			memcpy(handle->randomAccessBuffers, desc->randomAccessBuffers, size);
 
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
-			heapDesc.NumDescriptors = handle->readWriteBufferCount;
+			heapDesc.NumDescriptors = handle->randomAccessBufferCount;
 			heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->readWriteBufferHeap)))) return 0;
-			handle->readWriteBufferGPUDescHandle = handle->readWriteBufferHeap->GetGPUDescriptorHandleForHeapStart();
-			D3D12_CPU_DESCRIPTOR_HANDLE cpuReadWriteBufferHeap = handle->readWriteBufferHeap->GetCPUDescriptorHandleForHeapStart();
+			if (FAILED(handle->device->device->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&handle->randomAccessBufferHeap)))) return 0;
+			handle->randomAccessBufferGPUDescHandle = handle->randomAccessBufferHeap->GetGPUDescriptorHandleForHeapStart();
+			D3D12_CPU_DESCRIPTOR_HANDLE cpuRandomAccessBufferHeap = handle->randomAccessBufferHeap->GetCPUDescriptorHandleForHeapStart();
 			UINT heapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-			for (int i = 0; i != desc->readWriteBufferCount; ++i)
+			for (int i = 0; i != desc->randomAccessBufferCount; ++i)
 			{
-				if (desc->readWriteTypes[i] == ReadWriteBufferType::ReadWriteBufferType_Texture)
+				if (desc->randomAccessTypes[i] == RandomAccessBufferType::RandomAccessBufferType_Texture)
 				{
-					Texture* texture = (Texture*)desc->readWriteBuffers[i];
-					D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->readWriteResourceHeap->GetCPUDescriptorHandleForHeapStart();
-					handle->device->device->CopyDescriptorsSimple(1, cpuReadWriteBufferHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-					cpuReadWriteBufferHeap.ptr += heapSize;
+					Texture* texture = (Texture*)desc->randomAccessBuffers[i];
+					D3D12_CPU_DESCRIPTOR_HANDLE heap = texture->randomAccessResourceHeap->GetCPUDescriptorHandleForHeapStart();
+					handle->device->device->CopyDescriptorsSimple(1, cpuRandomAccessBufferHeap, heap, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+					cpuRandomAccessBufferHeap.ptr += heapSize;
 				}
 				else
 				{
@@ -119,9 +119,9 @@ extern "C"
 				}
 			}
 
-			size_t readWriteBufferSize = desc->readWriteBufferCount * sizeof(ReadWriteBufferType);
-			handle->readWriteTypes = (ReadWriteBufferType*)malloc(readWriteBufferSize);
-			memcpy(handle->readWriteTypes, desc->readWriteTypes, readWriteBufferSize);
+			size_t randomAccessBufferSize = desc->randomAccessBufferCount * sizeof(RandomAccessBufferType);
+			handle->randomAccessTypes = (RandomAccessBufferType*)malloc(randomAccessBufferSize);
+			memcpy(handle->randomAccessTypes, desc->randomAccessTypes, randomAccessBufferSize);
 		}
 
 		// create pipeline state
@@ -143,16 +143,16 @@ extern "C"
 			handle->textures = NULL;
 		}
 
-		if (handle->readWriteBuffers != NULL)
+		if (handle->randomAccessBuffers != NULL)
 		{
-			free(handle->readWriteBuffers);
-			handle->readWriteBuffers = NULL;
+			free(handle->randomAccessBuffers);
+			handle->randomAccessBuffers = NULL;
 		}
 
-		if (handle->readWriteTypes != NULL)
+		if (handle->randomAccessTypes != NULL)
 		{
-			free(handle->readWriteTypes);
-			handle->readWriteTypes = NULL;
+			free(handle->randomAccessTypes);
+			handle->randomAccessTypes = NULL;
 		}
 
 		if (handle->constantBufferHeap != NULL)
@@ -167,10 +167,10 @@ extern "C"
 			handle->textureHeap = NULL;
 		}
 
-		if (handle->readWriteBufferHeap != NULL)
+		if (handle->randomAccessBufferHeap != NULL)
 		{
-			handle->readWriteBufferHeap->Release();
-			handle->readWriteBufferHeap = NULL;
+			handle->randomAccessBufferHeap->Release();
+			handle->randomAccessBufferHeap = NULL;
 		}
 
 		if (handle->state != NULL)

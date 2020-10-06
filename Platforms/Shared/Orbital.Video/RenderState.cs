@@ -619,9 +619,9 @@ namespace Orbital.Video
 		public DepthStencilBase[] textureDepthStencils;
 
 		/// <summary>
-		/// Read/Write buffers to be accessed in compute shader
+		/// Random access buffers to be accessed in compute shader
 		/// </summary>
-		public object[] readWriteBuffers;
+		public object[] randomAccessBuffers;
 
 		/// <summary>
 		/// How the geometry will appear
@@ -679,8 +679,8 @@ namespace Orbital.Video
 			int textureCount = desc.textures != null ? desc.textures.Length : 0;
 			if (desc.shaderEffect.textureCount != textureCount) throw new ArgumentException("RenderStateDesc texture count doesn't match ShaderEffect requirements");
 
-			int readWriteBufferCount = desc.readWriteBuffers != null ? desc.readWriteBuffers.Length : 0;
-			if (desc.shaderEffect.readWriteBufferCount != readWriteBufferCount) throw new ArgumentException("RenderStateDesc read/write buffer count doesn't match ShaderEffect requirements");
+			int randomAccessBufferCount = desc.randomAccessBuffers != null ? desc.randomAccessBuffers.Length : 0;
+			if (desc.shaderEffect.randomAccessBufferCount != randomAccessBufferCount) throw new ArgumentException("RenderStateDesc random access buffer count doesn't match ShaderEffect requirements");
 
 			// validate independentBlendEnable is true settings
 			if (desc.blendDesc.independentBlendEnable)

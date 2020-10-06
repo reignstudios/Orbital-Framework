@@ -14,9 +14,9 @@ namespace Orbital.Video.D3D12
 			this.usage = usage;
 		}
 
-		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel, bool allowReadWrite)
+		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel, bool allowRandomAccess)
 		{
-			return Init(width, height, format, null, true, allowReadWrite, msaaLevel);
+			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel);
 		}
 
 		public override bool Init(int width, int height, TextureFormat format, byte[] data)
@@ -24,18 +24,18 @@ namespace Orbital.Video.D3D12
 			return Init(width, height, format, data, true, false, MSAALevel.Disabled);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowReadWrite)
+		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowRandomAccess)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, msaaLevel)) return false;
-			return Init(width, height, format, null, true, allowReadWrite, msaaLevel);
+			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowReadWrite)
+		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowRandomAccess)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, MSAALevel.Disabled)) return false;
-			return Init(width, height, format, data, true, allowReadWrite, MSAALevel.Disabled);
+			return Init(width, height, format, data, true, allowRandomAccess, MSAALevel.Disabled);
 		}
 
 		public override void Dispose()

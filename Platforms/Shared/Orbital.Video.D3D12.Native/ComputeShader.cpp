@@ -39,12 +39,12 @@ extern "C"
 		signature.samplersCount = desc->samplersCount;
 		signature.samplers = desc->samplers;
 
-		signature.readWriteBufferCount = desc->readWriteBufferCount;
-		signature.readWriteBuffers = (ShaderSignatureReadWriteBuffer*)alloca(desc->readWriteBufferCount * sizeof(ShaderSignatureReadWriteBuffer));
-		for (int i = 0; i != desc->readWriteBufferCount; ++i)
+		signature.randomAccessBufferCount = desc->randomAccessBufferCount;
+		signature.randomAccessBuffers = (ShaderSignatureRandomAccessBuffer*)alloca(desc->randomAccessBufferCount * sizeof(ShaderSignatureRandomAccessBuffer));
+		for (int i = 0; i != desc->randomAccessBufferCount; ++i)
 		{
-			signature.readWriteBuffers[i].registerIndex = desc->readWriteBuffers[i].registerIndex;
-			signature.readWriteBuffers[i].usage = ShaderEffectResourceUsage::ShaderEffectResourceUsage_All;
+			signature.randomAccessBuffers[i].registerIndex = desc->randomAccessBuffers[i].registerIndex;
+			signature.randomAccessBuffers[i].usage = ShaderEffectResourceUsage::ShaderEffectResourceUsage_All;
 		}
 
 		return Orbital_Video_D3D12_ShaderSignature_Init(&handle->signature, handle->device, &signature);

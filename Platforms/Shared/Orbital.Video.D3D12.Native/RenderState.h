@@ -25,11 +25,11 @@ struct RenderState
 	ID3D12DescriptorHeap* textureHeap;
 	D3D12_GPU_DESCRIPTOR_HANDLE textureGPUDescHandle;
 
-	UINT readWriteBufferCount;
-	intptr_t* readWriteBuffers;
-	ReadWriteBufferType* readWriteTypes;
-	ID3D12DescriptorHeap* readWriteBufferHeap;
-	D3D12_GPU_DESCRIPTOR_HANDLE readWriteBufferGPUDescHandle;
+	UINT randomAccessBufferCount;
+	intptr_t* randomAccessBuffers;
+	RandomAccessBufferType* randomAccessTypes;
+	ID3D12DescriptorHeap* randomAccessBufferHeap;
+	D3D12_GPU_DESCRIPTOR_HANDLE randomAccessBufferGPUDescHandle;
 
 	D3D_PRIMITIVE_TOPOLOGY topology;
 	VertexBufferStreamer* vertexBufferStreamer;
