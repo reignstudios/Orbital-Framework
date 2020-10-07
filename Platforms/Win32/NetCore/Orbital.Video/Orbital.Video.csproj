@@ -17,6 +17,7 @@
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video\Camera.cs" Link="Camera.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\ComputeCommandList.cs" Link="ComputeCommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ComputeShader.cs" Link="ComputeShader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ComputeState.cs" Link="ComputeState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
@@ -24,6 +25,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\IndexBuffer.cs" Link="IndexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video\RasterizeCommandList.cs" Link="RasterizeCommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\RenderState.cs" Link="RenderState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video\Shader.cs" Link="Shader.cs" />

@@ -150,7 +150,8 @@ namespace Orbital.Demo
 
 		private InstanceBase instance;
 		private DeviceBase device;
-		private CommandListBase commandList, commandList_Compute;
+		private RasterizeCommandListBase commandList;
+		private ComputeCommandListBase commandList_Compute;
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
@@ -208,8 +209,8 @@ namespace Orbital.Demo
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false);
 			
 			// create command list
-			commandList = device.CreateCommandList(CommandListType.Rasterize);
-			commandList_Compute = device.CreateCommandList(CommandListType.Compute);
+			commandList = device.CreateRasterizeCommandList();
+			commandList_Compute = device.CreateComputeCommandList();
 
 			// create render pass
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);

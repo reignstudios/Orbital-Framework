@@ -1,160 +1,36 @@
-﻿using Orbital.Numerics;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
+using Orbital.Numerics;
 
 namespace Orbital.Video.Vulkan
 {
-	public sealed class CommandList : CommandListBase
+	static class CommandList
 	{
-		public readonly Device deviceVulkan;
-		internal IntPtr handle;
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		public static extern IntPtr Orbital_Video_Vulkan_CommandList_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_Vulkan_CommandList_Create(IntPtr device);
+		public static extern int Orbital_Video_Vulkan_CommandList_Init(IntPtr handle, CommandListType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_Vulkan_CommandList_Init(IntPtr handle, CommandListType type);
+		public static extern void Orbital_Video_Vulkan_CommandList_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_Dispose(IntPtr handle);
+		public static extern void Orbital_Video_Vulkan_CommandList_Start(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_Start(IntPtr handle);
+		public static extern void Orbital_Video_Vulkan_CommandList_Finish(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_Finish(IntPtr handle);
+		public static extern void Orbital_Video_Vulkan_CommandList_BeginRenderPass(IntPtr handle, IntPtr renderPass);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_BeginRenderPass(IntPtr handle, IntPtr renderPass);
+		public static extern void Orbital_Video_Vulkan_CommandList_EndRenderPass(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_EndRenderPass(IntPtr handle);
+		public static extern void Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(IntPtr handle, IntPtr swapChain, float r, float g, float b, float a);
-
-		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_Vulkan_CommandList_Execute(IntPtr handle);
-
-		internal CommandList(Device device)
-		: base(device)
-		{
-			deviceVulkan = device;
-			handle = Orbital_Video_Vulkan_CommandList_Create(device.handle);
-		}
-
-		public bool Init(CommandListType type)
-		{
-			return Orbital_Video_Vulkan_CommandList_Init(handle, type) != 0;
-		}
-
-		public override void Dispose()
-		{
-			if (handle != IntPtr.Zero)
-			{
-				Orbital_Video_Vulkan_CommandList_Dispose(handle);
-				handle = IntPtr.Zero;
-			}
-		}
-
-		public override void Start()
-		{
-			Orbital_Video_Vulkan_CommandList_Start(handle);
-		}
-
-		public override void Finish()
-		{
-			Orbital_Video_Vulkan_CommandList_Finish(handle);
-		}
-
-		public override void BeginRenderPass(RenderPassBase renderPass)
-		{
-			var renderPassVulkan = (RenderPass)renderPass;
-			Orbital_Video_Vulkan_CommandList_BeginRenderPass(handle, renderPassVulkan.handle);
-		}
-
-		public override void EndRenderPass()
-		{
-			Orbital_Video_Vulkan_CommandList_EndRenderPass(handle);
-		}
-
-		public override void ClearRenderTarget(float r, float g, float b, float a)
-		{
-			Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(handle, deviceVulkan.swapChainVulkan.handle, r, b, g, a);
-		}
-
-		public override void ClearRenderTarget(SwapChainBase swapChain, float r, float g, float b, float a)
-		{
-			var swapChainVulkan = (SwapChain)swapChain;
-			Orbital_Video_Vulkan_CommandList_ClearSwapChainRenderTarget(handle, swapChainVulkan.handle, r, b, g, a);
-		}
-
-		public override void ClearRenderTarget(Texture2DBase renderTexture, float r, float g, float b, float a)
-		{
-			#if DEBUG
-			if (!renderTexture.isRenderTexture) throw new Exception("Is not render-texture");
-			#endif
-			throw new NotImplementedException();
-		}
-
-		public override void SetViewPort(ViewPort viewPort)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void SetRenderState(RenderStateBase renderState)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void SetComputeState(ComputeStateBase computeState)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void Draw()
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void ExecuteComputeShader(int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, Texture2DBase destinationRenderTexture)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void ResolveMSAA(Texture2DBase sourceRenderTexture, SwapChainBase destinationSwapChain)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void CopyTexture(Texture2DBase sourceTexture, Texture2DBase destinationTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel, int destinationMipmapLevel)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void CopyTexture(Texture2DBase sourceTexture, SwapChainBase destinationSwapChain, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void Execute()
-		{
-			Orbital_Video_Vulkan_CommandList_Execute(handle);
-		}
+		public static extern void Orbital_Video_Vulkan_CommandList_Execute(IntPtr handle);
 	}
 }

@@ -151,10 +151,21 @@ namespace Orbital.Video.Vulkan
 			throw new NotImplementedException();
 		}
 
-		public override CommandListBase CreateCommandList(CommandListType type)
+		public override RasterizeCommandListBase CreateRasterizeCommandList()
 		{
-			var abstraction = new CommandList(this);
-			if (!abstraction.Init(type))
+			var abstraction = new RasterizeCommandList(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create CommandList");
+			}
+			return abstraction;
+		}
+
+		public override ComputeCommandListBase CreateComputeCommandList()
+		{
+			var abstraction = new ComputeCommandList(this);
+			if (!abstraction.Init())
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create CommandList");
