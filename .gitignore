@@ -259,4 +259,4 @@ ModelManifest.xml
 *.hs
 *.ds
 *.gs
-*.cs
+TEMP_RESOURCES/*.cs
