@@ -38,6 +38,13 @@ typedef enum RandomAccessBufferType
 	RandomAccessBufferType_BIT = ENUM_BIT
 }RandomAccessBufferType;
 
+typedef enum SwapChainType
+{
+	SwapChainType_SingleGPU_Standard,
+	SwapChainType_MultiGPU_AFR,
+	SwapChainType_BIT = ENUM_BIT
+}SwapChainType;
+
 #pragma region Texture / Surface
 typedef enum TextureMode
 {

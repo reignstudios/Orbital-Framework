@@ -9,11 +9,10 @@ extern "C"
 		Device* handle = (Device*)calloc(1, sizeof(Device));
 		handle->instance = instance;
 		handle->type = type;
-		handle->internalMutex = new std::mutex();
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, int softwareRasterizer)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_Init(Device* handle, int adapterIndex, int softwareRasterizer, int allowMultiGPU, int* nodeCount)
 	{
 		// get adapter
 		if (softwareRasterizer)
@@ -29,7 +28,20 @@ extern "C"
 
 		// create device
 		if (FAILED(D3D12CreateDevice(handle->adapter, handle->instance->nativeMinFeatureLevel, IID_PPV_ARGS(&handle->device)))) return 0;
-		handle->nodeCount = handle->device->GetNodeCount();
+
+		// get mGPU node info
+		handle->fullNodeCount = handle->device->GetNodeCount();
+		if (allowMultiGPU)
+		{
+			handle->nodeCount = handle->fullNodeCount;
+			handle->fullNodeMask = (1 << handle->nodeCount) - 1;
+		}
+		else
+		{
+			handle->nodeCount = 1;
+			handle->fullNodeMask = 1;
+		}
+		*nodeCount = handle->nodeCount;
 
 		// get max feature level
 		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
@@ -58,104 +70,130 @@ extern "C"
 		}
 		handle->maxRootSignatureVersion = rootSignature.HighestVersion;
 
-		// create command queues
-		D3D12_COMMAND_QUEUE_DESC queueDesc = {};
-		queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue)))) return 0;
+		// create nodes
+		handle->nodes = (DeviceNode*)calloc(handle->nodeCount, sizeof(DeviceNode));
+		for (UINT n = 0; n != handle->nodeCount; ++n)
+		{
+			UINT nodeMask = 1 << n;
+			handle->nodes[n].mask = nodeMask;
 
-		queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
-		if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->commandQueue_Compute)))) return 0;
+			// create command queues
+			D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+			queueDesc.NodeMask = nodeMask;
+			queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+			queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+			if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->nodes[n].commandQueue)))) return 0;
 
-		// create command allocators
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->commandAllocator)))) return 0;
-		if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&handle->commandAllocator_Compute)))) return 0;
+			queueDesc.Type = D3D12_COMMAND_LIST_TYPE_COMPUTE;
+			if (FAILED(handle->device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&handle->nodes[n].commandQueue_Compute)))) return 0;
 
-		// create fence
-		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->fence)))) return 0;
-		handle->fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		if (handle->fenceEvent == NULL) return 0;
+			// create command allocators
+			if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&handle->nodes[n].internalCommandAllocator)))) return 0;
+			if (FAILED(handle->device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_COMPUTE, IID_PPV_ARGS(&handle->nodes[n].internalCommandAllocator_Compute)))) return 0;
 
-		// create helpers for synchronous buffer operations
-		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->commandAllocator, nullptr, IID_PPV_ARGS(&handle->internalCommandList)))) return 0;
-		if (FAILED(handle->internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
+			// create helpers for synchronous buffer operations
+			if (FAILED(handle->device->CreateCommandList(nodeMask, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->nodes[n].internalCommandAllocator, nullptr, IID_PPV_ARGS(&handle->nodes[n].internalCommandList)))) return 0;
+			if (FAILED(handle->nodes[n].internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
-		if (FAILED(handle->device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_COMPUTE, handle->commandAllocator_Compute, nullptr, IID_PPV_ARGS(&handle->internalCommandList_Compute)))) return 0;
-		if (FAILED(handle->internalCommandList_Compute->Close())) return 0;// make sure this is closed as it defaults to open for writing
+			if (FAILED(handle->device->CreateCommandList(nodeMask, D3D12_COMMAND_LIST_TYPE_COMPUTE, handle->nodes[n].internalCommandAllocator_Compute, nullptr, IID_PPV_ARGS(&handle->nodes[n].internalCommandList_Compute)))) return 0;
+			if (FAILED(handle->nodes[n].internalCommandList_Compute->Close())) return 0;// make sure this is closed as it defaults to open for writing
 
-		if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->internalFence)))) return 0;
-		handle->internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		if (handle->internalFenceEvent == NULL) return 0;
+			// create main fence
+			if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->nodes[n].fence)))) return 0;
+			handle->nodes[n].fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			if (handle->nodes[n].fenceEvent == NULL) return 0;
 
-		// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
-		handle->fenceValue = 1;
-		handle->internalFenceValue = 1;
+			// create internal fence
+			if (FAILED(handle->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->nodes[n].internalFence)))) return 0;
+			handle->nodes[n].internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			if (handle->nodes[n].internalFenceEvent == NULL) return 0;
+
+			// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
+			handle->nodes[n].fenceValue = 1;
+			handle->nodes[n].internalFenceValue = 1;
+			handle->nodes[n].internalMutex = new std::mutex();
+		}
 
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_Dispose(Device* handle)
 	{
-		// dispose helpers
-		if (handle->internalFenceEvent != NULL)
+		if (handle->nodes != NULL)
 		{
-			CloseHandle(handle->internalFenceEvent);
-			handle->internalFenceEvent = NULL;
-		}
+			for (UINT n = 0; n != handle->nodeCount; ++n)
+			{
+				// dispose helpers
+				if (handle->nodes[n].internalFenceEvent != NULL)
+				{
+					CloseHandle(handle->nodes[n].internalFenceEvent);
+					handle->nodes[n].internalFenceEvent = NULL;
+				}
 
-		if (handle->internalFence != NULL)
-		{
-			handle->internalFence->Release();
-			handle->internalFence = NULL;
-		}
+				if (handle->nodes[n].internalFence != NULL)
+				{
+					handle->nodes[n].internalFence->Release();
+					handle->nodes[n].internalFence = NULL;
+				}
 
-		if (handle->internalCommandList != NULL)
-		{
-			handle->internalCommandList->Release();
-			handle->internalCommandList = NULL;
-		}
+				if (handle->nodes[n].internalCommandList != NULL)
+				{
+					handle->nodes[n].internalCommandList->Release();
+					handle->nodes[n].internalCommandList = NULL;
+				}
 
-		if (handle->internalCommandList_Compute != NULL)
-		{
-			handle->internalCommandList_Compute->Release();
-			handle->internalCommandList_Compute = NULL;
-		}
+				if (handle->nodes[n].internalCommandList_Compute != NULL)
+				{
+					handle->nodes[n].internalCommandList_Compute->Release();
+					handle->nodes[n].internalCommandList_Compute = NULL;
+				}
 
-		// dispose normal
-		if (handle->fenceEvent != NULL)
-		{
-			CloseHandle(handle->fenceEvent);
-			handle->fenceEvent = NULL;
-		}
+				// dispose normal
+				if (handle->nodes[n].fenceEvent != NULL)
+				{
+					CloseHandle(handle->nodes[n].fenceEvent);
+					handle->nodes[n].fenceEvent = NULL;
+				}
 
-		if (handle->fence != NULL)
-		{
-			handle->fence->Release();
-			handle->fence = NULL;
-		}
+				if (handle->nodes[n].fence != NULL)
+				{
+					handle->nodes[n].fence->Release();
+					handle->nodes[n].fence = NULL;
+				}
 
-		if (handle->commandAllocator != NULL)
-		{
-			handle->commandAllocator->Release();
-			handle->commandAllocator = NULL;
-		}
+				if (handle->nodes[n].internalCommandAllocator != NULL)
+				{
+					handle->nodes[n].internalCommandAllocator->Release();
+					handle->nodes[n].internalCommandAllocator = NULL;
+				}
 
-		if (handle->commandAllocator_Compute != NULL)
-		{
-			handle->commandAllocator_Compute->Release();
-			handle->commandAllocator_Compute = NULL;
-		}
+				if (handle->nodes[n].internalCommandAllocator_Compute != NULL)
+				{
+					handle->nodes[n].internalCommandAllocator_Compute->Release();
+					handle->nodes[n].internalCommandAllocator_Compute = NULL;
+				}
 
-		if (handle->commandQueue != NULL)
-		{
-			handle->commandQueue->Release();
-			handle->commandQueue = NULL;
-		}
+				if (handle->nodes[n].commandQueue != NULL)
+				{
+					handle->nodes[n].commandQueue->Release();
+					handle->nodes[n].commandQueue = NULL;
+				}
 
-		if (handle->commandQueue_Compute != NULL)
-		{
-			handle->commandQueue_Compute->Release();
-			handle->commandQueue_Compute = NULL;
+				if (handle->nodes[n].commandQueue_Compute != NULL)
+				{
+					handle->nodes[n].commandQueue_Compute->Release();
+					handle->nodes[n].commandQueue_Compute = NULL;
+				}
+
+				if (handle->nodes[n].internalMutex != NULL)
+				{
+					delete handle->nodes[n].internalMutex;
+					handle->nodes[n].internalMutex = NULL;
+				}
+			}
+
+			free(handle->nodes);
+			handle->nodes = NULL;
 		}
 
 		if (handle != NULL)
@@ -170,24 +208,24 @@ extern "C"
 			handle->adapter = NULL;
 		}
 
-		if (handle->internalMutex != NULL)
-		{
-			delete handle->internalMutex;
-			handle->internalMutex = NULL;
-		}
-
 		free(handle);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_BeginFrame(Device* handle)
 	{
-		handle->commandAllocator->Reset();
-		handle->commandAllocator_Compute->Reset();
+		/*for (UINT n = 0; n != handle->nodeCount; ++n)
+		{
+			handle->nodes[n].internalCommandAllocator->Reset();
+			handle->nodes[n].internalCommandAllocator_Compute->Reset();
+		}*/
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_Device_EndFrame(Device* handle)
 	{
-		WaitForFence(handle, handle->fence, handle->fenceEvent, handle->fenceValue);
+		for (UINT n = 0; n != handle->nodeCount; ++n)
+		{
+			WaitForFence(handle, n, handle->nodes[n].fence, handle->nodes[n].fenceEvent, handle->nodes[n].fenceValue);
+		}
 	}
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_GetMaxMSAALevel(Device* handle, TextureFormat format, MSAALevel* msaaLevel)
@@ -228,8 +266,8 @@ void WaitForFence_CommandQueue(ID3D12CommandQueue* commandQueue, ID3D12Fence* fe
 	}
 }
 
-void WaitForFence(Device* handle, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
+void WaitForFence(Device* handle, UINT nodeIndex, ID3D12Fence* fence, HANDLE fenceEvent, UINT64& fenceValue)
 {
-	WaitForFence_CommandQueue(handle->commandQueue, fence, fenceEvent, fenceValue);
-	WaitForFence_CommandQueue(handle->commandQueue_Compute, fence, fenceEvent, fenceValue);
+	WaitForFence_CommandQueue(handle->nodes[nodeIndex].commandQueue, fence, fenceEvent, fenceValue);
+	WaitForFence_CommandQueue(handle->nodes[nodeIndex].commandQueue_Compute, fence, fenceEvent, fenceValue);
 }

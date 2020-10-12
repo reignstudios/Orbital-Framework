@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Orbital.Host;
+using Orbital.Numerics;
 
 namespace Orbital.Video.D3D12
 {
@@ -12,7 +13,7 @@ namespace Orbital.Video.D3D12
 		private readonly bool ensureSizeMatchesWindowSize;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device);
+		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device, SwapChainType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen, SwapChainFormat format);
@@ -21,16 +22,25 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle);
+		private static unsafe extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle, int* currentNodeIndex, int* lastNodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
 
-		public SwapChain(Device device, bool ensureSizeMatchesWindowSize)
-		: base(device)
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_SwapChain_ResolveRenderTexture(IntPtr handle, IntPtr srcRenderTexture);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_SwapChain_CopyTexture(IntPtr handle, IntPtr srcTexture);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_D3D12_SwapChain_CopyTextureRegion(IntPtr handle, IntPtr srcTexture, int srcX, int srcY, int dstX, int dstY, int width, int height, int srcMipmapLevel);
+
+		public SwapChain(Device device, bool ensureSizeMatchesWindowSize, SwapChainType type)
+		: base(device, type)
 		{
 			deviceD3D12 = device;
-			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle);
+			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle, type);
 			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 
@@ -67,18 +77,36 @@ namespace Orbital.Video.D3D12
 			}
 		}
 
-		public override void BeginFrame()
+		public unsafe override void BeginFrame()
 		{
 			if (ensureSizeMatchesWindowSize)
 			{
 				// TODO: check if window size changed and resize swapchain back-buffer if so to match
 			}
-			Orbital_Video_D3D12_SwapChain_BeginFrame(handle);
+			int currentNodeIndex, lastNodeIndex;
+			Orbital_Video_D3D12_SwapChain_BeginFrame(handle, &currentNodeIndex, &lastNodeIndex);
+			this.currentNodeIndex = currentNodeIndex;
+			this.lastNodeIndex = lastNodeIndex;
 		}
 
 		public override void Present()
 		{
 			Orbital_Video_D3D12_SwapChain_Present(handle);
+		}
+
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture)
+		{
+			Orbital_Video_D3D12_SwapChain_ResolveRenderTexture(handle, sourceRenderTexture.GetHandle());
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture)
+		{
+			Orbital_Video_D3D12_SwapChain_CopyTexture(handle, sourceTexture.GetHandle());
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel)
+		{
+			Orbital_Video_D3D12_SwapChain_CopyTextureRegion(handle, sourceTexture.GetHandle(), sourceOffset.x, sourceOffset.y, destinationOffset.x, destinationOffset.y, size.width, size.height, sourceMipmapLevel);
 		}
 
 		#region Create Methods

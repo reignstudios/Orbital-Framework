@@ -18,6 +18,11 @@ namespace Orbital.Video.D3D12
 		public bool softwareRasterizer;
 
 		/// <summary>
+		/// Allow the use of multiple GPUs that are linked when avaliable. Resources will be duplicated on all linked GPUs
+		/// </summary>
+		public bool allowMultiGPU;
+
+		/// <summary>
 		/// Window to the device will present to. Can be null for background devices
 		/// </summary>
 		public WindowBase window;
@@ -28,7 +33,7 @@ namespace Orbital.Video.D3D12
 		public bool ensureSwapChainMatchesWindowSize;
 
 		/// <summary>
-		/// Double/Tripple buffering etc
+		/// Double/Tripple buffering etc. (NOTE: ignored if multi-gpu rendering is active & avaliable)
 		/// </summary>
 		public int swapChainBufferCount;
 
@@ -36,6 +41,11 @@ namespace Orbital.Video.D3D12
 		/// Surface format of the swap-chain
 		/// </summary>
 		public SwapChainFormat swapChainFormat;
+
+		/// <summary>
+		/// Type of swap-chain
+		/// </summary>
+		public SwapChainType swapChainType;
 
 		/// <summary>
 		/// True to launch in fullscreen
@@ -73,7 +83,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_Device_Create(IntPtr Instance, DeviceType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, int softwareRasterizer);
+		private static unsafe extern int Orbital_Video_D3D12_Device_Init(IntPtr handle, int adapterIndex, int softwareRasterizer, int allowMultiGPU, int* nodeCount);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_Device_Dispose(IntPtr handle);
@@ -94,12 +104,14 @@ namespace Orbital.Video.D3D12
 			handle = Orbital_Video_D3D12_Device_Create(instance.handle, type);
 		}
 
-		public bool Init(DeviceDesc desc)
+		public unsafe bool Init(DeviceDesc desc)
 		{
-			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, (desc.softwareRasterizer ? 1 : 0)) == 0) return false;
+			int nodeCount = 0;
+			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.softwareRasterizer ? 1 : 0, desc.allowMultiGPU ? 1 : 0, &nodeCount) == 0) return false;
+			this.nodeCount = nodeCount;
 			if (type == DeviceType.Presentation)
 			{
-				swapChainD3D12 = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
+				swapChainD3D12 = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize, desc.swapChainType);
 				swapChain = swapChainD3D12;
 				if (desc.createDepthStencil) return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat, desc.stencilUsage, desc.depthStencilFormat, desc.depthStencilMode);
 				else return swapChainD3D12.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen, desc.swapChainFormat);
@@ -151,9 +163,9 @@ namespace Orbital.Video.D3D12
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type)
 		{
-			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
+			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize, type);
 			if (!abstraction.Init(window, bufferCount, fullscreen, format))
 			{
 				abstraction.Dispose();
@@ -162,9 +174,9 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
-			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
+			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize, type);
 			if (!abstraction.Init(window, bufferCount, fullscreen, format, stencilUsage, depthStencilFormat, depthStencilMode))
 			{
 				abstraction.Dispose();

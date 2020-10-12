@@ -61,6 +61,9 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ComputeState.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\PipelineStateResources.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp">
@@ -118,6 +121,9 @@
       <Filter>Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ComputeState.cpp">
+      <Filter>Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\PipelineStateResources.cpp">
       <Filter>Code</Filter>
     </ClCompile>
   </ItemGroup>

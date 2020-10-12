@@ -65,7 +65,7 @@ namespace Orbital.Video.Vulkan
 			}
 		}
 
-		public override bool BeginUpdate()
+		protected override bool BeginUpdateInternal()
 		{
 			throw new NotImplementedException();
 		}

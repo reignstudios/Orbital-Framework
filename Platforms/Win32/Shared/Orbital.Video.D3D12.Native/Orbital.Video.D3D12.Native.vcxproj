@@ -172,6 +172,7 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\IndexBuffer.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\PipelineStateResources.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\RenderPass.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Shader.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ShaderEffect.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Device.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\IndexBuffer.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Instance.cpp" />
+    <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\PipelineStateResources.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\RenderPass.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\Shader.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Video.D3D12.Native\ShaderEffect.cpp" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orbital.Numerics;
+using System;
 
 namespace Orbital.Video
 {
@@ -25,14 +26,34 @@ namespace Orbital.Video
 		R10G10B10A2
 	}
 
+	public enum SwapChainType
+	{
+		/// <summary>
+		/// Swap-Chain only uses primary GPU regardless of Multi-GPU support
+		/// </summary>
+		SingleGPU_Standard,
+
+		/// <summary>
+		/// Swap-Chain will init back-buffers on each GPU for AFR rendering.
+		/// NOTE: If Multi-GPU support isn't avaliable or enabled will default to 'SingleGPU_Standard'
+		/// </summary>
+		MultiGPU_AFR
+	}
+
 	public abstract class SwapChainBase : IDisposable
 	{
 		public readonly DeviceBase device;
 		public DepthStencilBase depthStencil { get; protected set; }
+		public readonly SwapChainType type;
+		public int currentNodeIndex { get; protected set; }
+		public int lastNodeIndex { get; protected set; }
 
-		public SwapChainBase(DeviceBase device)
+		public SwapChainBase(DeviceBase device, SwapChainType type)
 		{
 			this.device = device;
+
+			if (type == SwapChainType.MultiGPU_AFR && device.nodeCount == 1) type = SwapChainType.SingleGPU_Standard;
+			this.type = type;
 		}
 
 		public abstract void Dispose();
@@ -46,6 +67,21 @@ namespace Orbital.Video
 		/// Swaps back-buffer and presents to display
 		/// </summary>
 		public abstract void Present();
+
+		/// <summary>
+		/// Resolves/Copies MSAA render-texture to non-MSAA swap-chain
+		/// </summary>
+		public abstract void ResolveMSAA(Texture2DBase sourceRenderTexture);
+
+		/// <summary>
+		/// Copies texture to swap-chain of the same size
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture);
+
+		/// <summary>
+		/// Copies texture to swap-chain region
+		/// </summary>
+		public abstract void CopyTexture(Texture2DBase sourceTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel);
 
 		#region Create Methods
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);

@@ -19,19 +19,19 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_ConstantBuffer_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(IntPtr handle);
+		private static unsafe extern int Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(IntPtr handle, int nodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_EndUpdate(IntPtr handle);
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_EndUpdate(IntPtr handle, int nodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset);
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_Update(IntPtr handle, void* data, uint dataSize, uint dstOffset, int nodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_UpdateArray(IntPtr handle, void* data, uint dataElementSize, uint dataElementCount, uint offset, uint srcStride, uint dstStride);
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_UpdateArray(IntPtr handle, void* data, uint dataElementSize, uint dataElementCount, uint offset, uint srcStride, uint dstStride, int nodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(IntPtr handle, void* data, uint dataElementSize, uint dataElementCount, uint offset, uint srcStride, uint dstStride);
+		private static unsafe extern void Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(IntPtr handle, void* data, uint dataElementSize, uint dataElementCount, uint offset, uint srcStride, uint dstStride, int nodeIndex);
 
 		public ConstantBuffer(Device device, ConstantBufferMode mode)
 		: base(device)
@@ -88,38 +88,38 @@ namespace Orbital.Video.D3D12
 			}
 		}
 
-		public override bool BeginUpdate()
+		protected override bool BeginUpdateInternal()
 		{
-			return Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(handle) != 0;
+			return Orbital_Video_D3D12_ConstantBuffer_BeginUpdate(handle, currentNodeIndex) != 0;
 		}
 
 		public override void EndUpdate()
 		{
-			Orbital_Video_D3D12_ConstantBuffer_EndUpdate(handle);
+			Orbital_Video_D3D12_ConstantBuffer_EndUpdate(handle, currentNodeIndex);
 		}
 
 		#if CS_7_3
 		public unsafe override void Update<T>(T data)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), 0);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), 0, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T data, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)offset, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T[] data, int offset)
 		{
 			fixed (T* dataPtr = data)
 			{
-				Orbital_Video_D3D12_ConstantBuffer_Update(handle, dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset);
+				Orbital_Video_D3D12_ConstantBuffer_Update(handle, dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset, currentNodeIndex);
 			}
 		}
 
 		public unsafe override void Update<T>(T data, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &data, (uint)Marshal.SizeOf<T>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T[] data, ShaderVariableMapping variable)
@@ -128,7 +128,7 @@ namespace Orbital.Video.D3D12
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(variable.type);
 			fixed (T* dataPtr = data)
 			{
-				Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride);
+				Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 			}
 		}
 		#else
@@ -139,7 +139,7 @@ namespace Orbital.Video.D3D12
 			#if MONO
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), 0);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), 0, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T data, int offset)
@@ -149,14 +149,14 @@ namespace Orbital.Video.D3D12
 			#if MONO
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)offset, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T[] data, int offset)
 		{
 			GCHandle gcHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
 			IntPtr dataPtr = gcHandle.AddrOfPinnedObject();
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, (void*)dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, (void*)dataPtr, (uint)(Marshal.SizeOf<T>() * data.Length), (uint)offset, currentNodeIndex);
 			gcHandle.Free();
 		}
 
@@ -167,7 +167,7 @@ namespace Orbital.Video.D3D12
 			#if MONO
 			ptr += Marshal.SizeOf(typeof(RuntimeTypeHandle));
 			#endif
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, ptr, (uint)Marshal.SizeOf<T>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public unsafe override void Update<T>(T[] data, ShaderVariableMapping variable)
@@ -176,280 +176,280 @@ namespace Orbital.Video.D3D12
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(variable.type);
 			GCHandle gcHandle = GCHandle.Alloc(data, GCHandleType.Pinned);
 			IntPtr dataPtr = gcHandle.AddrOfPinnedObject();
-			Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, (void*)dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride);
+			Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, (void*)dataPtr, (uint)Marshal.SizeOf<T>(), (uint)data.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 			gcHandle.Free();
 		}
 		#endif
 
 		public override unsafe void Update(void* data, int dataSize, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, data, (uint)dataSize, (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, data, (uint)dataSize, (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(float value, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec2 vector, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec3 vector, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec4 vector, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2 matrix, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2x3 matrix, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3 matrix, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3x2 matrix, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat4 matrix, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Quat quaternion, int offset)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Color4 color, int offset)
 		{
 			var colorVec = color.ToVec4();
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(float value, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &value, sizeof(float), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec2 vector, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec2>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec3 vector, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec3>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec4 vector, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &vector, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2 matrix, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2x3 matrix, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat2x3>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3 matrix, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3x2 matrix, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat3x2>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat4 matrix, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &matrix, (uint)Marshal.SizeOf<Mat4>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Quat quaternion, ShaderVariableMapping variable)
 		{
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &quaternion, (uint)Marshal.SizeOf<Quat>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Color4 color, ShaderVariableMapping variable)
 		{
 			var colorVec = color.ToVec4();
-			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset);
+			Orbital_Video_D3D12_ConstantBuffer_Update(handle, &colorVec, (uint)Marshal.SizeOf<Vec4>(), (uint)variable.offset, currentNodeIndex);
 		}
 
 		public override unsafe void Update(float[] values, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float);
-			fixed (float* ptr = values) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, sizeof(float), (uint)values.Length, (uint)offset, srcStride, dstStride);
+			fixed (float* ptr = values) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, sizeof(float), (uint)values.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec2[] vectors, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2);
-			fixed (Vec2* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec2>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride);
+			fixed (Vec2* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec2>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec3[] vectors, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3);
-			fixed (Vec3* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec3>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride);
+			fixed (Vec3* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec3>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec4[] vectors, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Vec4* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec4>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride);
+			fixed (Vec4* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec4>(), (uint)vectors.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2[] matrices, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2x2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2x2);
-			fixed (Mat2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride);
+			fixed (Mat2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2x3[] matrices, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2x3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2x3);
-			fixed (Mat2x3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2x3>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride);
+			fixed (Mat2x3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2x3>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3[] matrices, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3x3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3x3);
-			fixed (Mat3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride);
+			fixed (Mat3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3x2[] matrices, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3x2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3x2);
-			fixed (Mat3x2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3x2>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride);
+			fixed (Mat3x2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3x2>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat4[] matrices, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4x4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4x4);
-			fixed (Mat4* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat4>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride);
+			fixed (Mat4* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat4>(), (uint)matrices.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Quat[] quaternions, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Quat* ptr = quaternions) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Quat>(), (uint)quaternions.Length, (uint)offset, srcStride, dstStride);
+			fixed (Quat* ptr = quaternions) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Quat>(), (uint)quaternions.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Color4[] colors, int offset)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4) / sizeof(float);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Color4* ptr = colors) Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(handle, ptr, (uint)Marshal.SizeOf<Color4>(), (uint)colors.Length, (uint)offset, srcStride, dstStride);
+			fixed (Color4* ptr = colors) Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(handle, ptr, (uint)Marshal.SizeOf<Color4>(), (uint)colors.Length, (uint)offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(float[] values, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float);
-			fixed (float* ptr = values) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, sizeof(float), (uint)values.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (float* ptr = values) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, sizeof(float), (uint)values.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec2[] vectors, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2);
-			fixed (Vec2* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec2>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Vec2* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec2>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec3[] vectors, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3);
-			fixed (Vec3* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec3>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Vec3* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec3>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Vec4[] vectors, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Vec4* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec4>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Vec4* ptr = vectors) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Vec4>(), (uint)vectors.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2[] matrices, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2x2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2x2);
-			fixed (Mat2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Mat2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat2x3[] matrices, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float2x3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float2x3);
-			fixed (Mat2x3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2x3>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Mat2x3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat2x3>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3[] matrices, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3x3);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3x3);
-			fixed (Mat3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Mat3* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat3x2[] matrices, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float3x2);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float3x2);
-			fixed (Mat3x2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3x2>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Mat3x2* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat3x2>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Mat4[] matrices, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4x4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4x4);
-			fixed (Mat4* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat4>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Mat4* ptr = matrices) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Mat4>(), (uint)matrices.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Quat[] quaternions, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Quat* ptr = quaternions) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Quat>(), (uint)quaternions.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Quat* ptr = quaternions) Orbital_Video_D3D12_ConstantBuffer_UpdateArray(handle, ptr, (uint)Marshal.SizeOf<Quat>(), (uint)quaternions.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 
 		public override unsafe void Update(Color4[] colors, ShaderVariableMapping variable)
 		{
 			uint srcStride = (uint)ShaderBase.VariableTypeToSrcStride(ShaderVariableType.Float4) / sizeof(float);
 			uint dstStride = (uint)ShaderBase.VariableTypeToDstStride(ShaderVariableType.Float4);
-			fixed (Color4* ptr = colors) Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(handle, ptr, (uint)Marshal.SizeOf<Color4>(), (uint)colors.Length, (uint)variable.offset, srcStride, dstStride);
+			fixed (Color4* ptr = colors) Orbital_Video_D3D12_ConstantBuffer_UpdateColorArray(handle, ptr, (uint)Marshal.SizeOf<Color4>(), (uint)colors.Length, (uint)variable.offset, srcStride, dstStride, currentNodeIndex);
 		}
 	}
 }

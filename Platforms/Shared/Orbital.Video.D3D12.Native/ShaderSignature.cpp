@@ -200,7 +200,7 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	if (FAILED(D3D12SerializeVersionedRootSignature(&signatureDesc, &serializedDesc, &error))) result = 0;
 
 	// create signature per physical GPU node
-	if (result == 1 && FAILED(device->device->CreateRootSignature(0, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signature)))) result = 0;
+	if (result == 1 && FAILED(device->device->CreateRootSignature(device->fullNodeMask, serializedDesc->GetBufferPointer(), serializedDesc->GetBufferSize(), IID_PPV_ARGS(&handle->signature)))) result = 0;
 
 	// dispose and return failed
 	if (serializedDesc != NULL) serializedDesc->Release();

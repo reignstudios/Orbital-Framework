@@ -25,6 +25,7 @@ namespace Orbital.Video
 		public readonly InstanceBase instance;
 		public readonly DeviceType type;
 		public SwapChainBase swapChain { get; protected set; }
+		public int nodeCount { get; protected set; }
 
 		public DeviceBase(InstanceBase instance, DeviceType type)
 		{
@@ -50,8 +51,8 @@ namespace Orbital.Video
 		public abstract bool GetMaxMSAALevel(TextureFormat format, out MSAALevel msaaLevel);
 
 		#region Create Methods
-		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format);
-		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type);
+		public abstract SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode);
 		public abstract RasterizeCommandListBase CreateRasterizeCommandList();
 		public abstract ComputeCommandListBase CreateComputeCommandList();
 		public abstract RenderPassBase CreateRenderPass(RenderPassDesc desc);

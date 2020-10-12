@@ -13,6 +13,11 @@ namespace Orbital.Video.Vulkan
 		public int adapterIndex;
 
 		/// <summary>
+		/// Allow the use of multiple GPUs that are linked when avaliable. Resources will be duplicated on all linked GPUs
+		/// </summary>
+		public bool allowMultiGPU;
+
+		/// <summary>
 		/// Window to the device will present to. Can be null for background devices
 		/// </summary>
 		public WindowBase window;
@@ -23,7 +28,7 @@ namespace Orbital.Video.Vulkan
 		public bool ensureSwapChainMatchesWindowSize;
 
 		/// <summary>
-		/// Double/Tripple buffering etc
+		/// Double/Tripple buffering etc. (NOTE: ignored if multi-gpu rendering is active & avaliable)
 		/// </summary>
 		public int swapChainBufferCount;
 
@@ -31,6 +36,11 @@ namespace Orbital.Video.Vulkan
 		/// Surface format of the swap-chain
 		/// </summary>
 		public SwapChainFormat swapChainFormat;
+
+		/// <summary>
+		/// Type of swap-chain
+		/// </summary>
+		public SwapChainType swapChainType;
 
 		/// <summary>
 		/// True to launch in fullscreen
@@ -91,7 +101,7 @@ namespace Orbital.Video.Vulkan
 			if (Orbital_Video_Vulkan_Device_Init(handle, desc.adapterIndex) == 0) return false;
 			if (type == DeviceType.Presentation)
 			{
-				swapChainVulkan = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize);
+				swapChainVulkan = new SwapChain(this, desc.ensureSwapChainMatchesWindowSize, desc.swapChainType);
 				swapChain = swapChainVulkan;
 				return swapChainVulkan.Init(desc.window, desc.swapChainBufferCount, desc.fullscreen);
 			}
@@ -135,9 +145,9 @@ namespace Orbital.Video.Vulkan
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type)
 		{
-			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize);
+			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize, type);
 			if (!abstraction.Init(window, bufferCount, fullscreen))
 			{
 				abstraction.Dispose();
@@ -146,7 +156,7 @@ namespace Orbital.Video.Vulkan
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
 		{
 			throw new NotImplementedException();
 		}

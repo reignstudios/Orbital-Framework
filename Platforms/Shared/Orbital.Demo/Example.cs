@@ -189,7 +189,7 @@ namespace Orbital.Demo
 			#endif
 
 			// load api abstraction (api-instance and hardware-device)
-			var abstractionDesc = new AbstractionDesc(true);
+			var abstractionDesc = new AbstractionDesc(AbstractionInitType.DefaultSingleGPU);
 			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
 			abstractionDesc.deviceDescD3D12.window = window;
@@ -205,6 +205,7 @@ namespace Orbital.Demo
 
 			// create msaa render texture
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
+			msaaLevel = MSAALevel.Disabled;
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false);
 			
@@ -575,16 +576,16 @@ namespace Orbital.Demo
 				camera.LookAt(Vec3.zero);
 
 				// update constant buffer
-				constantBuffer.BeginUpdate();
-				constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
-				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
-				constantBuffer.EndUpdate();
+				//if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
+				//constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
+				//constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
+				//constantBuffer.EndUpdate();
 				rot += 0.01f;
 
 				// render frame and present
 				device.BeginFrame();
 
-				commandList.Start();// RENDER INTO: RenderTexture
+				/*commandList.Start(device.swapChain);// RENDER INTO: RenderTexture
 				commandList.BeginRenderPass(renderTextureTest.renderPass);
 				commandList.SetViewPort(new ViewPort(0, 0, renderTextureTest.renderTexture.width, renderTextureTest.renderTexture.height));
 				commandList.SetRenderState(renderTextureTest.renderState);
@@ -606,10 +607,10 @@ namespace Orbital.Demo
 				commandList.SetRenderState(renderState);
 				commandList.Draw();
 				commandList.EndRenderPass();
-				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) commandList.ResolveMSAA(renderTextureMSAA, device.swapChain);
-				else commandList.CopyTexture(renderTextureMSAA, device.swapChain);
+				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
+				else device.swapChain.CopyTexture(renderTextureMSAA);
 				commandList.Finish();
-				commandList.Execute();
+				commandList.Execute();*/
 				device.EndFrame();
 
 				// run application events

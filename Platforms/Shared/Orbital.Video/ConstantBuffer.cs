@@ -24,6 +24,7 @@ namespace Orbital.Video
 	public abstract class ConstantBufferBase : IDisposable
 	{
 		public readonly DeviceBase device;
+		protected int currentNodeIndex { get; private set; }
 
 		/// <summary>
 		/// Size of the buffer with alignment padding
@@ -38,10 +39,40 @@ namespace Orbital.Video
 		public abstract void Dispose();
 
 		/// <summary>
-		/// Open command buffer for updates
+		/// Open command buffer for updates.
+		/// NOTE: Always updates on primary GPU
 		/// </summary>
 		/// <returns>True if successful</returns>
-		public abstract bool BeginUpdate();
+		public bool BeginUpdate()
+		{
+			currentNodeIndex = 0;
+			return BeginUpdateInternal();
+		}
+
+		/// <summary>
+		/// Open command buffer for updates.
+		/// NOTE: Locks buffers on swap-chains active GPU. (In the case of AFR this will be next swap buffer device)
+		/// </summary>
+		/// <param name="swapChain">SwapChain to lock GPU node buffers on</param>
+		/// <returns>True if successful</returns>
+		public bool BeginUpdate(SwapChainBase swapChain)
+		{
+			currentNodeIndex = swapChain.currentNodeIndex;
+			return BeginUpdateInternal();
+		}
+
+		/// <summary>
+		/// Open command buffer for updates
+		/// </summary>
+		/// <param name="nodeIndex">GPU node to update</param>
+		/// <returns>True if successful</returns>
+		public bool BeginUpdate(int nodeIndex)
+		{
+			currentNodeIndex = nodeIndex;
+			return BeginUpdateInternal();
+		}
+
+		protected abstract bool BeginUpdateInternal();
 
 		/// <summary>
 		/// Close command buffer from updates
@@ -58,6 +89,8 @@ namespace Orbital.Video
 		public abstract void Update<T>(T data) where T : struct;
 		public abstract void Update<T>(T data, int offset) where T : struct;
 		public abstract void Update<T>(T[] data, int offset) where T : struct;
+		public abstract void Update<T>(T data, ShaderVariableMapping variable) where T : struct;
+		public abstract void Update<T>(T[] data, ShaderVariableMapping variable) where T : struct;
 		#endif
 
 		public unsafe abstract void Update(void* data, int dataSize, int offset);

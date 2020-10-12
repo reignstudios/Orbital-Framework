@@ -9,7 +9,7 @@ namespace Orbital.Video.D3D12
 		internal IntPtr handle;
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern IntPtr Orbital_Video_D3D12_VertexBufferStreamer_Create();
+		private static extern IntPtr Orbital_Video_D3D12_VertexBufferStreamer_Create(IntPtr device);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static unsafe extern int Orbital_Video_D3D12_VertexBufferStreamer_Init(IntPtr handle, VertexBufferStreamLayout_NativeInterop* layout);
@@ -21,7 +21,7 @@ namespace Orbital.Video.D3D12
 		: base(device)
 		{
 			deviceD3D12 = device;
-			handle = Orbital_Video_D3D12_VertexBufferStreamer_Create();
+			handle = Orbital_Video_D3D12_VertexBufferStreamer_Create(device.handle);
 		}
 
 		public unsafe bool Init(VertexBufferStreamLayout layout)

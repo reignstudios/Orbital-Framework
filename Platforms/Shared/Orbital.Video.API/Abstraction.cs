@@ -17,6 +17,13 @@ namespace Orbital.Video.API
 		#endif
 	}
 
+	public enum AbstractionInitType
+	{
+		DontInit,
+		DefaultSingleGPU,
+		DefaultMultiGPU
+	}
+
 	public class AbstractionDesc
 	{
 		/// <summary>
@@ -39,9 +46,9 @@ namespace Orbital.Video.API
 		public string nativeLibPathVulkan;
 		#endif
 
-		public AbstractionDesc(bool initDefaults)
+		public AbstractionDesc(AbstractionInitType type)
 		{
-			if (!initDefaults) return;
+			if (type == AbstractionInitType.DontInit) return;
 
 			// set default apis
 			supportedAPIs = new AbstractionAPI[]
@@ -57,7 +64,22 @@ namespace Orbital.Video.API
 			instanceDescD3D12.minimumFeatureLevel = D3D12.FeatureLevel.Level_11_0;
 			deviceDescD3D12.adapterIndex = -1;
 			deviceDescD3D12.ensureSwapChainMatchesWindowSize = true;
-			deviceDescD3D12.swapChainBufferCount = 2;
+			if (type == AbstractionInitType.DefaultSingleGPU)
+			{
+				deviceDescD3D12.allowMultiGPU = false;
+				deviceDescD3D12.swapChainBufferCount = 2;
+				deviceDescD3D12.swapChainType = SwapChainType.SingleGPU_Standard;
+			}
+			else if (type == AbstractionInitType.DefaultMultiGPU)
+			{
+				deviceDescD3D12.allowMultiGPU = true;
+				deviceDescD3D12.swapChainBufferCount = 0;
+				deviceDescD3D12.swapChainType = SwapChainType.MultiGPU_AFR;
+			}
+			else
+			{
+				throw new NotImplementedException(type.ToString());
+			}
 			deviceDescD3D12.createDepthStencil = true;
 			#endif
 
@@ -66,7 +88,22 @@ namespace Orbital.Video.API
 			instanceDescVulkan.minimumFeatureLevel = Vulkan.FeatureLevel.Level_1_0;
 			deviceDescVulkan.adapterIndex = -1;
 			deviceDescVulkan.ensureSwapChainMatchesWindowSize = true;
-			deviceDescVulkan.swapChainBufferCount = 2;
+			if (type == AbstractionInitType.DefaultSingleGPU)
+			{
+				deviceDescVulkan.allowMultiGPU = false;
+				deviceDescVulkan.swapChainBufferCount = 2;
+				deviceDescVulkan.swapChainType = SwapChainType.SingleGPU_Standard;
+			}
+			else if (type == AbstractionInitType.DefaultMultiGPU)
+			{
+				deviceDescVulkan.allowMultiGPU = true;
+				deviceDescVulkan.swapChainBufferCount = 0;
+				deviceDescVulkan.swapChainType = SwapChainType.MultiGPU_AFR;
+			}
+			else
+			{
+				throw new NotImplementedException(type.ToString());
+			}
 			deviceDescVulkan.createDepthStencil = true;
 			#endif
 		}

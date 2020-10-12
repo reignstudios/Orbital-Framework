@@ -3,9 +3,11 @@
 
 extern "C"
 {
-	ORBITAL_EXPORT VertexBufferStreamer* Orbital_Video_D3D12_VertexBufferStreamer_Create()
+	ORBITAL_EXPORT VertexBufferStreamer* Orbital_Video_D3D12_VertexBufferStreamer_Create(Device* device)
 	{
-		return (VertexBufferStreamer*)calloc(1, sizeof(VertexBufferStreamer));
+		VertexBufferStreamer* handle = (VertexBufferStreamer*)calloc(1, sizeof(VertexBufferStreamer));
+		handle->device = device;
+		return handle;
 	}
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_VertexBufferStreamer_Init(VertexBufferStreamer* handle, VertexBufferStreamLayout* layout)
@@ -13,11 +15,20 @@ extern "C"
 		// track vertex buffer resources
 		handle->vertexBufferCount = layout->descCount;
 		handle->vertexBuffers = (VertexBuffer**)calloc(layout->descCount, sizeof(VertexBuffer*));
-		handle->vertexBufferViews = (D3D12_VERTEX_BUFFER_VIEW*)calloc(layout->descCount, sizeof(D3D12_VERTEX_BUFFER_VIEW));
 		for (int i = 0; i != layout->descCount; ++i)
 		{
 			handle->vertexBuffers[i] = (VertexBuffer*)layout->descs[i].vertexBuffer;
-			handle->vertexBufferViews[i] = handle->vertexBuffers[i]->resourceView;
+		}
+
+		// create nodes
+		handle->nodes = (VertexBufferStreamerNode*)calloc(handle->device->nodeCount, sizeof(VertexBufferStreamerNode));
+		for (UINT n = 0; n != handle->device->nodeCount; ++n)
+		{
+			handle->nodes[n].vertexBufferViews = (D3D12_VERTEX_BUFFER_VIEW*)calloc(layout->descCount, sizeof(D3D12_VERTEX_BUFFER_VIEW));
+			for (int i = 0; i != layout->descCount; ++i)
+			{
+				handle->nodes[n].vertexBufferViews[i] = handle->vertexBuffers[i]->nodes[n].resourceView;
+			}
 		}
 
 		// create elements
@@ -90,10 +101,19 @@ extern "C"
 			handle->vertexBuffers = NULL;
 		}
 
-		if (handle->vertexBufferViews != NULL)
+		if (handle->nodes != NULL)
 		{
-			free(handle->vertexBufferViews);
-			handle->vertexBufferViews = NULL;
+			for (UINT n = 0; n != handle->device->nodeCount; ++n)
+			{
+				if (handle->nodes[n].vertexBufferViews != NULL)
+				{
+					free(handle->nodes[n].vertexBufferViews);
+					handle->nodes[n].vertexBufferViews = NULL;
+				}
+			}
+
+			free(handle->nodes);
+			handle->nodes = NULL;
 		}
 
 		if (handle->elements != NULL)

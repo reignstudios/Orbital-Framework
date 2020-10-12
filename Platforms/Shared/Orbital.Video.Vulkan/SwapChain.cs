@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Orbital.Host;
+using Orbital.Numerics;
 
 namespace Orbital.Video.Vulkan
 {
@@ -28,8 +29,8 @@ namespace Orbital.Video.Vulkan
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_Vulkan_SwapChain_Present(IntPtr handle);
 
-		public SwapChain(Device device, bool ensureSizeMatchesWindowSize)
-		: base(device)
+		public SwapChain(Device device, bool ensureSizeMatchesWindowSize, SwapChainType type)
+		: base(device, type)
 		{
 			deviceVulkan = device;
 			handle = Orbital_Video_Vulkan_SwapChain_Create(device.handle);
@@ -38,6 +39,7 @@ namespace Orbital.Video.Vulkan
 
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
 		{
+			//InitBase(type);
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			uint width = (uint)size.width;
 			uint height = (uint)size.height;
@@ -70,6 +72,21 @@ namespace Orbital.Video.Vulkan
 		public override void Present()
 		{
 			Orbital_Video_Vulkan_SwapChain_Present(handle);
+		}
+
+		public override void ResolveMSAA(Texture2DBase sourceRenderTexture)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void CopyTexture(Texture2DBase sourceTexture, Point2 sourceOffset, Point2 destinationOffset, Size2 size, int sourceMipmapLevel)
+		{
+			throw new NotImplementedException();
 		}
 
 		#region Create Methods
