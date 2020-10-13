@@ -47,5 +47,6 @@ SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
+    //return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
+    return (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
 }

@@ -153,7 +153,7 @@ extern "C"
 	{
 		D3D12_RANGE readRange = {};
 		ConstantBufferNode* activeNode = &handle->nodes[nodeIndex];
-		activeNode->resource->Unmap(0, nullptr);
+		activeNode->resource->Unmap(0, &readRange);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_ConstantBuffer_Update(ConstantBuffer* handle, void* data, UINT dataSize, UINT offset, int nodeIndex)

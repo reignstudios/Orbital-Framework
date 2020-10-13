@@ -576,10 +576,10 @@ namespace Orbital.Demo
 				camera.LookAt(Vec3.zero);
 
 				// update constant buffer
-				if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
+				/*if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
 				constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
 				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
-				constantBuffer.EndUpdate();
+				constantBuffer.EndUpdate();*/
 				rot += 0.01f;
 
 				// render frame and present
@@ -594,12 +594,12 @@ namespace Orbital.Demo
 				commandList.Finish();
 				commandList.Execute();
 
-				// execute compute shader
+				/*// execute compute shader
 				commandList_Compute.Start(device.swapChain);
 				commandList_Compute.SetComputeState(computeState);
 				commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
 				commandList_Compute.Finish();
-				commandList_Compute.Execute();
+				commandList_Compute.Execute();*/
 
 				commandList.Start(device.swapChain);// RENDER INTO: SwapChain
 				commandList.BeginRenderPass(renderPass);
