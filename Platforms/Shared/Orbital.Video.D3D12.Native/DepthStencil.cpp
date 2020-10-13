@@ -78,12 +78,12 @@ extern "C"
 			if (FAILED(handle->device->device->CreateDescriptorHeap(&shaderHeapDesc, IID_PPV_ARGS(&handle->nodes[n].shaderResourceHeap)))) return 0;
 
 			// create shader resource view
-			D3D12_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
-			shaderResourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-			if (!GetNative_DepthStencilShaderResourceFormat(format, &shaderResourceDesc.Format)) return 0;
-			shaderResourceDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURE2DMS;
-			shaderResourceDesc.Texture2D.MipLevels = 1;
-			handle->device->device->CreateShaderResourceView(handle->nodes[n].resource, &shaderResourceDesc, handle->nodes[n].shaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
+			//D3D12_SHADER_RESOURCE_VIEW_DESC shaderResourceDesc = {};
+			//shaderResourceDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			//if (!GetNative_DepthStencilShaderResourceFormat(format, &shaderResourceDesc.Format)) return 0;
+			//shaderResourceDesc.ViewDimension = (msaaLevel == MSAALevel_Disabled) ? D3D12_SRV_DIMENSION_TEXTURE2D : D3D12_SRV_DIMENSION_TEXTURE2DMS;
+			//shaderResourceDesc.Texture2D.MipLevels = 1;
+			//handle->device->device->CreateShaderResourceView(handle->nodes[n].resource, &shaderResourceDesc, handle->nodes[n].shaderResourceHeap->GetCPUDescriptorHandleForHeapStart());
 		}
 
 		return 1;

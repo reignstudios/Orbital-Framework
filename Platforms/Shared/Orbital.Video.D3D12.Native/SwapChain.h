@@ -4,8 +4,6 @@
 struct SwapChainNode
 {
 	ID3D12DescriptorHeap* resourceHeap;
-	D3D12_CPU_DESCRIPTOR_HANDLE resourceDescCPUHandle;
-	D3D12_RESOURCE_STATES resourceState;
 };
 
 struct SwapChain
@@ -13,8 +11,12 @@ struct SwapChain
 	Device* device;
 	SwapChainNode* nodes;
 	UINT bufferCount, nodeCount, currentRenderTargetIndex, currentNodeIndex;
-	IDXGISwapChain3* swapChain;
+	IDXGISwapChain* swapChain;
+	IDXGISwapChain1* swapChain1;
+	IDXGISwapChain3* swapChain3;
 	ID3D12Resource** resources;
+	D3D12_CPU_DESCRIPTOR_HANDLE* resourceDescCPUHandles;
+	D3D12_RESOURCE_STATES* resourceStates;
 	DXGI_FORMAT format;
 	SwapChainType type;
 

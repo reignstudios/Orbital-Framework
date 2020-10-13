@@ -5,12 +5,14 @@ UINT TextureFormatSizePerPixel(DXGI_FORMAT nativeFormat)
 {
 	switch (nativeFormat)
 	{
-		case DXGI_FORMAT::DXGI_FORMAT_B8G8R8A8_UNORM:
+		case DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UINT:
+		case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UINT:
+		case DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM:
 		case DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM:
 			return 4;
 
-		case TextureFormat::TextureFormat_R16G16B16A16: return 8;
-		case TextureFormat::TextureFormat_R32G32B32A32: return 16;
+		case DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT: return 8;
+		case DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT: return 16;
 		default: return 0;
 	}
 	return true;
@@ -28,7 +30,7 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, int allowRandomAccess, MSAALevel msaaLevel)
 	{
-		if (!GetNative_TextureFormat(format, &handle->format)) return 0;
+		if (!GetNative_TextureFormat(format, &handle->format, isRenderTexture)) return 0;
 
 		// create nodes
 		handle->nodes = (TextureNode*)calloc(handle->device->nodeCount, sizeof(TextureNode));

@@ -154,25 +154,26 @@ extern "C"
 		UINT activeNodeIndex = handle->activeNodeIndex;
 		if (renderPass->swapChain != NULL)
 		{
+			UINT currentRenderTargetIndex = renderPass->swapChain->currentRenderTargetIndex;
 			D3D12_RESOURCE_BARRIER barriers[2] = {};
 			int barrierCount = 0;
-			if (renderPass->swapChain->nodes[activeNodeIndex].resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
+			if (renderPass->swapChain->resourceStates[currentRenderTargetIndex] != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
 			{
 				auto barrier = &barriers[barrierCount];
 				barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 				if (renderPass->swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard)
 				{
-					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[renderPass->swapChain->currentRenderTargetIndex];
+					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[currentRenderTargetIndex];
 				}
 				else if (renderPass->swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR)
 				{
 					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[0];
 				}
-				barrier->Transition.StateBefore = renderPass->swapChain->nodes[activeNodeIndex].resourceState;
+				barrier->Transition.StateBefore = renderPass->swapChain->resourceStates[currentRenderTargetIndex];
 				barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 				barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->swapChain->nodes[activeNodeIndex].resourceState = barrier->Transition.StateAfter;
+				renderPass->swapChain->resourceStates[currentRenderTargetIndex] = barrier->Transition.StateAfter;
 				++barrierCount;
 			}
 

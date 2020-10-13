@@ -231,7 +231,7 @@ extern "C"
 	ORBITAL_EXPORT int Orbital_Video_D3D12_Device_GetMaxMSAALevel(Device* handle, TextureFormat format, MSAALevel* msaaLevel)
 	{
 		DXGI_FORMAT nativeFormat;
-		if (!GetNative_TextureFormat(format, &nativeFormat)) return 0;
+		if (!GetNative_TextureFormat(format, &nativeFormat, true)) return 0;
 		*msaaLevel = MSAALevel::MSAALevel_Disabled;
 		UINT lvl = 2;
 		for (UINT i = 0; i != 4; ++i)

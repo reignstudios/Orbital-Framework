@@ -49,19 +49,26 @@ extern "C"
 		fullscreenDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER::DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		fullscreenDesc.Scaling = DXGI_MODE_SCALING::DXGI_MODE_SCALING_UNSPECIFIED;
 
-		IDXGISwapChain1* swapChain = NULL;
 		DeviceNode* primaryDeviceNode = &handle->device->nodes[0];// always use primary device node to create swap-chain
-		if (FAILED(handle->device->instance->factory->CreateSwapChainForHwnd(primaryDeviceNode->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &swapChain))) return 0;
-		handle->swapChain = (IDXGISwapChain3*)swapChain;
+		if (FAILED(handle->device->instance->factory->CreateSwapChainForHwnd(primaryDeviceNode->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &handle->swapChain1))) return 0;
+		//handle->device->instance->factory->CreateSwapChain
+		handle->swapChain = handle->swapChain1;
+		if (FAILED(handle->swapChain->QueryInterface(&handle->swapChain3))) return 0;
 		if (FAILED(handle->device->instance->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
+
+		// create resource object arrays
+		handle->resources = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
+		handle->resourceDescCPUHandles = (D3D12_CPU_DESCRIPTOR_HANDLE*)calloc(bufferCount, sizeof(D3D12_CPU_DESCRIPTOR_HANDLE));
+		handle->resourceStates = (D3D12_RESOURCE_STATES*)calloc(bufferCount, sizeof(D3D12_RESOURCE_STATES));
+		for (UINT i = 0; i != bufferCount; ++i)
+		{
+			handle->resourceStates[i] = D3D12_RESOURCE_STATE_PRESENT;// set default state
+		}
 
 		// create nodes
 		handle->nodes = (SwapChainNode*)calloc(handle->nodeCount, sizeof(SwapChainNode));
-		handle->resources = (ID3D12Resource**)calloc(bufferCount, sizeof(ID3D12Resource*));
 		for (UINT n = 0; n != handle->nodeCount; ++n)
 		{
-			handle->nodes[n].resourceState = D3D12_RESOURCE_STATE_PRESENT;// set default state
-
 			// create memory heaps
 			if (handle->type == SwapChainType::SwapChainType_SingleGPU_Standard)// single GPU standard swap buffers
 			{
@@ -79,7 +86,7 @@ extern "C"
 				{
 					if (FAILED(handle->swapChain->GetBuffer(i, IID_PPV_ARGS(&handle->resources[i])))) return 0;
 					handle->device->device->CreateRenderTargetView(handle->resources[i], nullptr, resourceDescCPUHandle);
-					handle->nodes[n].resourceDescCPUHandle = resourceDescCPUHandle;
+					handle->resourceDescCPUHandles[i] = resourceDescCPUHandle;
 					resourceDescCPUHandle.ptr += resourceHeapSize;
 				}
 			}
@@ -97,7 +104,7 @@ extern "C"
 				D3D12_CPU_DESCRIPTOR_HANDLE resourceDescCPUHandle = handle->nodes[n].resourceHeap->GetCPUDescriptorHandleForHeapStart();
 				if (FAILED(handle->swapChain->GetBuffer(n, IID_PPV_ARGS(&handle->resources[n])))) return 0;
 				handle->device->device->CreateRenderTargetView(handle->resources[n], nullptr, resourceDescCPUHandle);
-				handle->nodes[n].resourceDescCPUHandle = resourceDescCPUHandle;
+				handle->resourceDescCPUHandles[n] = resourceDescCPUHandle;
 			}
 			else
 			{
@@ -196,6 +203,19 @@ extern "C"
 			handle->internalCommandAllocator = NULL;
 		}
 
+		// dispose main
+		if (handle->resourceDescCPUHandles != NULL)
+		{
+			free(handle->resourceDescCPUHandles);
+			handle->resourceDescCPUHandles = NULL;
+		}
+
+		if (handle->resourceStates != NULL)
+		{
+			free(handle->resourceStates);
+			handle->resourceStates = NULL;
+		}
+
 		if (handle->resources != NULL)
 		{
 			for (UINT i = 0; i != handle->bufferCount; ++i)
@@ -207,6 +227,12 @@ extern "C"
 				}
 			}
 			handle->resources = NULL;
+		}
+
+		if (handle->swapChain3 != NULL)
+		{
+			handle->swapChain3->Release();
+			handle->swapChain3 = NULL;
 		}
 
 		if (handle->swapChain != NULL)
@@ -221,7 +247,7 @@ extern "C"
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_BeginFrame(SwapChain* handle, int* currentNodeIndex, int* lastNodeIndex)
 	{
 		*lastNodeIndex = handle->currentNodeIndex;
-		handle->currentRenderTargetIndex = handle->swapChain->GetCurrentBackBufferIndex();
+		handle->currentRenderTargetIndex = handle->swapChain3->GetCurrentBackBufferIndex();
 		if (handle->nodeCount == 1) handle->currentNodeIndex = 0;
 		else handle->currentNodeIndex = handle->currentRenderTargetIndex;
 		*currentNodeIndex = handle->currentNodeIndex;
@@ -258,7 +284,7 @@ extern "C"
 		// make sure swap-chain surface is in present state
 		UINT currentNodeIndex = handle->currentNodeIndex;
 		DeviceNode* primaryDeviceNode = &handle->device->nodes[0];
-		//Orbital_Video_D3D12_SwapChain_ChangeState(handle, currentNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT, handle->internalCommandList);
+		Orbital_Video_D3D12_SwapChain_ChangeState(handle, currentNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT, handle->internalCommandList);
 
 		// close command list
 		if (FAILED(handle->internalCommandList->Close()))
@@ -268,8 +294,8 @@ extern "C"
 
 		// execute operations
 		ID3D12CommandList* commandLists[1] = { handle->internalCommandList };
-		//primaryDeviceNode->commandQueue->ExecuteCommandLists(1, commandLists);
-		//WaitForFence_CommandQueue(primaryDeviceNode->commandQueue, handle->internalFence, handle->internalFenceEvent, handle->internalFenceValue);
+		primaryDeviceNode->commandQueue->ExecuteCommandLists(1, commandLists);
+		WaitForFence_CommandQueue(primaryDeviceNode->commandQueue, handle->internalFence, handle->internalFenceEvent, handle->internalFenceValue);
 
 		handle->swapChain->Present(0, 0);
 	}
@@ -286,22 +312,6 @@ extern "C"
 	{
 		UINT activeNodeIndex = handle->currentNodeIndex;
 		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->internalCommandList);
-
-		//// reset command list and copy resource
-		//handle->device->nodes[activeNodeIndex].internalMutex->lock();
-		//handle->device->nodes[activeNodeIndex].internalCommandList->Reset(handle->device->nodes[activeNodeIndex].internalCommandAllocator, NULL);
-		//Orbital_Video_D3D12_Texture_ChangeState(srcTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->device->nodes[activeNodeIndex].internalCommandList);
-		//// close command list
-		//handle->device->nodes[activeNodeIndex].internalCommandList->Close();
-
-		//// execute operations
-		//ID3D12CommandList* commandLists[1] = { handle->device->nodes[activeNodeIndex].internalCommandList };
-		//handle->device->nodes[activeNodeIndex].commandQueue->ExecuteCommandLists(1, commandLists);
-		//WaitForFence(handle->device, activeNodeIndex, handle->device->nodes[activeNodeIndex].internalFence, handle->device->nodes[activeNodeIndex].internalFenceEvent, handle->device->nodes[activeNodeIndex].internalFenceValue);
-
-		//// release temp resource
-		//handle->device->nodes[activeNodeIndex].internalMutex->unlock();
-
 		Orbital_Video_D3D12_SwapChain_ChangeState(handle, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->internalCommandList);
 		handle->internalCommandList->CopyResource(handle->resources[handle->currentRenderTargetIndex], srcTexture->nodes[activeNodeIndex].resource);
 	}
@@ -334,14 +344,15 @@ extern "C"
 void Orbital_Video_D3D12_SwapChain_ChangeState(SwapChain* handle, UINT nodeIndex, D3D12_RESOURCE_STATES state, ID3D12GraphicsCommandList* commandList)
 {
 	SwapChainNode* activeNode = &handle->nodes[nodeIndex];
-	if (activeNode->resourceState == state) return;
+	UINT currentRenderTargetIndex = handle->currentRenderTargetIndex;
+	if (handle->resourceStates[currentRenderTargetIndex] == state) return;
 	D3D12_RESOURCE_BARRIER barrier = {};
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 	barrier.Transition.pResource = handle->resources[handle->currentRenderTargetIndex];
-	barrier.Transition.StateBefore = activeNode->resourceState;
+	barrier.Transition.StateBefore = handle->resourceStates[currentRenderTargetIndex];
 	barrier.Transition.StateAfter = state;
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	commandList->ResourceBarrier(1, &barrier);
-	activeNode->resourceState = state;
+	handle->resourceStates[currentRenderTargetIndex] = state;
 }

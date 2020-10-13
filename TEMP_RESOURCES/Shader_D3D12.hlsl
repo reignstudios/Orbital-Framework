@@ -31,8 +31,9 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
 
-    float4 pos = float4(input.position, 1);
-    result.position = mul(pos, camera);
+    //float4 pos = float4(input.position, 1);
+    //result.position = mul(pos, camera);
+    result.position = float4(input.position, 1);
     result.color = input.color * constrast;
     result.uv = input.uv;
 

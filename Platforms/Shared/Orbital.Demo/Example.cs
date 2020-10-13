@@ -214,7 +214,7 @@ namespace Orbital.Demo
 			commandList_Compute = device.CreateComputeCommandList();
 
 			// create render pass
-			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
+			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, 1, 0, 1), 1);
 			//renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
 			renderPass = renderTextureMSAA.CreateRenderPass(renderPassDesc, renderTextureMSAA.GetDepthStencil());
 
@@ -576,16 +576,16 @@ namespace Orbital.Demo
 				camera.LookAt(Vec3.zero);
 
 				// update constant buffer
-				//if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
-				//constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
-				//constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
-				//constantBuffer.EndUpdate();
+				if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
+				constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
+				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
+				constantBuffer.EndUpdate();
 				rot += 0.01f;
 
 				// render frame and present
 				device.BeginFrame();
 
-				/*commandList.Start(device.swapChain);// RENDER INTO: RenderTexture
+				commandList.Start(device.swapChain);// RENDER INTO: RenderTexture
 				commandList.BeginRenderPass(renderTextureTest.renderPass);
 				commandList.SetViewPort(new ViewPort(0, 0, renderTextureTest.renderTexture.width, renderTextureTest.renderTexture.height));
 				commandList.SetRenderState(renderTextureTest.renderState);
@@ -595,13 +595,13 @@ namespace Orbital.Demo
 				commandList.Execute();
 
 				// execute compute shader
-				commandList_Compute.Start();
+				commandList_Compute.Start(device.swapChain);
 				commandList_Compute.SetComputeState(computeState);
 				commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
 				commandList_Compute.Finish();
 				commandList_Compute.Execute();
 
-				commandList.Start();// RENDER INTO: SwapChain
+				commandList.Start(device.swapChain);// RENDER INTO: SwapChain
 				commandList.BeginRenderPass(renderPass);
 				commandList.SetViewPort(viewPort);
 				commandList.SetRenderState(renderState);
@@ -610,7 +610,7 @@ namespace Orbital.Demo
 				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
 				else device.swapChain.CopyTexture(renderTextureMSAA);
 				commandList.Finish();
-				commandList.Execute();*/
+				commandList.Execute();
 				device.EndFrame();
 
 				// run application events

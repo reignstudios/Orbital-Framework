@@ -124,7 +124,7 @@ extern "C"
 				for (UINT i = 0; i != swapChain->bufferCount; ++i)
 				{
 					handle->nodes[n].renderTargetResources[i] = swapChain->resources[i];
-					handle->nodes[n].renderTargetDescs[i].cpuDescriptor = swapChain->nodes[n].resourceDescCPUHandle;
+					handle->nodes[n].renderTargetDescs[i].cpuDescriptor = swapChain->resourceDescCPUHandles[i];
 				}
 			}
 			else if (swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR)
@@ -132,7 +132,7 @@ extern "C"
 				handle->nodes[n].renderTargetResources = (ID3D12Resource**)calloc(1, sizeof(ID3D12Resource));
 				handle->nodes[n].renderTargetDescs = (D3D12_RENDER_PASS_RENDER_TARGET_DESC*)calloc(1, sizeof(D3D12_RENDER_PASS_RENDER_TARGET_DESC));
 				handle->nodes[n].renderTargetResources[0] = swapChain->resources[n];
-				handle->nodes[n].renderTargetDescs[0].cpuDescriptor = swapChain->nodes[n].resourceDescCPUHandle;
+				handle->nodes[n].renderTargetDescs[0].cpuDescriptor = swapChain->resourceDescCPUHandles[n];
 			}
 			else
 			{
