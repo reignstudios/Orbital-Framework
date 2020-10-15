@@ -73,7 +73,7 @@ namespace Orbital.Video.API
 			else if (type == AbstractionInitType.DefaultMultiGPU)
 			{
 				deviceDescD3D12.allowMultiGPU = true;
-				deviceDescD3D12.swapChainBufferCount = 0;
+				deviceDescD3D12.swapChainBufferCount = 2;
 				deviceDescD3D12.swapChainType = SwapChainType.MultiGPU_AFR;
 			}
 			else
@@ -97,7 +97,7 @@ namespace Orbital.Video.API
 			else if (type == AbstractionInitType.DefaultMultiGPU)
 			{
 				deviceDescVulkan.allowMultiGPU = true;
-				deviceDescVulkan.swapChainBufferCount = 0;
+				deviceDescVulkan.swapChainBufferCount = 2;
 				deviceDescVulkan.swapChainType = SwapChainType.MultiGPU_AFR;
 			}
 			else

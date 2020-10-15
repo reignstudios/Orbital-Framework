@@ -40,7 +40,7 @@ namespace Orbital.Video.D3D12
 		: base(device, type)
 		{
 			deviceD3D12 = device;
-			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle, type);
+			handle = Orbital_Video_D3D12_SwapChain_Create(device.handle, this.type);
 			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 

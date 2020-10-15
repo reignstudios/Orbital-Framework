@@ -16,8 +16,8 @@ extern "C"
 	{
 		if (handle->type == SwapChainType::SwapChainType_MultiGPU_AFR)
 		{
-			bufferCount = handle->device->nodeCount;// if multi-gpu buffer count matches GPU count
 			handle->nodeCount = handle->device->nodeCount;
+			bufferCount = handle->device->nodeCount;// if multi-gpu buffer count matches GPU count
 		}
 		else
 		{
