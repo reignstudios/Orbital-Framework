@@ -44,7 +44,7 @@ extern "C"
 		*nodeCount = handle->nodeCount;
 
 		// get max feature level
-		D3D_FEATURE_LEVEL supportedFeatureLevels[9] =
+		D3D_FEATURE_LEVEL supportedFeatureLevels[4] =
 		{
 			D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_0,
 			D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_11_1,
@@ -52,7 +52,7 @@ extern "C"
 			D3D_FEATURE_LEVEL::D3D_FEATURE_LEVEL_12_1
 		};
 		D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelInfo = {};
-		featureLevelInfo.NumFeatureLevels = 9;
+		featureLevelInfo.NumFeatureLevels = 4;
 		featureLevelInfo.pFeatureLevelsRequested = supportedFeatureLevels;
 		if (FAILED(handle->device->CheckFeatureSupport(D3D12_FEATURE::D3D12_FEATURE_FEATURE_LEVELS, &featureLevelInfo, sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS)))) return 0;
 		handle->nativeFeatureLevel = featureLevelInfo.MaxSupportedFeatureLevel;
