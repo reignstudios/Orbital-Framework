@@ -150,19 +150,8 @@ extern "C"
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Finish(CommandList* handle)
 	{
-		auto result = handle->activeNode->commandList->Close();
-		if (FAILED(result))
-		{
-			handle->activeNode->commandList->Close();
-		}
-		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList)
-		{
-			result = handle->activeNode->commandList_Direct->Close();
-			if (FAILED(result))
-			{
-				handle->activeNode->commandList->Close();
-			}
-		}
+		handle->activeNode->commandList->Close();
+		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList) handle->activeNode->commandList_Direct->Close();
 	}
 	
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_BeginRenderPass(CommandList* handle, RenderPass* renderPass)

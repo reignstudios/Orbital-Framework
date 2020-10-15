@@ -266,10 +266,7 @@ extern "C"
 		Orbital_Video_D3D12_SwapChain_ChangeState(handle, currentNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT, handle->internalCommandList);
 
 		// close command list
-		if (FAILED(handle->internalCommandList->Close()))
-		{
-			return;
-		}
+		handle->internalCommandList->Close();
 
 		// execute operations
 		ID3D12CommandList* commandLists[1] = { handle->internalCommandList };

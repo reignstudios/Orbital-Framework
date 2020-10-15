@@ -193,6 +193,7 @@ namespace Orbital.Demo
 			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
 			abstractionDesc.deviceDescD3D12.window = window;
+			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 
 			abstractionDesc.deviceDescVulkan.window = window;
@@ -214,7 +215,7 @@ namespace Orbital.Demo
 			commandList_Compute = device.CreateComputeCommandList();
 
 			// create render pass
-			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, 1, 0, 1), 1);
+			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
 			//renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
 			renderPass = renderTextureMSAA.CreateRenderPass(renderPassDesc, renderTextureMSAA.GetDepthStencil());
 
