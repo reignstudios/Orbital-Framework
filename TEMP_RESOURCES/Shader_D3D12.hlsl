@@ -1,9 +1,3 @@
-cbuffer ConstantBufferObject : register(b0)
-{
-	float constrast;
-    float4x4 camera;
-};
-
 // Test reference
 /*tbuffer TextureBufferObject : register(t2)
 {
@@ -12,6 +6,12 @@ cbuffer ConstantBufferObject : register(b0)
 // GLSL equivalent
 // https://www.khronos.org/opengl/wiki/Buffer_Texture
 // texelFetch or texelFetchOffset: https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Direct_texel_fetches
+
+cbuffer ConstantBufferObject : register(b0)
+{
+    float constrast;
+    float4x4 camera;
+};
 
 struct VSInput
 {
@@ -31,9 +31,8 @@ PSInput VSMain(VSInput input)
 {
     PSInput result;
 
-    //float4 pos = float4(input.position, 1);
-    //result.position = mul(pos, camera);
-    result.position = float4(input.position, 1);
+    float4 pos = float4(input.position, 1);
+    result.position = mul(pos, camera);
     result.color = input.color * constrast;
     result.uv = input.uv;
 
@@ -47,6 +46,5 @@ SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    //return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
-    return (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
+    return input.color * (mainTexture.Sample(mainSampler, input.uv) + mainTexture2.Sample(mainSampler, input.uv)) * triangleTexture.Sample(mainSampler, input.uv);
 }

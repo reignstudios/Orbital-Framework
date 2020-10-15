@@ -194,6 +194,7 @@ extern "C"
 				{
 					// reset command list and copy resource
 					handle->device->nodes[n].internalMutex->lock();
+					handle->device->nodes[n].internalCommandAllocator->Reset();
 					handle->device->nodes[n].internalCommandList->Reset(handle->device->nodes[n].internalCommandAllocator, NULL);
 
 					// copy all mip levels

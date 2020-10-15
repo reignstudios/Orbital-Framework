@@ -253,34 +253,13 @@ extern "C"
 		*currentNodeIndex = handle->currentNodeIndex;
 
 		// reset command list and copy resource
+		handle->internalCommandAllocator->Reset();
 		DeviceNode* primaryDeviceNode = &handle->device->nodes[0];
 		handle->internalCommandList->Reset(handle->internalCommandAllocator, NULL);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_Present(SwapChain* handle)
 	{
-		//UINT currentNodeIndex = handle->currentNodeIndex;
-		//UINT n = 0;//handle->currentNodeIndex;
-		////if (handle->nodes[currentNodeIndex].resourceState != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT)
-		//{
-		//	// reset command list and copy resource
-		//	handle->nodes[currentNodeIndex].internalCommandList->Reset(handle->device->nodes[currentNodeIndex].commandAllocator, NULL);
-
-		//	Orbital_Video_D3D12_SwapChain_ChangeState(handle, currentNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->nodes[currentNodeIndex].internalCommandList);
-
-		//	// change resource state to present
-		//	Orbital_Video_D3D12_SwapChain_ChangeState(handle, currentNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_PRESENT, handle->nodes[currentNodeIndex].internalCommandList);
-
-		//	// close command list
-		//	handle->nodes[currentNodeIndex].internalCommandList->Close();
-
-		//	// execute operations
-		//	ID3D12CommandList* commandLists[1] = { handle->nodes[currentNodeIndex].internalCommandList };
-		//	handle->device->nodes[n].commandQueue->ExecuteCommandLists(1, commandLists);
-		//	WaitForFence(handle->device, currentNodeIndex, handle->nodes[currentNodeIndex].internalFence, handle->nodes[currentNodeIndex].internalFenceEvent, handle->nodes[currentNodeIndex].internalFenceValue);
-		//}
-		//handle->swapChain->Present(0, 0);
-
 		// make sure swap-chain surface is in present state
 		UINT currentNodeIndex = handle->currentNodeIndex;
 		DeviceNode* primaryDeviceNode = &handle->device->nodes[0];

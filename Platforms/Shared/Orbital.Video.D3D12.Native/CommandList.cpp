@@ -139,14 +139,30 @@ extern "C"
 	{
 		handle->activeNodeIndex = nodeIndex;
 		handle->activeNode = &handle->nodes[nodeIndex];
+		handle->activeNode->commandAllocator->Reset();
 		handle->activeNode->commandList->Reset(handle->activeNode->commandAllocator, NULL);
-		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList) handle->activeNode->commandList_Direct->Reset(handle->activeNode->commandAllocator_Direct, NULL);
+		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList)
+		{
+			handle->activeNode->commandAllocator_Direct->Reset();
+			handle->activeNode->commandList_Direct->Reset(handle->activeNode->commandAllocator_Direct, NULL);
+		}
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Finish(CommandList* handle)
 	{
-		handle->activeNode->commandList->Close();
-		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList) handle->activeNode->commandList_Direct->Close();
+		auto result = handle->activeNode->commandList->Close();
+		if (FAILED(result))
+		{
+			handle->activeNode->commandList->Close();
+		}
+		if (handle->activeNode->commandList_Direct != handle->activeNode->commandList)
+		{
+			result = handle->activeNode->commandList_Direct->Close();
+			if (FAILED(result))
+			{
+				handle->activeNode->commandList->Close();
+			}
+		}
 	}
 	
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_BeginRenderPass(CommandList* handle, RenderPass* renderPass)
