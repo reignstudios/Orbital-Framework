@@ -42,7 +42,14 @@ namespace Orbital.Video
 
 	public enum SwapChainVSyncMode
 	{
+		/// <summary>
+		/// VSync is on (no tearing if possible)
+		/// </summary>
 		VSyncOn,
+
+		/// <summary>
+		/// VSync is off (tearing if possible)
+		/// </summary>
 		VSyncOff
 	}
 

@@ -14,28 +14,28 @@ namespace Orbital.Video.D3D12
 			this.usage = usage;
 		}
 
-		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel, bool allowRandomAccess)
+		public bool Init(int width, int height, TextureFormat format, MSAALevel msaaLevel, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
-			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel);
+			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel, nodeVisibility);
 		}
 
-		public override bool Init(int width, int height, TextureFormat format, byte[] data)
+		public override bool Init(int width, int height, TextureFormat format, byte[] data, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
-			return Init(width, height, format, data, true, false, MSAALevel.Disabled);
+			return Init(width, height, format, data, true, false, MSAALevel.Disabled, nodeVisibility);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowRandomAccess)
+		public bool Init(int width, int height, TextureFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, msaaLevel)) return false;
-			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel);
+			return Init(width, height, format, null, true, allowRandomAccess, msaaLevel, nodeVisibility);
 		}
 
-		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowRandomAccess)
+		public bool Init(int width, int height, TextureFormat format, byte[] data, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			depthStencil = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			if (!depthStencil.Init(width, height, depthStencilFormat, MSAALevel.Disabled)) return false;
-			return Init(width, height, format, data, true, allowRandomAccess, MSAALevel.Disabled);
+			return Init(width, height, format, data, true, allowRandomAccess, MSAALevel.Disabled, nodeVisibility);
 		}
 
 		public override void Dispose()

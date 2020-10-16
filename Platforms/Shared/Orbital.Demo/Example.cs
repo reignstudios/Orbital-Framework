@@ -44,7 +44,7 @@ namespace Orbital.Demo
 		{
 			// create render texture
 			const int size = 256;
-			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, MSAALevel.Disabled, true);
+			renderTexture = device.CreateRenderTexture2D(size, size, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, MSAALevel.Disabled, true, MultiGPUNodeResourceVisibility.Self);
 
 			// load shader effect
 			using (var vsStream = new FileStream("Shaders\\Triangle_D3D12.vs", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -209,7 +209,7 @@ namespace Orbital.Demo
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
 			msaaLevel = MSAALevel.Disabled;
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
-			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false);
+			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false, MultiGPUNodeResourceVisibility.All);
 			
 			// create command list
 			commandList = device.CreateRasterizeCommandList();
@@ -242,7 +242,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized);
+			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
 
 			// create texture 2
 			textureWidth = 100;
@@ -267,7 +267,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized);
+			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
 
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect

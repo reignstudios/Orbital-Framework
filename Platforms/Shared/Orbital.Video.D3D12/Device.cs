@@ -442,10 +442,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateTexture2D(int width, int height, TextureFormat format, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateTexture2D(int width, int height, TextureFormat format, byte[] data, TextureMode mode, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			var abstraction = new Texture2D(this, mode);
-			if (!abstraction.Init(width, height, format, data))
+			if (!abstraction.Init(width, height, format, data, nodeVisibility))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create Texture2D");
@@ -453,10 +453,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, MSAALevel msaaLevel, bool allowRandomAccess)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, MSAALevel msaaLevel, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(width, height, format, msaaLevel, allowRandomAccess))
+			if (!abstraction.Init(width, height, format, msaaLevel, allowRandomAccess, nodeVisibility))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");
@@ -464,10 +464,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(width, height, format, data))
+			if (!abstraction.Init(width, height, format, data, nodeVisibility))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");
@@ -475,10 +475,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowRandomAccess)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, MSAALevel msaaLevel, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(width, height, format, stencilUsage, depthStencilFormat, depthStencilMode, msaaLevel, allowRandomAccess))
+			if (!abstraction.Init(width, height, format, stencilUsage, depthStencilFormat, depthStencilMode, msaaLevel, allowRandomAccess, nodeVisibility))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");
@@ -486,10 +486,10 @@ namespace Orbital.Video.D3D12
 			return abstraction;
 		}
 
-		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowRandomAccess)
+		public override Texture2DBase CreateRenderTexture2D(int width, int height, TextureFormat format, RenderTextureUsage usage, byte[] data, TextureMode mode, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, bool allowRandomAccess, MultiGPUNodeResourceVisibility nodeVisibility)
 		{
 			var abstraction = new RenderTexture2D(this, usage, mode);
-			if (!abstraction.Init(width, height, format, data, stencilUsage, depthStencilFormat, depthStencilMode, allowRandomAccess))
+			if (!abstraction.Init(width, height, format, data, stencilUsage, depthStencilFormat, depthStencilMode, allowRandomAccess, nodeVisibility))
 			{
 				abstraction.Dispose();
 				throw new Exception("Failed to create RenderTexture2D");

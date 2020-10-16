@@ -28,7 +28,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, int allowRandomAccess, MSAALevel msaaLevel)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Texture_Init(Texture* handle, TextureFormat format, TextureType type, UINT32 mipLevels, UINT32* width, UINT32* height, UINT32* depth, BYTE** data, int isRenderTexture, int allowRandomAccess, MSAALevel msaaLevel, MultiGPUNodeResourceVisibility nodeVisibility)
 	{
 		if (!GetNative_TextureFormat(format, &handle->format, isRenderTexture)) return 0;
 
@@ -43,7 +43,7 @@ extern "C"
 			heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 			heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 			heapProperties.CreationNodeMask = handle->device->nodes[n].mask;
-			heapProperties.VisibleNodeMask = handle->device->fullNodeMask;//handle->device->nodes[n].mask;
+			heapProperties.VisibleNodeMask = (nodeVisibility == MultiGPUNodeResourceVisibility_Self) ? handle->device->nodes[n].mask : handle->device->fullNodeMask;
 
 			D3D12_RESOURCE_DESC resourceDesc = {};
 			if (type == TextureType::TextureType_1D) resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE1D;

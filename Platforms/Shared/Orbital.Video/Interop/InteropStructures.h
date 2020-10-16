@@ -11,6 +11,12 @@ typedef enum DeviceType
 	DeviceType_BIT = ENUM_BIT
 }DeviceType;
 
+typedef enum MultiGPUNodeResourceVisibility
+{
+	MultiGPUNodeResourceVisibility_Self,
+	MultiGPUNodeResourceVisibility_All
+}MultiGPUNodeResourceVisibility;
+
 typedef struct RenderPassRenderTargetDesc
 {
 	byte clearColor;
