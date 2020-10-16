@@ -110,17 +110,6 @@ extern "C"
 			{
 				return 0;
 			}
-
-			//// create helpers for synchronous buffer operations
-			//if (FAILED(handle->device->device->CreateCommandList(handle->device->nodes[0].mask, D3D12_COMMAND_LIST_TYPE_DIRECT, handle->device->nodes[0].commandAllocator, nullptr, IID_PPV_ARGS(&handle->nodes[n].internalCommandList)))) return 0;
-			//if (FAILED(handle->nodes[n].internalCommandList->Close())) return 0;// make sure this is closed as it defaults to open for writing
-
-			//if (FAILED(handle->device->device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&handle->nodes[n].internalFence)))) return 0;
-			//handle->nodes[n].internalFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-			//if (handle->nodes[n].internalFenceEvent == NULL) return 0;
-
-			//// make sure fence values start at 1 so they don't match 'GetCompletedValue' when its first called
-			//handle->nodes[n].internalFenceValue = 1;
 		}
 
 		// create helpers for synchronous buffer operations
@@ -153,25 +142,6 @@ extern "C"
 						handle->nodes[n].resourceHeap = NULL;
 					}
 				}
-
-				//// dispose present helpers
-				//if (handle->nodes[n].internalFenceEvent != NULL)
-				//{
-				//	CloseHandle(handle->nodes[n].internalFenceEvent);
-				//	handle->nodes[n].internalFenceEvent = NULL;
-				//}
-
-				//if (handle->nodes[n].internalFence != NULL)
-				//{
-				//	handle->nodes[n].internalFence->Release();
-				//	handle->nodes[n].internalFence = NULL;
-				//}
-
-				//if (handle->nodes[n].internalCommandList != NULL)
-				//{
-				//	handle->nodes[n].internalCommandList->Release();
-				//	handle->nodes[n].internalCommandList = NULL;
-				//}
 			}
 
 			free(handle->nodes);
