@@ -145,7 +145,7 @@ namespace Orbital.Video.Vulkan
 		}
 
 		#region Create Methods
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, SwapChainVSyncMode vSyncMode)
 		{
 			var abstraction = new SwapChain(this, ensureSizeMatchesWindowSize, type);
 			if (!abstraction.Init(window, bufferCount, fullscreen))
@@ -156,7 +156,7 @@ namespace Orbital.Video.Vulkan
 			return abstraction;
 		}
 
-		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, SwapChainVSyncMode vSyncMode)
 		{
 			throw new NotImplementedException();
 		}

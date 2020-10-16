@@ -12,7 +12,7 @@ extern "C"
 		return handle;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen, SwapChainFormat format)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_SwapChain_Init(SwapChain* handle, HWND hWnd, UINT width, UINT height, UINT bufferCount, int fullscreen, SwapChainFormat format, SwapChainVSyncMode vSyncMode)
 	{
 		if (handle->type == SwapChainType::SwapChainType_MultiGPU_AFR)
 		{
@@ -25,6 +25,9 @@ extern "C"
 		}
 		handle->bufferCount = bufferCount;
 		if (!GetNative_SwapChainFormat(format, &handle->format)) return false;
+		handle->vSyncMode = vSyncMode;
+		handle->vSync = (vSyncMode == SwapChainVSyncMode_VSyncOn) ? 1 : 0;
+		handle->fullscreen = fullscreen == 1 ? true : false;
 
 		// check format support
 		D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = {};
@@ -38,10 +41,10 @@ extern "C"
 		swapChainDesc.Height = height;
 		swapChainDesc.Format = handle->format;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT::DXGI_SWAP_EFFECT_FLIP_DISCARD;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 		swapChainDesc.SampleDesc.Count = 1;// swap-chains do not support msaa
 		swapChainDesc.SampleDesc.Quality = 0;
-		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG::DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+		swapChainDesc.Flags = (vSyncMode == SwapChainVSyncMode_VSyncOff && !fullscreen) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
 
 		DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreenDesc = {};
 		fullscreenDesc.Windowed = fullscreen == 0;
@@ -52,7 +55,7 @@ extern "C"
 
 		DeviceNode* primaryDeviceNode = &handle->device->nodes[0];// always use primary device node to create swap-chain
 		if (FAILED(handle->device->instance->factory->CreateSwapChainForHwnd(primaryDeviceNode->commandQueue, hWnd, &swapChainDesc, &fullscreenDesc, NULL, &handle->swapChain1))) return 0;
-		//handle->device->instance->factory->CreateSwapChain
+		//handle->device->instance->factory->CreateSwapChain()
 		handle->swapChain = handle->swapChain1;
 		if (FAILED(handle->swapChain->QueryInterface(&handle->swapChain3))) return 0;
 		if (FAILED(handle->device->instance->factory->MakeWindowAssociation(hWnd, DXGI_MWA_NO_ALT_ENTER))) return 0;
@@ -244,7 +247,10 @@ extern "C"
 		primaryDeviceNode->commandQueue->ExecuteCommandLists(1, commandLists);
 		WaitForFence_CommandQueue(primaryDeviceNode->commandQueue, handle->internalFence, handle->internalFenceEvent, handle->internalFenceValue);
 
-		handle->swapChain->Present(0, 0);
+		// preset frame
+		UINT presentFlags = 0;
+		if (handle->vSyncMode == SwapChainVSyncMode_VSyncOff && !handle->fullscreen) presentFlags |= DXGI_PRESENT_ALLOW_TEARING;
+		handle->swapChain->Present(handle->vSync, presentFlags);
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_ResolveRenderTexture(SwapChain* handle, Texture* srcRenderTexture)

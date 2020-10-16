@@ -40,6 +40,12 @@ namespace Orbital.Video
 		MultiGPU_AFR
 	}
 
+	public enum SwapChainVSyncMode
+	{
+		VSyncOn,
+		VSyncOff
+	}
+
 	public abstract class SwapChainBase : IDisposable
 	{
 		public readonly DeviceBase device;

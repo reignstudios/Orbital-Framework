@@ -45,6 +45,12 @@ typedef enum SwapChainType
 	SwapChainType_BIT = ENUM_BIT
 }SwapChainType;
 
+typedef enum SwapChainVSyncMode
+{
+	SwapChainVSyncMode_VSyncOn,
+	SwapChainVSyncMode_VSyncOff
+}SwapChainVSyncMode;
+
 #pragma region Texture / Surface
 typedef enum TextureMode
 {

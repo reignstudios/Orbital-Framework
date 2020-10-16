@@ -16,7 +16,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_SwapChain_Create(IntPtr device, SwapChainType type);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen, SwapChainFormat format);
+		private static extern int Orbital_Video_D3D12_SwapChain_Init(IntPtr handle, IntPtr hWnd, uint width, uint height, uint bufferCount, int fullscreen, SwapChainFormat format, SwapChainVSyncMode vSyncMode);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
@@ -44,21 +44,21 @@ namespace Orbital.Video.D3D12
 			this.ensureSizeMatchesWindowSize = ensureSizeMatchesWindowSize;
 		}
 
-		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, SwapChainVSyncMode vSyncMode)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			IntPtr hWnd = window.GetHandle();
-			if (Orbital_Video_D3D12_SwapChain_Init(handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0), format) == 0) return false;
+			if (Orbital_Video_D3D12_SwapChain_Init(handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0), format, vSyncMode) == 0) return false;
 			return true;
 		}
 
-		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode)
+		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, SwapChainVSyncMode vSyncMode)
 		{
 			var size = window.GetSize(WindowSizeType.WorkingArea);
 			depthStencilD3D12 = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			depthStencil = depthStencilD3D12;
 			if (!depthStencilD3D12.Init(size.width, size.height, depthStencilFormat, MSAALevel.Disabled)) return false;
-			return Init(window, bufferCount, fullscreen, format);
+			return Init(window, bufferCount, fullscreen, format, vSyncMode);
 		}
 
 		public override void Dispose()

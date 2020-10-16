@@ -194,6 +194,7 @@ namespace Orbital.Demo
 
 			abstractionDesc.deviceDescD3D12.window = window;
 			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
+			abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 
 			abstractionDesc.deviceDescVulkan.window = window;

@@ -17,12 +17,36 @@ bool ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBIL
 	return true;
 }
 
+void CheckRootAccess
+(
+	ShaderEffectResourceUsage usage,
+	bool* vertexShaderAccess,
+	bool* pixelShaderAccess,
+	bool* hullShaderAccess,
+	bool* domainShaderAccess,
+	bool* geometryShaderAccess
+)
+{
+	if ((usage & ShaderEffectResourceUsage_VS) != 0) *vertexShaderAccess = true;
+	if ((usage & ShaderEffectResourceUsage_PS) != 0) *pixelShaderAccess = true;
+	if ((usage & ShaderEffectResourceUsage_HS) != 0) *hullShaderAccess = true;
+	if ((usage & ShaderEffectResourceUsage_DS) != 0) *domainShaderAccess = true;
+	if ((usage & ShaderEffectResourceUsage_GS) != 0) *geometryShaderAccess = true;
+}
+
 int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* device, ShaderSignatureDesc* desc)
 {
 	// set version
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC signatureDesc = {};
 	signatureDesc.Version = device->maxRootSignatureVersion;
-	signatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	signatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
+	bool vertexShaderAccess = false;
+	bool pixelShaderAccess = false;
+	bool hullShaderAccess = false;
+	bool domainShaderAccess = false;
+	bool geometryShaderAccess = false;
+	bool amplificationShaderAccess = false;
+	bool meshShaderAccess = false;
 
 	// configure samplers
 	signatureDesc.Desc_1_1.NumStaticSamplers = desc->samplersCount;
@@ -79,6 +103,16 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 				break;
 			}
+
+			CheckRootAccess
+			(
+				constantBuffers[i].usage,
+				&vertexShaderAccess,
+				&pixelShaderAccess,
+				&hullShaderAccess,
+				&domainShaderAccess,
+				&geometryShaderAccess
+			);
 		}
 
 		parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
@@ -127,6 +161,16 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 				break;
 			}
+
+			CheckRootAccess
+			(
+				textures[i].usage,
+				&vertexShaderAccess,
+				&pixelShaderAccess,
+				&hullShaderAccess,
+				&domainShaderAccess,
+				&geometryShaderAccess
+			);
 		}
 
 		parameter.DescriptorTable.NumDescriptorRanges = desc->textureCount;
@@ -165,7 +209,27 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 		auto randomAccessBuffers = desc->randomAccessBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
 		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+		if (!ResourceUsageToNative(randomAccessBuffers[0].usage, &parameter.ShaderVisibility)) return 0;// get first visibility
+		for (int i = 0; i != desc->randomAccessBufferCount; ++i)
+		{
+			D3D12_SHADER_VISIBILITY visibility;
+			if (!ResourceUsageToNative(randomAccessBuffers[i].usage, &visibility)) return 0;
+			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
+			{
+				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+				break;
+			}
+
+			CheckRootAccess
+			(
+				randomAccessBuffers[i].usage,
+				&vertexShaderAccess,
+				&pixelShaderAccess,
+				&hullShaderAccess,
+				&domainShaderAccess,
+				&geometryShaderAccess
+			);
+		}
 
 		parameter.DescriptorTable.NumDescriptorRanges = desc->randomAccessBufferCount;
 		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
@@ -192,6 +256,15 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 		memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
 		++parameterIndex;
 	}
+
+	// optimize root signatures
+	if (!vertexShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+	if (!pixelShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+	if (!hullShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
+	if (!domainShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+	if (!geometryShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+	if (!amplificationShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS;
+	if (!meshShaderAccess) signatureDesc.Desc_1_1.Flags |= D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS;
 
 	// serialize desc
 	ID3DBlob* serializedDesc = NULL;

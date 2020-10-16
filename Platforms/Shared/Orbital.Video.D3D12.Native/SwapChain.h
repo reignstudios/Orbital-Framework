@@ -19,6 +19,9 @@ struct SwapChain
 	D3D12_RESOURCE_STATES* resourceStates;
 	DXGI_FORMAT format;
 	SwapChainType type;
+	UINT vSync;
+	SwapChainVSyncMode vSyncMode;
+	bool fullscreen;
 
 	// used to switch over to present
 	ID3D12CommandAllocator* internalCommandAllocator;
