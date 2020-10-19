@@ -13,6 +13,11 @@ cbuffer ConstantBufferObject : register(b0)
     float4x4 camera;
 };
 
+Texture2D mainTexture : register(t0);
+Texture2D mainTexture2 : register(t1);
+Texture2D triangleTexture : register(t2);
+SamplerState mainSampler : register(s0);
+
 struct VSInput
 {
     float3 position : POSITION0;
@@ -38,11 +43,6 @@ PSInput VSMain(VSInput input)
 
     return result;
 }
-
-Texture2D mainTexture : register(t0);
-Texture2D mainTexture2 : register(t1);
-Texture2D triangleTexture : register(t2);
-SamplerState mainSampler : register(s0);
 
 float4 PSMain(PSInput input) : SV_TARGET
 {

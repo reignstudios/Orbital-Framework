@@ -44,18 +44,23 @@ bool GetNative_DepthStencilFormat(DepthStencilFormat format, DXGI_FORMAT* native
 {
 	switch (format)
 	{
-		case DepthStencilFormat::DepthStencilFormat_DefaultDepth:
 		case DepthStencilFormat::DepthStencilFormat_D32:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT;
 			break;
 
-		case DepthStencilFormat::DepthStencilFormat_DefaultDepthStencil:
 		case DepthStencilFormat::DepthStencilFormat_D32S8:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
 			break;
 
-		case DepthStencilFormat::DepthStencilFormat_D24S8: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT; break;
-		case DepthStencilFormat::DepthStencilFormat_D16: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D16_UNORM; break;
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepth:
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepthStencil:
+		case DepthStencilFormat::DepthStencilFormat_D24S8:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D24_UNORM_S8_UINT;
+			break;
+
+		case DepthStencilFormat::DepthStencilFormat_D16:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_D16_UNORM;
+			break;
 		default: return false;
 	}
 	return true;;
@@ -65,18 +70,23 @@ bool GetNative_DepthStencilShaderResourceFormat(DepthStencilFormat format, DXGI_
 {
 	switch (format)
 	{
-		case DepthStencilFormat::DepthStencilFormat_DefaultDepth:
 		case DepthStencilFormat::DepthStencilFormat_D32:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT;
 			break;
 
-		case DepthStencilFormat::DepthStencilFormat_DefaultDepthStencil:
 		case DepthStencilFormat::DepthStencilFormat_D32S8:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
 			break;
 
-		case DepthStencilFormat::DepthStencilFormat_D24S8: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R24_UNORM_X8_TYPELESS; break;
-		case DepthStencilFormat::DepthStencilFormat_D16: *nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R16_UNORM; break;
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepth:
+		case DepthStencilFormat::DepthStencilFormat_DefaultDepthStencil:
+		case DepthStencilFormat::DepthStencilFormat_D24S8:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+			break;
+
+		case DepthStencilFormat::DepthStencilFormat_D16:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R16_UNORM;
+			break;
 		default: return false;
 	}
 	return true;;

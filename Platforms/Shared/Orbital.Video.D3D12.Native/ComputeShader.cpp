@@ -37,7 +37,18 @@ extern "C"
 		}
 
 		signature.samplersCount = desc->samplersCount;
-		signature.samplers = desc->samplers;
+		signature.samplers = (ShaderSignatureSampler*)alloca(desc->samplersCount * sizeof(ShaderSignatureSampler));
+		for (int i = 0; i != desc->samplersCount; ++i)
+		{
+			signature.samplers[i].registerIndex = desc->samplers[i].registerIndex;
+			signature.samplers[i].filter = desc->samplers[i].filter;
+			signature.samplers[i].anisotropy = desc->samplers[i].anisotropy;
+			signature.samplers[i].addressU = desc->samplers[i].addressU;
+			signature.samplers[i].addressV = desc->samplers[i].addressV;
+			signature.samplers[i].addressW = desc->samplers[i].addressW;
+			signature.samplers[i].comparisonFunction = desc->samplers[i].comparisonFunction;
+			signature.samplers[i].usage = ShaderEffectResourceUsage::ShaderEffectResourceUsage_All;
+		}
 
 		signature.randomAccessBufferCount = desc->randomAccessBufferCount;
 		signature.randomAccessBuffers = (ShaderSignatureRandomAccessBuffer*)alloca(desc->randomAccessBufferCount * sizeof(ShaderSignatureRandomAccessBuffer));

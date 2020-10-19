@@ -87,7 +87,7 @@ extern "C"
 					return 0;
 				}
 				memcpy(gpuDataPtr, initialData, size);
-				uploadResource->Unmap(0, nullptr);
+				uploadResource->Unmap(0, &readRange);
 
 				// copy upload buffer to default buffer
 				if (useUploadBuffer)

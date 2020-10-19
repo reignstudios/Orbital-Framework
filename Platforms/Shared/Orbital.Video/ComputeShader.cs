@@ -23,6 +23,35 @@ namespace Orbital.Video
 		public int registerIndex;
 	}
 
+	public struct ComputeShaderSampler
+	{
+		/// <summary>
+		/// Register index of the sampler
+		/// </summary>
+		public int registerIndex;
+
+		/// <summary>
+		/// Texture sampler filter
+		/// </summary>
+		public ShaderSamplerFilter filter;
+
+		/// <summary>
+		/// Anisotropy texture filtering
+		/// </summary>
+		public ShaderSamplerAnisotropy anisotropy;
+
+		/// <summary>
+		/// Texture address mode
+		/// </summary>
+		public ShaderSamplerAddress addressU, addressV, addressW;
+
+		/// <summary>
+		/// Use with special shader sampler method to compare against custom value.
+		/// Useful for PCF shadows.
+		/// </summary>
+		public ShaderComparisonFunction comparisonFunction;
+	}
+
 	public struct ComputeShaderRandomAccessBuffer
 	{
 		/// <summary>
@@ -35,7 +64,7 @@ namespace Orbital.Video
 	{
 		public ComputeShaderConstantBuffer[] constantBuffers;
 		public ComputeShaderTexture[] textures;
-		public ShaderSampler[] samplers;
+		public ComputeShaderSampler[] samplers;
 		public ComputeShaderRandomAccessBuffer[] randomAccessBuffers;
 	}
 

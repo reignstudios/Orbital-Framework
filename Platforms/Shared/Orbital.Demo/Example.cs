@@ -194,7 +194,7 @@ namespace Orbital.Demo
 
 			abstractionDesc.deviceDescD3D12.window = window;
 			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
-			abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
+			//abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 
 			abstractionDesc.deviceDescVulkan.window = window;
@@ -243,7 +243,7 @@ namespace Orbital.Demo
 				}
 			}
 			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
-
+			
 			// create texture 2
 			textureWidth = 100;
 			textureHeight = 100;
@@ -268,7 +268,7 @@ namespace Orbital.Demo
 				}
 			}
 			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
-
+			
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect
 			/*using (var stream = new FileStream("Shader.se", FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -317,15 +317,16 @@ namespace Orbital.Demo
 					registerIndex = 2,
 					usage = ShaderEffectResourceUsage.PS
 				};
-				desc.samplers = new ShaderSampler[1];
-				desc.samplers[0] = new ShaderSampler()
+				desc.samplers = new ShaderEffectSampler[1];
+				desc.samplers[0] = new ShaderEffectSampler()
 				{
 					registerIndex = 0,
 					filter = ShaderSamplerFilter.Default,
 					anisotropy = ShaderSamplerAnisotropy.Default,
 					addressU = ShaderSamplerAddress.Wrap,
 					addressV = ShaderSamplerAddress.Wrap,
-					addressW = ShaderSamplerAddress.Wrap
+					addressW = ShaderSamplerAddress.Wrap,
+					usage = ShaderEffectResourceUsage.PS
 				};
 				shaderEffect = device.CreateShaderEffect(vs, ps, null, null, null, desc, true);
 			}
@@ -609,10 +610,12 @@ namespace Orbital.Demo
 				commandList.SetRenderState(renderState);
 				commandList.Draw();
 				commandList.EndRenderPass();
-				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
-				else device.swapChain.CopyTexture(renderTextureMSAA);
 				commandList.Finish();
 				commandList.Execute();
+
+				// copy render-texture into swap-chain surface
+				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
+				else device.swapChain.CopyTexture(renderTextureMSAA);
 				device.EndFrame();
 
 				// run application events

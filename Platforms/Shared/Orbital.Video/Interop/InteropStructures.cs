@@ -518,29 +518,6 @@ namespace Orbital.Video.Vulkan
 	}
 	#endregion
 
-	#region Shaders
-	[StructLayout(LayoutKind.Sequential)]
-	struct ShaderSampler_NativeInterop
-	{
-		public int registerIndex;
-		public ShaderSamplerFilter filter;
-		public ShaderSamplerAnisotropy anisotropy;
-		public ShaderSamplerAddress addressU, addressV, addressW;
-		public ShaderComparisonFunction comparisonFunction;
-
-		public ShaderSampler_NativeInterop(ref ShaderSampler sampler)
-		{
-			registerIndex = sampler.registerIndex;
-			filter = sampler.filter;
-			addressU = sampler.addressU;
-			addressV = sampler.addressV;
-			addressW = sampler.addressW;
-			anisotropy = sampler.anisotropy;
-			comparisonFunction = sampler.comparisonFunction;
-		}
-	}
-	#endregion
-
 	#region ShaderEffect
 	[StructLayout(LayoutKind.Sequential)]
 	struct ShaderEffectConstantBuffer_NativeInterop
@@ -569,6 +546,29 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	struct ShaderEffectSampler_NativeInterop
+	{
+		public int registerIndex;
+		public ShaderSamplerFilter filter;
+		public ShaderSamplerAnisotropy anisotropy;
+		public ShaderSamplerAddress addressU, addressV, addressW;
+		public ShaderComparisonFunction comparisonFunction;
+		public ShaderEffectResourceUsage usage;
+
+		public ShaderEffectSampler_NativeInterop(ref ShaderEffectSampler sampler)
+		{
+			registerIndex = sampler.registerIndex;
+			filter = sampler.filter;
+			addressU = sampler.addressU;
+			addressV = sampler.addressV;
+			addressW = sampler.addressW;
+			anisotropy = sampler.anisotropy;
+			comparisonFunction = sampler.comparisonFunction;
+			usage = sampler.usage;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ShaderEffectRandomAccessBuffer_NativeInterop
 	{
 		public int registerIndex;
@@ -587,7 +587,7 @@ namespace Orbital.Video.Vulkan
 		public int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 		public ShaderEffectConstantBuffer_NativeInterop* constantBuffers;
 		public ShaderEffectTexture_NativeInterop* textures;
-		public ShaderSampler_NativeInterop* samplers;
+		public ShaderEffectSampler_NativeInterop* samplers;
 		public ShaderEffectRandomAccessBuffer_NativeInterop* randomAccessBuffers;
 
 		public ShaderEffectDesc_NativeInterop(ref ShaderEffectDesc desc)
@@ -628,10 +628,10 @@ namespace Orbital.Video.Vulkan
 			if (desc.samplers != null)
 			{
 				samplersCount = desc.samplers.Length;
-				samplers = (ShaderSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderSampler_NativeInterop>() * samplersCount);
+				samplers = (ShaderEffectSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderEffectSampler_NativeInterop>() * samplersCount);
 				for (int i = 0; i != samplersCount; ++i)
 				{
-					samplers[i] = new ShaderSampler_NativeInterop(ref desc.samplers[i]);
+					samplers[i] = new ShaderEffectSampler_NativeInterop(ref desc.samplers[i]);
 				}
 			}
 
@@ -700,6 +700,27 @@ namespace Orbital.Video.Vulkan
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
+	struct ComputeShaderSampler_NativeInterop
+	{
+		public int registerIndex;
+		public ShaderSamplerFilter filter;
+		public ShaderSamplerAnisotropy anisotropy;
+		public ShaderSamplerAddress addressU, addressV, addressW;
+		public ShaderComparisonFunction comparisonFunction;
+
+		public ComputeShaderSampler_NativeInterop(ref ComputeShaderSampler sampler)
+		{
+			registerIndex = sampler.registerIndex;
+			filter = sampler.filter;
+			addressU = sampler.addressU;
+			addressV = sampler.addressV;
+			addressW = sampler.addressW;
+			anisotropy = sampler.anisotropy;
+			comparisonFunction = sampler.comparisonFunction;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	unsafe struct ComputeShaderRandomAccessBuffer_NativeInterop
 	{
 		public int registerIndex;
@@ -716,7 +737,7 @@ namespace Orbital.Video.Vulkan
 		public int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 		public ComputeShaderConstantBuffer_NativeInterop* constantBuffers;
 		public ComputeShaderTexture_NativeInterop* textures;
-		public ShaderSampler_NativeInterop* samplers;
+		public ComputeShaderSampler_NativeInterop* samplers;
 		public ComputeShaderRandomAccessBuffer_NativeInterop* randomAccessBuffers;
 
 		public ComputeShaderDesc_NativeInterop(ref ComputeShaderDesc desc)
@@ -757,10 +778,10 @@ namespace Orbital.Video.Vulkan
 			if (desc.samplers != null)
 			{
 				samplersCount = desc.samplers.Length;
-				samplers = (ShaderSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ShaderSampler_NativeInterop>() * samplersCount);
+				samplers = (ComputeShaderSampler_NativeInterop*)Marshal.AllocHGlobal(Marshal.SizeOf<ComputeShaderSampler_NativeInterop>() * samplersCount);
 				for (int i = 0; i != samplersCount; ++i)
 				{
-					samplers[i] = new ShaderSampler_NativeInterop(ref desc.samplers[i]);
+					samplers[i] = new ComputeShaderSampler_NativeInterop(ref desc.samplers[i]);
 				}
 			}
 

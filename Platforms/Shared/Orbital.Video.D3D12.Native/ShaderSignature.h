@@ -15,6 +15,16 @@ struct ShaderSignatureTexture
 	ShaderEffectResourceUsage usage;// ignore for compute shaders
 };
 
+struct ShaderSignatureSampler
+{
+	int registerIndex;
+	ShaderSamplerFilter filter;
+	ShaderSamplerAnisotropy anisotropy;
+	ShaderSamplerAddress addressU, addressV, addressW;
+	ShaderComparisonFunction comparisonFunction;
+	ShaderEffectResourceUsage usage;// ignore for compute shaders
+};
+
 struct ShaderSignatureRandomAccessBuffer
 {
 	int registerIndex;
@@ -26,7 +36,7 @@ struct ShaderSignatureDesc
 	int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 	ShaderSignatureConstantBuffer* constantBuffers;
 	ShaderSignatureTexture* textures;
-	ShaderSampler* samplers;
+	ShaderSignatureSampler* samplers;
 	ShaderSignatureRandomAccessBuffer* randomAccessBuffers;
 };
 

@@ -2,7 +2,7 @@
 #include "Utils.h"
 #include "Device.h"
 
-bool ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBILITY* nativeUsage)
+void ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBILITY* nativeUsage)
 {
 	switch (usage)
 	{
@@ -12,9 +12,8 @@ bool ResourceUsageToNative(ShaderEffectResourceUsage usage, D3D12_SHADER_VISIBIL
 		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_DS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_DOMAIN; break;
 		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_GS: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_GEOMETRY; break;
 		case ShaderEffectResourceUsage::ShaderEffectResourceUsage_All: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL; break;
-		default: return false;
+		default: *nativeUsage = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL; break;// default to ALL if flag combination
 	}
-	return true;
 }
 
 void CheckRootAccess
@@ -39,7 +38,7 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	// set version
 	D3D12_VERSIONED_ROOT_SIGNATURE_DESC signatureDesc = {};
 	signatureDesc.Version = device->maxRootSignatureVersion;
-	signatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
+	signatureDesc.Desc_1_1.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;// | D3D12_ROOT_SIGNATURE_FLAG_ALLOW_STREAM_OUTPUT;
 	bool vertexShaderAccess = false;
 	bool pixelShaderAccess = false;
 	bool hullShaderAccess = false;
@@ -53,11 +52,11 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	signatureDesc.Desc_1_1.pStaticSamplers = (D3D12_STATIC_SAMPLER_DESC*)alloca(sizeof(D3D12_STATIC_SAMPLER_DESC) * desc->samplersCount);
 	for (int i = 0; i != desc->samplersCount; ++i)
 	{
-		ShaderSampler sampler = desc->samplers[i];
+		ShaderSignatureSampler sampler = desc->samplers[i];
 		D3D12_STATIC_SAMPLER_DESC samplerDesc = {};
 
 		samplerDesc.ShaderRegister = sampler.registerIndex;
-		samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY::D3D12_SHADER_VISIBILITY_ALL;
+		ResourceUsageToNative(sampler.usage, &samplerDesc.ShaderVisibility);
 		samplerDesc.MipLODBias = 0;
 		samplerDesc.MinLOD = 0;
 		samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
@@ -78,11 +77,19 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 	if (desc->textureCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
 	if (desc->randomAccessBufferCount != 0) ++signatureDesc.Desc_1_1.NumParameters;
 	size_t paramSize;
-	if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) paramSize = sizeof(D3D12_ROOT_PARAMETER);
-	else paramSize = sizeof(D3D12_ROOT_PARAMETER1);
-	signatureDesc.Desc_1_1.pParameters = (D3D12_ROOT_PARAMETER1*)alloca(sizeof(D3D12_ROOT_PARAMETER1) * signatureDesc.Desc_1_1.NumParameters);// PARAMETER1 is the same size as PARAMETER
+	if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+	{
+		paramSize = sizeof(D3D12_ROOT_PARAMETER);
+		signatureDesc.Desc_1_0.pParameters = (D3D12_ROOT_PARAMETER*)alloca(paramSize * signatureDesc.Desc_1_0.NumParameters);
+	}
+	else
+	{
+		paramSize = sizeof(D3D12_ROOT_PARAMETER1);
+		signatureDesc.Desc_1_1.pParameters = (D3D12_ROOT_PARAMETER1*)alloca(paramSize * signatureDesc.Desc_1_1.NumParameters);
+	}
+	
 
-	int parameterIndex = 0;
+	int parameterIndex = 0;// NOTE memory thats likly to change should be at the top of the desc for potential performance improvments
 	if (desc->constantBufferCount != 0)
 	{
 		handle->constantBufferCount = desc->constantBufferCount;
@@ -92,12 +99,12 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 
 		auto constantBuffers = desc->constantBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
-		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		if (!ResourceUsageToNative(constantBuffers[0].usage, &parameter.ShaderVisibility)) return 0;// get first visibility
+		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		ResourceUsageToNative(constantBuffers[0].usage, &parameter.ShaderVisibility);// get first visibility
 		for (int i = 0; i != desc->constantBufferCount; ++i)
 		{
 			D3D12_SHADER_VISIBILITY visibility;
-			if (!ResourceUsageToNative(constantBuffers[i].usage, &visibility)) return 0;
+			ResourceUsageToNative(constantBuffers[i].usage, &visibility);
 			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
 			{
 				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -113,9 +120,9 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 				&domainShaderAccess,
 				&geometryShaderAccess
 			);
-		}
+		//}
 
-		parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
+		/*parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
 		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
 		else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
 		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->constantBufferCount);
@@ -126,77 +133,33 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 			range.BaseShaderRegister = constantBuffers[i].registerIndex;
 			range.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC;// allows driver to get better performance
-			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			range.OffsetInDescriptorsFromTableStart = i;//D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
 			{
 				D3D12_DESCRIPTOR_RANGE* oldRange = (D3D12_DESCRIPTOR_RANGE*)parameter.DescriptorTable.pDescriptorRanges;
-				memcpy((void*)&oldRange[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE));
+				oldRange[i].RangeType = range.RangeType;
+				oldRange[i].NumDescriptors = range.NumDescriptors;
+				oldRange[i].BaseShaderRegister = range.BaseShaderRegister;
+				oldRange[i].RegisterSpace = range.RegisterSpace;
+				oldRange[i].OffsetInDescriptorsFromTableStart = range.OffsetInDescriptorsFromTableStart;
 			}
 			else
 			{
 				memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
 			}
-		}
-		memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
-		++parameterIndex;
-	}
+		}*/
 
-	if (desc->textureCount != 0)
-	{
-		handle->textureCount = desc->textureCount;
-		size_t size = sizeof(ShaderSignatureTexture) * desc->textureCount;
-		handle->textures = (ShaderSignatureTexture*)malloc(size);
-		memcpy(handle->textures, desc->textures, size);
-
-		auto textures = desc->textures;
-		D3D12_ROOT_PARAMETER1 parameter = {};
-		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		if (!ResourceUsageToNative(textures[0].usage, &parameter.ShaderVisibility)) return 0;// get first visibility
-		for (int i = 0; i != desc->textureCount; ++i)
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
 		{
-			D3D12_SHADER_VISIBILITY visibility;
-			if (!ResourceUsageToNative(textures[i].usage, &visibility)) return 0;
-			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
-			{
-				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-				break;
-			}
-
-			CheckRootAccess
-			(
-				textures[i].usage,
-				&vertexShaderAccess,
-				&pixelShaderAccess,
-				&hullShaderAccess,
-				&domainShaderAccess,
-				&geometryShaderAccess
-			);
+			memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
 		}
-
-		parameter.DescriptorTable.NumDescriptorRanges = desc->textureCount;
-		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
-		else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
-		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->textureCount);
-		for (int i = 0; i != desc->textureCount; ++i)
+		else
 		{
-			D3D12_DESCRIPTOR_RANGE1 range = {};
-			range.NumDescriptors = 1;
-			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-			range.BaseShaderRegister = textures[i].registerIndex;
-			range.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC;// allows driver to get better performance
-			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
-			{
-				D3D12_DESCRIPTOR_RANGE* oldRange = (D3D12_DESCRIPTOR_RANGE*)parameter.DescriptorTable.pDescriptorRanges;
-				memcpy((void*)&oldRange[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE));
-			}
-			else
-			{
-				memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
-			}
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
 		}
-		memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+
 		++parameterIndex;
+		}
 	}
 
 	if (desc->randomAccessBufferCount != 0)
@@ -209,11 +172,11 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 		auto randomAccessBuffers = desc->randomAccessBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
 		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		if (!ResourceUsageToNative(randomAccessBuffers[0].usage, &parameter.ShaderVisibility)) return 0;// get first visibility
+		ResourceUsageToNative(randomAccessBuffers[0].usage, &parameter.ShaderVisibility);// get first visibility
 		for (int i = 0; i != desc->randomAccessBufferCount; ++i)
 		{
 			D3D12_SHADER_VISIBILITY visibility;
-			if (!ResourceUsageToNative(randomAccessBuffers[i].usage, &visibility)) return 0;
+			ResourceUsageToNative(randomAccessBuffers[i].usage, &visibility);
 			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
 			{
 				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -242,18 +205,102 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 			range.BaseShaderRegister = randomAccessBuffers[i].registerIndex;
 			range.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE;
-			range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			range.OffsetInDescriptorsFromTableStart = i;//D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
 			{
 				D3D12_DESCRIPTOR_RANGE* oldRange = (D3D12_DESCRIPTOR_RANGE*)parameter.DescriptorTable.pDescriptorRanges;
-				memcpy((void*)&oldRange[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE));
+				oldRange[i].RangeType = range.RangeType;
+				oldRange[i].NumDescriptors = range.NumDescriptors;
+				oldRange[i].BaseShaderRegister = range.BaseShaderRegister;
+				oldRange[i].RegisterSpace = range.RegisterSpace;
+				oldRange[i].OffsetInDescriptorsFromTableStart = range.OffsetInDescriptorsFromTableStart;
 			}
 			else
 			{
 				memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
 			}
 		}
-		memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+		{
+			memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
+		}
+		else
+		{
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+		}
+
+		++parameterIndex;
+	}
+
+	if (desc->textureCount != 0)
+	{
+		handle->textureCount = desc->textureCount;
+		size_t size = sizeof(ShaderSignatureTexture) * desc->textureCount;
+		handle->textures = (ShaderSignatureTexture*)malloc(size);
+		memcpy(handle->textures, desc->textures, size);
+
+		auto textures = desc->textures;
+		D3D12_ROOT_PARAMETER1 parameter = {};
+		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		ResourceUsageToNative(textures[0].usage, &parameter.ShaderVisibility);// get first visibility
+		for (int i = 0; i != desc->textureCount; ++i)
+		{
+			D3D12_SHADER_VISIBILITY visibility;
+			ResourceUsageToNative(textures[i].usage, &visibility);
+			if (parameter.ShaderVisibility != visibility)// if other resources don't match change to ALL
+			{
+				parameter.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+				break;
+			}
+
+			CheckRootAccess
+			(
+				textures[i].usage,
+				&vertexShaderAccess,
+				&pixelShaderAccess,
+				&hullShaderAccess,
+				&domainShaderAccess,
+				&geometryShaderAccess
+			);
+		}
+
+		parameter.DescriptorTable.NumDescriptorRanges = desc->textureCount;
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
+		else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
+		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->textureCount);
+		for (int i = 0; i != desc->textureCount; ++i)
+		{
+			D3D12_DESCRIPTOR_RANGE1 range = {};
+			range.NumDescriptors = 1;
+			range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE::D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+			range.BaseShaderRegister = textures[i].registerIndex;
+			range.Flags = D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC;// allows driver to get better performance
+			range.OffsetInDescriptorsFromTableStart = i;//D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+			{
+				D3D12_DESCRIPTOR_RANGE* oldRange = (D3D12_DESCRIPTOR_RANGE*)parameter.DescriptorTable.pDescriptorRanges;
+				oldRange[i].RangeType = range.RangeType;
+				oldRange[i].NumDescriptors = range.NumDescriptors;
+				oldRange[i].BaseShaderRegister = range.BaseShaderRegister;
+				oldRange[i].RegisterSpace = range.RegisterSpace;
+				oldRange[i].OffsetInDescriptorsFromTableStart = range.OffsetInDescriptorsFromTableStart;
+			}
+			else
+			{
+				memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
+			}
+		}
+		
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+		{
+			memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
+		}
+		else
+		{
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+		}
+
 		++parameterIndex;
 	}
 

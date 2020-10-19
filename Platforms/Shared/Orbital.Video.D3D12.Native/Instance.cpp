@@ -31,7 +31,18 @@ extern "C"
 		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 		{
-			handle->debugController->EnableDebugLayer();
+			//handle->debugController->QueryInterface(IID_PPV_ARGS(&handle->debugController3));// TODO: add debugging options to enable this
+			if (handle->debugController3 != nullptr)
+			{
+				handle->debugController3->SetEnableGPUBasedValidation(true);
+				handle->debugController3->SetGPUBasedValidationFlags(D3D12_GPU_BASED_VALIDATION_FLAGS_DISABLE_STATE_TRACKING);
+				handle->debugController3->SetEnableSynchronizedCommandQueueValidation(true);
+				handle->debugController3->EnableDebugLayer();
+			}
+			else
+			{
+				handle->debugController->EnableDebugLayer();
+			}
 			factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 		#endif
@@ -49,6 +60,12 @@ extern "C"
 		}
 
 		#if defined(_DEBUG)
+		if (handle->debugController3 != NULL)
+		{
+			handle->debugController3->Release();
+			handle->debugController3 = NULL;
+		}
+
 		if (handle->debugController != NULL)
 		{
 			handle->debugController->Release();

@@ -357,9 +357,19 @@ extern "C"
 		UINT descIndex = 0;
 		if (resources->nodes[activeNodeIndex].constantBufferHeap != NULL)
 		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].constantBufferHeap);
-			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].constantBufferGPUDescHandle);
-			++descIndex;
+			//handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].constantBufferHeap);
+			//handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].constantBufferGPUDescHandle);
+			for (UINT i = 0; i != resources->constantBufferCount; ++i)
+			{
+				handle->activeNode->commandList->SetGraphicsRootConstantBufferView(descIndex, resources->constantBuffers[i]->nodes[activeNodeIndex].resource->GetGPUVirtualAddress());
+				++descIndex;
+			}
+		}
+
+		if (resources->nodes[activeNodeIndex].randomAccessBufferHeap != NULL)
+		{
+			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].randomAccessBufferHeap);
+			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].randomAccessBufferGPUDescHandle);
 		}
 
 		if (resources->nodes[activeNodeIndex].textureHeap != NULL)
@@ -369,15 +379,9 @@ extern "C"
 			++descIndex;
 		}
 
-		if (resources->nodes[activeNodeIndex].randomAccessBufferHeap != NULL)
-		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].randomAccessBufferHeap);
-			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].randomAccessBufferGPUDescHandle);
-		}
-
 		// enable render state
 		handle->activeNode->commandList->SetPipelineState(renderState->state);
-
+		
 		// enable vertex / index buffers
 		handle->activeNode->commandList->IASetPrimitiveTopology(renderState->topology);
 		handle->activeNode->commandList->IASetVertexBuffers(0, vertexBufferCount, renderState->vertexBufferStreamer->nodes[activeNodeIndex].vertexBufferViews);

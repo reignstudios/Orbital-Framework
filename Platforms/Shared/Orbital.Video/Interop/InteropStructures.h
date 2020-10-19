@@ -469,15 +469,6 @@ typedef enum ShaderComparisonFunction
 	ShaderComparisonFunction_GreaterThanOrEqual,
 	ShaderComparisonFunction_BIT = ENUM_BIT
 }ShaderComparisonFunction;
-
-typedef struct ShaderSampler
-{
-	int registerIndex;
-	ShaderSamplerFilter filter;
-	ShaderSamplerAnisotropy anisotropy;
-	ShaderSamplerAddress addressU, addressV, addressW;
-	ShaderComparisonFunction comparisonFunction;
-}ShaderSampler;
 #pragma endregion
 
 #pragma region ShaderEffect
@@ -504,6 +495,16 @@ typedef struct ShaderEffectTexture
 	ShaderEffectResourceUsage usage;
 }ShaderEffectTexture;
 
+typedef struct ShaderEffectSampler
+{
+	int registerIndex;
+	ShaderSamplerFilter filter;
+	ShaderSamplerAnisotropy anisotropy;
+	ShaderSamplerAddress addressU, addressV, addressW;
+	ShaderComparisonFunction comparisonFunction;
+	ShaderEffectResourceUsage usage;
+}ShaderEffectSampler;
+
 typedef struct ShaderEffectRandomAccessBuffer
 {
 	int registerIndex;
@@ -515,7 +516,7 @@ typedef struct ShaderEffectDesc
 	int constantBufferCount, textureCount, samplersCount, readWriteBufferCount;
 	ShaderEffectConstantBuffer* constantBuffers;
 	ShaderEffectTexture* textures;
-	ShaderSampler* samplers;
+	ShaderEffectSampler* samplers;
 	ShaderEffectRandomAccessBuffer* randomAccessBuffers;
 }ShaderEffectDesc;
 #pragma endregion
@@ -531,6 +532,15 @@ typedef struct ComputeShaderTexture
 	int registerIndex;
 }ComputeShaderTexture;
 
+typedef struct ComputeShaderSampler
+{
+	int registerIndex;
+	ShaderSamplerFilter filter;
+	ShaderSamplerAnisotropy anisotropy;
+	ShaderSamplerAddress addressU, addressV, addressW;
+	ShaderComparisonFunction comparisonFunction;
+}ComputeShaderSampler;
+
 typedef struct ComputeShaderRandomAccessBuffer
 {
 	int registerIndex;
@@ -541,7 +551,7 @@ typedef struct ComputeShaderDesc
 	int constantBufferCount, textureCount, samplersCount, randomAccessBufferCount;
 	ComputeShaderConstantBuffer* constantBuffers;
 	ComputeShaderTexture* textures;
-	ShaderSampler* samplers;
+	ComputeShaderSampler* samplers;
 	ComputeShaderRandomAccessBuffer* randomAccessBuffers;
 }ComputeShaderDesc;
 #pragma endregion

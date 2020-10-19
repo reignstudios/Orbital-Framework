@@ -13,6 +13,7 @@ struct Instance
 {
 	#if defined(_DEBUG)
 	ID3D12Debug* debugController;
+	ID3D12Debug3* debugController3;
 	#endif
 
 	IDXGIFactory4* factory;
