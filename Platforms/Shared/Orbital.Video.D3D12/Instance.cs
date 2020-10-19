@@ -14,6 +14,7 @@ namespace Orbital.Video.D3D12
 	public struct InstanceDesc
 	{
 		public FeatureLevel minimumFeatureLevel;
+		public bool extraDebugging;
 	}
 
 	public sealed class Instance : InstanceBase
@@ -27,7 +28,7 @@ namespace Orbital.Video.D3D12
 		private static extern IntPtr Orbital_Video_D3D12_Instance_Create();
 
 		[DllImport(lib, CallingConvention = callingConvention)]
-		private static extern int Orbital_Video_D3D12_Instance_Init(IntPtr handle, FeatureLevel minimumFeatureLevel);
+		private static extern int Orbital_Video_D3D12_Instance_Init(IntPtr handle, FeatureLevel minimumFeatureLevel, int extraDebugging);
 
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_D3D12_Instance_Dispose(IntPtr handle);
@@ -42,7 +43,7 @@ namespace Orbital.Video.D3D12
 
 		public bool Init(InstanceDesc desc)
 		{
-			return Orbital_Video_D3D12_Instance_Init(handle, desc.minimumFeatureLevel) != 0;
+			return Orbital_Video_D3D12_Instance_Init(handle, desc.minimumFeatureLevel, desc.extraDebugging ? 1 : 0) != 0;
 		}
 
 		public override void Dispose()

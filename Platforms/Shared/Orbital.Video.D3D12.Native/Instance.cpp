@@ -20,7 +20,7 @@ extern "C"
 		return (Instance*)calloc(1, sizeof(Instance));
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_Init(Instance* handle, FeatureLevel minimumFeatureLevel)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_Init(Instance* handle, FeatureLevel minimumFeatureLevel, int extraDebugging)
 	{
 		// get native feature level
 		if (!FeatureLevelToNative(minimumFeatureLevel, &handle->nativeMinFeatureLevel)) return 0;
@@ -31,7 +31,7 @@ extern "C"
 		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
 		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 		{
-			//handle->debugController->QueryInterface(IID_PPV_ARGS(&handle->debugController3));// TODO: add debugging options to enable this
+			if (extraDebugging) handle->debugController->QueryInterface(IID_PPV_ARGS(&handle->debugController3));
 			if (handle->debugController3 != nullptr)
 			{
 				handle->debugController3->SetEnableGPUBasedValidation(true);
