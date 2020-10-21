@@ -196,7 +196,7 @@ extern "C"
 			handle->nodes = NULL;
 		}
 
-		if (handle != NULL)
+		if (handle->device != NULL)
 		{
 			handle->device->Release();
 			handle->device = NULL;

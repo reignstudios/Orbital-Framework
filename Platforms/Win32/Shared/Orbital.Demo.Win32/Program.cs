@@ -9,6 +9,8 @@ namespace Orbital.Demo.Win32
 	{
 		static void Main(string[] args)
 		{
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			
 			// init app and window
 			var application = new Application();
 			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
@@ -29,6 +31,17 @@ namespace Orbital.Demo.Win32
 				#endif
 				example.Run();
 			}
+		}
+
+		private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			var ex = e.ExceptionObject as Exception;
+			if (ex == null) return;
+			Console.WriteLine("Orbital ERROR: " + ex.Message);
+			Console.WriteLine(ex.StackTrace);
+			Console.WriteLine();
+			Console.WriteLine("HIT ENTER");
+			Console.ReadLine();
 		}
 	}
 }
