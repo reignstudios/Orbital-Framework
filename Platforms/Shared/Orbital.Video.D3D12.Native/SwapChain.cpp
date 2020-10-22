@@ -103,7 +103,6 @@ extern "C"
 				rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 				rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 				if (FAILED(handle->device->device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&handle->nodes[n].resourceHeap)))) return 0;
-				UINT resourceHeapSize = handle->device->device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 				D3D12_CPU_DESCRIPTOR_HANDLE resourceDescCPUHandle = handle->nodes[n].resourceHeap->GetCPUDescriptorHandleForHeapStart();
 				if (FAILED(handle->swapChain->GetBuffer(n, IID_PPV_ARGS(&handle->resources[n])))) return 0;

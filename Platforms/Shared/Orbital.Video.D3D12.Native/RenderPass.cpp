@@ -104,7 +104,9 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_D3D12_RenderPass_Init_WithSwapChain(RenderPass* handle, RenderPassDesc* desc, SwapChain* swapChain, DepthStencil* depthStencil, StencilUsage stencilUsage)
 	{
-		handle->renderTargetCount = swapChain->bufferCount;
+		if (swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard) handle->renderTargetCount = swapChain->bufferCount;
+		else if (swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR) handle->renderTargetCount = 1;
+		else return 0;
 
 		// copy render-target formats
 		handle->renderTargetFormats = (DXGI_FORMAT*)calloc(swapChain->bufferCount, sizeof(DXGI_FORMAT));
