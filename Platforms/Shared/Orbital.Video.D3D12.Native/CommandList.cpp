@@ -196,7 +196,10 @@ extern "C"
 			}
 			
 			if (barrierCount != 0) handle->activeNode->commandList->ResourceBarrier(barrierCount, barriers);
-			handle->activeNode->commandList4->BeginRenderPass(1, &renderPass->nodes[activeNodeIndex].renderTargetDescs[renderPass->swapChain->currentRenderTargetIndex], renderPass->nodes[activeNodeIndex].depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
+			D3D12_RENDER_PASS_RENDER_TARGET_DESC* renderTargetDescs = nullptr;
+			if (renderPass->swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard) renderTargetDescs = &renderPass->nodes[activeNodeIndex].renderTargetDescs[currentRenderTargetIndex];
+			else if (renderPass->swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR) renderTargetDescs = &renderPass->nodes[activeNodeIndex].renderTargetDescs[0];
+			handle->activeNode->commandList4->BeginRenderPass(1, renderTargetDescs, renderPass->nodes[activeNodeIndex].depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
 		}
 		else
 		{

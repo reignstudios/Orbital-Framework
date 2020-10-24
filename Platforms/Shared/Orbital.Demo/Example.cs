@@ -189,12 +189,12 @@ namespace Orbital.Demo
 			#endif
 
 			// load api abstraction (api-instance and hardware-device)
-			var abstractionDesc = new AbstractionDesc(AbstractionInitType.DefaultSingleGPU);
+			var abstractionDesc = new AbstractionDesc(AbstractionInitType.DefaultMultiGPU);
 			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
 			abstractionDesc.deviceDescD3D12.window = window;
 			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
-			//abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
+			abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			#if DEBUG
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 			#else
@@ -215,7 +215,6 @@ namespace Orbital.Demo
 
 			// create msaa render texture
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
-			msaaLevel = MSAALevel.Disabled;
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false, MultiGPUNodeResourceVisibility.All);
 			
@@ -612,7 +611,7 @@ namespace Orbital.Demo
 				commandList_Compute.Finish();
 				commandList_Compute.Execute();*/
 
-				commandList.Start(device.swapChain);// RENDER INTO: SwapChain
+				commandList.Start(device.swapChain);// RENDER INTO: MSAA RenderTexture
 				commandList.BeginRenderPass(renderPass);
 				commandList.SetViewPort(viewPort);
 				commandList.SetRenderState(renderState);
