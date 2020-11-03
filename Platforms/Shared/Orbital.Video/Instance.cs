@@ -2,6 +2,19 @@
 
 namespace Orbital.Video
 {
+	public enum AdapterVendor
+	{
+		Unknown,
+		Intel,
+		Nvidia,
+		AMD,
+
+		/// <summary>
+		/// WARP device
+		/// </summary>
+		Microsoft
+	}
+
 	public class AdapterInfo
 	{
 		/// <summary>
@@ -15,9 +28,19 @@ namespace Orbital.Video
 		public readonly int index;
 
 		/// <summary>
-		/// Manufacture adapter name
+		/// Vendor adapter name
 		/// </summary>
 		public readonly string name;
+
+		/// <summary>
+		/// Vendor ID
+		/// </summary>
+		public readonly uint vendorID;
+
+		/// <summary>
+		/// Vendor resolved from name
+		/// </summary>
+		public readonly AdapterVendor vendor;
 
 		/// <summary>
 		/// How many mGPU linked-nodes
@@ -54,6 +77,7 @@ namespace Orbital.Video
 			bool isPrimary,
 			int index,
 			string name,
+			uint vendorID,
 			int nodeCount,
 			ulong dedicatedGPUMemory,
 			ulong deticatedSystemMemory,
@@ -63,6 +87,7 @@ namespace Orbital.Video
 			this.isPrimary = isPrimary;
 			this.index = index;
 			this.name = name;
+			this.vendorID = vendorID;
 			this.nodeCount = nodeCount;
 			this.dedicatedGPUMemory = dedicatedGPUMemory;
 			this.deticatedSystemMemory = deticatedSystemMemory;
@@ -83,6 +108,14 @@ namespace Orbital.Video
 			if (sharedSystemMemory >= 0)
 			{
 				maxMemory += sharedSystemMemory;
+			}
+
+			switch (vendorID)
+			{
+				case 0x8086: vendor = AdapterVendor.Intel; break;
+				case 0x10DE: vendor = AdapterVendor.Nvidia; break;
+				case 0x1002: vendor = AdapterVendor.AMD; break;
+				case 0x1414: vendor = AdapterVendor.Microsoft; break;
 			}
 		}
 	}

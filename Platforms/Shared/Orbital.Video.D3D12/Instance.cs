@@ -75,15 +75,17 @@ namespace Orbital.Video.D3D12
 			adapters = new AdapterInfo[adapterNameCount];
 			for (int i = 0; i != adapterNameCount; ++i)
 			{
+				var adapter = &adapters_Native[i];
 				adapters[i] = new AdapterInfo
 				(
-					adapters_Native[i].isPrimary != 0 ? true : false,
-					adapters_Native[i].index,
-					Marshal.PtrToStringUni(adapters_Native[i].name),
-					adapters_Native[i].nodeCount,
-					adapters_Native[i].dedicatedGPUMemory.ToUInt64(),
-					adapters_Native[i].deticatedSystemMemory.ToUInt64(),
-					adapters_Native[i].sharedSystemMemory.ToUInt64()
+					adapter->isPrimary != 0 ? true : false,
+					adapter->index,
+					Marshal.PtrToStringUni(adapter->name),
+					adapter->vendorID,
+					adapter->nodeCount,
+					adapter->dedicatedGPUMemory.ToUInt64(),
+					adapter->deticatedSystemMemory.ToUInt64(),
+					adapter->sharedSystemMemory.ToUInt64()
 				);
 			}
 			return true;

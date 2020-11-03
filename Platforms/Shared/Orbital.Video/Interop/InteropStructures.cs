@@ -19,6 +19,7 @@ namespace Orbital.Video.Vulkan
 		public int isPrimary;
 		public int index;
 		public IntPtr name;
+		public uint vendorID;
 		public int nodeCount;
 		public UIntPtr dedicatedGPUMemory;
 		public UIntPtr deticatedSystemMemory;

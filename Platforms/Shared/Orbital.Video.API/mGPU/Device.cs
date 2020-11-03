@@ -1,7 +1,6 @@
 ﻿using Orbital.Host;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 
 namespace Orbital.Video.API.mGPU
 {
@@ -34,6 +33,11 @@ namespace Orbital.Video.API.mGPU
 	public struct DeviceDesc
 	{
 		public D3D12.DeviceDesc descD3D12;
+
+		/// <summary>
+		/// Any vendors in this list will be ignored when intializing mGPU mixed-devices
+		/// </summary>
+		public AdapterVendor[] vendorIgnores_MixedDevices;
 	}
 
 	public sealed class Device : DeviceBase
@@ -41,7 +45,7 @@ namespace Orbital.Video.API.mGPU
 		public DeviceBase[] devices { get; private set; }
 
 		/// <summary>
-		/// This device(s) mGPU type
+		/// This device(s) mGPU type after 'Init' is called
 		/// </summary>
 		public MGPUDeviceType mgpuType { get; private set; }
 
@@ -55,34 +59,122 @@ namespace Orbital.Video.API.mGPU
 		public Device(InstanceBase instance, DeviceType type, MGPUDeviceType mgpuType)
 		: base(instance, type)
 		{
+			this.mgpuType = mgpuType;
+		}
+
+		private static bool IsVendorIgnored(AdapterVendor vender, AdapterVendor[] ignoredVendors)
+		{
+			foreach (var v in ignoredVendors)
+			{
+				if (vender == v) return true;
+			}
+			return false;
+		}
+
+		public bool Init(DeviceDesc desc)
+		{
 			AdapterInfo[] adapters = null;
 			bool createSingleDevice = false;
 			if (mgpuType == MGPUDeviceType.SingleGPU_Standard)
 			{
-				this.mgpuType = MGPUDeviceType.SingleGPU_Standard;
+				mgpuType = MGPUDeviceType.SingleGPU_Standard;
 				createSingleDevice = true;// single gpu mode only
 			}
 			else if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
 			{
 				if (!instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
-				// TODO: check avaliable configurations
+				if (adapters.Length >= 1)
+				{
+					// test for linked-gpus
+					foreach (var adapter in adapters)
+					{
+						if (adapter.isPrimary && adapter.nodeCount > 1)
+						{
+							mgpuType = MGPUDeviceType.MultiGPU_LinkedNode_AFR;
+							break;
+						}
+					}
+
+					// test for mixed-gpu support
+					if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
+					{
+						if (adapters.Length >= 2)
+						{
+							foreach (var adapter in adapters)
+							{
+								if (adapter.isPrimary)
+								{
+									mgpuType = MGPUDeviceType.MultiGPU_MixedDevice_AFR;
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				// set to single gpu if no mGPU support found
+				if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
+				{
+					mgpuType = MGPUDeviceType.SingleGPU_Standard;
+					createSingleDevice = true;
+				}
 			}
 
 			if (mgpuType == MGPUDeviceType.MultiGPU_LinkedNode_AFR)
 			{
-				this.mgpuType = MGPUDeviceType.MultiGPU_LinkedNode_AFR;// TODO: if only one node avaliable default to single
-				createSingleDevice = true;// linked-gpus only need one device/adapter
+				if (adapters == null && !instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
+				bool linkedNodesFound = false;
+				foreach (var adapter in adapters)
+				{
+					if (adapter.isPrimary && adapter.nodeCount > 1)
+					{
+						linkedNodesFound = true;
+						break;
+					}
+				}
+
+				if (!linkedNodesFound)
+				{
+					mgpuType = MGPUDeviceType.SingleGPU_Standard;// default to single gpu mode if only adapter-node found
+					createSingleDevice = true;
+				}
 			}
 			else if (mgpuType == MGPUDeviceType.MultiGPU_MixedDevice_AFR)
 			{
 				if (adapters == null && !instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
-				if (adapters.Length > 1) this.mgpuType = MGPUDeviceType.MultiGPU_MixedDevice_AFR;
-				else this.mgpuType = MGPUDeviceType.SingleGPU_Standard;
-				devices = new DeviceBase[adapters.Length];// mixed-device mode needs to create a device per physical GPU
-				for (int i = 0; i != devices.Length; ++i)
+				if (adapters.Length > 1)
 				{
-					if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, i == 0 ? type : DeviceType.Background);
-					else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+					// calculate how many valid device we have
+					int deviceCount;
+					if (desc.vendorIgnores_MixedDevices != null)
+					{
+						deviceCount = 0;
+						foreach (var adapter in adapters)
+						{
+							if (!IsVendorIgnored(adapter.vendor, desc.vendorIgnores_MixedDevices)) ++deviceCount;
+						}
+					}
+					else
+					{
+						deviceCount = adapters.Length;
+					}
+
+					// create mixed device arrays
+					devices = new DeviceBase[deviceCount];// mixed-device mode needs to create a device per physical GPU
+					int i = 0;
+					foreach (var adapter in adapters)
+					{
+						if (IsVendorIgnored(adapter.vendor, desc.vendorIgnores_MixedDevices)) continue;
+
+						if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, i == 0 ? type : DeviceType.Background);
+						else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+						++i;
+					}
+				}
+				else
+				{
+					mgpuType = MGPUDeviceType.SingleGPU_Standard;// default to single gpu mode if only adapter found
+					createSingleDevice = true;
 				}
 			}
 
@@ -91,10 +183,7 @@ namespace Orbital.Video.API.mGPU
 				devices = new DeviceBase[1];
 				if (instance is D3D12.Instance) devices[0] = new D3D12.Device((D3D12.Instance)instance, type);
 			}
-		}
 
-		public bool Init(DeviceDesc desc)
-		{
 			// force mixed-device AFR requirements
 			if (mgpuType == MGPUDeviceType.MultiGPU_MixedDevice_AFR)
 			{
@@ -102,6 +191,7 @@ namespace Orbital.Video.API.mGPU
 				desc.descD3D12.swapChainBufferCount = 1;
 			}
 
+			// init devices
 			foreach (var device in devices)
 			{
 				if (device is D3D12.Device)
@@ -130,13 +220,11 @@ namespace Orbital.Video.API.mGPU
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void BeginFrame()
 		{
 			activeDevice.BeginFrame();
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public override void EndFrame()
 		{
 			activeDevice.EndFrame();

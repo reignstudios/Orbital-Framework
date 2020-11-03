@@ -9,6 +9,7 @@ typedef struct AdapterInfo
 	bool isPrimary;
 	int index;
 	byte* name;
+	uint32_t vendorID;
 	int nodeCount;
 	uintptr_t dedicatedGPUMemory;
 	uintptr_t deticatedSystemMemory;
