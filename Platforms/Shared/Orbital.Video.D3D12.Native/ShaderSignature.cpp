@@ -149,16 +149,16 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 			}
 		}*/
 
-		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
-		{
-			memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
-		}
-		else
-		{
-			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
-		}
+			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+			{
+				memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
+			}
+			else
+			{
+				memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+			}
 
-		++parameterIndex;
+			++parameterIndex;
 		}
 	}
 
