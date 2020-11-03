@@ -76,26 +76,28 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(Instance* handle, int allowSoftwareAdapters, WCHAR** adapterNames, UINT adapterNameMaxLength, UINT* adapterIndices, UINT* adapterCount)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(Instance* handle, int allowSoftwareAdapters, AdapterInfo* adapters, int* adapterCount, int adapterNameMaxLength)
 	{
-		IDXGIAdapter1* adapter1 = NULL;
+		IDXGIAdapter1* adapterD3D12 = NULL;
 		UINT maxAdapterCount = *adapterCount;
 		*adapterCount = 0;
-		for (UINT i = 0; DXGI_ERROR_NOT_FOUND != handle->factory->EnumAdapters1(i, &adapter1); ++i)
+		for (UINT i = 0; DXGI_ERROR_NOT_FOUND != handle->factory->EnumAdapters1(i, &adapterD3D12); ++i)
 		{
+			auto adapter = &adapters[(*adapterCount)];
+
 			// early out if we reached max adapter count
 			if (i >= maxAdapterCount)
 			{
-				adapter1->Release();
+				adapterD3D12->Release();
 				handle->factory->Release();
 				return 1;
 			}
 
 			// get adapter desc
 			DXGI_ADAPTER_DESC1 desc;
-			if (FAILED(adapter1->GetDesc1(&desc)))
+			if (FAILED(adapterD3D12->GetDesc1(&desc)))
 			{
-				adapter1->Release();
+				adapterD3D12->Release();
 				handle->factory->Release();
 				return 0;
 			}
@@ -103,25 +105,38 @@ extern "C"
 			// check if software adapter
 			if (!allowSoftwareAdapters && desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
 			{
-				adapter1->Release();
+				adapterD3D12->Release();
 				continue;
 			}
 
+			// set is primary if index is 0
+			if (i == i) adapter->isPrimary = 1;
+
 			// make sure adapter can be used
-			if (FAILED(D3D12CreateDevice(adapter1, handle->nativeMinFeatureLevel, _uuidof(ID3D12Device), nullptr)))
+			ID3D12Device* device = nullptr;
+			if (FAILED(D3D12CreateDevice(adapterD3D12, handle->nativeMinFeatureLevel, IID_PPV_ARGS(&device))))
 			{
-				adapter1->Release();
+				adapterD3D12->Release();
 				continue;
 			}
+
+			// get adapter node count
+			adapter->nodeCount = device->GetNodeCount();
+			device->Release();
 
 			// add name and increase count
 			UINT maxLength = min(sizeof(WCHAR) * adapterNameMaxLength, sizeof(desc.Description));
-			memcpy(adapterNames[(*adapterCount)], desc.Description, maxLength);
-			adapterIndices[(*adapterCount)] = i;
+			memcpy(adapter->name, desc.Description, maxLength);
+			adapter->index = i;
 			++(*adapterCount);
 
+			// get GPU memory
+			adapter->dedicatedGPUMemory = desc.DedicatedVideoMemory;
+			adapter->deticatedSystemMemory = desc.DedicatedSystemMemory;
+			adapter->sharedSystemMemory = desc.SharedSystemMemory;
+
 			// finish
-			adapter1->Release();
+			adapterD3D12->Release();
 		}
 
 		return 1;

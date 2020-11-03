@@ -17,7 +17,7 @@ struct SwapChain
 {
 	Device* device;
 	SwapChainNode* nodes, *activeNode;
-	UINT bufferCount, nodeCount, currentRenderTargetIndex, currentNodeIndex;
+	UINT bufferCount, nodeCount, activeRenderTargetIndex, activeNodeIndex;
 	IDXGISwapChain* swapChain;
 	IDXGISwapChain1* swapChain1;
 	IDXGISwapChain3* swapChain3;

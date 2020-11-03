@@ -55,7 +55,7 @@ namespace Orbital.Video.Vulkan
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
 		{
-			const int maxNameLength = 64, maxAdapters = 32;
+			/*const int maxNameLength = 64, maxAdapters = 32;
 			uint adapterNameCount = maxAdapters;
 			byte** adapterNamesPtr = stackalloc byte*[maxAdapters];
 			for (int i = 0; i != maxAdapters; ++i)
@@ -76,7 +76,10 @@ namespace Orbital.Video.Vulkan
 				string name = Marshal.PtrToStringAnsi((IntPtr)adapterNamesPtr[i]);
 				adapters[i] = new AdapterInfo((int)adapterIndices[i], name);
 			}
-			return true;
+			return true;*/
+
+			adapters = null;
+			return false;// TODO: update
 		}
 	}
 }

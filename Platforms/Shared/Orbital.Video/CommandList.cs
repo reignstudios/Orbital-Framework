@@ -29,7 +29,7 @@ namespace Orbital.Video
 		/// <param name="swapChain">SwapChain to get active GPU node from</param>
 		public void Start(SwapChainBase swapChain)
 		{
-			Start(swapChain.currentNodeIndex);
+			Start(swapChain.activeNodeIndex);
 		}
 
 		/// <summary>

@@ -16,11 +16,16 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.API\Abstraction.cs" Link="Abstraction.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\Device.cs" Link="mGPU\Device.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Video.D3D12\Orbital.Video.D3D12.csproj" />
     <ProjectReference Include="..\Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="mGPU\" />
   </ItemGroup>
 
 </Project>

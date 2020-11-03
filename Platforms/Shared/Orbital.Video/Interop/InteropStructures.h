@@ -4,6 +4,17 @@
 // ensures enums compile as 32-bit regardess of C compiler
 #define ENUM_BIT INT_MAX
 
+typedef struct AdapterInfo
+{
+	bool isPrimary;
+	int index;
+	byte* name;
+	int nodeCount;
+	uintptr_t dedicatedGPUMemory;
+	uintptr_t deticatedSystemMemory;
+	uintptr_t sharedSystemMemory;
+}AdapterInfo;
+
 typedef enum DeviceType
 {
 	DeviceType_Presentation,

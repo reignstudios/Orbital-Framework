@@ -58,7 +58,7 @@ namespace Orbital.Video
 		public readonly DeviceBase device;
 		public DepthStencilBase depthStencil { get; protected set; }
 		public readonly SwapChainType type;
-		public int currentNodeIndex { get; protected set; }
+		public int activeNodeIndex { get; protected set; }
 		public int lastNodeIndex { get; protected set; }
 
 		public SwapChainBase(DeviceBase device, SwapChainType type)

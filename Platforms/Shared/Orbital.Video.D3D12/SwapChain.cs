@@ -22,7 +22,7 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_SwapChain_Dispose(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
-		private static unsafe extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle, int* currentNodeIndex, int* lastNodeIndex);
+		private static unsafe extern void Orbital_Video_D3D12_SwapChain_BeginFrame(IntPtr handle, int* activeNodeIndex, int* lastNodeIndex);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private static extern void Orbital_Video_D3D12_SwapChain_Present(IntPtr handle);
@@ -83,9 +83,9 @@ namespace Orbital.Video.D3D12
 			{
 				// TODO: check if window size changed and resize swapchain back-buffer if so to match
 			}
-			int currentNodeIndex, lastNodeIndex;
-			Orbital_Video_D3D12_SwapChain_BeginFrame(handle, &currentNodeIndex, &lastNodeIndex);
-			this.currentNodeIndex = currentNodeIndex;
+			int activeNodeIndex, lastNodeIndex;
+			Orbital_Video_D3D12_SwapChain_BeginFrame(handle, &activeNodeIndex, &lastNodeIndex);
+			this.activeNodeIndex = activeNodeIndex;
 			this.lastNodeIndex = lastNodeIndex;
 		}
 

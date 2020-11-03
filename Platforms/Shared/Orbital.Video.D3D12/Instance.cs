@@ -34,7 +34,7 @@ namespace Orbital.Video.D3D12
 		private static extern void Orbital_Video_D3D12_Instance_Dispose(IntPtr handle);
 
 		[DllImport(lib, CallingConvention = callingConvention)]
-		private static unsafe extern int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, char** adapterNames, uint adapterNameMaxLength, uint* adapterIndices, uint* adapterCount);
+		private static unsafe extern int Orbital_Video_D3D12_Instance_QuerySupportedAdapters(IntPtr handle, int allowSoftwareAdapters, AdapterInfo_NativeInterop* adapters, int* adapterCount, int adapterNameMaxLength);
 
 		public Instance()
 		{
@@ -57,16 +57,16 @@ namespace Orbital.Video.D3D12
 
 		public override unsafe bool QuerySupportedAdapters(bool allowSoftwareAdapters, out AdapterInfo[] adapters)
 		{
-			const int maxNameLength = 64, maxAdapters = 32;
-			uint adapterNameCount = maxAdapters;
-			char** adapterNamesPtr = stackalloc char*[maxAdapters];
+			const int maxAdapters = 16, maxNameLength = 64;
+			int adapterNameCount = maxAdapters;
+			var adapters_Native = stackalloc AdapterInfo_NativeInterop[maxAdapters];
 			for (int i = 0; i != maxAdapters; ++i)
 			{
 				char* adapterNamePtr = stackalloc char[maxNameLength];
-				adapterNamesPtr[i] = adapterNamePtr;
+				adapters_Native[i].name = (IntPtr)adapterNamePtr;
 			}
-			uint* adapterIndices = stackalloc uint[maxAdapters];
-			if (Orbital_Video_D3D12_Instance_QuerySupportedAdapters(handle, (byte)(allowSoftwareAdapters ? 1 : 0), adapterNamesPtr, maxNameLength, adapterIndices, &adapterNameCount) == 0)
+
+			if (Orbital_Video_D3D12_Instance_QuerySupportedAdapters(handle, (byte)(allowSoftwareAdapters ? 1 : 0), adapters_Native, &adapterNameCount, maxNameLength) == 0)
 			{
 				adapters = null;
 				return false;
@@ -75,8 +75,16 @@ namespace Orbital.Video.D3D12
 			adapters = new AdapterInfo[adapterNameCount];
 			for (int i = 0; i != adapterNameCount; ++i)
 			{
-				string name = Marshal.PtrToStringUni((IntPtr)adapterNamesPtr[i]);
-				adapters[i] = new AdapterInfo((int)adapterIndices[i], name);
+				adapters[i] = new AdapterInfo
+				(
+					adapters_Native[i].isPrimary != 0 ? true : false,
+					adapters_Native[i].index,
+					Marshal.PtrToStringUni(adapters_Native[i].name),
+					adapters_Native[i].nodeCount,
+					adapters_Native[i].dedicatedGPUMemory.ToUInt64(),
+					adapters_Native[i].deticatedSystemMemory.ToUInt64(),
+					adapters_Native[i].sharedSystemMemory.ToUInt64()
+				);
 			}
 			return true;
 		}

@@ -24,7 +24,7 @@ namespace Orbital.Video
 	public abstract class ConstantBufferBase : IDisposable
 	{
 		public readonly DeviceBase device;
-		protected int currentNodeIndex { get; private set; }
+		protected int activeNodeIndex { get; private set; }
 
 		/// <summary>
 		/// Size of the buffer with alignment padding
@@ -45,7 +45,7 @@ namespace Orbital.Video
 		/// <returns>True if successful</returns>
 		public bool BeginUpdate()
 		{
-			currentNodeIndex = 0;
+			activeNodeIndex = 0;
 			return BeginUpdateInternal();
 		}
 
@@ -57,7 +57,7 @@ namespace Orbital.Video
 		/// <returns>True if successful</returns>
 		public bool BeginUpdate(SwapChainBase swapChain)
 		{
-			currentNodeIndex = swapChain.currentNodeIndex;
+			activeNodeIndex = swapChain.activeNodeIndex;
 			return BeginUpdateInternal();
 		}
 
@@ -68,7 +68,7 @@ namespace Orbital.Video
 		/// <returns>True if successful</returns>
 		public bool BeginUpdate(int nodeIndex)
 		{
-			currentNodeIndex = nodeIndex;
+			activeNodeIndex = nodeIndex;
 			return BeginUpdateInternal();
 		}
 

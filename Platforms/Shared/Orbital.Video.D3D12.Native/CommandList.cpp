@@ -159,26 +159,26 @@ extern "C"
 		UINT activeNodeIndex = handle->activeNodeIndex;
 		if (renderPass->swapChain != NULL)
 		{
-			UINT currentRenderTargetIndex = renderPass->swapChain->currentRenderTargetIndex;
+			UINT activeRenderTargetIndex = renderPass->swapChain->activeRenderTargetIndex;
 			D3D12_RESOURCE_BARRIER barriers[2] = {};
 			int barrierCount = 0;
-			if (renderPass->swapChain->resourceStates[currentRenderTargetIndex] != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
+			if (renderPass->swapChain->resourceStates[activeRenderTargetIndex] != D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET)
 			{
 				auto barrier = &barriers[barrierCount];
 				barrier->Type = D3D12_RESOURCE_BARRIER_TYPE::D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 				barrier->Flags = D3D12_RESOURCE_BARRIER_FLAGS::D3D12_RESOURCE_BARRIER_FLAG_NONE;
 				if (renderPass->swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard)
 				{
-					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[currentRenderTargetIndex];
+					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[activeRenderTargetIndex];
 				}
 				else if (renderPass->swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR)
 				{
 					barrier->Transition.pResource = renderPass->nodes[activeNodeIndex].renderTargetResources[0];
 				}
-				barrier->Transition.StateBefore = renderPass->swapChain->resourceStates[currentRenderTargetIndex];
+				barrier->Transition.StateBefore = renderPass->swapChain->resourceStates[activeRenderTargetIndex];
 				barrier->Transition.StateAfter = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RENDER_TARGET;
 				barrier->Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-				renderPass->swapChain->resourceStates[currentRenderTargetIndex] = barrier->Transition.StateAfter;
+				renderPass->swapChain->resourceStates[activeRenderTargetIndex] = barrier->Transition.StateAfter;
 				++barrierCount;
 			}
 
@@ -197,7 +197,7 @@ extern "C"
 			
 			if (barrierCount != 0) handle->activeNode->commandList->ResourceBarrier(barrierCount, barriers);
 			D3D12_RENDER_PASS_RENDER_TARGET_DESC* renderTargetDescs = nullptr;
-			if (renderPass->swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard) renderTargetDescs = &renderPass->nodes[activeNodeIndex].renderTargetDescs[currentRenderTargetIndex];
+			if (renderPass->swapChain->type == SwapChainType::SwapChainType_SingleGPU_Standard) renderTargetDescs = &renderPass->nodes[activeNodeIndex].renderTargetDescs[activeRenderTargetIndex];
 			else if (renderPass->swapChain->type == SwapChainType::SwapChainType_MultiGPU_AFR) renderTargetDescs = &renderPass->nodes[activeNodeIndex].renderTargetDescs[0];
 			handle->activeNode->commandList4->BeginRenderPass(1, renderTargetDescs, renderPass->nodes[activeNodeIndex].depthStencilDesc, D3D12_RENDER_PASS_FLAGS::D3D12_RENDER_PASS_FLAG_NONE);
 		}
@@ -457,14 +457,6 @@ extern "C"
 		handle->activeNode->commandList->ResolveSubresource(dstRenderTexture->nodes[activeNodeIndex].resource, 0, srcRenderTexture->nodes[activeNodeIndex].resource, 0, srcRenderTexture->format);
 	}
 
-	/*ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_ResolveRenderTextureToSwapChain(CommandList* handle, Texture* srcRenderTexture, SwapChain* dstSwapChain)
-	{
-		UINT activeNodeIndex = handle->activeNodeIndex;
-		Orbital_Video_D3D12_Texture_ChangeState(srcRenderTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_SOURCE, handle->activeNode->commandList);
-		Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_RESOLVE_DEST, handle->activeNode->commandList);
-		handle->activeNode->commandList->ResolveSubresource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], 0, srcRenderTexture->nodes[activeNodeIndex].resource, 0, srcRenderTexture->format);
-	}*/
-
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTexture(CommandList* handle, Texture* srcTexture, Texture* dstTexture)
 	{
 		UINT activeNodeIndex = handle->activeNodeIndex;
@@ -472,18 +464,6 @@ extern "C"
 		Orbital_Video_D3D12_Texture_ChangeState(dstTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->activeNode->commandList);
 		handle->activeNode->commandList->CopyResource(dstTexture->nodes[activeNodeIndex].resource, srcTexture->nodes[activeNodeIndex].resource);
 	}
-
-	//ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChain(CommandList* handle, Texture* srcTexture, SwapChain* dstSwapChain)
-	//{
-	//	/*UINT activeNodeIndex = handle->activeNodeIndex;
-	//	Orbital_Video_D3D12_Texture_ChangeState(srcTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->activeNode->commandList);
-	//	Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->activeNode->commandList);
-	//	handle->activeNode->commandList->CopyResource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], srcTexture->nodes[activeNodeIndex].resource);*/
-	//	UINT activeNodeIndex = handle->activeNodeIndex;
-	//	Orbital_Video_D3D12_Texture_ChangeState(srcTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->nodes[activeNodeIndex].commandList);
-	//	Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->nodes[activeNodeIndex].commandList);
-	//	//handle->nodes[primaryNodeIndex].commandList->CopyResource(dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex], srcTexture->nodes[activeNodeIndex].resource);
-	//}
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureRegion(CommandList* handle, Texture* srcTexture, Texture* dstTexture, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT srcMipmapLevel, UINT dstMipmapLevel)
 	{
@@ -509,30 +489,6 @@ extern "C"
 
 		handle->activeNode->commandList->CopyTextureRegion(&dstLoc, dstX, dstY, dstZ, &srcLoc, &srcBox);
 	}
-
-	/*ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_CopyTextureToSwapChainRegion(CommandList* handle, Texture* srcTexture, SwapChain* dstSwapChain, UINT srcX, UINT srcY, UINT srcZ, UINT dstX, UINT dstY, UINT dstZ, UINT width, UINT height, UINT depth, UINT srcMipmapLevel)
-	{
-		UINT activeNodeIndex = handle->activeNodeIndex;
-		Orbital_Video_D3D12_Texture_ChangeState(srcTexture, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_SOURCE, handle->activeNode->commandList);
-		Orbital_Video_D3D12_SwapChain_ChangeState(dstSwapChain, activeNodeIndex, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST, handle->activeNode->commandList);
-
-		D3D12_TEXTURE_COPY_LOCATION dstLoc = {};
-		dstLoc.pResource = dstSwapChain->resources[dstSwapChain->currentRenderTargetIndex];
-
-		D3D12_TEXTURE_COPY_LOCATION srcLoc = {};
-		srcLoc.pResource = srcTexture->nodes[activeNodeIndex].resource;
-		srcLoc.SubresourceIndex = srcMipmapLevel;
-
-		D3D12_BOX srcBox;
-		srcBox.left = srcX;
-		srcBox.right = srcX + width;
-		srcBox.top = srcY;
-		srcBox.bottom = srcY + height;
-		srcBox.front = srcZ;
-		srcBox.back = srcZ + depth;
-
-		handle->activeNode->commandList->CopyTextureRegion(&dstLoc, dstX, dstY, dstZ, &srcLoc, &srcBox);
-	}*/
 
 	ORBITAL_EXPORT void Orbital_Video_D3D12_CommandList_Execute(CommandList* handle)
 	{

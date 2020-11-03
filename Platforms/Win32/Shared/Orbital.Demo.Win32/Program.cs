@@ -9,7 +9,7 @@ namespace Orbital.Demo.Win32
 	{
 		static void Main(string[] args)
 		{
-			AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+			//AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			
 			// init app and window
 			var application = new Application();

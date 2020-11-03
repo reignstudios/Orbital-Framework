@@ -13,6 +13,18 @@ namespace Orbital.Video.Vulkan
 		Texture
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	struct AdapterInfo_NativeInterop
+	{
+		public int isPrimary;
+		public int index;
+		public IntPtr name;
+		public int nodeCount;
+		public UIntPtr dedicatedGPUMemory;
+		public UIntPtr deticatedSystemMemory;
+		public UIntPtr sharedSystemMemory;
+	}
+
 	#region Render Pass
 	[StructLayout(LayoutKind.Sequential)]
 	struct RenderPassRenderTargetDesc_NativeInterop
