@@ -7,6 +7,7 @@ namespace Orbital.Video.API.mGPU
 	public sealed class Device : DeviceBase
 	{
 		public DeviceBase[] devices { get; private set; }
+		public DeviceBase primaryDevice { get; private set; }
 
 		public int activeDeviceIndex { get; private set; }
 		public DeviceBase activeDevice { get; private set; }
@@ -14,12 +15,17 @@ namespace Orbital.Video.API.mGPU
 		public Device(InstanceBase instance, DeviceType type, AdapterInfo[] adapters)
 		: base(instance, type)
 		{
+			if (adapters == null || adapters.Length <= 1) throw new ArgumentException("Adapters must be at least two in length");
 			devices = new DeviceBase[adapters.Length];
 			for (int i = 0; i != devices.Length; ++i)
 			{
+				// allocate API specific device
 				if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
 				else if (instance is Vulkan.Instance) devices[i] = new Vulkan.Device((Vulkan.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
 				else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+
+				// set primary device
+				if (adapters[i].isPrimary) primaryDevice = devices[i];
 			}
 		}
 
@@ -86,42 +92,66 @@ namespace Orbital.Video.API.mGPU
 		#region Create Methods
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, SwapChainVSyncMode vSyncMode)
 		{
-			return activeDevice.CreateSwapChain(window, bufferCount, fullscreen, ensureSizeMatchesWindowSize, format, type, vSyncMode);
+			return primaryDevice.CreateSwapChain(window, bufferCount, fullscreen, ensureSizeMatchesWindowSize, format, type, vSyncMode);
 		}
 
 		public override SwapChainBase CreateSwapChain(WindowBase window, int bufferCount, bool fullscreen, bool ensureSizeMatchesWindowSize, SwapChainFormat format, SwapChainType type, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, SwapChainVSyncMode vSyncMode)
 		{
-			return activeDevice.CreateSwapChain(window, bufferCount, fullscreen, ensureSizeMatchesWindowSize, format, type, stencilUsage, depthStencilFormat, depthStencilMode, vSyncMode);
+			return primaryDevice.CreateSwapChain(window, bufferCount, fullscreen, ensureSizeMatchesWindowSize, format, type, stencilUsage, depthStencilFormat, depthStencilMode, vSyncMode);
 		}
 
 		public override RasterizeCommandListBase CreateRasterizeCommandList()
 		{
-			return activeDevice.CreateRasterizeCommandList();
+			var abstraction = new RasterizeCommandList(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create CommandList");
+			}
+			return abstraction;
 		}
 
 		public override ComputeCommandListBase CreateComputeCommandList()
 		{
-			return activeDevice.CreateComputeCommandList();
+			var abstraction = new ComputeCommandList(this);
+			if (!abstraction.Init())
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create CommandList");
+			}
+			return abstraction;
 		}
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc)
 		{
-			return activeDevice.CreateRenderPass(desc);
+			return primaryDevice.swapChain.CreateRenderPass(desc);
 		}
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, DepthStencilBase depthStencil)
 		{
-			return activeDevice.CreateRenderPass(desc, depthStencil);
+			return primaryDevice.swapChain.CreateRenderPass(desc, depthStencil);
 		}
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures)
 		{
-			return activeDevice.CreateRenderPass(desc, renderTextures);
+			var abstraction = new RenderPass(this);
+			/*if (!abstraction.Init(desc, (RenderTexture2D[])renderTextures))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderState");
+			}*/
+			return abstraction;
 		}
 
 		public override RenderPassBase CreateRenderPass(RenderPassDesc desc, Texture2DBase[] renderTextures, DepthStencilBase depthStencil)
 		{
-			return activeDevice.CreateRenderPass(desc, renderTextures, depthStencil);
+			var abstraction = new RenderPass(this);
+			/*if (!abstraction.Init(desc, (RenderTexture2D[])renderTextures, (DepthStencil)depthStencil))
+			{
+				abstraction.Dispose();
+				throw new Exception("Failed to create RenderState");
+			}*/
+			return abstraction;
 		}
 
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc)

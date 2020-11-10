@@ -16,7 +16,20 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.API\Abstraction.cs" Link="Abstraction.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\ComputeCommandList.cs" Link="mGPU\ComputeCommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\ComputeShader.cs" Link="mGPU\ComputeShader.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\ComputeState.cs" Link="mGPU\ComputeState.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\ConstantBuffer.cs" Link="mGPU\ConstantBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\DepthStencil.cs" Link="mGPU\DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\Device.cs" Link="mGPU\Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\IndexBuffer.cs" Link="mGPU\IndexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RasterizeCommandList.cs" Link="mGPU\RasterizeCommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RenderPass.cs" Link="mGPU\RenderPass.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RenderState.cs" Link="mGPU\RenderState.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\ShaderEffect.cs" Link="mGPU\ShaderEffect.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\Texture2D.cs" Link="mGPU\Texture2D.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\VertexBuffer.cs" Link="mGPU\VertexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\VertexBufferStreamer.cs" Link="mGPU\VertexBufferStreamer.cs" />
   </ItemGroup>
 
   <ItemGroup>
