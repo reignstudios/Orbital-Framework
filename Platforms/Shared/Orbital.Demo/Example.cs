@@ -189,7 +189,7 @@ namespace Orbital.Demo
 			#endif
 
 			// load api abstraction (api-instance and hardware-device)
-			var abstractionDesc = new AbstractionDesc(AbstractionInitType.DefaultMultiGPU);
+			var abstractionDesc = new AbstractionDesc(AbstractionInitType.MultiGPU_BestAvaliable_AFR);
 			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
 
 			abstractionDesc.deviceDescD3D12.window = window;

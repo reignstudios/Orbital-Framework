@@ -239,10 +239,11 @@ extern "C"
 		free(handle);
 	}
 
-	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_BeginFrame(SwapChain* handle, int* activeNodeIndex, int* lastNodeIndex)
+	ORBITAL_EXPORT void Orbital_Video_D3D12_SwapChain_BeginFrame(SwapChain* handle, int* activeRenderTargetIndex, int* activeNodeIndex, int* lastNodeIndex)
 	{
 		*lastNodeIndex = handle->activeNodeIndex;
 		handle->activeRenderTargetIndex = handle->swapChain3->GetCurrentBackBufferIndex();
+		*activeRenderTargetIndex = handle->activeRenderTargetIndex;
 		if (handle->nodeCount == 1) handle->activeNodeIndex = 0;
 		else handle->activeNodeIndex = handle->activeRenderTargetIndex;
 		*activeNodeIndex = handle->activeNodeIndex;

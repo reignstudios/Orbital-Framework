@@ -4,205 +4,40 @@ using System.IO;
 
 namespace Orbital.Video.API.mGPU
 {
-	public enum MGPUDeviceType
-	{
-		/// <summary>
-		/// Primary devices used only & Swap-Chain only uses primary GPU regardless of Multi-GPU support
-		/// </summary>
-		SingleGPU_Standard,
-
-		/// <summary>
-		/// Use best option for AFR.
-		/// LinkedNode option will be used in favor over MixedDevice if avaliable
-		/// </summary>
-		MultiGPU_BestAvaliable_AFR,
-
-		/// <summary>
-		/// Single linked-adapter will be used & Swap-Chain will init back-buffers on each GPU for AFR rendering.
-		/// NOTE: If Linked-GPU/Multi-GPU support isn't avaliable or enabled will default to 'SingleGPU_Standard'
-		/// </summary>
-		MultiGPU_LinkedNode_AFR,
-
-		/// <summary>
-		/// Multiple devices will be used & Swap-Chain will init present-back-buffers on primary GPU & extra GPUs each get a back-buffer to be copied to primary GPU for AFR rendering.
-		/// NOTE: If Multi-GPU support isn't avaliable will default to 'SingleGPU_Standard'
-		/// </summary>
-		MultiGPU_MixedDevice_AFR
-	}
-
-	public struct DeviceDesc
-	{
-		public D3D12.DeviceDesc descD3D12;
-
-		/// <summary>
-		/// Any vendors in this list will be ignored when intializing mGPU mixed-devices
-		/// </summary>
-		public AdapterVendor[] vendorIgnores_MixedDevices;
-	}
-
 	public sealed class Device : DeviceBase
 	{
 		public DeviceBase[] devices { get; private set; }
 
-		/// <summary>
-		/// This device(s) mGPU type after 'Init' is called
-		/// </summary>
-		public MGPUDeviceType mgpuType { get; private set; }
-
-		/// <summary>
-		/// For AFR this is the active device index
-		/// </summary>
 		public int activeDeviceIndex { get; private set; }
-
 		public DeviceBase activeDevice { get; private set; }
 
-		public Device(InstanceBase instance, DeviceType type, MGPUDeviceType mgpuType)
+		public Device(InstanceBase instance, DeviceType type, AdapterInfo[] adapters)
 		: base(instance, type)
 		{
-			this.mgpuType = mgpuType;
+			devices = new DeviceBase[adapters.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
+				else if (instance is Vulkan.Instance) devices[i] = new Vulkan.Device((Vulkan.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
+				else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+			}
 		}
 
-		private static bool IsVendorIgnored(AdapterVendor vender, AdapterVendor[] ignoredVendors)
+		public bool Init(AbstractionDesc desc)
 		{
-			foreach (var v in ignoredVendors)
+			for (int i = 0; i != devices.Length; ++i)
 			{
-				if (vender == v) return true;
-			}
-			return false;
-		}
-
-		public bool Init(DeviceDesc desc)
-		{
-			AdapterInfo[] adapters = null;
-			bool createSingleDevice = false;
-			if (mgpuType == MGPUDeviceType.SingleGPU_Standard)
-			{
-				mgpuType = MGPUDeviceType.SingleGPU_Standard;
-				createSingleDevice = true;// single gpu mode only
-			}
-			else if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
-			{
-				if (!instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
-				if (adapters.Length >= 1)
+				if (instance is D3D12.Instance)
 				{
-					// test for linked-gpus
-					foreach (var adapter in adapters)
-					{
-						if (adapter.isPrimary && adapter.nodeCount > 1)
-						{
-							mgpuType = MGPUDeviceType.MultiGPU_LinkedNode_AFR;
-							break;
-						}
-					}
-
-					// test for mixed-gpu support
-					if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
-					{
-						if (adapters.Length >= 2)
-						{
-							foreach (var adapter in adapters)
-							{
-								if (adapter.isPrimary)
-								{
-									mgpuType = MGPUDeviceType.MultiGPU_MixedDevice_AFR;
-									break;
-								}
-							}
-						}
-					}
+					var deviceD3D12 = (D3D12.Device)devices[i];
+					if (!deviceD3D12.Init(desc.deviceDescD3D12)) return false;
 				}
-
-				// set to single gpu if no mGPU support found
-				if (mgpuType == MGPUDeviceType.MultiGPU_BestAvaliable_AFR)
+				else if (instance is Vulkan.Instance)
 				{
-					mgpuType = MGPUDeviceType.SingleGPU_Standard;
-					createSingleDevice = true;
+					var deviceVulkan = (Vulkan.Device)devices[i];
+					if (!deviceVulkan.Init(desc.deviceDescVulkan)) return false;
 				}
-			}
-
-			if (mgpuType == MGPUDeviceType.MultiGPU_LinkedNode_AFR)
-			{
-				if (adapters == null && !instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
-				bool linkedNodesFound = false;
-				foreach (var adapter in adapters)
-				{
-					if (adapter.isPrimary && adapter.nodeCount > 1)
-					{
-						linkedNodesFound = true;
-						break;
-					}
-				}
-
-				if (!linkedNodesFound)
-				{
-					mgpuType = MGPUDeviceType.SingleGPU_Standard;// default to single gpu mode if only adapter-node found
-					createSingleDevice = true;
-				}
-			}
-			else if (mgpuType == MGPUDeviceType.MultiGPU_MixedDevice_AFR)
-			{
-				if (adapters == null && !instance.QuerySupportedAdapters(false, out adapters)) throw new Exception("Failed to get supported adapters");
-				if (adapters.Length > 1)
-				{
-					// calculate how many valid device we have
-					int deviceCount;
-					if (desc.vendorIgnores_MixedDevices != null)
-					{
-						deviceCount = 0;
-						foreach (var adapter in adapters)
-						{
-							if (!IsVendorIgnored(adapter.vendor, desc.vendorIgnores_MixedDevices)) ++deviceCount;
-						}
-					}
-					else
-					{
-						deviceCount = adapters.Length;
-					}
-
-					// create mixed device arrays
-					devices = new DeviceBase[deviceCount];// mixed-device mode needs to create a device per physical GPU
-					int i = 0;
-					foreach (var adapter in adapters)
-					{
-						if (IsVendorIgnored(adapter.vendor, desc.vendorIgnores_MixedDevices)) continue;
-
-						if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, i == 0 ? type : DeviceType.Background);
-						else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
-						++i;
-					}
-				}
-				else
-				{
-					mgpuType = MGPUDeviceType.SingleGPU_Standard;// default to single gpu mode if only adapter found
-					createSingleDevice = true;
-				}
-			}
-
-			if (createSingleDevice)
-			{
-				devices = new DeviceBase[1];
-				if (instance is D3D12.Instance) devices[0] = new D3D12.Device((D3D12.Instance)instance, type);
-			}
-
-			// force mixed-device AFR requirements
-			if (mgpuType == MGPUDeviceType.MultiGPU_MixedDevice_AFR)
-			{
-				desc.descD3D12.swapChainType = SwapChainType.SingleGPU_Standard;
-				desc.descD3D12.swapChainBufferCount = 1;
-			}
-
-			// init devices
-			foreach (var device in devices)
-			{
-				if (device is D3D12.Device)
-				{
-					var deviceD3D12 = (D3D12.Device)device;
-					if (!deviceD3D12.Init(desc.descD3D12)) return false;
-				}
-				else
-				{
-					throw new NotImplementedException();
-				}
+				else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
 			}
 
 			return true;
@@ -222,17 +57,30 @@ namespace Orbital.Video.API.mGPU
 
 		public override void BeginFrame()
 		{
+			activeDevice = devices[activeDeviceIndex];
 			activeDevice.BeginFrame();
 		}
 
 		public override void EndFrame()
 		{
 			activeDevice.EndFrame();
+			++activeDeviceIndex;
+			if (activeDeviceIndex >= devices.Length) activeDeviceIndex = 0;
 		}
 
+		/// <summary>
+		/// Will find the MSAA level compatible with all devices
+		/// </summary>
 		public unsafe override bool GetMaxMSAALevel(TextureFormat format, out MSAALevel msaaLevel)
 		{
-			return activeDevice.GetMaxMSAALevel(format, out msaaLevel);
+			msaaLevel = MSAALevel.X16;
+			foreach (var device in devices)
+			{
+				MSAALevel deviceMSAA;
+				if (!device.GetMaxMSAALevel(format, out deviceMSAA)) return false;
+				if (deviceMSAA < msaaLevel) msaaLevel = deviceMSAA;
+			}
+			return true;
 		}
 
 		#region Create Methods
