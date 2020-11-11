@@ -33,7 +33,7 @@ namespace Orbital.Demo.Win32
 			}
 		}
 
-		private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		/*private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			var ex = e.ExceptionObject as Exception;
 			if (ex == null) return;
@@ -42,6 +42,6 @@ namespace Orbital.Demo.Win32
 			Console.WriteLine();
 			Console.WriteLine("HIT ENTER");
 			Console.ReadLine();
-		}
+		}*/
 	}
 }

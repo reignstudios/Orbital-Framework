@@ -8,4 +8,5 @@ git submodule update --recursive --remote
 git submodule update --remote --merge
 
 <<< Push git submodule changes >>>
-git push --recurse-submodules=on-demand
+git push origin HEAD:master
+NOTE old git method: git push --recurse-submodules=on-demand

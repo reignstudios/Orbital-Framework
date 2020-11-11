@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
 		<!-- Prevent .NET Core 3+ from generating exe -->
 		<UseAppHost>false</UseAppHost>
@@ -24,12 +24,14 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs" Link="CommandList.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeCommandList.cs" Link="ComputeCommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeShader.cs" Link="ComputeShader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeState.cs" Link="ComputeState.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ConstantBuffer.cs" Link="ConstantBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\IndexBuffer.cs" Link="IndexBuffer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RasterizeCommandList.cs" Link="RasterizeCommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs" Link="RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Shader.cs" Link="Shader.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ShaderEffect.cs" Link="ShaderEffect.cs" />
