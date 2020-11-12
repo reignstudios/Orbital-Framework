@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.API", "Orbita
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.Vulkan", "Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj", "{1F98D4CA-785E-4714-9CA2-09F4248D450C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.IO", "Orbital.IO\Orbital.IO.csproj", "{76E85FD1-FEA1-4B90-9F41-AD10D99FBD4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "Orbital.IO\Orbital.IO.csproj", "{76E85FD1-FEA1-4B90-9F41-AD10D99FBD4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

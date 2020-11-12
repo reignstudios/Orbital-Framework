@@ -3,9 +3,6 @@
   <PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 
-    <!-- Prevent .NET Core 3+ from generating exe -->
-    <UseAppHost>false</UseAppHost>
-
     <!--Disable .NET Core SDK libs-->
     <NoStdLib>true</NoStdLib>
     <NoStandardLibraries>true</NoStandardLibraries>
