@@ -76,7 +76,7 @@ extern "C"
 			handle->nodes[n].resourceState = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 			if (data != NULL && handle->mode == TextureMode_GPUOptimized) handle->nodes[n].resourceState = D3D12_RESOURCE_STATE_COPY_DEST;// init for gpu copy
 			if (FAILED(handle->device->device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc, handle->nodes[n].resourceState, NULL, IID_PPV_ARGS(&handle->nodes[n].resource)))) return 0;
-
+			
 			// create shader resource heap
 			D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
 			heapDesc.NodeMask = handle->device->nodes[n].mask;

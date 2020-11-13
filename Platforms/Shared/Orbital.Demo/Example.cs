@@ -212,12 +212,12 @@ namespace Orbital.Demo
 			
 			// create render texture test objects
 			renderTextureTest = new RenderTextureTest(device);
-
+			
 			// create msaa render texture
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
 			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false, MultiGPUNodeResourceVisibility.All);
-			
+
 			// create command list
 			commandList = device.CreateRasterizeCommandList();
 			//commandList_Compute = device.CreateComputeCommandList();
@@ -226,7 +226,7 @@ namespace Orbital.Demo
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
 			//renderPass = device.CreateRenderPass(renderPassDesc, device.swapChain.depthStencil);
 			renderPass = renderTextureMSAA.CreateRenderPass(renderPassDesc, renderTextureMSAA.GetDepthStencil());
-
+			
 			// create texture
 			int textureWidth = 256, textureHeight = 256;
 			var textureData = new byte[textureWidth * textureHeight * 4];
