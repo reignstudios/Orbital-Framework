@@ -29,21 +29,60 @@ extern "C"
 		UINT factoryFlags = 0;
 		#if defined(_DEBUG)
 		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
-		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 		{
-			if (extraDebugging) handle->debugController->QueryInterface(IID_PPV_ARGS(&handle->debugController3));
-			if (handle->debugController3 != nullptr)
+			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 			{
-				handle->debugController3->SetEnableGPUBasedValidation(true);
-				handle->debugController3->SetGPUBasedValidationFlags(D3D12_GPU_BASED_VALIDATION_FLAGS_DISABLE_STATE_TRACKING);
-				handle->debugController3->SetEnableSynchronizedCommandQueueValidation(true);
-				handle->debugController3->EnableDebugLayer();
+				if (extraDebugging) handle->debugController->QueryInterface(IID_PPV_ARGS(&handle->debugController3));
+				if (handle->debugController3 != nullptr)
+				{
+					//handle->debugController3->SetEnableGPUBasedValidation(true);
+					//handle->debugController3->SetGPUBasedValidationFlags(D3D12_GPU_BASED_VALIDATION_FLAGS_DISABLE_STATE_TRACKING);
+					handle->debugController3->SetEnableSynchronizedCommandQueueValidation(true);
+					handle->debugController3->EnableDebugLayer();
+				}
+				else
+				{
+					handle->debugController->EnableDebugLayer();
+				}
+				factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 			}
-			else
+
+			typedef HRESULT(WINAPI* DXGIGetDebugInterface_Func)(REFIID riid, void** ppDebug);
+			auto module = GetModuleHandle(L"Dxgidebug.dll");
+			if (module != nullptr)
 			{
-				handle->debugController->EnableDebugLayer();
+				auto DXGIGetDebugInterface1_FuncPtr = (DXGIGetDebugInterface_Func)GetProcAddress(module, "DXGIGetDebugInterface1");
+				if (DXGIGetDebugInterface1_FuncPtr != nullptr)
+				{
+					if (SUCCEEDED(DXGIGetDebugInterface1_FuncPtr(IID_PPV_ARGS(&handle->infoQueue))))
+					{
+						handle->infoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
+						handle->infoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
+					}
+
+					if (SUCCEEDED(DXGIGetDebugInterface1_FuncPtr(IID_PPV_ARGS(&handle->debugDXGI1))))
+					{
+						// do nothing...
+					}
+				}
+				else
+				{
+					auto DXGIGetDebugInterface_FuncPtr = (DXGIGetDebugInterface_Func)GetProcAddress(module, "DXGIGetDebugInterface");
+					if (DXGIGetDebugInterface_FuncPtr != nullptr)
+					{
+						if (SUCCEEDED(DXGIGetDebugInterface_FuncPtr(IID_PPV_ARGS(&handle->infoQueue))))
+						{
+							handle->infoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true);
+							handle->infoQueue->SetBreakOnSeverity(DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true);
+						}
+
+						if (SUCCEEDED(DXGIGetDebugInterface_FuncPtr(IID_PPV_ARGS(&handle->debugDXGI))))
+						{
+							// do nothing...
+						}
+					}
+				}
 			}
-			factoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 		}
 		#endif
 
@@ -70,6 +109,26 @@ extern "C"
 		{
 			handle->debugController->Release();
 			handle->debugController = NULL;
+		}
+
+		if (handle->infoQueue != NULL)
+		{
+			handle->infoQueue->Release();
+			handle->infoQueue = NULL;
+		}
+
+		if (handle->debugDXGI != NULL)
+		{
+			handle->debugDXGI->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
+			handle->debugDXGI->Release();
+			handle->debugDXGI = NULL;
+		}
+
+		if (handle->debugDXGI1 != NULL)
+		{
+			handle->debugDXGI1->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
+			handle->debugDXGI1->Release();
+			handle->debugDXGI1 = NULL;
 		}
 		#endif
 
