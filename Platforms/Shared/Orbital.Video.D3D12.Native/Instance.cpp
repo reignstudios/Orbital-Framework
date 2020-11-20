@@ -169,7 +169,7 @@ extern "C"
 			}
 
 			// set is primary if index is 0
-			if (i == i) adapter->isPrimary = 1;
+			if ((*adapterCount) == 0) adapter->isPrimary = 1;
 			adapter->vendorID = desc.VendorId;
 
 			// make sure adapter can be used

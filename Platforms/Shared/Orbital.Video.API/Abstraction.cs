@@ -274,7 +274,15 @@ namespace Orbital.Video.API
 						supportedAdapters = new List<AdapterInfo>(adapters);
 					}
 
-					device = new mGPU.Device(instance, desc.deviceType, supportedAdapters.ToArray());
+					if (supportedAdapters.Count > 1)
+					{
+						device = new mGPU.Device(instance, desc.deviceType, supportedAdapters.ToArray());
+					}
+					else
+					{
+						initType = AbstractionInitType.SingleGPU_Standard;// default to single gpu mode if only adapter found
+						createSingleDevice = true;
+					}
 				}
 				else
 				{
