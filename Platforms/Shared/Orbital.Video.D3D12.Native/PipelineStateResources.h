@@ -22,14 +22,8 @@ struct PipelineStateResourcesDesc
 
 struct PipelineStateResourcesNode
 {
-	ID3D12DescriptorHeap* constantBufferHeap;
-	D3D12_GPU_DESCRIPTOR_HANDLE constantBufferGPUDescHandle;
-
-	ID3D12DescriptorHeap* textureHeap;
-	D3D12_GPU_DESCRIPTOR_HANDLE textureGPUDescHandle;
-
-	ID3D12DescriptorHeap* randomAccessBufferHeap;
-	D3D12_GPU_DESCRIPTOR_HANDLE randomAccessBufferGPUDescHandle;
+	ID3D12DescriptorHeap* bufferHeap;
+	D3D12_GPU_DESCRIPTOR_HANDLE constantBufferGPUDescHandle, textureGPUDescHandle, randomAccessBufferGPUDescHandle;
 };
 
 struct PipelineStateResources

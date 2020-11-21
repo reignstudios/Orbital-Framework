@@ -151,7 +151,7 @@ namespace Orbital.Demo
 		private InstanceBase instance;
 		private DeviceBase device;
 		private RasterizeCommandListBase commandList;
-		//private ComputeCommandListBase commandList_Compute;
+		private ComputeCommandListBase commandList_Compute;
 		private RenderPassBase renderPass;
 		private RenderStateBase renderState;
 		private ShaderEffectBase shaderEffect;
@@ -162,8 +162,8 @@ namespace Orbital.Demo
 		private Texture2DBase texture, texture2;
 		private Texture2DBase renderTextureMSAA;
 		private RenderTextureTest renderTextureTest;
-		//private ComputeShaderBase computeShader;
-		//private ComputeStateBase computeState;
+		private ComputeShaderBase computeShader;
+		private ComputeStateBase computeState;
 
 		private Camera camera;
 		private float rot = .85f;
@@ -220,7 +220,7 @@ namespace Orbital.Demo
 
 			// create command list
 			commandList = device.CreateRasterizeCommandList();
-			//commandList_Compute = device.CreateComputeCommandList();
+			commandList_Compute = device.CreateComputeCommandList();
 
 			// create render pass
 			var renderPassDesc = RenderPassDesc.CreateDefault(new Color4F(0, .2f, .4f, 1), 1);
@@ -441,7 +441,7 @@ namespace Orbital.Demo
 			renderStateDesc.textures[2] = renderTextureTest.renderTexture;
 			renderState = device.CreateRenderState(renderStateDesc);
 
-			/*// create compute shader
+			// create compute shader
 			using (var csStream = new FileStream("Shaders\\Compute_D3D12.cs", FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				var csDesc = new ComputeShaderDesc()
@@ -462,7 +462,7 @@ namespace Orbital.Demo
 				randomAccessBuffers = new object[1]
 			};
 			computeStateDesc.randomAccessBuffers[0] = renderTextureTest.renderTexture;
-			computeState = device.CreateComputeState(computeStateDesc);*/
+			computeState = device.CreateComputeState(computeStateDesc);
 
 			// print all GPUs this abstraction supports
 			if (!instance.QuerySupportedAdapters(false, out var adapters)) throw new Exception("Failed: QuerySupportedAdapters");
@@ -474,7 +474,7 @@ namespace Orbital.Demo
 
 		public void Dispose()
 		{
-			/*if (computeState != null)
+			if (computeState != null)
 			{
 				computeState.Dispose();
 				computeState = null;
@@ -484,7 +484,7 @@ namespace Orbital.Demo
 			{
 				computeShader.Dispose();
 				computeShader = null;
-			}*/
+			}
 
 			if (renderTextureMSAA != null)
 			{
@@ -552,11 +552,11 @@ namespace Orbital.Demo
 				commandList = null;
 			}
 
-			/*if (commandList_Compute != null)
+			if (commandList_Compute != null)
 			{
 				commandList_Compute.Dispose();
 				commandList_Compute = null;
-			}*/
+			}
 
 			if (device != null)
 			{
@@ -605,11 +605,11 @@ namespace Orbital.Demo
 				commandList.Execute();
 
 				// execute compute shader
-				/*commandList_Compute.Start(device.swapChain);
+				commandList_Compute.Start(device.swapChain);
 				commandList_Compute.SetComputeState(computeState);
 				commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
 				commandList_Compute.Finish();
-				commandList_Compute.Execute();*/
+				commandList_Compute.Execute();
 
 				commandList.Start(device.swapChain);// RENDER INTO: MSAA RenderTexture
 				commandList.BeginRenderPass(renderPass);

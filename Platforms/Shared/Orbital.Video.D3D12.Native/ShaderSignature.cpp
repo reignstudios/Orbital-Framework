@@ -99,7 +99,7 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 
 		auto constantBuffers = desc->constantBuffers;
 		D3D12_ROOT_PARAMETER1 parameter = {};
-		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;//D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		parameter.ParameterType = D3D12_ROOT_PARAMETER_TYPE::D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		ResourceUsageToNative(constantBuffers[0].usage, &parameter.ShaderVisibility);// get first visibility
 		for (int i = 0; i != desc->constantBufferCount; ++i)
 		{
@@ -120,9 +120,9 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 				&domainShaderAccess,
 				&geometryShaderAccess
 			);
-		//}
+		}
 
-		/*parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
+		parameter.DescriptorTable.NumDescriptorRanges = desc->constantBufferCount;
 		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0) size = sizeof(D3D12_DESCRIPTOR_RANGE);
 		else size = sizeof(D3D12_DESCRIPTOR_RANGE1);
 		parameter.DescriptorTable.pDescriptorRanges = (D3D12_DESCRIPTOR_RANGE1*)alloca(size * desc->constantBufferCount);
@@ -147,19 +147,18 @@ int Orbital_Video_D3D12_ShaderSignature_Init(ShaderSignature* handle, Device* de
 			{
 				memcpy((void*)&parameter.DescriptorTable.pDescriptorRanges[i], &range, sizeof(D3D12_DESCRIPTOR_RANGE1));
 			}
-		}*/
-
-			if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
-			{
-				memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
-			}
-			else
-			{
-				memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
-			}
-
-			++parameterIndex;
 		}
+
+		if (signatureDesc.Version == D3D_ROOT_SIGNATURE_VERSION::D3D_ROOT_SIGNATURE_VERSION_1_0)
+		{
+			memcpy((void*)&signatureDesc.Desc_1_0.pParameters[parameterIndex], &parameter, paramSize);
+		}
+		else
+		{
+			memcpy((void*)&signatureDesc.Desc_1_1.pParameters[parameterIndex], &parameter, paramSize);
+		}
+
+		++parameterIndex;
 	}
 
 	if (desc->randomAccessBufferCount != 0)

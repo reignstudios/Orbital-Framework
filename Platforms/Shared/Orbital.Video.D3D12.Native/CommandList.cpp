@@ -357,29 +357,28 @@ extern "C"
 		// bind shader resources
 		handle->activeNode->commandList->SetGraphicsRootSignature(renderState->shaderEffect->signature.signature);
 
+		auto node = &resources->nodes[activeNodeIndex];
+		if (node->bufferHeap != nullptr)
+		{
+			handle->activeNode->commandList->SetDescriptorHeaps(1, &node->bufferHeap);
+		}
+
 		UINT descIndex = 0;
-		if (resources->nodes[activeNodeIndex].constantBufferHeap != NULL)
+		if (node->constantBufferGPUDescHandle.ptr != 0)
 		{
-			//handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].constantBufferHeap);
-			//handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].constantBufferGPUDescHandle);
-			for (UINT i = 0; i != resources->constantBufferCount; ++i)
-			{
-				handle->activeNode->commandList->SetGraphicsRootConstantBufferView(descIndex, resources->constantBuffers[i]->nodes[activeNodeIndex].resource->GetGPUVirtualAddress());
-				++descIndex;
-			}
-		}
-
-		if (resources->nodes[activeNodeIndex].randomAccessBufferHeap != NULL)
-		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].randomAccessBufferHeap);
-			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].randomAccessBufferGPUDescHandle);
-		}
-
-		if (resources->nodes[activeNodeIndex].textureHeap != NULL)
-		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].textureHeap);
-			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].textureGPUDescHandle);
+			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, node->constantBufferGPUDescHandle);
 			++descIndex;
+		}
+
+		if (node->randomAccessBufferGPUDescHandle.ptr != 0)
+		{
+			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, node->randomAccessBufferGPUDescHandle);
+			++descIndex;
+		}
+
+		if (node->textureGPUDescHandle.ptr != 0)
+		{
+			handle->activeNode->commandList->SetGraphicsRootDescriptorTable(descIndex, node->textureGPUDescHandle);
 		}
 
 		// enable render state
@@ -409,25 +408,28 @@ extern "C"
 		// bind shader resources
 		handle->activeNode->commandList->SetComputeRootSignature(computeState->computeShader->signature.signature);
 
+		auto node = &resources->nodes[activeNodeIndex];
+		if (node->bufferHeap != nullptr)
+		{
+			handle->activeNode->commandList->SetDescriptorHeaps(1, &node->bufferHeap);
+		}
+
 		UINT descIndex = 0;
-		if (resources->nodes[activeNodeIndex].constantBufferHeap != NULL)
+		if (node->constantBufferGPUDescHandle.ptr != 0)
 		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].constantBufferHeap);
-			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].constantBufferGPUDescHandle);
+			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, node->constantBufferGPUDescHandle);
 			++descIndex;
 		}
 
-		if (resources->nodes[activeNodeIndex].textureHeap != NULL)
+		if (node->randomAccessBufferGPUDescHandle.ptr != 0)
 		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].textureHeap);
-			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].textureGPUDescHandle);
+			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, node->randomAccessBufferGPUDescHandle);
 			++descIndex;
 		}
 
-		if (resources->nodes[activeNodeIndex].randomAccessBufferHeap != NULL)
+		if (node->textureGPUDescHandle.ptr != 0)
 		{
-			handle->activeNode->commandList->SetDescriptorHeaps(1, &resources->nodes[activeNodeIndex].randomAccessBufferHeap);
-			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, resources->nodes[activeNodeIndex].randomAccessBufferGPUDescHandle);
+			handle->activeNode->commandList->SetComputeRootDescriptorTable(descIndex, node->textureGPUDescHandle);
 		}
 
 		// enable render state
