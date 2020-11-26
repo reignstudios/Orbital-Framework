@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Input\Analog1D.cs" Link="Analog1D.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Analog2D.cs" Link="Analog2D.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Button.cs" Link="Button.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Controller.cs" Link="Controller.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Instance.cs" Link="Instance.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj" />
+  </ItemGroup>
+
+</Project>

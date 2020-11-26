@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Controller.cs" Link="Controller.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input.XInput\InteropStructures.cs" Link="InteropStructures.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Input\Orbital.Input.csproj" />
+  </ItemGroup>
+
+</Project>

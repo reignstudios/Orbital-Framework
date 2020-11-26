@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\AffineTransform3.cs" Link="AffineTransform3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound2.cs" Link="Bound2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound3.cs" Link="Bound3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3.cs" Link="Color3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3F.cs" Link="Color3F.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4.cs" Link="Color4.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4F.cs" Link="Color4F.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Frustum3.cs" Link="Frustum3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line2.cs" Link="Line2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line3.cs" Link="Line3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2.cs" Link="Mat2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2x3.cs" Link="Mat2x3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3.cs" Link="Mat3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3x2.cs" Link="Mat3x2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat4.cs" Link="Mat4.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathTools.cs" Link="MathTools.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Plane3.cs" Link="Plane3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point2.cs" Link="Point2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point3.cs" Link="Point3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Quat.cs" Link="Quat.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray2.cs" Link="Ray2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray3.cs" Link="Ray3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect2.cs" Link="Rect2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect3.cs" Link="Rect3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\RigidTransform3.cs" Link="RigidTransform3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size2.cs" Link="Size2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size3.cs" Link="Size3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size4.cs" Link="Size4.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere2.cs" Link="Sphere2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere3.cs" Link="Sphere3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Triangle3.cs" Link="Triangle3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec2.cs" Link="Vec2.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec3.cs" Link="Vec3.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec4.cs" Link="Vec4.cs" />
+  </ItemGroup>
+
+</Project>
