@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.NETFW", "Orbital.Demo.NETFW\Orbital.Demo.NETFW.csproj", "{10F51B5A-D790-4BC6-B1EF-6304E61BA033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input", "Orbital.Input\Orbital.Input.csproj", "{323A7B0E-08E5-47F8-90C0-1E8D4E125758}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Input", "Orbital.Input\Orbital.Input.csproj", "{323A7B0E-08E5-47F8-90C0-1E8D4E125758}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.XInput", "Orbital.Input.XInput\Orbital.Input.XInput.csproj", "{BEE0670F-22EE-40F2-BF74-751D1C8E0C93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Input.XInput", "Orbital.Input.XInput\Orbital.Input.XInput.csproj", "{BEE0670F-22EE-40F2-BF74-751D1C8E0C93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{6F119961-7BA2-4D88-AF79-28BE31B55F4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{6F119961-7BA2-4D88-AF79-28BE31B55F4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.NetCore", "Orbital.NetCore\Orbital.NetCore.csproj", "{D178EF59-C07D-4F4C-93F2-9C63CC144435}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6F119961-7BA2-4D88-AF79-28BE31B55F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F119961-7BA2-4D88-AF79-28BE31B55F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F119961-7BA2-4D88-AF79-28BE31B55F4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

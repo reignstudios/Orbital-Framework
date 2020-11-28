@@ -41,4 +41,8 @@
     <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec4.cs" Link="Vec4.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -2,9 +2,11 @@
 {
 	public struct Analog1D
 	{
-		public float value { get; private set; }
+		public string name;
+		public float value;
+		public float tolerance;
 
-		internal void Update(float value, float tolerance)
+		public void Update(float value)
 		{
 			if (value <= tolerance) value = 0;
 			this.value = value;

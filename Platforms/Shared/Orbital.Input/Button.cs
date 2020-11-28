@@ -2,11 +2,12 @@
 {
 	public struct Button
 	{
-		public bool on { get; private set; }
-		public bool down { get; private set; }
-		public bool up { get; private set; }
+		public string name;
+		public bool on;
+		public bool down;
+		public bool up;
 
-		internal void Update(bool on)
+		public void Update(bool on)
 		{
 			down = false;
 			up = false;

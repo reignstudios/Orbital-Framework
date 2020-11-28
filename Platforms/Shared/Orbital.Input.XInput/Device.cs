@@ -13,13 +13,14 @@ namespace Orbital.Input.XInput
 		/// </summary>
 		public Controller[] controllers { get; private set; }
 
-		[DllImport(Instance.lib_1_3, CallingConvention = Instance.callingConvention)]
+		[DllImport(Instance.lib_1_3, CallingConvention = Instance.callingConvention, EntryPoint = "XInputGetState")]
 		private unsafe static extern DWORD XInputGetState_1_3(DWORD dwUserIndex, XINPUT_STATE* pState);
 
 		public Device(Instance instance)
 		{
 			this.instance = instance;
 			controllers = new Controller[8];
+			for (int i = 0; i != controllers.Length; ++i) controllers[i] = new Controller(i);
 		}
 
 		public bool Init()

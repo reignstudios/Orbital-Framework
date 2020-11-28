@@ -35,126 +35,106 @@ namespace Orbital.Input
 		/// <summary>
 		/// Common button: A (XB), X (PS), B {Nintendo), etc
 		/// </summary>
-		public Button button1 { get { return button1_field; } }
-		protected Button button1_field;
+		public Button button1;
 
 		/// <summary>
 		/// Common button: B (XB), O (PS), A {Nintendo), etc
 		/// </summary>
-		public Button button2 { get { return button2_field; } }
-		protected Button button2_field;
+		public Button button2;
 
 		/// <summary>
 		/// Common button: X (XB), □ (PS), Y {Nintendo), etc
 		/// </summary>
-		public Button button3 { get { return button3_field; } }
-		protected Button button3_field;
+		public Button button3;
 
 		/// <summary>
 		/// Common button: Y (XB), △ (PS), X {Nintendo), etc
 		/// </summary>
-		public Button button4 { get { return button4_field; } }
-		protected Button button4_field;
+		public Button button4;
 
 		/// <summary>
 		/// Common button: DPad Left
 		/// </summary>
-		public Button dpadLeft { get { return dpadLeft_field; } }
-		protected Button dpadLeft_field;
+		public Button dpadLeft;
 
 		/// <summary>
 		/// Common button: DPad Right
 		/// </summary>
-		public Button dpadRight { get { return dpadRight_field; } }
-		protected Button dpadRight_field;
+		public Button dpadRight;
 
 		/// <summary>
 		/// Common button: DPad Down
 		/// </summary>
-		public Button dpadDown { get { return dpadDown_field; } }
-		protected Button dpadDown_field;
+		public Button dpadDown;
 
 		/// <summary>
 		/// Common button: DPad Up
 		/// </summary>
-		public Button dpadUp { get { return dpadUp_field; } }
-		protected Button dpadUp_field;
+		public Button dpadUp;
 
 		/// <summary>
 		/// Common button: Menu, Start, Options, etc
 		/// </summary>
-		public Button menu { get { return menu_field; } }
-		protected Button menu_field;
+		public Button menu;
 
 		/// <summary>
 		/// Common button: Back, Select, etc
 		/// </summary>
-		public Button back { get { return back_field; } }
-		protected Button back_field;
+		public Button back;
 
 		/// <summary>
 		/// Common button: Bumper Left
 		/// </summary>
-		public Button bumperLeft { get { return bumperLeft_field; } }
-		protected Button bumperLeft_field;
+		public Button bumperLeft;
 
 		/// <summary>
 		/// Common button: Bumper Right
 		/// </summary>
-		public Button bumperRight { get { return bumperRight_field; } }
-		protected Button bumperRight_field;
+		public Button bumperRight;
 
 		/// <summary>
 		/// Common button: Trigger Button Left
 		/// </summary>
-		public Button triggerButtonLeft { get { return triggerButtonLeft_field; } }
-		protected Button triggerButtonLeft_field;
+		public Button triggerButtonLeft;
 
 		/// <summary>
 		/// Common button: Trigger Button Right
 		/// </summary>
-		public Button triggerButtonRight { get { return triggerButtonRight_field; } }
-		protected Button triggerButtonRight_field;
+		public Button triggerButtonRight;
 
 		/// <summary>
 		/// Common button: Joystick Left
 		/// </summary>
-		public Button joysticButtonkLeft { get { return joysticButtonkLeft_field; } }
-		protected Button joysticButtonkLeft_field;
+		public Button joystickButtonLeft;
 
 		/// <summary>
 		/// Common button: Joystick Right
 		/// </summary>
-		public Button joystickButtonRight { get { return joystickButtonRight_field; } }
-		protected Button joystickButtonRight_field;
+		public Button joystickButtonRight;
 		#endregion
 
 		#region Common 1D Analogs
 		/// <summary>
 		/// Common analog: Trigger Left
 		/// </summary>
-		public Analog1D triggerLeft { get { return triggerLeft_field; } }
-		protected Analog1D triggerLeft_field;
+		public Analog1D triggerLeft;
 
 		/// <summary>
 		/// Common analog: Trigger Right
 		/// </summary>
-		public Analog1D triggerRight { get { return triggerRight_field; } }
-		protected Analog1D triggerRight_field;
+		public Analog1D triggerRight;
 		#endregion
 
 		#region Common 2D Analogs
 		/// <summary>
 		/// Common analog: Joystick Left
 		/// </summary>
-		public Analog2D joystickLeft { get { return joystickLeft_field; } }
-		protected Analog2D joystickLeft_field;
+		public Analog2D joystickLeft;
 
 		/// <summary>
 		/// Common analog: Joystick Right
 		/// </summary>
-		public Analog2D joystickRight { get { return joystickRight_field; } }
-		protected Analog2D joystickRight_field;
+		public Analog2D joystickRight;
 		#endregion
 
 		public ControllerBase(int buttonCount, int analog1DCount, int analog2DCount)
@@ -162,6 +142,14 @@ namespace Orbital.Input
 			buttons = new Button[buttonCount];
 			analogs_1D = new Analog1D[analog1DCount];
 			analogs_2D = new Analog2D[analog2DCount];
+
+			const float defaultTolerance = .1f;
+			triggerLeft.tolerance = defaultTolerance;
+			triggerRight.tolerance = defaultTolerance;
+			joystickLeft.tolerance = defaultTolerance;
+			joystickRight.tolerance = defaultTolerance;
+			for (int i = 0; i != analogs_1D.Length; ++i) analogs_1D[i].tolerance = defaultTolerance;
+			for (int i = 0; i != analogs_2D.Length; ++i) analogs_2D[i].tolerance = defaultTolerance;
 		}
 
 		protected void Update(bool connected)
@@ -179,26 +167,65 @@ namespace Orbital.Input
 		/// </summary>
 		protected void UpdateDisconnected()
 		{
-			button1_field.Update(false);
-			button2_field.Update(false);
-			button3_field.Update(false);
-			button4_field.Update(false);
-			dpadLeft_field.Update(false);
-			dpadRight_field.Update(false);
-			dpadDown_field.Update(false);
-			dpadUp_field.Update(false);
-			menu_field.Update(false);
-			back_field.Update(false);
-			bumperLeft_field.Update(false);
-			bumperRight_field.Update(false);
-			triggerButtonLeft_field.Update(false);
-			triggerButtonRight_field.Update(false);
-			joysticButtonkLeft_field.Update(false);
-			joystickButtonRight_field.Update(false);
-			triggerLeft_field.Update(0, 0);
-			triggerRight_field.Update(0, 0);
-			joystickLeft_field.Update(Vec2.zero, 0);
-			joystickRight_field.Update(Vec2.zero, 0);
+			// primary buttons
+			button1.Update(false);
+			button2.Update(false);
+			button3.Update(false);
+			button4.Update(false);
+
+			// dpad
+			dpadLeft.Update(false);
+			dpadRight.Update(false);
+			dpadDown.Update(false);
+			dpadUp.Update(false);
+
+			// options
+			menu.Update(false);
+			back.Update(false);
+
+			// bumbers
+			bumperLeft.Update(false);
+			bumperRight.Update(false);
+
+			// trigger buttons
+			triggerButtonLeft.Update(false);
+			triggerButtonRight.Update(false);
+
+			// joystick buttons
+			joystickButtonLeft.Update(false);
+			joystickButtonRight.Update(false);
+
+			// triggers
+			triggerLeft.Update(0);
+			triggerRight.Update(0);
+
+			// joysticks
+			joystickLeft.Update(Vec2.zero);
+			joystickRight.Update(Vec2.zero);
+		}
+
+		/// <summary>
+		/// Copy common values into arrays (buttons, analogs_1D & analogs_2D)
+		/// </summary>
+		public abstract void UpdateArraysToCommon();
+
+		/// <summary>
+		/// Sets all motors rumble on supported controllers
+		/// </summary>
+		/// <param name="value">0-1 min-max value</param>
+		public virtual void SetRumble(float value)
+		{
+			// do nothing if not supported...
+		}
+
+		/// <summary>
+		/// Sets motor rumble on supported controllers
+		/// </summary>
+		/// <param name="leftValue">0-1 min-max value</param>
+		/// <param name="rightValue">0-1 min-max value</param>
+		public virtual void SetRumble(float leftValue, float rightValue)
+		{
+			// do nothing if not supported...
 		}
 	}
 }

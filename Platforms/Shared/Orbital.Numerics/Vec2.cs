@@ -350,5 +350,10 @@ namespace Orbital.Numerics
 			);
 		}
 		#endregion
+
+		public new string ToString()
+		{
+			return string.Format("{0},{1}", x.ToString(), y.ToString());
+		}
 	}
 }

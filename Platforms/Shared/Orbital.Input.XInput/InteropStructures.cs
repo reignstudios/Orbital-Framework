@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
 using DWORD = System.UInt32;
+using WORD = System.UInt16;
 
 namespace Orbital.Input.XInput
 {
@@ -39,5 +40,12 @@ namespace Orbital.Input.XInput
 	{
 		public DWORD dwPacketNumber;
 		public XINPUT_GAMEPAD Gamepad;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	struct XINPUT_VIBRATION
+	{
+		public WORD wLeftMotorSpeed;
+		public WORD wRightMotorSpeed;
 	}
 }
