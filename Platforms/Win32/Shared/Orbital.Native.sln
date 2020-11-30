@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orbital.Video.D3D12.Native"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orbital.Video.Vulkan.Native", "Orbital.Video.Vulkan.Native\Orbital.Video.Vulkan.Native.vcxproj", "{B3793993-AEB2-4FC0-B38E-8F0D18AD7D50}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Orbital.Input.DirectInput.Native", "Orbital.Input.DirectInput.Native\Orbital.Input.DirectInput.Native.vcxproj", "{3E143151-FDDA-4C05-82DC-0060B49B2878}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{B3793993-AEB2-4FC0-B38E-8F0D18AD7D50}.Release|x64.Build.0 = Release|x64
 		{B3793993-AEB2-4FC0-B38E-8F0D18AD7D50}.Release|x86.ActiveCfg = Release|Win32
 		{B3793993-AEB2-4FC0-B38E-8F0D18AD7D50}.Release|x86.Build.0 = Release|Win32
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Debug|x64.ActiveCfg = Debug|x64
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Debug|x64.Build.0 = Debug|x64
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Debug|x86.ActiveCfg = Debug|Win32
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Debug|x86.Build.0 = Debug|Win32
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Release|x64.ActiveCfg = Release|x64
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Release|x64.Build.0 = Release|x64
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Release|x86.ActiveCfg = Release|Win32
+		{3E143151-FDDA-4C05-82DC-0060B49B2878}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

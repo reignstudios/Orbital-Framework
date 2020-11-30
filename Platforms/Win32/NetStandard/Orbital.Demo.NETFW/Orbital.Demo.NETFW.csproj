@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Orbital.Input.DirectInput\Orbital.Input.DirectInput.csproj">
+      <Project>{382b6a37-c529-4d3e-9d2f-997d832a634c}</Project>
+      <Name>Orbital.Input.DirectInput</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Orbital.Input.XInput\Orbital.Input.XInput.csproj">
       <Project>{bee0670f-22ee-40f2-bf74-751d1c8e0c93}</Project>
       <Name>Orbital.Input.XInput</Name>

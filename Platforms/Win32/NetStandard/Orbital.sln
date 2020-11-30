@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.NetCore", "Orbital.NetCore\Orbital.NetCore.csproj", "{D178EF59-C07D-4F4C-93F2-9C63CC144435}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.DirectInput", "Orbital.Input.DirectInput\Orbital.Input.DirectInput.csproj", "{382B6A37-C529-4D3E-9D2F-997D832A634C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D178EF59-C07D-4F4C-93F2-9C63CC144435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{382B6A37-C529-4D3E-9D2F-997D832A634C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{382B6A37-C529-4D3E-9D2F-997D832A634C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{382B6A37-C529-4D3E-9D2F-997D832A634C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{382B6A37-C529-4D3E-9D2F-997D832A634C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
