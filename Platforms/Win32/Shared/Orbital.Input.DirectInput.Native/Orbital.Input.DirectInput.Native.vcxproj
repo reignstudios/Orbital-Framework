@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Common.h" />
+    <ClInclude Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Device.h" />
     <ClInclude Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Instance.h" />
     <ClInclude Include="framework.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Device.cpp" />
     <ClCompile Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Instance.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

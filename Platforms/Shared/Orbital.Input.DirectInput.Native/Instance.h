@@ -12,15 +12,19 @@ enum FeatureLevel
 #if (DIRECTINPUT_VERSION >= 0x0800)
 #define DI_INTERFACE IDirectInput8
 #define DI_INTERFACE_ID IID_IDirectInput8
+#define DI_DEVICE IDirectInputDevice8
 #elif (DIRECTINPUT_VERSION >= 0x0700)
 #define DI_INTERFACE IDirectInput7
 #define DI_INTERFACE_ID IID_IDirectInput7
+#define DI_DEVICE IDirectInputDevice7
 #elif (DIRECTINPUT_VERSION >= 0x0200)
 #define DI_INTERFACE IDirectInput2
 #define DI_INTERFACE_ID IID_IDirectInput2
+#define DI_DEVICE IDirectInputDevice2
 #else
 #define DI_INTERFACE IDirectInput
 #define DI_INTERFACE_ID IID_IDirectInput
+#define DI_DEVICE IDirectInputDevice
 #endif
 
 struct Instance

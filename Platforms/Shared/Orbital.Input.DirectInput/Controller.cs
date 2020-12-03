@@ -10,8 +10,8 @@ namespace Orbital.Input.DirectInput
 	{
 		public int index { get; private set; }
 
-		[DllImport(Instance.lib_8, CallingConvention = Instance.callingConvention, EntryPoint = "XInputSetState")]
-		private unsafe static extern DWORD XInputSetState_1_3(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
+		//[DllImport(Instance.lib_8, CallingConvention = Instance.callingConvention, EntryPoint = "XInputSetState")]
+		//private unsafe static extern DWORD XInputSetState_1_3(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
 
 		public Controller(int index)
 		: base(16, 2, 2)
@@ -55,7 +55,7 @@ namespace Orbital.Input.DirectInput
 			joystickRight.name = "JR";
 		}
 
-		internal void Update(bool connected, ref XINPUT_STATE state)
+		/*internal void Update(bool connected, ref XINPUT_STATE state)
 		{
 			Update(connected);
 			if (!connected) return;
@@ -102,7 +102,7 @@ namespace Orbital.Input.DirectInput
 
 			// update arrays
 			UpdateArraysToCommon();
-		}
+		}*/
 
 		public override void UpdateArraysToCommon()
 		{
@@ -145,28 +145,28 @@ namespace Orbital.Input.DirectInput
 
 		public unsafe override void SetRumble(float value)
 		{
-			if (value > 1) value = 1;
-			if (value < 0) value = 0;
-			var desc = new XINPUT_VIBRATION()
-			{
-				wLeftMotorSpeed = (WORD)(WORD.MaxValue * value),
-				wRightMotorSpeed = (WORD)(WORD.MaxValue * value)
-			};
-			XInputSetState_1_3((DWORD)index, &desc);
+			//if (value > 1) value = 1;
+			//if (value < 0) value = 0;
+			//var desc = new XINPUT_VIBRATION()
+			//{
+			//	wLeftMotorSpeed = (WORD)(WORD.MaxValue * value),
+			//	wRightMotorSpeed = (WORD)(WORD.MaxValue * value)
+			//};
+			//XInputSetState_1_3((DWORD)index, &desc);
 		}
 
 		public unsafe override void SetRumble(float leftValue, float rightValue)
 		{
-			if (leftValue > 1) leftValue = 1;
-			if (leftValue < 0) leftValue = 0;
-			if (rightValue > 1) rightValue = 1;
-			if (rightValue < 0) rightValue = 0;
-			var desc = new XINPUT_VIBRATION()
-			{
-				wLeftMotorSpeed = (WORD)(WORD.MaxValue * leftValue),
-				wRightMotorSpeed = (WORD)(WORD.MaxValue * rightValue)
-			};
-			XInputSetState_1_3((DWORD)index, &desc);
+			//if (leftValue > 1) leftValue = 1;
+			//if (leftValue < 0) leftValue = 0;
+			//if (rightValue > 1) rightValue = 1;
+			//if (rightValue < 0) rightValue = 0;
+			//var desc = new XINPUT_VIBRATION()
+			//{
+			//	wLeftMotorSpeed = (WORD)(WORD.MaxValue * leftValue),
+			//	wRightMotorSpeed = (WORD)(WORD.MaxValue * rightValue)
+			//};
+			//XInputSetState_1_3((DWORD)index, &desc);
 		}
 	}
 }
