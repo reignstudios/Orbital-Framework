@@ -53,6 +53,16 @@ namespace Orbital.Input
 		public Button button4;
 
 		/// <summary>
+		/// Common button: C (Sega, MS), etc
+		/// </summary>
+		public Button button5;
+
+		/// <summary>
+		/// Common button: 3 (Sega, MS), etc
+		/// </summary>
+		public Button button6;
+
+		/// <summary>
 		/// Common button: DPad Left
 		/// </summary>
 		public Button dpadLeft;
@@ -172,6 +182,8 @@ namespace Orbital.Input
 			button2.Update(false);
 			button3.Update(false);
 			button4.Update(false);
+			button5.Update(false);
+			button6.Update(false);
 
 			// dpad
 			dpadLeft.Update(false);

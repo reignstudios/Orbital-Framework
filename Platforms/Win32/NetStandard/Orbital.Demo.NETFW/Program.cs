@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Orbital.Input;
-using Orbital.Input.XInput;
+using Orbital.Input.DirectInput;
 
 namespace Orbital.Input.Demo
 {
@@ -16,6 +16,18 @@ namespace Orbital.Input.Demo
 			using (var instance = new Instance())
 			using (var device = new Device(instance))
 			{
+				if (!instance.Init(FeatureLevel.Level_1))
+				{
+					Console.WriteLine("ERROR: failed to init instance");
+					return;
+				}
+
+				if (!device.Init())
+				{
+					Console.WriteLine("ERROR: failed to init device");
+					return;
+				}
+
 				while (true)
 				{
 					device.Update();

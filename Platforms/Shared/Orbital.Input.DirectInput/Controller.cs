@@ -14,7 +14,7 @@ namespace Orbital.Input.DirectInput
 		//private unsafe static extern DWORD XInputSetState_1_3(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
 
 		public Controller(int index)
-		: base(16, 2, 2)
+		: base(18, 2, 2)
 		{
 			this.index = index;
 
@@ -23,6 +23,8 @@ namespace Orbital.Input.DirectInput
 			button2.name = "B";
 			button3.name = "X";
 			button4.name = "Y";
+			button5.name = "C";
+			button6.name = "Z";
 
 			// dpad
 			dpadLeft.name = "Left";
@@ -55,35 +57,41 @@ namespace Orbital.Input.DirectInput
 			joystickRight.name = "JR";
 		}
 
-		/*internal void Update(bool connected, ref XINPUT_STATE state)
+		internal unsafe void Update(bool connected, ref DIJOYSTATE2 state)
 		{
 			Update(connected);
 			if (!connected) return;
 
-			var gamepad = state.Gamepad;
+			for (int i = 0; i != 128; ++i)
+			{
+				if (state.rgbButtons[i] != 0)
+				{
+					System.Console.WriteLine($"{i} = {state.rgbButtons[i]}");
+				}
+			}
 
 			// primary buttons
-			button1.Update((gamepad.wButtons & 0x1000) != 0);
-			button2.Update((gamepad.wButtons & 0x2000) != 0);
-			button3.Update((gamepad.wButtons & 0x4000) != 0);
-			button4.Update((gamepad.wButtons & 0x8000) != 0);
+			button1.Update(state.rgbButtons[0] != 0);
+			button2.Update(state.rgbButtons[1] != 0);
+			button3.Update(state.rgbButtons[2] != 0);
+			button4.Update(state.rgbButtons[3] != 0);
 
 			// dpad
-			dpadLeft.Update((gamepad.wButtons & 0x0004) != 0);
-			dpadRight.Update((gamepad.wButtons & 0x0008) != 0);
-			dpadDown.Update((gamepad.wButtons & 0x0002) != 0);
-			dpadUp.Update((gamepad.wButtons & 0x0001) != 0);
+			dpadLeft.Update(state.rgbButtons[4] != 0);
+			dpadRight.Update(state.rgbButtons[5] != 0);
+			dpadDown.Update(state.rgbButtons[6] != 0);
+			dpadUp.Update(state.rgbButtons[7] != 0);
 
 			// options
-			menu.Update((gamepad.wButtons & 0x0010) != 0);
-			back.Update((gamepad.wButtons & 0x0020) != 0);
+			menu.Update(state.rgbButtons[8] != 0);
+			back.Update(state.rgbButtons[9] != 0);
 
 			// bumbers
-			bumperLeft.Update((gamepad.wButtons & 0x0100) != 0);
-			bumperRight.Update((gamepad.wButtons & 0x0200) != 0);
+			bumperLeft.Update(state.rgbButtons[10] != 0);
+			bumperRight.Update(state.rgbButtons[11] != 0);
 
-			// trigger buttons
-			float triggerLeftValue = gamepad.bLeftTrigger / 255f;
+			/*// trigger buttons
+			float triggerLeftValue = state.lY / 255f;
 			float triggerRightValue = gamepad.bRightTrigger / 255f;
 			triggerButtonLeft.Update(triggerLeftValue >= .75f);
 			triggerButtonRight.Update(triggerRightValue >= .75f);
@@ -98,41 +106,45 @@ namespace Orbital.Input.DirectInput
 
 			// joysticks
 			joystickLeft.Update(new Vec2(gamepad.sThumbLX / (float)short.MaxValue, gamepad.sThumbLY / (float)short.MaxValue));
-			joystickRight.Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));
+			joystickRight.Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));*/
 
 			// update arrays
 			UpdateArraysToCommon();
-		}*/
+		}
 
 		public override void UpdateArraysToCommon()
 		{
+			int i = 0;
+
 			// primary buttons
-			buttons[0] = button1;
-			buttons[1] = button2;
-			buttons[2] = button3;
-			buttons[3] = button4;
+			buttons[i++] = button1;
+			buttons[i++] = button2;
+			buttons[i++] = button3;
+			buttons[i++] = button4;
+			buttons[i++] = button5;
+			buttons[i++] = button6;
 
 			// dpad
-			buttons[4] = dpadLeft;
-			buttons[5] = dpadRight;
-			buttons[6] = dpadDown;
-			buttons[7] = dpadUp;
+			buttons[i++] = dpadLeft;
+			buttons[i++] = dpadRight;
+			buttons[i++] = dpadDown;
+			buttons[i++] = dpadUp;
 
 			// options
-			buttons[8] = menu;
-			buttons[9] = back;
+			buttons[i++] = menu;
+			buttons[i++] = back;
 
 			// bumbers
-			buttons[10] = bumperLeft;
-			buttons[11] = bumperRight;
+			buttons[i++] = bumperLeft;
+			buttons[i++] = bumperRight;
 
 			// trigger buttons
-			buttons[12] = triggerButtonLeft;
-			buttons[13] = triggerButtonRight;
+			buttons[i++] = triggerButtonLeft;
+			buttons[i++] = triggerButtonRight;
 
 			// joystick buttons
-			buttons[14] = joystickButtonLeft;
-			buttons[15] = joystickButtonRight;
+			buttons[i++] = joystickButtonLeft;
+			buttons[i++] = joystickButtonRight;
 
 			// triggers
 			analogs_1D[0] = triggerLeft;

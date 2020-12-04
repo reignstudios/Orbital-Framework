@@ -6,7 +6,7 @@ namespace Orbital.Input.XInput
 {
 	public sealed class Device : DeviceBase
 	{
-		public Instance instance { get; private set; }
+		public Instance instanceXI { get; private set; }
 		
 		/// <summary>
 		/// 4 controllers max
@@ -17,8 +17,9 @@ namespace Orbital.Input.XInput
 		private unsafe static extern DWORD XInputGetState_1_3(DWORD dwUserIndex, XINPUT_STATE* pState);
 
 		public Device(Instance instance)
+		: base(instance)
 		{
-			this.instance = instance;
+			instanceXI = instance;
 			controllers = new Controller[4];
 			for (int i = 0; i != controllers.Length; ++i) controllers[i] = new Controller(i);
 		}
@@ -35,7 +36,7 @@ namespace Orbital.Input.XInput
 
 		public override void Update()
 		{
-			switch (instance.version)
+			switch (instanceXI.version)
 			{
 				case InstanceVersion.XInput_1_3: Update_1_3(); break;
 			}

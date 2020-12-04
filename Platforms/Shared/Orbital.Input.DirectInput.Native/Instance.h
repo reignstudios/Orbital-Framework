@@ -30,4 +30,5 @@ enum FeatureLevel
 struct Instance
 {
 	DI_INTERFACE* diInterface;
+	FeatureLevel featureLevel;
 };

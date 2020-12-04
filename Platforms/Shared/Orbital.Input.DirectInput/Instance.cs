@@ -1,59 +1,54 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-using DWORD = System.UInt32;
-using HRESULT = System.Int32;
-using HMODULE = System.IntPtr;
-using HINSTANCE = System.IntPtr;
-
 namespace Orbital.Input.DirectInput
 {
-	public enum InstanceVersion
+	public enum FeatureLevel
 	{
-		DI_8,
-		DI_Legacy
+		Level_1,
+		Level_2,
+		Level_7,
+		Level_8
 	}
 
 	public sealed class Instance : InstanceBase
 	{
-		public const string lib_8 = "Dinput8.dll";
-		public const string lib_Legacy = "Dinput.dll";
-		public const CallingConvention callingConvention = CallingConvention.StdCall;
+		internal IntPtr handle;
+		public FeatureLevel featureLevel { get; private set; }
 
-		[DllImport("Kernel32.dll", CallingConvention = CallingConvention.StdCall)]
-		private unsafe static extern HMODULE LoadLibraryW(char* lpLibFileName);
+		public const string lib = "Orbital.Input.DirectInput.Native.dll";
+		public const CallingConvention callingConvention = CallingConvention.Cdecl;
 
-		[DllImport("Ole32.dll", CallingConvention = CallingConvention.StdCall)]
-		private unsafe static extern HRESULT CoInitializeEx(void* pvReserved, DWORD dwCoInit);
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static extern IntPtr Orbital_Video_DirectInput_Instance_Create();
 
-		[DllImport("Ole32.dll", CallingConvention = CallingConvention.StdCall)]
-		private unsafe static extern HRESULT CoCreateInstance(Guid* rclsid, IntPtr pUnkOuter, DWORD dwClsContext, Guid* riid, void** ppv);
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private unsafe static extern int Orbital_Video_DirectInput_Instance_Init(IntPtr handle, FeatureLevel* minimumFeatureLevel);
 
-		[DllImport(Instance.lib_8, CallingConvention = callingConvention, EntryPoint = "DirectInput8Create")]
-		private unsafe static extern HRESULT DirectInput8Create(HINSTANCE hinst, DWORD dwVersion, Guid* riidltf, void* ppvOut, IntPtr punkOuter);
+		[DllImport(lib, CallingConvention = callingConvention)]
+		private static extern void Orbital_Video_DirectInput_Instance_Dispose(IntPtr handle);
 
-		public InstanceVersion version { get; private set; }
-
-		public unsafe bool Init()
+		public Instance()
 		{
-			// test for v8
-			fixed (char* libName = lib_8)
-			{
-				var library = LoadLibraryW(libName);
-				if (library != HMODULE.Zero)
-				{
-					//HRESULT result = DirectInput8Create();
-					version = InstanceVersion.DI_8;
-					return true;
-				}
-			}
+			handle = Orbital_Video_DirectInput_Instance_Create();
+		}
 
-			return false;
+		public unsafe bool Init(FeatureLevel minimumFeatureLevel)
+		{
+			FeatureLevel level;
+			if (Orbital_Video_DirectInput_Instance_Init(handle, &level) == 0) return false;
+			featureLevel = level;
+			if (level < minimumFeatureLevel) return false;
+			return true;
 		}
 
 		public override void Dispose()
 		{
-			// do nothing...
+			if (handle != IntPtr.Zero)
+			{
+				Orbital_Video_DirectInput_Instance_Dispose(handle);
+				handle = IntPtr.Zero;
+			}
 		}
 	}
 }

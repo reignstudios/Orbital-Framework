@@ -1,53 +1,62 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-using DWORD = System.UInt32;
-using HRESULT = System.Int32;
-using HINSTANCE = System.IntPtr;
-
 namespace Orbital.Input.DirectInput
 {
 	public sealed class Device : DeviceBase
 	{
-		public Instance instance { get; private set; }
-		
+		internal IntPtr handle;
+		public Instance instanceDI { get; private set; }
+
 		/// <summary>
 		/// 8 controllers max
 		/// </summary>
 		public Controller[] controllers { get; private set; }
 
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern IntPtr Orbital_Video_DirectInput_Device_Create();
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern int Orbital_Video_DirectInput_Device_Init(IntPtr handle, IntPtr instance, IntPtr window);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private static extern void Orbital_Video_DirectInput_Device_Dispose(IntPtr handle);
+
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private unsafe static extern int Orbital_Video_DirectInput_Device_Update(IntPtr handle, int controllerIndex, DIJOYSTATE2* state, int* connected);
+
 		public Device(Instance instance)
+		: base(instance)
 		{
-			this.instance = instance;
+			instanceDI = instance;
 			controllers = new Controller[8];
 			for (int i = 0; i != controllers.Length; ++i) controllers[i] = new Controller(i);
+			handle = Orbital_Video_DirectInput_Device_Create();
 		}
 
-		public unsafe bool Init()
+		public bool Init()// TODO: allow custom window so its handle can be used
 		{
+			if (Orbital_Video_DirectInput_Device_Init(handle, instanceDI.handle, IntPtr.Zero) == 0) return false;
 			return true;
 		}
 
 		public override void Dispose()
 		{
-			// do nothing...
-		}
-
-		public override void Update()
-		{
-			switch (instance.version)
+			if (handle != IntPtr.Zero)
 			{
-				case InstanceVersion.DI_8: Update_8(); break;
+				Orbital_Video_DirectInput_Device_Dispose(handle);
+				handle = IntPtr.Zero;
 			}
 		}
 
-		private unsafe void Update_8()
+		public unsafe override void Update()
 		{
-			for (uint i = 0; i != controllers.Length; ++i)
+			for (int i = 0; i != controllers.Length; ++i)
 			{
-				//XINPUT_STATE state;
-				//bool connected = XInputGetState_1_3(i, &state) == 0;
-				//controllers[i].Update(connected, ref state);
+				DIJOYSTATE2 state;
+				int connected;
+				if (Orbital_Video_DirectInput_Device_Update(handle, i, &state, &connected) == 0) connected = 0;
+				controllers[i].Update(connected != 0, ref state);
 			}
 		}
 	}
