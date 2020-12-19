@@ -25,14 +25,16 @@ namespace Orbital.Host.Win32
 		static Application()
 		{
 			// get hInstance
+			#if !NET_STANDARD_20
 			if (hInstance == HINSTANCE.Zero)
 			{
 				#if CS2X
 				hInstance = Marshal.GetHINSTANCE();
 				#else
-				hInstance = Marshal.GetHINSTANCE(typeof(Window).Module);
+				hInstance = Marshal.GetHINSTANCE(typeof(Application).Module);
 				#endif
 			}
+			#endif
 
 			// get nCmdShow
 			if (nCmdShow == 0)
@@ -45,6 +47,17 @@ namespace Orbital.Host.Win32
 				else nCmdShow = info.wShowWindow;
 			}
 		}
+
+		#if NET_STANDARD_20
+		/// <summary>
+		/// Pass the argument: Marshal.GetHINSTANCE(typeof(Application).Module)
+		/// </summary>
+		/// <param name="hInstance">Marshal.GetHINSTANCE(typeof(Application).Module)</param>
+		public Application(HINSTANCE hInstance)
+		{
+			Application.hInstance = hInstance;
+		}
+		#endif
 
 		public override void Run()
 		{

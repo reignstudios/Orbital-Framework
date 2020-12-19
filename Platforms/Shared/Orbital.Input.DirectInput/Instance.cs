@@ -16,6 +16,11 @@ namespace Orbital.Input.DirectInput
 		internal IntPtr handle;
 		public FeatureLevel featureLevel { get; private set; }
 
+		/// <summary>
+		/// 8 devices max
+		/// </summary>
+		public Device[] devices { get; private set; }
+
 		public const string lib = "Orbital.Input.DirectInput.Native.dll";
 		public const CallingConvention callingConvention = CallingConvention.Cdecl;
 
@@ -23,7 +28,7 @@ namespace Orbital.Input.DirectInput
 		private static extern IntPtr Orbital_Video_DirectInput_Instance_Create();
 
 		[DllImport(lib, CallingConvention = callingConvention)]
-		private unsafe static extern int Orbital_Video_DirectInput_Instance_Init(IntPtr handle, FeatureLevel* minimumFeatureLevel);
+		private unsafe static extern int Orbital_Video_DirectInput_Instance_Init(IntPtr handle, IntPtr window, FeatureLevel* minimumFeatureLevel);
 
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_DirectInput_Instance_Dispose(IntPtr handle);
@@ -31,12 +36,19 @@ namespace Orbital.Input.DirectInput
 		public Instance()
 		{
 			handle = Orbital_Video_DirectInput_Instance_Create();
+			devices = new Device[8];
+			for (int i = 0; i != devices.Length; ++i) devices[i] = new Device(this, i);
 		}
 
-		public unsafe bool Init(FeatureLevel minimumFeatureLevel)
+		public bool Init(FeatureLevel minimumFeatureLevel)
+		{
+			return Init(IntPtr.Zero, minimumFeatureLevel);
+		}
+
+		public unsafe bool Init(IntPtr hwnd, FeatureLevel minimumFeatureLevel)
 		{
 			FeatureLevel level;
-			if (Orbital_Video_DirectInput_Instance_Init(handle, &level) == 0) return false;
+			if (Orbital_Video_DirectInput_Instance_Init(handle, hwnd, &level) == 0) return false;
 			featureLevel = level;
 			if (level < minimumFeatureLevel) return false;
 			return true;
@@ -49,6 +61,19 @@ namespace Orbital.Input.DirectInput
 				Orbital_Video_DirectInput_Instance_Dispose(handle);
 				handle = IntPtr.Zero;
 			}
+		}
+
+		public override void Update()
+		{
+			foreach (var device in devices)
+			{
+				device.Update();
+			}
+		}
+
+		public override DeviceBase[] GetDevices()
+		{
+			return devices;
 		}
 	}
 }

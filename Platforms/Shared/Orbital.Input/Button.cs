@@ -1,11 +1,36 @@
 ﻿namespace Orbital.Input
 {
-	public struct Button
+	public class Button
 	{
+		/// <summary>
+		/// Name of button
+		/// </summary>
 		public string name;
-		public bool on;
-		public bool down;
-		public bool up;
+
+		/// <summary>
+		/// Is the button attached to a device
+		/// </summary>
+		public readonly bool attached;
+
+		/// <summary>
+		/// Button actively being pressed
+		/// </summary>
+		public bool on { get; private set; }
+
+		/// <summary>
+		/// Button was pressed
+		/// </summary>
+		public bool down { get; private set; }
+
+		/// <summary>
+		/// Button was released
+		/// </summary>
+		public bool up { get; private set; }
+
+		public Button(bool attached)
+		{
+			this.attached = attached;
+		}
 
 		public void Update(bool on)
 		{

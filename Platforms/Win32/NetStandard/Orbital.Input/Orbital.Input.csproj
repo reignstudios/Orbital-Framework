@@ -4,11 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Input\Orbital.Input.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Input\Orbital.Input.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Input\Analog1D.cs" Link="Analog1D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Analog2D.cs" Link="Analog2D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Button.cs" Link="Button.cs" />
-    <Compile Include="..\..\..\Shared\Orbital.Input\Controller.cs" Link="Controller.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Instance.cs" Link="Instance.cs" />
   </ItemGroup>

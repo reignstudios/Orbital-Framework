@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Orbital.Input.API</name>
+    </assembly>
+    <members>
+        <member name="T:Orbital.Input.API.AbstractionAPI">
+            <summary>
+            Native device APIs
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInitType.SingleAPI">
+            <summary>
+            Only a single native abstraction API will be init
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInitType.MultiAPI">
+            <summary>
+            Init multi-api abstraction if avaliable. If platform only supports one 'SingleAPI' will be used instead
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.None">
+            <summary>
+            No requirements
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.Gamepad">
+            <summary>
+            API must support Gamepads
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.ArcadeStick">
+            <summary>
+            API must support Gamepads
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.FlightStick">
+            <summary>
+            API must support Flightsicks
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.SteeringWheel">
+            <summary>
+            API must support Steering-Wheels
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionInputRequirments.All">
+            <summary>
+            API must support all input hardware types
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.API.AbstractionDesc.type">
+            <summary>
+            How the abstractions should try to init
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionDesc.supportedAPIs">
+            <summary>
+            APIs to attempt to Init in order
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.API.AbstractionDesc.inputRequirments">
+            <summary>
+            API input flag requirments
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.API.Abstraction.InitFirstAvaliable(Orbital.Input.API.AbstractionDesc,Orbital.Input.InstanceBase@)">
+            <summary>
+            Initializes first API avaliable to the hardware
+            NOTE: 'desc' may be modified
+            </summary>
+        </member>
+    </members>
+</doc>

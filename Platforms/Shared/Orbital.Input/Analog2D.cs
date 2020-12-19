@@ -2,11 +2,32 @@
 
 namespace Orbital.Input
 {
-	public struct Analog2D
+	public class Analog2D
 	{
+		/// <summary>
+		/// Name of analog
+		/// </summary>
 		public string name;
-		public Vec2 value;
-		public float tolerance;
+
+		/// <summary>
+		/// Is the analog attached to a device
+		/// </summary>
+		public readonly bool attached;
+
+		/// <summary>
+		/// Any input under talerance will be forced to Vec2.zero
+		/// </summary>
+		public float tolerance = .1f;
+
+		/// <summary>
+		/// Value of the analog input
+		/// </summary>
+		public Vec2 value { get; private set; }
+
+		public Analog2D(bool attached)
+		{
+			this.attached = attached;
+		}
 
 		public void Update(Vec2 value)
 		{

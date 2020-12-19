@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Orbital.Numerics</name>
+    </assembly>
+    <members>
+        <member name="F:Orbital.Numerics.MathTools.bigEpsilon">
+            <summary>
+            Large tolerance value.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.epsilon">
+            <summary>
+            Tolerance value.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.pi">
+            <summary>
+            Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.pi2">
+            <summary>
+            Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π, multiplied by 2.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.pi4">
+            <summary>
+            Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π, multiplied by 4.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.piHalf">
+            <summary>
+            Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π, divided by 2.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.piQuarter">
+            <summary>
+            Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π, divided by 4.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.piDelta">
+            <summary>
+            Represents 1 divided by the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.piHalfDelta">
+            <summary>
+            Represents 1 divided by the ratio of the circumference of a circle to its diameter, specified by the constant, π, divided by 2.
+            </summary>
+        </member>
+        <member name="F:Orbital.Numerics.MathTools.piQuarterDelta">
+            <summary>
+            Represents 1 divided by the ratio of the circumference of a circle to its diameter, specified by the constant, π, divided by 4.
+            </summary>
+        </member>
+        <member name="M:Orbital.Numerics.MathTools.DegToRad(System.Single)">
+            <summary>
+            Converts Degrees to Radians.
+            </summary>
+            <param name="degrees">Degrees</param>
+            <returns>Radians</returns>
+        </member>
+        <member name="M:Orbital.Numerics.MathTools.RadToDeg(System.Single)">
+            <summary>
+            Converts Radians to Degrees.
+            </summary>
+            <param name="radians">Radians</param>
+            <returns>Degrees</returns>
+        </member>
+        <member name="M:Orbital.Numerics.Vec3.WithinTriangle(Orbital.Numerics.Vec3,Orbital.Numerics.Vec3,Orbital.Numerics.Vec3)">
+            <summary>
+            Barycentric Technique
+            </summary>
+        </member>
+    </members>
+</doc>

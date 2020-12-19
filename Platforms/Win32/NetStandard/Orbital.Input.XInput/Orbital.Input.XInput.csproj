@@ -6,14 +6,15 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Input.XInput\Orbital.Input.XInput.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Input.XInput\Orbital.Input.XInput.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Controller.cs" Link="Controller.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input.XInput\Instance.cs" Link="Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input.XInput\InteropStructures.cs" Link="InteropStructures.cs" />

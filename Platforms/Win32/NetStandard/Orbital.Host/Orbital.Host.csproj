@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Host\Orbital.Host.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Host\Orbital.Host.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Host\Application.cs" Link="Application.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Host\Window.cs" Link="Window.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj" />
+  </ItemGroup>
+
+</Project>

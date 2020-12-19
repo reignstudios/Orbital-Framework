@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Orbital.Host</name>
+    </assembly>
+    <members>
+        <member name="T:Orbital.Host.WindowSizeType">
+            <summary>
+            Meaning of window size
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowSizeType.ClientDecorations">
+            <summary>
+            Size includes client side decorations
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowSizeType.WorkingArea">
+            <summary>
+            Size only represents usable area
+            </summary>
+        </member>
+        <member name="T:Orbital.Host.WindowType">
+            <summary>
+            Window creation type presets
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowType.Default">
+            <summary>
+            Whatever the host defaults to
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowType.Tool">
+            <summary>
+            No resize, minimize or maximize if possible on host
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowType.Popup">
+            <summary>
+            No client side decorations if possible on host
+            </summary>
+        </member>
+        <member name="T:Orbital.Host.WindowStartupPosition">
+            <summary>
+            Window creation / startup position
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowStartupPosition.Default">
+            <summary>
+            Let the host decide
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowStartupPosition.Custom">
+            <summary>
+            Use position parameters if possible
+            </summary>
+        </member>
+        <member name="F:Orbital.Host.WindowStartupPosition.CenterScreen">
+            <summary>
+            Center hosts screen if possible
+            </summary>
+        </member>
+        <member name="M:Orbital.Host.WindowBase.GetHandle">
+            <summary>
+            Returns pointer to platform specific native handle
+            </summary>
+        </member>
+        <member name="M:Orbital.Host.WindowBase.GetManagedHandle">
+            <summary>
+            Returns pointer to platform specific managed handle
+            </summary>
+        </member>
+    </members>
+</doc>

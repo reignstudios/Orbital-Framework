@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{10F51B5A-D790-4BC6-B1EF-6304E61BA033}</ProjectGuid>
+    <ProjectGuid>{9F3C0457-7A05-48D0-A0BA-BC854C2CE488}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Orbital.Input.Demo</RootNamespace>
-    <AssemblyName>Orbital.Input.Demo</AssemblyName>
+    <RootNamespace>Orbital.Demo.Input.Win32</RootNamespace>
+    <AssemblyName>Orbital.Demo.Input.Win32</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -19,18 +19,23 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_FRAMEWORK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_FRAMEWORK</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,6 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Demo.Input\Example.cs">
+      <Link>Example.cs</Link>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -50,6 +58,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Orbital.Host.Win32\Orbital.Host.Win32.csproj">
+      <Project>{363f2af2-cba8-4bd8-aece-ff289e068fe4}</Project>
+      <Name>Orbital.Host.Win32</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
+      <Project>{aaef4109-5b5b-4fa4-aea0-436de1a01a5d}</Project>
+      <Name>Orbital.Host</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.Input.API\Orbital.Input.API.csproj">
+      <Project>{cadb958f-acba-4487-b341-5b2de5097606}</Project>
+      <Name>Orbital.Input.API</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Orbital.Input.DirectInput\Orbital.Input.DirectInput.csproj">
       <Project>{382b6a37-c529-4d3e-9d2f-997d832a634c}</Project>
       <Name>Orbital.Input.DirectInput</Name>
@@ -61,6 +81,10 @@
     <ProjectReference Include="..\Orbital.Input\Orbital.Input.csproj">
       <Project>{323a7b0e-08e5-47f8-90c0-1e8d4e125758}</Project>
       <Name>Orbital.Input</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj">
+      <Project>{d178ef59-c07d-4f4c-93f2-9c63cc144435}</Project>
+      <Name>Orbital.NetCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{6f119961-7ba2-4d88-af79-28be31b55f4b}</Project>

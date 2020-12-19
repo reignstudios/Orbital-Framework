@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;NET_STANDARD_20</DefineConstants>
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Host.Win32\Orbital.Host.Win32.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;NET_STANDARD_20</DefineConstants>
+    <DocumentationFile>F:\Dev\Reign\Orbital-Framework\Platforms\Win32\NetStandard\Orbital.Host.Win32\Orbital.Host.Win32.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.Host.Win32\Application.cs" Link="Application.cs" />
+    <Compile Include="..\..\Shared\Orbital.Host.Win32\Window.cs" Link="Window.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+  </ItemGroup>
+
+</Project>

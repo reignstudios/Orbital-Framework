@@ -1,0 +1,23 @@
+# Artwork #
+*.kra~
+*.blend1
+
+# Android #
+*.apk
+*.svd
+
+# Visual Studio #
+*.sln
+*.csproj
+*.booproj
+*.log
+*.tmp
+/.vs/
+/[Oo]bj/
+
+# Unity #
+*.unitypackage
+/[Ll]ibrary/
+/[Ll]ogs/
+/[Tt]emp/
+/[Uu]serSettings/

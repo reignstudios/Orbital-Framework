@@ -19,6 +19,17 @@ namespace Orbital.Input.XInput
 
 		public InstanceVersion version { get; private set; }
 
+		/// <summary>
+		/// 4 devices max
+		/// </summary>
+		public Device[] devices { get; private set; }
+
+		public Instance()
+		{
+			devices = new Device[4];
+			for (int i = 0; i != devices.Length; ++i) devices[i] = new Device(this, i);
+		}
+
 		public unsafe bool Init()
 		{
 			// test for v1.3
@@ -38,6 +49,19 @@ namespace Orbital.Input.XInput
 		public override void Dispose()
 		{
 			// do nothing...
+		}
+
+		public override void Update()
+		{
+			foreach (var device in devices)
+			{
+				device.Update();
+			}
+		}
+
+		public override DeviceBase[] GetDevices()
+		{
+			return devices;
 		}
 	}
 }
