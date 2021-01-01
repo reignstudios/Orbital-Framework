@@ -28,7 +28,7 @@ namespace Orbital.Input.XInput
 			instanceXI = instance;
 			this.index = index;
 
-			CreateAttachedArrays(16, 2, 2);
+			CreateAttachedArrays(16, 2, 2, 0, 0);
 			int buttonIndex = 0;
 
 			// primary buttons

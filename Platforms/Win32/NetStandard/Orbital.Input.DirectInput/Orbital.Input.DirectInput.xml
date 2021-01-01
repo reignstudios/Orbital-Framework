@@ -4,14 +4,110 @@
         <name>Orbital.Input.DirectInput</name>
     </assembly>
     <members>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.Unknown">
+            <summary>
+            Unknown device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.Xbox360_Gamepad">
+            <summary>
+            Microsoft Xbox 360 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.XboxOne_Gamepad">
+            <summary>
+            Microsoft Xbox One gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.XboxSeries_Gamepad">
+            <summary>
+            Microsoft Xbox SX/SS gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.PS3_Gamepad">
+            <summary>
+            Sony PS3 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceHardware.PS4_Gamepad">
+            <summary>
+            Sony PS4 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceDPadMode.POV">
+            <summary>
+            Dpad maps buttons from POV (point-of-view hats)
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceDPadMode.Buttons">
+            <summary>
+            Dpad is a set of normal buttons
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceTriggerMode.Seperate">
+            <summary>
+            Each trigger as its own axis
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Orbital.Input.DirectInput.DeviceTriggerMode.Shared" -->
+        <member name="F:Orbital.Input.DirectInput.DeviceTriggerButtonMode.Virtual">
+            <summary>
+            Buttons are activated when trigger goes over 75%
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.DeviceTriggerButtonMode.Physical">
+            <summary>
+            Trigger buttons exist physically on the hardware
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DirectInput.Device.isPrimary">
             <summary>
             Primary device configured in Windows control panel
             </summary>
         </member>
+        <member name="P:Orbital.Input.DirectInput.Device.productID">
+            <summary>
+            Product ID from manufacture
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DirectInput.Device.productName">
+            <summary>
+            Product name from manufacture
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DirectInput.Device.supportsForceFeedback">
+            <summary>
+            Does this device support force-feedback / haptics
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DirectInput.Device.index">
             <summary>
             The device index
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.Device.dpadMode">
+            <summary>
+            How the dpad buttons are mapped
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.Device.triggerMode">
+            <summary>
+            How the triggers map
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.Device.triggerSharedAxis">
+            <summary>
+            If the trigger mode is 'Shared' what axis do they use
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.Device.triggerButtonMode">
+            <summary>
+            How the trigger buttons are mapped
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DirectInput.Device.dpad_POV_Offset">
+            <summary>
+            Which
             </summary>
         </member>
         <member name="P:Orbital.Input.DirectInput.Instance.devices">

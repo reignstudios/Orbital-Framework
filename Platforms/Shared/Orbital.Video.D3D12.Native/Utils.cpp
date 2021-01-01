@@ -6,13 +6,17 @@ bool GetNative_SwapChainFormat(SwapChainFormat format, DXGI_FORMAT* nativeFormat
 	switch (format)
 	{
 		case SwapChainFormat::SwapChainFormat_Default:
-		case SwapChainFormat::SwapChainFormat_B8G8R8A8:
+		case SwapChainFormat::SwapChainFormat_R8G8B8A8:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
 			break;
 
 		case SwapChainFormat::SwapChainFormat_DefaultHDR:
 		case SwapChainFormat::SwapChainFormat_R10G10B10A2:
 			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM;
+			break;
+
+		case SwapChainFormat::SwapChainFormat_R16G16B16A16:
+			*nativeFormat = DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT;
 			break;
 		default: return false;
 	}
@@ -24,7 +28,7 @@ bool GetNative_TextureFormat(TextureFormat format, DXGI_FORMAT* nativeFormat, bo
 	switch (format)
 	{
 		case TextureFormat::TextureFormat_Default:
-		case TextureFormat::TextureFormat_B8G8R8A8:
+		case TextureFormat::TextureFormat_R8G8B8A8:
 			*nativeFormat = DXGI_FORMAT_R8G8B8A8_UNORM;//isRenderTexture ? DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UINT;
 			break;
 

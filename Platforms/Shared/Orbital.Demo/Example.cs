@@ -249,7 +249,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
+			texture = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.R8G8B8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
 			
 			// create texture 2
 			textureWidth = 100;
@@ -274,7 +274,7 @@ namespace Orbital.Demo
 					textureData[i + 3] = 255;
 				}
 			}
-			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.B8G8R8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
+			texture2 = device.CreateTexture2D(textureWidth, textureHeight, TextureFormat.R8G8B8A8, textureData, TextureMode.GPUOptimized, MultiGPUNodeResourceVisibility.Self);
 			
 			// load shaders
 			// TODO: load CS2X compiled ShaderEffect

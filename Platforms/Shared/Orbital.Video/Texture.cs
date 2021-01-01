@@ -25,7 +25,7 @@ namespace Orbital.Video
 		/// <summary>
 		/// 32bit: 8bit for RGBA non-floating point channels
 		/// </summary>
-		B8G8R8A8,
+		R8G8B8A8,
 
 		/// <summary>
 		/// 32bit: 10bit for RGB floating point channels + 2bit for alpha as non-floating point channel

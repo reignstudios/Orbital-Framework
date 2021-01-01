@@ -51,6 +51,10 @@ namespace Orbital.Input.DirectInput
 			if (Orbital_Video_DirectInput_Instance_Init(handle, hwnd, &level) == 0) return false;
 			featureLevel = level;
 			if (level < minimumFeatureLevel) return false;
+
+			// init devices
+			for (int i = 0; i != devices.Length; ++i) devices[i].Init();
+
 			return true;
 		}
 

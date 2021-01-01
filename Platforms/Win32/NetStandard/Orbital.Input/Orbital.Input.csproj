@@ -15,9 +15,11 @@
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Input\Analog1D.cs" Link="Analog1D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Analog2D.cs" Link="Analog2D.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Analog3D.cs" Link="Analog3D.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Button.cs" Link="Button.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Device.cs" Link="Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Input\Instance.cs" Link="Instance.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input\Slider.cs" Link="Slider.cs" />
   </ItemGroup>
 
   <ItemGroup>

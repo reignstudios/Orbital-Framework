@@ -72,21 +72,24 @@ namespace Orbital.Demo
 					device.SetRumble(device.triggerLeft.value, device.triggerRight.value);
 
 					// buttons
-					foreach (var button in device.buttons)
+					for (int i = 0; i != device.buttons.Length; ++i)
 					{
-						if (button.down) Console.WriteLine(button.name);
+						var button = device.buttons[i];
+						if (button.down) Console.WriteLine(i.ToString() + " " + button.name);
 					}
 
 					// analogs 1D
-					foreach (var analog in device.analogs_1D)
+					for (int i = 0; i != device.analogs_1D.Length; ++i)
 					{
-						if (analog.value > 0) Console.WriteLine(analog.name + " " + analog.value.ToString());
+						var analog = device.analogs_1D[i];
+						if (analog.value != 0) Console.WriteLine(i.ToString() + " " + analog.name + " " + analog.value.ToString());
 					}
 
 					// analogs 2D
-					foreach (var analog in device.analogs_2D)
+					for (int i = 0; i != device.analogs_2D.Length; ++i)
 					{
-						if (analog.value.Length() > 0) Console.WriteLine(analog.name + " " + analog.value.ToString());
+						var analog = device.analogs_2D[i];
+						if (analog.value.Length() > 0) Console.WriteLine(i.ToString() + " " + analog.name + " " + analog.value.ToString());
 					}
 				}
 

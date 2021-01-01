@@ -39,6 +39,16 @@ struct Device
 {
 	DI_DEVICE* diDevice;
 	bool connected, isPrimary;
+	GUID productID;
+	WCHAR productName[MAX_PATH];
+	bool supportsForceFeedback;
+
+	int buttonCount;
+	int keyCount;
+	int povCount;
+	int sliderCount;
+	int xAxisCount, yAxisCount, zAxisCount;
+	int rxAxisCount, ryAxisCount, rzAxisCount;
 };
 
 struct Instance

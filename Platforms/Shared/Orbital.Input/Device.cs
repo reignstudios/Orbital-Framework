@@ -3,12 +3,23 @@ using System;
 
 namespace Orbital.Input
 {
+	public enum DeviceType
+	{
+		Unknown,
+		Gamepad,
+		ArcadeStick,
+		FlightStick,
+		SteeringWheel,
+		Keyboard,
+		Mouse
+	}
+
 	public abstract class DeviceBase : IDisposable
 	{
 		public InstanceBase instance { get; private set; }
 
 		/// <summary>
-		/// Is true if controller connected
+		/// Is true if device connected
 		/// </summary>
 		public bool connected { get; private set; }
 
@@ -16,22 +27,32 @@ namespace Orbital.Input
 		/// Called when device disconnects
 		/// </summary>
 		public event DisconnectedCallbackMethod DisconnectedCallback;
-		public delegate void DisconnectedCallbackMethod(DeviceBase controller);
+		public delegate void DisconnectedCallbackMethod(DeviceBase device);
 
 		/// <summary>
-		/// All buttons this controller supports
+		/// All buttons this device supports
 		/// </summary>
 		public Button[] buttons { get; protected set; }
 
 		/// <summary>
-		/// All 1D analog/triggers/etc this controller supports
+		/// All 1D analog/triggers/etc this device supports
 		/// </summary>
 		public Analog1D[] analogs_1D { get; protected set; }
 
 		/// <summary>
-		/// All 2D analog/joystick/etc this controller supports
+		/// All 2D analog/joystick/etc this device supports
 		/// </summary>
 		public Analog2D[] analogs_2D { get; protected set; }
+
+		/// <summary>
+		/// All 3D analog etc this device supports
+		/// </summary>
+		public Analog3D[] analogs_3D { get; protected set; }
+
+		/// <summary>
+		/// All sliders this device supports
+		/// </summary>
+		public Slider[] sliders { get; protected set; }
 
 		#region Common Buttons
 		/// <summary>
@@ -88,6 +109,11 @@ namespace Orbital.Input
 		/// Common button: Menu, Start, Options, etc
 		/// </summary>
 		public Button menu { get; protected set; }
+
+		/// <summary>
+		/// Special button: System menu, OS home, etc
+		/// </summary>
+		public Button home { get; protected set; }
 
 		/// <summary>
 		/// Common button: Back, Select, etc
@@ -157,16 +183,22 @@ namespace Orbital.Input
 		/// <summary>
 		/// Create interal arrays of attached buttons, analogs, etc
 		/// </summary>
-		protected void CreateAttachedArrays(int buttonCount, int analog1DCount, int analog2DCount)
+		protected void CreateAttachedArrays(int buttonCount, int analog1DCount, int analog2DCount, int analog3DCount, int sliderCount)
 		{
 			buttons = new Button[buttonCount];
 			for (int i = 0; i != buttonCount; ++i) buttons[i] = new Button(true);
 
 			analogs_1D = new Analog1D[analog1DCount];
-			for (int i = 0; i != analog1DCount; ++i) analogs_1D[i] = new Analog1D(true);
+			for (int i = 0; i != analog1DCount; ++i) analogs_1D[i] = new Analog1D(true, Analog1DUpdateMode.Bidirectional);
 
 			analogs_2D = new Analog2D[analog2DCount];
 			for (int i = 0; i != analog2DCount; ++i) analogs_2D[i] = new Analog2D(true);
+
+			analogs_3D = new Analog3D[analog3DCount];
+			for (int i = 0; i != analog3DCount; ++i) analogs_3D[i] = new Analog3D(true);
+
+			sliders = new Slider[sliderCount];
+			for (int i = 0; i != sliderCount; ++i) sliders[i] = new Slider(true);
 		}
 
 		/// <summary>
@@ -205,8 +237,8 @@ namespace Orbital.Input
 			if (joystickButtonRight == null) joystickButtonRight = new Button(false);
 
 			// triggers
-			if (triggerLeft == null) triggerLeft = new Analog1D(false);
-			if (triggerRight == null) triggerRight = new Analog1D(false);
+			if (triggerLeft == null) triggerLeft = new Analog1D(false, Analog1DUpdateMode.Positive);
+			if (triggerRight == null) triggerRight = new Analog1D(false, Analog1DUpdateMode.Positive);
 
 			// joysticks
 			if (joystickLeft == null) joystickLeft = new Analog2D(false);

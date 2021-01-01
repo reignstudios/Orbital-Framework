@@ -2,7 +2,7 @@
 
 namespace Orbital.Input
 {
-	public class Analog2D
+	public class Analog3D
 	{
 		/// <summary>
 		/// Name of analog
@@ -15,9 +15,9 @@ namespace Orbital.Input
 		public readonly bool attached;
 
 		/// <summary>
-		/// Any input under talerance will be forced to Vec2.zero
+		/// Any input under talerance will be forced to Vec3.zero
 		/// </summary>
-		public float tolerance = .2f;
+		public float tolerance = .1f;
 
 		/// <summary>
 		/// 0-1 smoothing value
@@ -27,16 +27,16 @@ namespace Orbital.Input
 		/// <summary>
 		/// Value of the analog input
 		/// </summary>
-		public Vec2 value { get; private set; }
+		public Vec3 value { get; private set; }
 
-		public Analog2D(bool attached)
+		public Analog3D(bool attached)
 		{
 			this.attached = attached;
 		}
 
-		public void Update(Vec2 value)
+		public void Update(Vec3 value)
 		{
-			if (value.Length() <= tolerance) value = Vec2.zero;
+			if (value.Length() <= tolerance) value = Vec3.zero;
 			this.value += (value - this.value) * smoothing;
 		}
 	}

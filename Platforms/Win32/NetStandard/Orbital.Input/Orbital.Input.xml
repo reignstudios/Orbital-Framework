@@ -4,6 +4,21 @@
         <name>Orbital.Input</name>
     </assembly>
     <members>
+        <member name="F:Orbital.Input.Analog1DUpdateMode.Bidirectional">
+            <summary>
+            Value can be positive or negitive
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog1DUpdateMode.Positive">
+            <summary>
+            0-1 values
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog1DUpdateMode.Negitive">
+            <summary>
+            0-(-1) values
+            </summary>
+        </member>
         <member name="F:Orbital.Input.Analog1D.name">
             <summary>
             Name of analog
@@ -14,9 +29,19 @@
             Is the analog attached to a device
             </summary>
         </member>
+        <member name="F:Orbital.Input.Analog1D.updateMode">
+            <summary>
+            How the update values are processed
+            </summary>
+        </member>
         <member name="F:Orbital.Input.Analog1D.tolerance">
             <summary>
             Any input under talerance will be forced to 0
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog1D.smoothing">
+            <summary>
+            0-1 smoothing value
             </summary>
         </member>
         <member name="P:Orbital.Input.Analog1D.value">
@@ -39,7 +64,37 @@
             Any input under talerance will be forced to Vec2.zero
             </summary>
         </member>
+        <member name="F:Orbital.Input.Analog2D.smoothing">
+            <summary>
+            0-1 smoothing value
+            </summary>
+        </member>
         <member name="P:Orbital.Input.Analog2D.value">
+            <summary>
+            Value of the analog input
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog3D.name">
+            <summary>
+            Name of analog
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog3D.attached">
+            <summary>
+            Is the analog attached to a device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog3D.tolerance">
+            <summary>
+            Any input under talerance will be forced to Vec3.zero
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog3D.smoothing">
+            <summary>
+            0-1 smoothing value
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Analog3D.value">
             <summary>
             Value of the analog input
             </summary>
@@ -71,7 +126,7 @@
         </member>
         <member name="P:Orbital.Input.DeviceBase.connected">
             <summary>
-            Is true if controller connected
+            Is true if device connected
             </summary>
         </member>
         <member name="E:Orbital.Input.DeviceBase.DisconnectedCallback">
@@ -81,17 +136,27 @@
         </member>
         <member name="P:Orbital.Input.DeviceBase.buttons">
             <summary>
-            All buttons this controller supports
+            All buttons this device supports
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.analogs_1D">
             <summary>
-            All 1D analog/triggers/etc this controller supports
+            All 1D analog/triggers/etc this device supports
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.analogs_2D">
             <summary>
-            All 2D analog/joystick/etc this controller supports
+            All 2D analog/joystick/etc this device supports
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.analogs_3D">
+            <summary>
+            All 3D analog etc this device supports
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.sliders">
+            <summary>
+            All sliders this device supports
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.button1">
@@ -149,6 +214,11 @@
             Common button: Menu, Start, Options, etc
             </summary>
         </member>
+        <member name="P:Orbital.Input.DeviceBase.home">
+            <summary>
+            Special button: System menu, OS home, etc
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.back">
             <summary>
             Common button: Back, Select, etc
@@ -204,7 +274,7 @@
             Common analog: Joystick Right
             </summary>
         </member>
-        <member name="M:Orbital.Input.DeviceBase.CreateAttachedArrays(System.Int32,System.Int32,System.Int32)">
+        <member name="M:Orbital.Input.DeviceBase.CreateAttachedArrays(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             Create interal arrays of attached buttons, analogs, etc
             </summary>
@@ -247,6 +317,26 @@
         <member name="M:Orbital.Input.InstanceBase.GetDevices">
             <summary>
             Gets an array of all possible devices
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Slider.name">
+            <summary>
+            Name of button
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Slider.attached">
+            <summary>
+            Is the button attached to a device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Slider.smoothing">
+            <summary>
+            0-1 smoothing value
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Slider.value">
+            <summary>
+            Value of the analog input
             </summary>
         </member>
     </members>

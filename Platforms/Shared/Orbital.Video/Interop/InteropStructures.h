@@ -89,7 +89,7 @@ typedef enum TextureFormat
 {
 	TextureFormat_Default,
 	TextureFormat_DefaultHDR,
-	TextureFormat_B8G8R8A8,
+	TextureFormat_R8G8B8A8,
 	TextureFormat_R10G10B10A2,
 	TextureFormat_R16G16B16A16,
 	TextureFormat_R32G32B32A32,
@@ -107,8 +107,9 @@ typedef enum SwapChainFormat
 {
 	SwapChainFormat_Default,
 	SwapChainFormat_DefaultHDR,
-	SwapChainFormat_B8G8R8A8,
+	SwapChainFormat_R8G8B8A8,
 	SwapChainFormat_R10G10B10A2,
+	SwapChainFormat_R16G16B16A16,
 	SwapChainFormat_BIT = ENUM_BIT
 }SwapChainFormat;
 #pragma endregion

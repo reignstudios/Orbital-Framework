@@ -18,12 +18,17 @@ namespace Orbital.Video
 		/// <summary>
 		/// 32bit: 8bit for RGBA non-floating point channels
 		/// </summary>
-		B8G8R8A8,
+		R8G8B8A8,
 
 		/// <summary>
 		/// 32bit: 10bit for RGB floating point channels + 2bit for alpha as non-floating point channel
 		/// </summary>
-		R10G10B10A2
+		R10G10B10A2,
+
+		/// <summary>
+		/// 64bit: 16bit for RGBA floating point channels
+		/// </summary>
+		R16G16B16A16,
 	}
 
 	public enum SwapChainType

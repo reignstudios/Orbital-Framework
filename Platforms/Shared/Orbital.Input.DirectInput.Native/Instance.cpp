@@ -7,7 +7,7 @@ extern "C"
 		return (Instance*)calloc(1, sizeof(Instance));
 	}
 
-	struct EnumJoysticksContext
+	struct EnumControllersContext
 	{
 		Instance* handle;
 		DIJOYCONFIG* joyConfig;
@@ -15,42 +15,66 @@ extern "C"
 
 	BOOL CALLBACK EnumControllersCallback(const DIDEVICEINSTANCE* pdidInstance, void* pContext)
 	{
-		EnumJoysticksContext* context = (EnumJoysticksContext*)pContext;
+		EnumControllersContext* context = (EnumControllersContext*)pContext;
 		Instance* handle = context->handle;
+		Device* device = &handle->devices[handle->deviceCount];
 
 		// create DI controller device
-		if (FAILED(handle->diInterface->CreateDevice(pdidInstance->guidInstance, &handle->devices[handle->deviceCount].diDevice, nullptr))) return DIENUM_CONTINUE;
+		if (FAILED(handle->diInterface->CreateDevice(pdidInstance->guidInstance, &device->diDevice, nullptr))) return DIENUM_CONTINUE;
 		handle->devices[handle->deviceCount].connected = true;
 
 		// check if controller is primary
-		if (IsEqualGUID(context->joyConfig->guidInstance, pdidInstance->guidInstance)) handle->devices[handle->deviceCount].isPrimary = true;
+		if (IsEqualGUID(context->joyConfig->guidInstance, pdidInstance->guidInstance)) device->isPrimary = true;
 
+		// check if Force-Feedback is supported
+		if (!IsEqualGUID(pdidInstance->guidFFDriver, GUID_NULL)) device->supportsForceFeedback = true;
+
+		// copy product id
+		device->productID = pdidInstance->guidProduct;
+
+		// copy produce name
+		wcscpy_s(device->productName, pdidInstance->tszProductName);
+
+		// finish
 		++handle->deviceCount;
 		return handle->deviceCount >= 8 ? DIENUM_STOP : DIENUM_CONTINUE;
 	}
 
+	struct EnumControllerObjectsContext
+	{
+		Instance* handle;
+		Device* device;
+	};
+
 	BOOL CALLBACK EnumControllerObjectsCallback(const DIDEVICEOBJECTINSTANCE* pdidoi, void* pContext)
 	{
-		DI_DEVICE* diDevice = (DI_DEVICE*)pContext;
+		EnumControllerObjectsContext* context = (EnumControllerObjectsContext*)pContext;
+		Device* device = context->device;
 
-		if (pdidoi->dwType & DIDFT_AXIS)
+		// set the range for any axis to 1000
+		if ((pdidoi->dwType & DIDFT_AXIS) != 0)
 		{
 			DIPROPRANGE diprg;
 			diprg.diph.dwSize = sizeof(DIPROPRANGE);
 			diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
 			diprg.diph.dwHow = DIPH_BYID;
-			diprg.diph.dwObj = pdidoi->dwType; // Specify the enumerated axis
+			diprg.diph.dwObj = pdidoi->dwType;// specify the enumerated axis type
 			diprg.lMin = -1000;
 			diprg.lMax = +1000;
-
-			// Set the range for the axis
-			if (FAILED(diDevice->SetProperty(DIPROP_RANGE, &diprg.diph))) return DIENUM_STOP;
+			if (FAILED(device->diDevice->SetProperty(DIPROP_RANGE, &diprg.diph))) return DIENUM_STOP;
 		}
 
-		if (pdidoi->guidType == GUID_XAxis)
-		{
-			return DIENUM_CONTINUE;
-		}
+		// gather object counts
+		if (pdidoi->guidType == GUID_Button) ++device->buttonCount;
+		else if (pdidoi->guidType == GUID_Key) ++device->keyCount;
+		else if (pdidoi->guidType == GUID_POV) ++device->povCount;
+		else if (pdidoi->guidType == GUID_Slider) ++device->sliderCount;
+		else if (pdidoi->guidType == GUID_XAxis) ++device->xAxisCount;
+		else if (pdidoi->guidType == GUID_YAxis) ++device->yAxisCount;
+		else if (pdidoi->guidType == GUID_ZAxis) ++device->zAxisCount;
+		else if (pdidoi->guidType == GUID_RxAxis) ++device->rxAxisCount;
+		else if (pdidoi->guidType == GUID_RyAxis) ++device->ryAxisCount;
+		else if (pdidoi->guidType == GUID_RzAxis) ++device->rzAxisCount;
 
 		return DIENUM_CONTINUE;
 	}
@@ -79,18 +103,18 @@ extern "C"
 		if (FAILED(result)) memset(&joyConfig, 0, sizeof(DIJOYCONFIG));
 
 		// enum all controllers
-		EnumJoysticksContext enumContext;
+		EnumControllersContext enumContext;
 		enumContext.handle = handle;
 		enumContext.joyConfig = &joyConfig;
 		if (FAILED(handle->diInterface->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumControllersCallback, &enumContext, DIEDFL_ATTACHEDONLY))) return 0;
 
 		// configure device
-		if (window == nullptr) window = GetActiveWindow();// TODO: get this in C#
+		if (window == nullptr) window = GetActiveWindow();
 		if (window == nullptr) window = GetConsoleWindow();
 		if (window == nullptr) return 0;
-		// set data format
 		for (int i = 0; i != handle->deviceCount; ++i)
 		{
+			// set data format
 			if (FAILED(handle->devices[i].diDevice->SetDataFormat(&c_dfDIJoystick2))) return 0;
 
 			// set how the device can be accessed
@@ -106,7 +130,10 @@ extern "C"
 			}
 
 			// enum device capabilities
-			if (FAILED(handle->devices[i].diDevice->EnumObjects(EnumControllerObjectsCallback, handle->devices[i].diDevice, DIDFT_ALL))) return 0;
+			EnumControllerObjectsContext enumObjectsContext;
+			enumObjectsContext.handle = handle;
+			enumObjectsContext.device = &handle->devices[i];
+			if (FAILED(handle->devices[i].diDevice->EnumObjects(EnumControllerObjectsCallback, &enumObjectsContext, DIDFT_ALL))) return 0;
 
 			// acquire device for use
 			handle->devices[i].diDevice->Acquire();// this can fail the first time so don't check for errors
@@ -168,5 +195,41 @@ extern "C"
 		// finish
 		*connected = device->connected;
 		return 1;
+	}
+
+	struct DeviceInfo
+	{
+		GUID productID;
+		WCHAR* productName;
+		int supportsForceFeedback;
+		int isPrimary;
+
+		int buttonCount;
+		int keyCount;
+		int povCount;
+		int sliderCount;
+		int xAxisCount, yAxisCount, zAxisCount;
+		int rxAxisCount, ryAxisCount, rzAxisCount;
+	};
+
+	ORBITAL_EXPORT void Orbital_Video_DirectInput_Instance_GetDeviceInfo(Instance* handle, int deviceIndex, DeviceInfo* info)
+	{
+		Device* device = &handle->devices[deviceIndex];
+
+		info->productID = device->productID;
+		info->productName = device->productName;
+		info->supportsForceFeedback = device->supportsForceFeedback;
+		info->isPrimary = device->isPrimary;
+
+		info->buttonCount = device->buttonCount;
+		info->keyCount = device->keyCount;
+		info->povCount = device->povCount;
+		info->sliderCount = device->sliderCount;
+		info->xAxisCount = device->xAxisCount;
+		info->yAxisCount = device->yAxisCount;
+		info->zAxisCount = device->zAxisCount;
+		info->rxAxisCount = device->rxAxisCount;
+		info->ryAxisCount = device->ryAxisCount;
+		info->rzAxisCount = device->rzAxisCount;
 	}
 }
