@@ -11,12 +11,17 @@
         </member>
         <member name="F:Orbital.Input.Analog1DUpdateMode.Positive">
             <summary>
-            0-1 values
+            (0)-(+1) values
             </summary>
         </member>
         <member name="F:Orbital.Input.Analog1DUpdateMode.Negitive">
             <summary>
-            0-(-1) values
+            (0)-(-1) values
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.Analog1DUpdateMode.FullRange_ShiftedPositive">
+            <summary>
+            (-1)-(+1) shifted into range of (0)-(+1)
             </summary>
         </member>
         <member name="F:Orbital.Input.Analog1D.name">
@@ -186,7 +191,12 @@
         </member>
         <member name="P:Orbital.Input.DeviceBase.button6">
             <summary>
-            Common button: 3 (Sega, MS), etc
+            Common button: Z (Sega, MS), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.special1">
+            <summary>
+            Special button: Touch-Pad (Sony), etc
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.dpadLeft">

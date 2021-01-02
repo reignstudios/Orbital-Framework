@@ -88,9 +88,14 @@ namespace Orbital.Input
 		public Button button5 { get; protected set; }
 
 		/// <summary>
-		/// Common button: 3 (Sega, MS), etc
+		/// Common button: Z (Sega, MS), etc
 		/// </summary>
 		public Button button6 { get; protected set; }
+
+		/// <summary>
+		/// Special button: Touch-Pad (Sony), etc
+		/// </summary>
+		public Button special1 { get; protected set; }
 
 		/// <summary>
 		/// Common button: DPad Left
@@ -221,6 +226,9 @@ namespace Orbital.Input
 			if (button5 == null) button5 = new Button(false);
 			if (button6 == null) button6 = new Button(false);
 
+			// special
+			if (special1 == null) special1 = new Button(false);
+
 			// dpad
 			if (dpadLeft == null) dpadLeft = new Button(false);
 			if (dpadRight == null) dpadRight = new Button(false);
@@ -317,6 +325,9 @@ namespace Orbital.Input
 			button4.Update(false);
 			button5.Update(false);
 			button6.Update(false);
+
+			// special
+			special1.Update(false);
 
 			// dpad
 			dpadLeft.Update(false);

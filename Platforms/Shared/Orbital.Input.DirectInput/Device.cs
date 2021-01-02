@@ -142,6 +142,7 @@ namespace Orbital.Input.DirectInput
 		public DeviceTriggerButtonMode triggerButtonMode;
 
 		public Button button1, button2, button3, button4, button5, button6;
+		public Button special1;
 		public Button dpadLeft, dpadRight, dpadDown, dpadUp;
 		public Button menu, back, home;
 		public Button bumperLeft, bumperRight;
@@ -246,7 +247,12 @@ namespace Orbital.Input.DirectInput
 
 			// configure input settings
 			var configuration = new InputConfiguration();
-			if (productID == new Guid("02ff045e-0000-0000-0000-504944564944"))// Xbox
+			var xbox360ID = new Guid("028e045e-0000-0000-0000-504944564944");
+			if
+			(
+				productID == xbox360ID ||// Xbox 360
+				productID == new Guid("02ff045e-0000-0000-0000-504944564944")// Xbox One
+			)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
@@ -276,10 +282,13 @@ namespace Orbital.Input.DirectInput
 				// options
 				configuration.menu = buttons[7];
 				configuration.back = buttons[6];
-				configuration.home = buttons[10];
 				configuration.menu.name = "Menu";
 				configuration.back.name = "Back";
-				configuration.home.name = "Dashboard";
+				if (productID != xbox360ID && buttons.Count >= 11)
+				{
+					configuration.home = buttons[10];
+					configuration.home.name = "Xbox";
+				}
 
 				// bumbers
 				configuration.bumperLeft = buttons[4];
@@ -330,74 +339,90 @@ namespace Orbital.Input.DirectInput
 			}
 			else if (productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944"))// PS4
 			{
-				/*dpadMode = DeviceDPadMode.POV;
-				triggerMode = DeviceTriggerMode.Seperate;
-				triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
-				int buttonCount = info.buttonCount + info.povCount + 2;// add dpad-POV & triggers
-				CreateAttachedArrays(buttonCount, axisCount, 2, 0, info.sliderCount);
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
-				button1 = buttons[0];
-				button2 = buttons[1];
-				button3 = buttons[2];
-				button4 = buttons[3];
-				button1.name = "X";
-				button2.name = "O";
-				button3.name = "□";
-				button4.name = "△";
+				configuration.button1 = buttons[1];
+				configuration.button2 = buttons[2];
+				configuration.button3 = buttons[0];
+				configuration.button4 = buttons[3];
+				configuration.button1.name = "X";
+				configuration.button2.name = "O";
+				configuration.button3.name = "Square";
+				configuration.button4.name = "Triangle";
+
+				// special button
+				configuration.special1 = buttons[13];
+				configuration.special1.name = "Touch-Pad";
 
 				// dpad
-				dpadLeft = new Button(true);
-				dpadRight = new Button(true);
-				dpadDown = new Button(true);
-				dpadUp = new Button(true);
-				dpadLeft.name = "Left";
-				dpadRight.name = "Right";
-				dpadDown.name = "Down";
-				dpadUp.name = "Up";
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
 
 				// options
-				menu = buttons[7];
-				back = buttons[6];
-				home = buttons[11];
-				menu.name = "Options";
-				back.name = "Share";
-				home.name = "PS";
+				configuration.menu = buttons[7];
+				configuration.back = buttons[6];
+				configuration.home = buttons[12];
+				configuration.menu.name = "Menu";
+				configuration.back.name = "Back";
+				configuration.home.name = "PS";
 
 				// bumbers
-				bumperLeft = buttons[4];
-				bumperRight = buttons[4];
-				bumperLeft.name = "BL";
-				bumperRight.name = "BR";
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
 
 				// trigger buttons
-				triggerButtonLeft = buttons[4];
-				triggerButtonRight = buttons[4];
-				triggerButtonLeft.name = "TBL";
-				triggerButtonRight.name = "TBR";
+				configuration.triggerButtonLeft = new Button(false);
+				configuration.triggerButtonRight = new Button(false);
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
 
 				// joystick buttons
-				joystickButtonLeft = buttons[4];
-				joystickButtonRight = buttons[4];
-				joystickButtonLeft.name = "JBL";
-				joystickButtonRight.name = "JBR";
+				configuration.joystickButtonLeft = buttons[10];
+				configuration.joystickButtonRight = buttons[11];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
-				triggerLeft = analogs_1D[0];
-				triggerRight = analogs_1D[1];
-				triggerLeft.name = "TL";
-				triggerRight.name = "TR";
+				configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+				configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+				configuration.triggerLeft.name = "TL";
+				configuration.triggerRight.name = "TR";
 
-				// triggers
-				joystickLeft = analogs_2D[0];
-				joystickRight = analogs_2D[1];
-				joystickLeft.name = "JL";
-				joystickRight.name = "JR";*/
+				configuration.axis1DMaps = new DeviceAxis1DMap[2];
+				configuration.axis1DMaps[0].analogSrc = analogs_1D[3];
+				configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
+				configuration.axis1DMaps[1].analogSrc = analogs_1D[4];
+				configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				configuration.axis2DMaps[1].axisY = analogs_1D[5];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			//else
-			//{
-			//	CreateAttachedArrays(info.buttonCount, axisCount, 0, 0, info.sliderCount);
-			//}
 
 			// configure input
 			Configure(ref configuration);
@@ -456,6 +481,9 @@ namespace Orbital.Input.DirectInput
 			button4 = configuration.button4;
 			button5 = configuration.button5;
 			button6 = configuration.button6;
+
+			// special
+			special1 = configuration.special1;
 
 			// dpad
 			dpadLeft = configuration.dpadLeft;

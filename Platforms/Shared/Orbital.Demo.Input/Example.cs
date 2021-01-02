@@ -78,7 +78,7 @@ namespace Orbital.Demo
 						if (button.down) Console.WriteLine(i.ToString() + " " + button.name);
 					}
 
-					// analogs 1D
+					/*// analogs 1D
 					for (int i = 0; i != device.analogs_1D.Count; ++i)
 					{
 						var analog = device.analogs_1D[i];
@@ -90,7 +90,15 @@ namespace Orbital.Demo
 					{
 						var analog = device.analogs_2D[i];
 						if (analog.value.Length() > 0) Console.WriteLine(i.ToString() + " " + analog.name + " " + analog.value.ToString());
-					}
+					}*/
+
+					// triggers
+					if (device.triggerLeft.value != 0) Console.WriteLine(device.triggerLeft.name + " " + device.triggerLeft.value.ToString());
+					if (device.triggerRight.value != 0) Console.WriteLine(device.triggerRight.name + " " + device.triggerRight.value.ToString());
+
+					// joysticks
+					if (device.joystickLeft.value.Length() != 0) Console.WriteLine(device.joystickLeft.name + " " + device.joystickLeft.value.ToString());
+					if (device.joystickRight.value.Length() != 0) Console.WriteLine(device.joystickRight.name + " " + device.joystickRight.value.ToString());
 				}
 
 				// keep within 60fps

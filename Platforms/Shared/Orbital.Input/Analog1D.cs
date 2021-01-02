@@ -10,14 +10,19 @@ namespace Orbital.Input
 		Bidirectional,
 
 		/// <summary>
-		/// 0-1 values
+		/// (0)-(+1) values
 		/// </summary>
 		Positive,
 
 		/// <summary>
-		/// 0-(-1) values
+		/// (0)-(-1) values
 		/// </summary>
-		Negitive
+		Negitive,
+
+		/// <summary>
+		/// (-1)-(+1) shifted into range of (0)-(+1)
+		/// </summary>
+		FullRange_ShiftedPositive
 	}
 
 	public class Analog1D
@@ -73,6 +78,12 @@ namespace Orbital.Input
 			{
 				if (value > 0) value = 0;
 				value = MathF.Abs(value);
+				if (value <= tolerance) value = 0;
+			}
+			else if (updateMode == Analog1DUpdateMode.FullRange_ShiftedPositive)
+			{
+				value += 1f;
+				value *= .5f;
 				if (value <= tolerance) value = 0;
 			}
 
