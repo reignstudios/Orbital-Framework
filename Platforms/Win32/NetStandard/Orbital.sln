@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "Orbital.Hos
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Win32", "Orbital.Host.Win32\Orbital.Host.Win32.csproj", "{363F2AF2-CBA8-4BD8-AECE-FF289E068FE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.API", "Orbital.Input.API\Orbital.Input.API.csproj", "{CADB958F-ACBA-4487-B341-5B2DE5097606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Input.API", "Orbital.Input.API\Orbital.Input.API.csproj", "{CADB958F-ACBA-4487-B341-5B2DE5097606}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Primitives", "Orbital.Primitives\Orbital.Primitives.csproj", "{EC650D32-D981-4908-A0F0-AE99BEB15708}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{CADB958F-ACBA-4487-B341-5B2DE5097606}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CADB958F-ACBA-4487-B341-5B2DE5097606}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CADB958F-ACBA-4487-B341-5B2DE5097606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC650D32-D981-4908-A0F0-AE99BEB15708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC650D32-D981-4908-A0F0-AE99BEB15708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC650D32-D981-4908-A0F0-AE99BEB15708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC650D32-D981-4908-A0F0-AE99BEB15708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

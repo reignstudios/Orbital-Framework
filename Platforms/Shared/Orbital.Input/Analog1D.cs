@@ -25,12 +25,12 @@ namespace Orbital.Input
 		/// <summary>
 		/// Name of analog
 		/// </summary>
-		public string name;
+		public string name = "?";
 
 		/// <summary>
-		/// Is the analog attached to a device
+		/// Is physically attached to a device. Otherwise virtually simulated
 		/// </summary>
-		public readonly bool attached;
+		public readonly bool physical;
 
 		/// <summary>
 		/// How the update values are processed
@@ -52,9 +52,9 @@ namespace Orbital.Input
 		/// </summary>
 		public float value { get; private set; }
 
-		public Analog1D(bool attached, Analog1DUpdateMode mode)
+		public Analog1D(bool physical, Analog1DUpdateMode mode)
 		{
-			this.attached = attached;
+			this.physical = physical;
 			this.updateMode = mode;
 		}
 

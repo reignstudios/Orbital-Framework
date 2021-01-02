@@ -7,12 +7,12 @@ namespace Orbital.Input
 		/// <summary>
 		/// Name of analog
 		/// </summary>
-		public string name;
+		public string name = "?";
 
 		/// <summary>
-		/// Is the analog attached to a device
+		/// Is physically attached to a device. Otherwise virtually simulated
 		/// </summary>
-		public readonly bool attached;
+		public readonly bool physical;
 
 		/// <summary>
 		/// Any input under talerance will be forced to Vec2.zero
@@ -29,9 +29,9 @@ namespace Orbital.Input
 		/// </summary>
 		public Vec2 value { get; private set; }
 
-		public Analog2D(bool attached)
+		public Analog2D(bool physical)
 		{
-			this.attached = attached;
+			this.physical = physical;
 		}
 
 		public void Update(Vec2 value)

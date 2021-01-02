@@ -85,30 +85,11 @@
             The device index
             </summary>
         </member>
-        <member name="F:Orbital.Input.DirectInput.Device.dpadMode">
+        <member name="M:Orbital.Input.DirectInput.Device.Configure(Orbital.Input.DirectInput.InputConfiguration@)">
             <summary>
-            How the dpad buttons are mapped
+            Custom device configuration mapping
             </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.Device.triggerMode">
-            <summary>
-            How the triggers map
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.Device.triggerSharedAxis">
-            <summary>
-            If the trigger mode is 'Shared' what axis do they use
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.Device.triggerButtonMode">
-            <summary>
-            How the trigger buttons are mapped
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.Device.dpad_POV_Offset">
-            <summary>
-            Which
-            </summary>
+            <param name="configuration">Configuration object to use</param>
         </member>
         <member name="P:Orbital.Input.DirectInput.Instance.devices">
             <summary>

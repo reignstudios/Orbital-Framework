@@ -24,9 +24,9 @@
             Name of analog
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1D.attached">
+        <member name="F:Orbital.Input.Analog1D.physical">
             <summary>
-            Is the analog attached to a device
+            Is physically attached to a device. Otherwise virtually simulated
             </summary>
         </member>
         <member name="F:Orbital.Input.Analog1D.updateMode">
@@ -54,9 +54,9 @@
             Name of analog
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog2D.attached">
+        <member name="F:Orbital.Input.Analog2D.physical">
             <summary>
-            Is the analog attached to a device
+            Is physically attached to a device. Otherwise virtually simulated
             </summary>
         </member>
         <member name="F:Orbital.Input.Analog2D.tolerance">
@@ -79,9 +79,9 @@
             Name of analog
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog3D.attached">
+        <member name="F:Orbital.Input.Analog3D.physical">
             <summary>
-            Is the analog attached to a device
+            Is physically attached to a device. Otherwise virtually simulated
             </summary>
         </member>
         <member name="F:Orbital.Input.Analog3D.tolerance">
@@ -104,9 +104,9 @@
             Name of button
             </summary>
         </member>
-        <member name="F:Orbital.Input.Button.attached">
+        <member name="F:Orbital.Input.Button.physical">
             <summary>
-            Is the button attached to a device
+            Is physically attached to a device. Otherwise virtually simulated
             </summary>
         </member>
         <member name="P:Orbital.Input.Button.on">
@@ -209,14 +209,14 @@
             Common button: DPad Up
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.menu">
-            <summary>
-            Common button: Menu, Start, Options, etc
-            </summary>
-        </member>
         <member name="P:Orbital.Input.DeviceBase.home">
             <summary>
             Special button: System menu, OS home, etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.menu">
+            <summary>
+            Common button: Menu, Start, Options, etc
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.back">
@@ -274,14 +274,39 @@
             Common analog: Joystick Right
             </summary>
         </member>
-        <member name="M:Orbital.Input.DeviceBase.CreateAttachedArrays(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+        <member name="M:Orbital.Input.DeviceBase.CreatePhysicalObjects(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Create interal arrays of attached buttons, analogs, etc
+            Create physical buttons, analogs, etc
             </summary>
         </member>
         <member name="M:Orbital.Input.DeviceBase.CreateMissingObjects">
             <summary>
             If any buttons, analogs, etc are null an instance will be created to avoid null-refs when used
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Button)">
+            <summary>
+            Add object if it doesn't exist
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog1D)">
+            <summary>
+            Add object if it doesn't exist
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog2D)">
+            <summary>
+            Add object if it doesn't exist
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog3D)">
+            <summary>
+            Add object if it doesn't exist
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Slider)">
+            <summary>
+            Add object if it doesn't exist
             </summary>
         </member>
         <member name="M:Orbital.Input.DeviceBase.UpdateDisconnected">
@@ -324,9 +349,9 @@
             Name of button
             </summary>
         </member>
-        <member name="F:Orbital.Input.Slider.attached">
+        <member name="F:Orbital.Input.Slider.physical">
             <summary>
-            Is the button attached to a device
+            Is physically attached to a device. Otherwise virtually simulated
             </summary>
         </member>
         <member name="F:Orbital.Input.Slider.smoothing">

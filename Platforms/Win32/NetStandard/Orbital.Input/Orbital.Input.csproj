@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj" />
+    <ProjectReference Include="..\Orbital.Primitives\Orbital.Primitives.csproj" />
   </ItemGroup>
 
 </Project>

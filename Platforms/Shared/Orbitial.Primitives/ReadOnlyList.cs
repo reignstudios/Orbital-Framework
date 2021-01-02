@@ -1,0 +1,41 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace Orbital.Primitives
+{
+	public class ReadOnlyList<T> : IEnumerable<T>
+	{
+		private List<T> list;
+
+		public static ReadOnlyList<T> Create(out List<T> backingList)
+		{
+			backingList = new List<T>();
+			return new ReadOnlyList<T>(backingList);
+		}
+
+		public ReadOnlyList(List<T> backingList)
+		{
+			list = backingList;
+		}
+
+		public T this[int i]
+		{
+			get { return list[i]; }
+		}
+
+		public int Count
+		{
+			get { return list.Count; }
+		}
+
+		public IEnumerator<T> GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return list.GetEnumerator();
+		}
+	}
+}

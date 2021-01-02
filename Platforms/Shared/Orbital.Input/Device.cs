@@ -1,5 +1,7 @@
 ﻿using Orbital.Numerics;
+using Orbital.Primitives;
 using System;
+using System.Collections.Generic;
 
 namespace Orbital.Input
 {
@@ -32,27 +34,32 @@ namespace Orbital.Input
 		/// <summary>
 		/// All buttons this device supports
 		/// </summary>
-		public Button[] buttons { get; protected set; }
+		public ReadOnlyList<Button> buttons { get; protected set; }
+		protected List<Button> buttons_backing;
 
 		/// <summary>
 		/// All 1D analog/triggers/etc this device supports
 		/// </summary>
-		public Analog1D[] analogs_1D { get; protected set; }
+		public ReadOnlyList<Analog1D> analogs_1D { get; protected set; }
+		protected List<Analog1D> analogs_1D_backing;
 
 		/// <summary>
 		/// All 2D analog/joystick/etc this device supports
 		/// </summary>
-		public Analog2D[] analogs_2D { get; protected set; }
+		public ReadOnlyList<Analog2D> analogs_2D { get; protected set; }
+		protected List<Analog2D> analogs_2D_backing;
 
 		/// <summary>
 		/// All 3D analog etc this device supports
 		/// </summary>
-		public Analog3D[] analogs_3D { get; protected set; }
+		public ReadOnlyList<Analog3D> analogs_3D { get; protected set; }
+		protected List<Analog3D> analogs_3D_backing;
 
 		/// <summary>
 		/// All sliders this device supports
 		/// </summary>
-		public Slider[] sliders { get; protected set; }
+		public ReadOnlyList<Slider> sliders { get; protected set; }
+		protected List<Slider> sliders_backing;
 
 		#region Common Buttons
 		/// <summary>
@@ -106,14 +113,14 @@ namespace Orbital.Input
 		public Button dpadUp { get; protected set; }
 
 		/// <summary>
-		/// Common button: Menu, Start, Options, etc
-		/// </summary>
-		public Button menu { get; protected set; }
-
-		/// <summary>
 		/// Special button: System menu, OS home, etc
 		/// </summary>
 		public Button home { get; protected set; }
+
+		/// <summary>
+		/// Common button: Menu, Start, Options, etc
+		/// </summary>
+		public Button menu { get; protected set; }
 
 		/// <summary>
 		/// Common button: Back, Select, etc
@@ -181,24 +188,24 @@ namespace Orbital.Input
 		}
 
 		/// <summary>
-		/// Create interal arrays of attached buttons, analogs, etc
+		/// Create physical buttons, analogs, etc
 		/// </summary>
-		protected void CreateAttachedArrays(int buttonCount, int analog1DCount, int analog2DCount, int analog3DCount, int sliderCount)
+		protected void CreatePhysicalObjects(int buttonCount, int analog1DCount, int analog2DCount, int analog3DCount, int sliderCount)
 		{
-			buttons = new Button[buttonCount];
-			for (int i = 0; i != buttonCount; ++i) buttons[i] = new Button(true);
+			buttons = ReadOnlyList<Button>.Create(out buttons_backing);
+			for (int i = 0; i != buttonCount; ++i) buttons_backing.Add(new Button(true));
 
-			analogs_1D = new Analog1D[analog1DCount];
-			for (int i = 0; i != analog1DCount; ++i) analogs_1D[i] = new Analog1D(true, Analog1DUpdateMode.Bidirectional);
+			analogs_1D = ReadOnlyList<Analog1D>.Create(out analogs_1D_backing);
+			for (int i = 0; i != analog1DCount; ++i) analogs_1D_backing.Add(new Analog1D(true, Analog1DUpdateMode.Bidirectional));
 
-			analogs_2D = new Analog2D[analog2DCount];
-			for (int i = 0; i != analog2DCount; ++i) analogs_2D[i] = new Analog2D(true);
+			analogs_2D = ReadOnlyList<Analog2D>.Create(out analogs_2D_backing);
+			for (int i = 0; i != analog2DCount; ++i) analogs_2D_backing.Add(new Analog2D(true));
 
-			analogs_3D = new Analog3D[analog3DCount];
-			for (int i = 0; i != analog3DCount; ++i) analogs_3D[i] = new Analog3D(true);
+			analogs_3D = ReadOnlyList<Analog3D>.Create(out analogs_3D_backing);
+			for (int i = 0; i != analog3DCount; ++i) analogs_3D_backing.Add(new Analog3D(true));
 
-			sliders = new Slider[sliderCount];
-			for (int i = 0; i != sliderCount; ++i) sliders[i] = new Slider(true);
+			sliders = ReadOnlyList<Slider>.Create(out sliders_backing);
+			for (int i = 0; i != sliderCount; ++i) sliders_backing.Add(new Slider(true));
 		}
 
 		/// <summary>
@@ -243,6 +250,46 @@ namespace Orbital.Input
 			// joysticks
 			if (joystickLeft == null) joystickLeft = new Analog2D(false);
 			if (joystickRight == null) joystickRight = new Analog2D(false);
+		}
+
+		/// <summary>
+		/// Add object if it doesn't exist
+		/// </summary>
+		protected void AddVirtualObject(Button button)
+		{
+			if (button != null && !buttons_backing.Contains(button)) buttons_backing.Add(button);
+		}
+
+		/// <summary>
+		/// Add object if it doesn't exist
+		/// </summary>
+		protected void AddVirtualObject(Analog1D analog)
+		{
+			if (analog != null && !analogs_1D_backing.Contains(analog)) analogs_1D_backing.Add(analog);
+		}
+
+		/// <summary>
+		/// Add object if it doesn't exist
+		/// </summary>
+		protected void AddVirtualObject(Analog2D analog)
+		{
+			if (analog != null && !analogs_2D_backing.Contains(analog)) analogs_2D_backing.Add(analog);
+		}
+
+		/// <summary>
+		/// Add object if it doesn't exist
+		/// </summary>
+		protected void AddVirtualObject(Analog3D analog)
+		{
+			if (analog != null && !analogs_3D_backing.Contains(analog)) analogs_3D_backing.Add(analog);
+		}
+
+		/// <summary>
+		/// Add object if it doesn't exist
+		/// </summary>
+		protected void AddVirtualObject(Slider slider)
+		{
+			if (slider != null && !sliders_backing.Contains(slider)) sliders_backing.Add(slider);
 		}
 
 		public abstract void Dispose();

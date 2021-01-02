@@ -5,12 +5,12 @@
 		/// <summary>
 		/// Name of button
 		/// </summary>
-		public string name;
+		public string name = "?";
 
 		/// <summary>
-		/// Is the button attached to a device
+		/// Is physically attached to a device. Otherwise virtually simulated
 		/// </summary>
-		public readonly bool attached;
+		public readonly bool physical;
 
 		/// <summary>
 		/// Button actively being pressed
@@ -27,9 +27,9 @@
 		/// </summary>
 		public bool up { get; private set; }
 
-		public Button(bool attached)
+		public Button(bool physical)
 		{
-			this.attached = attached;
+			this.physical = physical;
 		}
 
 		public void Update(bool on)

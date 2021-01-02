@@ -132,6 +132,30 @@ namespace Orbital.Input.DirectInput
 		public Analog3D analog;
 	}
 
+	public struct InputConfiguration
+	{
+		public DeviceDPadMode dpadMode;
+		public int dpad_POV_Index;
+
+		public DeviceTriggerMode triggerMode;
+		public DeviceTriggerSharedAxis triggerSharedAxis;
+		public DeviceTriggerButtonMode triggerButtonMode;
+
+		public Button button1, button2, button3, button4, button5, button6;
+		public Button dpadLeft, dpadRight, dpadDown, dpadUp;
+		public Button menu, back, home;
+		public Button bumperLeft, bumperRight;
+		public Button triggerButtonLeft, triggerButtonRight;
+		public Button joystickButtonLeft, joystickButtonRight;
+
+		public Analog1D triggerLeft, triggerRight;
+		public Analog2D joystickLeft, joystickRight;
+
+		public DeviceAxis1DMap[] axis1DMaps;
+		public DeviceAxis2DMap[] axis2DMaps;
+		public DeviceAxis3DMap[] axis3DMaps;
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	struct DeviceInfo
 	{
@@ -146,17 +170,6 @@ namespace Orbital.Input.DirectInput
 		public int sliderCount;
 		public int xAxisCount, yAxisCount, zAxisCount;
 		public int rxAxisCount, ryAxisCount, rzAxisCount;
-	}
-
-	class DpadMap
-	{
-		public int index;
-		public Button left, right, down, up;
-	}
-
-	class InputConfiguration
-	{
-		public DpadMap dpadMap;
 	}
 
 	public sealed class Device : DeviceBase
@@ -188,32 +201,14 @@ namespace Orbital.Input.DirectInput
 		/// </summary>
 		public int index { get; private set; }
 
-		/// <summary>
-		/// How the dpad buttons are mapped
-		/// </summary>
-		public DeviceDPadMode dpadMode = DeviceDPadMode.POV;
-
-		/// <summary>
-		/// How the triggers map
-		/// </summary>
-		public DeviceTriggerMode triggerMode = DeviceTriggerMode.Seperate;
-
-		/// <summary>
-		/// If the trigger mode is 'Shared' what axis do they use
-		/// </summary>
-		public DeviceTriggerSharedAxis triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
-
-		/// <summary>
-		/// How the trigger buttons are mapped
-		/// </summary>
-		public DeviceTriggerButtonMode triggerButtonMode = DeviceTriggerButtonMode.Virtual;
-
-		/// <summary>
-		/// Which
-		/// </summary>
-		public int dpad_POV_Offset;
-
 		private DeviceInfo nativeInfo;
+
+		private int dpad_POV_Index;
+		private DeviceDPadMode dpadMode = DeviceDPadMode.POV;
+		private DeviceTriggerMode triggerMode = DeviceTriggerMode.Seperate;
+		private DeviceTriggerSharedAxis triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
+		private DeviceTriggerButtonMode triggerButtonMode = DeviceTriggerButtonMode.Virtual;
+
 		private DeviceAxis1DMap[] axis1DMaps;
 		private DeviceAxis2DMap[] axis2DMaps;
 		private DeviceAxis3DMap[] axis3DMaps;
@@ -246,94 +241,92 @@ namespace Orbital.Input.DirectInput
 			int axisCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
 			axisCount += info.rxAxisCount + info.ryAxisCount + info.rzAxisCount;
 
+			// create objects
+			CreatePhysicalObjects(info.buttonCount, axisCount, 0, 0, info.sliderCount);
+
 			// configure input settings
+			var configuration = new InputConfiguration();
 			if (productID == new Guid("02ff045e-0000-0000-0000-504944564944"))// Xbox
 			{
-				dpadMode = DeviceDPadMode.POV;
-				triggerMode = DeviceTriggerMode.Shared;
-				triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
-				triggerButtonMode = DeviceTriggerButtonMode.Virtual;
-				int buttonCount = info.buttonCount + 4 + 2;// add dpad-POV & triggers
-				axisCount += 2;// add triggers for mappings
-				CreateAttachedArrays(buttonCount, axisCount, 2, 0, info.sliderCount);
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
-				button1 = buttons[0];
-				button2 = buttons[1];
-				button3 = buttons[2];
-				button4 = buttons[3];
-				button1.name = "A";
-				button2.name = "B";
-				button3.name = "X";
-				button4.name = "Y";
+				configuration.button1 = buttons[0];
+				configuration.button2 = buttons[1];
+				configuration.button3 = buttons[2];
+				configuration.button4 = buttons[3];
+				configuration.button1.name = "A";
+				configuration.button2.name = "B";
+				configuration.button3.name = "X";
+				configuration.button4.name = "Y";
 
 				// dpad
-				int buttonIndex = buttonCount - (4 + 2);
-				dpadLeft = buttons[buttonIndex++];
-				dpadRight = buttons[buttonIndex++];
-				dpadDown = buttons[buttonIndex++];
-				dpadUp = buttons[buttonIndex++];
-				dpadLeft.name = "Left";
-				dpadRight.name = "Right";
-				dpadDown.name = "Down";
-				dpadUp.name = "Up";
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
 
 				// options
-				menu = buttons[7];
-				back = buttons[6];
-				home = buttons[10];
-				menu.name = "Menu";
-				back.name = "Back";
-				home.name = "Dashboard";
+				configuration.menu = buttons[7];
+				configuration.back = buttons[6];
+				configuration.home = buttons[10];
+				configuration.menu.name = "Menu";
+				configuration.back.name = "Back";
+				configuration.home.name = "Dashboard";
 
 				// bumbers
-				bumperLeft = buttons[4];
-				bumperRight = buttons[5];
-				bumperLeft.name = "BL";
-				bumperRight.name = "BR";
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
 
 				// trigger buttons
-				triggerButtonLeft = buttons[buttonIndex++];
-				triggerButtonRight = buttons[buttonIndex++];
-				triggerButtonLeft.name = "TBL";
-				triggerButtonRight.name = "TBR";
+				configuration.triggerButtonLeft = new Button(false);
+				configuration.triggerButtonRight = new Button(false);
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
 
 				// joystick buttons
-				joystickButtonLeft = buttons[8];
-				joystickButtonRight = buttons[9];
-				joystickButtonLeft.name = "JBL";
-				joystickButtonRight.name = "JBR";
+				configuration.joystickButtonLeft = buttons[8];
+				configuration.joystickButtonRight = buttons[9];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
-				triggerLeft = new Analog1D(true, Analog1DUpdateMode.Positive);
-				triggerRight = new Analog1D(true, Analog1DUpdateMode.Negitive);
-				triggerLeft.name = "TL";
-				triggerRight.name = "TR";
-				analogs_1D[axisCount - 2] = triggerLeft;
-				analogs_1D[axisCount - 1] = triggerRight;
+				configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.Positive);
+				configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.Negitive);
+				configuration.triggerLeft.name = "TL";
+				configuration.triggerRight.name = "TR";
 
-				axis1DMaps = new DeviceAxis1DMap[2];
-				axis1DMaps[0].analogSrc = analogs_1D[2];
-				axis1DMaps[0].analogDst = triggerLeft;
-				axis1DMaps[1].analogSrc = analogs_1D[2];
-				axis1DMaps[1].analogDst = triggerRight;
+				configuration.axis1DMaps = new DeviceAxis1DMap[2];
+				configuration.axis1DMaps[0].analogSrc = analogs_1D[2];
+				configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
+				configuration.axis1DMaps[1].analogSrc = analogs_1D[2];
+				configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
 
 				// joysticks
-				joystickLeft = analogs_2D[0];
-				joystickRight = analogs_2D[1];
-				joystickLeft.name = "JL";
-				joystickRight.name = "JR";
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
 
-				axis2DMaps = new DeviceAxis2DMap[2];
-				axis2DMaps[0].invertAxisY = true;
-				axis2DMaps[0].axisX = analogs_1D[0];
-				axis2DMaps[0].axisY = analogs_1D[1];
-				axis2DMaps[0].analog = joystickLeft;
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
 
-				axis2DMaps[1].invertAxisY = true;
-				axis2DMaps[1].axisX = analogs_1D[3];
-				axis2DMaps[1].axisY = analogs_1D[4];
-				axis2DMaps[1].analog = joystickRight;
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[3];
+				configuration.axis2DMaps[1].axisY = analogs_1D[4];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
 			else if (productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944"))// PS4
 			{
@@ -401,13 +394,160 @@ namespace Orbital.Input.DirectInput
 				joystickLeft.name = "JL";
 				joystickRight.name = "JR";*/
 			}
-			else
-			{
-				CreateAttachedArrays(info.buttonCount, axisCount, 0, 0, info.sliderCount);
-			}
+			//else
+			//{
+			//	CreateAttachedArrays(info.buttonCount, axisCount, 0, 0, info.sliderCount);
+			//}
+
+			// configure input
+			Configure(ref configuration);
 
 			// create any missing objects this API doesn't support
 			CreateMissingObjects();
+		}
+
+		/// <summary>
+		/// Custom device configuration mapping
+		/// </summary>
+		/// <param name="configuration">Configuration object to use</param>
+		public void Configure(ref InputConfiguration configuration)
+		{
+			// get total axis count
+			int axisCount = nativeInfo.xAxisCount + nativeInfo.yAxisCount + nativeInfo.zAxisCount;
+			axisCount += nativeInfo.rxAxisCount + nativeInfo.ryAxisCount + nativeInfo.rzAxisCount;
+
+			// remove non-native backed objects
+			int delta = nativeInfo.buttonCount - buttons.Count;
+			if (delta > 0) buttons_backing.RemoveRange(nativeInfo.buttonCount, delta);
+
+			delta = axisCount - analogs_1D.Count;
+			if (delta > 0) analogs_1D_backing.RemoveRange(axisCount, delta);
+
+			// copy mode settings
+			dpad_POV_Index = configuration.dpad_POV_Index;
+			dpadMode = configuration.dpadMode;
+			triggerMode = configuration.triggerMode;
+			triggerSharedAxis = configuration.triggerSharedAxis;
+			triggerButtonMode = configuration.triggerButtonMode;
+
+			// copy maps
+			if (configuration.axis1DMaps != null)
+			{
+				axis1DMaps = new DeviceAxis1DMap[configuration.axis1DMaps.Length];
+				Array.Copy(configuration.axis1DMaps, axis1DMaps, axis1DMaps.Length);
+			}
+
+			if (configuration.axis2DMaps != null)
+			{
+				axis2DMaps = new DeviceAxis2DMap[configuration.axis2DMaps.Length];
+				Array.Copy(configuration.axis2DMaps, axis2DMaps, axis2DMaps.Length);
+			}
+
+			if (configuration.axis3DMaps != null)
+			{
+				axis3DMaps = new DeviceAxis3DMap[configuration.axis3DMaps.Length];
+				Array.Copy(configuration.axis3DMaps, axis3DMaps, axis3DMaps.Length);
+			}
+
+			// primary buttons
+			button1 = configuration.button1;
+			button2 = configuration.button2;
+			button3 = configuration.button3;
+			button4 = configuration.button4;
+			button5 = configuration.button5;
+			button6 = configuration.button6;
+
+			// dpad
+			dpadLeft = configuration.dpadLeft;
+			dpadRight = configuration.dpadRight;
+			dpadDown = configuration.dpadDown;
+			dpadUp = configuration.dpadUp;
+
+			// options
+			menu = configuration.menu;
+			back = configuration.back;
+			home = configuration.home;
+
+			// bumbers
+			bumperLeft = configuration.bumperLeft;
+			bumperRight = configuration.bumperRight;
+
+			// trigger buttons
+			triggerButtonLeft = configuration.triggerButtonLeft;
+			triggerButtonRight = configuration.triggerButtonRight;
+
+			// joystick buttons
+			joystickButtonLeft = configuration.joystickButtonLeft;
+			joystickButtonRight = configuration.joystickButtonRight;
+
+			// triggers
+			triggerLeft = configuration.triggerLeft;
+			triggerRight = configuration.triggerRight;
+
+			// joysticks
+			joystickLeft = configuration.joystickLeft;
+			joystickRight = configuration.joystickRight;
+
+			// create any missing objects this API doesn't support (NOTE: call this before we try to add virtual objects)
+			CreateMissingObjects();
+
+			// primary buttons
+			AddVirtualObject(button1);
+			AddVirtualObject(button2);
+			AddVirtualObject(button3);
+			AddVirtualObject(button4);
+			AddVirtualObject(button5);
+			AddVirtualObject(button6);
+
+			// dpad
+			AddVirtualObject(dpadLeft);
+			AddVirtualObject(dpadRight);
+			AddVirtualObject(dpadDown);
+			AddVirtualObject(dpadUp);
+
+			// options
+			AddVirtualObject(menu);
+			AddVirtualObject(back);
+			AddVirtualObject(home);
+
+			// bumbers
+			AddVirtualObject(bumperLeft);
+			AddVirtualObject(bumperRight);
+
+			// trigger buttons
+			AddVirtualObject(triggerButtonLeft);
+			AddVirtualObject(triggerButtonRight);
+
+			// ensure analog map objects are added
+			if (configuration.axis1DMaps != null)
+			{
+				foreach (var map in configuration.axis1DMaps)
+				{
+					AddVirtualObject(map.analogSrc);
+					AddVirtualObject(map.analogDst);
+				}
+			}
+
+			if (configuration.axis2DMaps != null)
+			{
+				foreach (var map in configuration.axis2DMaps)
+				{
+					AddVirtualObject(map.axisX);
+					AddVirtualObject(map.axisY);
+					AddVirtualObject(map.analog);
+				}
+			}
+
+			if (configuration.axis3DMaps != null)
+			{
+				foreach (var map in configuration.axis3DMaps)
+				{
+					AddVirtualObject(map.axisX);
+					AddVirtualObject(map.axisY);
+					AddVirtualObject(map.axisZ);
+					AddVirtualObject(map.analog);
+				}
+			}
 		}
 
 		public override void Dispose()
@@ -455,9 +595,9 @@ namespace Orbital.Input.DirectInput
 			// dpad (clock-wise 0-36000)
 			if (dpadMode == DeviceDPadMode.POV && nativeInfo.povCount != 0)
 			{
-				if (dpad_POV_Offset < 0) dpad_POV_Offset = 0;
-				if (dpad_POV_Offset >= nativeInfo.povCount) dpad_POV_Offset = nativeInfo.povCount - 1;
-				uint value = state.rgdwPOV[dpad_POV_Offset];
+				if (dpad_POV_Index < 0) dpad_POV_Index = 0;
+				if (dpad_POV_Index >= nativeInfo.povCount) dpad_POV_Index = nativeInfo.povCount - 1;
+				uint value = state.rgdwPOV[dpad_POV_Index];
 				dpadUp.Update((value >= 31500 && value <= 36000) || (value >= 0 && value < 4500));
 				dpadRight.Update(value >= 4500 && value < 13500);
 				dpadDown.Update(value >= 13500 && value < 22500);

@@ -90,6 +90,10 @@
       <Project>{6f119961-7ba2-4d88-af79-28be31b55f4b}</Project>
       <Name>Orbital.Numerics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Orbital.Primitives\Orbital.Primitives.csproj">
+      <Project>{ec650d32-d981-4908-a0f0-ae99beb15708}</Project>
+      <Name>Orbital.Primitives</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
