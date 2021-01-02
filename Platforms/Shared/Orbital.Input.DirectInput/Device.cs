@@ -247,11 +247,15 @@ namespace Orbital.Input.DirectInput
 
 			// configure input settings
 			var configuration = new InputConfiguration();
-			var xbox360ID = new Guid("028e045e-0000-0000-0000-504944564944");
+
+			// ================
+			// Microsoft
+			// ================
 			if
 			(
-				productID == xbox360ID ||// Xbox 360
-				productID == new Guid("02ff045e-0000-0000-0000-504944564944")// Xbox One
+				productID == Guid.Parse("028e045e-0000-0000-0000-504944564944") ||// Xbox 360
+				productID == Guid.Parse("02ff045e-0000-0000-0000-504944564944") ||// Xbox One
+				productID == Guid.Parse("c21d046d-0000-0000-0000-504944564944")// Logitech
 			)
 			{
 				configuration.dpad_POV_Index = 0;
@@ -284,7 +288,7 @@ namespace Orbital.Input.DirectInput
 				configuration.back = buttons[6];
 				configuration.menu.name = "Menu";
 				configuration.back.name = "Back";
-				if (productID != xbox360ID && buttons.Count >= 11)
+				if (buttons.Count >= 11)// only some controllers supply this
 				{
 					configuration.home = buttons[10];
 					configuration.home.name = "Xbox";
@@ -337,11 +341,20 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[4];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944"))// PS4
+
+			// ================
+			// Sony
+			// ================
+			var ps3ID = Guid.Parse("0268054c-0000-0000-0000-504944564944");
+			var ps3ID_GameStop = Guid.Parse("63020e6f-0000-0000-0000-504944564944");
+			if
+			(
+				productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944") ||// PS4
+				productID == ps3ID_GameStop// Wired PS3 GameStop controller
+			)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
-				configuration.triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
 				configuration.triggerButtonMode = DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
@@ -353,6 +366,217 @@ namespace Orbital.Input.DirectInput
 				configuration.button2.name = "O";
 				configuration.button3.name = "Square";
 				configuration.button4.name = "Triangle";
+
+				// special button
+				if (productID != ps3ID_GameStop)
+				{
+					configuration.special1 = buttons[13];
+					configuration.special1.name = "Touch-Pad";
+				}
+
+				// dpad
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
+
+				// options
+				configuration.menu = buttons[9];
+				configuration.back = buttons[8];
+				if (productID == ps3ID_GameStop)
+				{
+					configuration.menu.name = "Start";
+					configuration.back.name = "Select";
+				}
+				else
+				{
+					configuration.home = buttons[12];
+					configuration.menu.name = "Options";
+					configuration.back.name = "Share";
+					configuration.home.name = "PS";
+				}
+
+				// bumbers
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
+
+				// trigger buttons
+				if (productID == ps3ID_GameStop)
+				{
+					configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+					configuration.triggerButtonLeft = buttons[6];
+					configuration.triggerButtonRight = buttons[7];
+				}
+				else
+				{
+					configuration.triggerButtonLeft = new Button(false);
+					configuration.triggerButtonRight = new Button(false);
+				}
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
+
+				// joystick buttons
+				configuration.joystickButtonLeft = buttons[10];
+				configuration.joystickButtonRight = buttons[11];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
+
+				// triggers
+				if (productID != ps3ID_GameStop)
+				{
+					configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+					configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+					configuration.triggerLeft.name = "TL";
+					configuration.triggerRight.name = "TR";
+
+					configuration.axis1DMaps = new DeviceAxis1DMap[2];
+					configuration.axis1DMaps[0].analogSrc = analogs_1D[3];
+					configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
+					configuration.axis1DMaps[1].analogSrc = analogs_1D[4];
+					configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
+				}
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				if (productID == ps3ID_GameStop) configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				else configuration.axis2DMaps[1].axisY = analogs_1D[5];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+			}
+			else if (productID == ps3ID)
+			{
+				// TODO
+			}
+
+			// ================
+			// Nintendo
+			// ================
+			var smashControllerID = Guid.Parse("01850e6f-0000-0000-0000-504944564944");
+			if
+			(
+				productID == Guid.Parse("2009057e-0000-0000-0000-504944564944") ||// Switch Pro Controller
+				productID == smashControllerID// Wired Smash controller for Switch
+			)
+			{
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+
+				// primary buttons
+				if (productID == smashControllerID)
+				{
+					configuration.button1 = buttons[2];
+					configuration.button2 = buttons[1];
+					configuration.button3 = buttons[0];
+					configuration.button4 = buttons[3];
+					configuration.button1.name = "A";
+					configuration.button2.name = "B";
+					configuration.button3.name = "X";
+					configuration.button4.name = "Y";
+				}
+				else
+				{
+					configuration.button1 = buttons[0];
+					configuration.button2 = buttons[1];
+					configuration.button3 = buttons[2];
+					configuration.button4 = buttons[3];
+					configuration.button1.name = "B";
+					configuration.button2.name = "A";
+					configuration.button3.name = "X";
+					configuration.button4.name = "Y";
+				}
+
+				// special button
+				configuration.special1 = buttons[13];
+				configuration.special1.name = "Capture";
+
+				// dpad
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
+
+				// options
+				configuration.menu = buttons[9];
+				configuration.back = buttons[8];
+				configuration.home = buttons[12];
+				configuration.menu.name = "+";
+				configuration.back.name = "-";
+				configuration.home.name = "Home";
+
+				// bumbers
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
+
+				// trigger buttons
+				configuration.triggerButtonLeft = buttons[6];
+				configuration.triggerButtonRight = buttons[7];
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
+
+				// joystick buttons
+				configuration.joystickButtonLeft = buttons[10];
+				configuration.joystickButtonRight = buttons[11];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+			}
+			else if (productID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// GameCube
+			{
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+
+				// primary buttons
+				configuration.button1 = buttons[1];
+				configuration.button2 = buttons[2];
+				configuration.button3 = buttons[3];
+				configuration.button4 = buttons[0];
+				configuration.button6 = buttons[7];
+				configuration.button1.name = "A";
+				configuration.button2.name = "B";
+				configuration.button3.name = "X";
+				configuration.button4.name = "Y";
+				configuration.button6.name = "Z";
 
 				// special button
 				configuration.special1 = buttons[13];
@@ -369,12 +593,8 @@ namespace Orbital.Input.DirectInput
 				configuration.dpadUp.name = "Up";
 
 				// options
-				configuration.menu = buttons[7];
-				configuration.back = buttons[6];
-				configuration.home = buttons[12];
-				configuration.menu.name = "Menu";
-				configuration.back.name = "Back";
-				configuration.home.name = "PS";
+				configuration.menu = buttons[9];
+				configuration.menu.name = "Pause";
 
 				// bumbers
 				configuration.bumperLeft = buttons[4];
@@ -383,16 +603,10 @@ namespace Orbital.Input.DirectInput
 				configuration.bumperRight.name = "BR";
 
 				// trigger buttons
-				configuration.triggerButtonLeft = new Button(false);
-				configuration.triggerButtonRight = new Button(false);
+				configuration.triggerButtonLeft = buttons[4];
+				configuration.triggerButtonRight = buttons[5];
 				configuration.triggerButtonLeft.name = "TBL";
 				configuration.triggerButtonRight.name = "TBR";
-
-				// joystick buttons
-				configuration.joystickButtonLeft = buttons[10];
-				configuration.joystickButtonRight = buttons[11];
-				configuration.joystickButtonLeft.name = "JBL";
-				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
 				configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
