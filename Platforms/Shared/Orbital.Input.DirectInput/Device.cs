@@ -111,6 +111,7 @@ namespace Orbital.Input.DirectInput
 	{
 		public Guid productID;
 		public unsafe char* productName;
+		public uint type;
 		public int supportsForceFeedback;
 		public int isPrimary;
 
@@ -120,6 +121,138 @@ namespace Orbital.Input.DirectInput
 		public int sliderCount;
 		public int xAxisCount, yAxisCount, zAxisCount;
 		public int rxAxisCount, ryAxisCount, rzAxisCount;
+	}
+
+	public enum DeviceInfoType_FeatureLevel1
+	{
+		None = 0,
+		DIDEVTYPE_DEVICE = 1,
+		DIDEVTYPE_MOUSE = 2,
+		DIDEVTYPE_KEYBOARD = 3,
+		DIDEVTYPE_JOYSTICK = 4
+	}
+
+	public enum DeviceInfoSubType_FeatureLevel1
+	{
+		None = 0,
+		DIDEVTYPEMOUSE_UNKNOWN = 1,
+		DIDEVTYPEMOUSE_TRADITIONAL = 2,
+		DIDEVTYPEMOUSE_FINGERSTICK = 3,
+		DIDEVTYPEMOUSE_TOUCHPAD = 4,
+		DIDEVTYPEMOUSE_TRACKBALL = 5,
+
+		DIDEVTYPEKEYBOARD_UNKNOWN = 0,
+		DIDEVTYPEKEYBOARD_PCXT = 1,
+		DIDEVTYPEKEYBOARD_OLIVETTI = 2,
+		DIDEVTYPEKEYBOARD_PCAT = 3,
+		DIDEVTYPEKEYBOARD_PCENH = 4,
+		DIDEVTYPEKEYBOARD_NOKIA1050 = 5,
+		DIDEVTYPEKEYBOARD_NOKIA9140 = 6,
+		DIDEVTYPEKEYBOARD_NEC98 = 7,
+		DIDEVTYPEKEYBOARD_NEC98LAPTOP = 8,
+		DIDEVTYPEKEYBOARD_NEC98106 = 9,
+		DIDEVTYPEKEYBOARD_JAPAN106 = 10,
+		DIDEVTYPEKEYBOARD_JAPANAX = 11,
+		DIDEVTYPEKEYBOARD_J3100 = 12,
+
+		DIDEVTYPEJOYSTICK_UNKNOWN = 1,
+		DIDEVTYPEJOYSTICK_TRADITIONAL = 2,
+		DIDEVTYPEJOYSTICK_FLIGHTSTICK = 3,
+		DIDEVTYPEJOYSTICK_GAMEPAD = 4,
+		DIDEVTYPEJOYSTICK_RUDDER = 5,
+		DIDEVTYPEJOYSTICK_WHEEL = 6,
+		DIDEVTYPEJOYSTICK_HEADTRACKER = 7
+	}
+
+	public enum DeviceInfoType_FeatureLevel8
+	{
+		None = 0,
+		DI8DEVTYPE_DEVICE = 0x11,
+		DI8DEVTYPE_MOUSE = 0x12,
+		DI8DEVTYPE_KEYBOARD = 0x13,
+		DI8DEVTYPE_JOYSTICK = 0x14,
+		DI8DEVTYPE_GAMEPAD = 0x15,
+		DI8DEVTYPE_DRIVING = 0x16,
+		DI8DEVTYPE_FLIGHT = 0x17,
+		DI8DEVTYPE_1STPERSON = 0x18,
+		DI8DEVTYPE_DEVICECTRL = 0x19,
+		DI8DEVTYPE_SCREENPOINTER = 0x1A,
+		DI8DEVTYPE_REMOTE = 0x1B,
+		DI8DEVTYPE_SUPPLEMENTAL = 0x1C
+	}
+
+	public enum DeviceInfoSubType_FeatureLevel8
+	{
+		None = 0,
+		DI8DEVTYPEMOUSE_UNKNOWN = 1,
+		DI8DEVTYPEMOUSE_TRADITIONAL = 2,
+		DI8DEVTYPEMOUSE_FINGERSTICK = 3,
+		DI8DEVTYPEMOUSE_TOUCHPAD = 4,
+		DI8DEVTYPEMOUSE_TRACKBALL = 5,
+		DI8DEVTYPEMOUSE_ABSOLUTE = 6,
+
+		DI8DEVTYPEKEYBOARD_UNKNOWN = 0,
+		DI8DEVTYPEKEYBOARD_PCXT = 1,
+		DI8DEVTYPEKEYBOARD_OLIVETTI = 2,
+		DI8DEVTYPEKEYBOARD_PCAT = 3,
+		DI8DEVTYPEKEYBOARD_PCENH = 4,
+		DI8DEVTYPEKEYBOARD_NOKIA1050 = 5,
+		DI8DEVTYPEKEYBOARD_NOKIA9140 = 6,
+		DI8DEVTYPEKEYBOARD_NEC98 = 7,
+		DI8DEVTYPEKEYBOARD_NEC98LAPTOP = 8,
+		DI8DEVTYPEKEYBOARD_NEC98106 = 9,
+		DI8DEVTYPEKEYBOARD_JAPAN106 = 10,
+		DI8DEVTYPEKEYBOARD_JAPANAX = 11,
+		DI8DEVTYPEKEYBOARD_J3100 = 12,
+
+		DI8DEVTYPE_LIMITEDGAMESUBTYPE = 1,
+
+		DI8DEVTYPEJOYSTICK_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE,
+		DI8DEVTYPEJOYSTICK_STANDARD = 2,
+
+		DI8DEVTYPEGAMEPAD_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE,
+		DI8DEVTYPEGAMEPAD_STANDARD = 2,
+		DI8DEVTYPEGAMEPAD_TILT = 3,
+
+		DI8DEVTYPEDRIVING_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE,
+		DI8DEVTYPEDRIVING_COMBINEDPEDALS = 2,
+		DI8DEVTYPEDRIVING_DUALPEDALS = 3,
+		DI8DEVTYPEDRIVING_THREEPEDALS = 4,
+		DI8DEVTYPEDRIVING_HANDHELD = 5,
+
+		DI8DEVTYPEFLIGHT_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE,
+		DI8DEVTYPEFLIGHT_STICK = 2,
+		DI8DEVTYPEFLIGHT_YOKE = 3,
+		DI8DEVTYPEFLIGHT_RC = 4,
+
+		DI8DEVTYPE1STPERSON_LIMITED = DI8DEVTYPE_LIMITEDGAMESUBTYPE,
+		DI8DEVTYPE1STPERSON_UNKNOWN = 2,
+		DI8DEVTYPE1STPERSON_SIXDOF = 3,
+		DI8DEVTYPE1STPERSON_SHOOTER = 4,
+
+		DI8DEVTYPESCREENPTR_UNKNOWN = 2,
+		DI8DEVTYPESCREENPTR_LIGHTGUN = 3,
+		DI8DEVTYPESCREENPTR_LIGHTPEN = 4,
+		DI8DEVTYPESCREENPTR_TOUCH = 5,
+
+		DI8DEVTYPEREMOTE_UNKNOWN = 2,
+
+		DI8DEVTYPEDEVICECTRL_UNKNOWN = 2,
+		DI8DEVTYPEDEVICECTRL_COMMSSELECTION = 3,
+		DI8DEVTYPEDEVICECTRL_COMMSSELECTION_HARDWIRED = 4,
+
+		DI8DEVTYPESUPPLEMENTAL_UNKNOWN = 2,
+		DI8DEVTYPESUPPLEMENTAL_2NDHANDCONTROLLER = 3,
+		DI8DEVTYPESUPPLEMENTAL_HEADTRACKER = 4,
+		DI8DEVTYPESUPPLEMENTAL_HANDTRACKER = 5,
+		DI8DEVTYPESUPPLEMENTAL_SHIFTSTICKGATE = 6,
+		DI8DEVTYPESUPPLEMENTAL_SHIFTER = 7,
+		DI8DEVTYPESUPPLEMENTAL_THROTTLE = 8,
+		DI8DEVTYPESUPPLEMENTAL_SPLITTHROTTLE = 9,
+		DI8DEVTYPESUPPLEMENTAL_COMBINEDPEDALS = 10,
+		DI8DEVTYPESUPPLEMENTAL_DUALPEDALS = 11,
+		DI8DEVTYPESUPPLEMENTAL_THREEPEDALS = 12,
+		DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS = 13
 	}
 
 	public sealed class Device : DeviceBase
@@ -132,14 +265,9 @@ namespace Orbital.Input.DirectInput
 		public bool isPrimary { get; private set; }
 
 		/// <summary>
-		/// Product ID from manufacture
+		/// Product ID GUID from manufacture
 		/// </summary>
-		public Guid productID { get; private set; }
-
-		/// <summary>
-		/// Product name from manufacture
-		/// </summary>
-		public string productName { get; private set; }
+		public Guid productID_GUID { get; private set; }
 
 		/// <summary>
 		/// Does this device support force-feedback / haptics
@@ -150,6 +278,26 @@ namespace Orbital.Input.DirectInput
 		/// The device index
 		/// </summary>
 		public int index { get; private set; }
+
+		/// <summary>
+		/// Type info for DirectInput FeatureLevels 1,2 & 7
+		/// </summary>
+		public DeviceInfoType_FeatureLevel1 deviceInfoType_FeatureLevel1 { get; private set; }
+
+		/// <summary>
+		/// Sub-Type info for DirectInput FeatureLevels 1,2 & 7
+		/// </summary>
+		public DeviceInfoSubType_FeatureLevel1 deviceInfoSubType_FeatureLevel1 { get; private set; }
+
+		/// <summary>
+		/// Type info for DirectInput FeatureLevel 8
+		/// </summary>
+		public DeviceInfoType_FeatureLevel8 deviceInfoType_FeatureLevel8 { get; private set; }
+
+		/// <summary>
+		/// Sub-Type info for DirectInput FeatureLevel 8
+		/// </summary>
+		public DeviceInfoSubType_FeatureLevel8 deviceInfoSubType_FeatureLevel8 { get; private set; }
 
 		private DeviceInfo nativeInfo;
 
@@ -180,10 +328,49 @@ namespace Orbital.Input.DirectInput
 			DeviceInfo info;
 			Orbital_Video_DirectInput_Instance_GetDeviceInfo(instanceDI.handle, index, &info);
 			nativeInfo = info;
-			productID = info.productID;
-			productName = new string(info.productName);
+			productID_GUID = info.productID;
+			name = new string(info.productName);
 			supportsForceFeedback = info.supportsForceFeedback != 0;
 			isPrimary = info.isPrimary != 0;
+
+			// get product & vendor id numbers
+			var productBytes = (byte*)&info.productID;
+			vendorID = *(ushort*)(&productBytes[0]);
+			productID = *(ushort*)(&productBytes[sizeof(ushort)]);
+
+			// get type
+			if (instanceDI.featureLevel < FeatureLevel.Level_8)
+			{
+				deviceInfoType_FeatureLevel1 = (DeviceInfoType_FeatureLevel1)(info.type & 0x000000FF);
+				deviceInfoSubType_FeatureLevel1 = (DeviceInfoSubType_FeatureLevel1)(info.type & 0xFF000000);
+				switch (deviceInfoType_FeatureLevel1)
+				{
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_JOYSTICK: type = DeviceType.Gamepad; break;
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_KEYBOARD: type = DeviceType.Keyboard; break;
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_MOUSE: type = DeviceType.Mouse; break;
+				}
+			}
+			else
+			{
+				deviceInfoType_FeatureLevel8 = (DeviceInfoType_FeatureLevel8)(info.type & 0x000000FF);
+				deviceInfoSubType_FeatureLevel8 = (DeviceInfoSubType_FeatureLevel8)(info.type & 0xFF000000);
+				switch (deviceInfoType_FeatureLevel8)
+				{
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_1STPERSON:
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_GAMEPAD:
+						type = DeviceType.Gamepad; break;
+
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_JOYSTICK:
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_FLIGHT:
+						type = DeviceType.FlightStick; break;
+
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_DRIVING: type = DeviceType.SteeringWheel; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_KEYBOARD: type = DeviceType.Keyboard; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_MOUSE: type = DeviceType.Mouse; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_REMOTE: type = DeviceType.Remote; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_SCREENPOINTER: type = DeviceType.Pointer; break;
+				}
+			}
 
 			// get total axis count
 			int axisCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
@@ -201,11 +388,12 @@ namespace Orbital.Input.DirectInput
 			var xbox360ID = Guid.Parse("028e045e-0000-0000-0000-504944564944");
 			var logitechXInputID = Guid.Parse("c21d046d-0000-0000-0000-504944564944");// Logitech XInput mode
 			var logitechDirecInputID = Guid.Parse("c216046d-0000-0000-0000-504944564944");// Logitech DirectInput mode
-			bool isXbox360 = productID == xbox360ID || productID == logitechXInputID;
+			var pxnArcadeStickID = Guid.Parse("187c0079-0000-0000-0000-504944564944");// PXN arcade stick
+			bool isXbox360 = productID_GUID == xbox360ID || productID_GUID == logitechXInputID || productID_GUID == pxnArcadeStickID;
 			if
 			(
 				isXbox360 ||// Xbox 360
-				productID == Guid.Parse("02ff045e-0000-0000-0000-504944564944")// Xbox One
+				productID_GUID == Guid.Parse("02ff045e-0000-0000-0000-504944564944")// Xbox One
 			)
 			{
 				configuration.dpad_POV_Index = 0;
@@ -290,7 +478,7 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[4];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID == logitechDirecInputID)// Logitech DirectInput mode
+			else if (productID_GUID == logitechDirecInputID)// Logitech DirectInput mode
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
@@ -366,14 +554,14 @@ namespace Orbital.Input.DirectInput
 			var ps5ID = Guid.Parse("0ce6054c-0000-0000-0000-504944564944");
 			if
 			(
-				productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944") ||// PS4
-				productID == ps5ID ||// PS5
-				productID == ps3ID_Wired// Wired PS3 controller
+				productID_GUID == Guid.Parse("05c4054c-0000-0000-0000-504944564944") ||// PS4
+				productID_GUID == ps5ID ||// PS5
+				productID_GUID == ps3ID_Wired// Wired PS3 controller
 			)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
-				configuration.triggerButtonMode = productID == ps3ID_Wired ? DeviceTriggerButtonMode.Physical : DeviceTriggerButtonMode.Virtual;
+				configuration.triggerButtonMode = productID_GUID == ps3ID_Wired ? DeviceTriggerButtonMode.Physical : DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
 				configuration.button1 = buttons[1];
@@ -386,13 +574,13 @@ namespace Orbital.Input.DirectInput
 				configuration.button4.name = "Triangle";
 
 				// special button
-				if (productID != ps3ID_Wired)
+				if (productID_GUID != ps3ID_Wired)
 				{
 					configuration.special1 = buttons[13];
 					configuration.special1.name = "Touch-Pad";
 				}
 
-				if (productID == ps5ID)
+				if (productID_GUID == ps5ID)
 				{
 					configuration.special2 = buttons[14];
 					configuration.special2.name = "Mute";
@@ -411,7 +599,7 @@ namespace Orbital.Input.DirectInput
 				// options
 				configuration.menu = buttons[9];
 				configuration.back = buttons[8];
-				if (productID == ps3ID_Wired)
+				if (productID_GUID == ps3ID_Wired)
 				{
 					configuration.menu.name = "Start";
 					configuration.back.name = "Select";
@@ -431,7 +619,7 @@ namespace Orbital.Input.DirectInput
 				configuration.bumperRight.name = "BR";
 
 				// trigger buttons
-				if (productID == ps3ID_Wired)
+				if (productID_GUID == ps3ID_Wired)
 				{
 					configuration.triggerButtonLeft = buttons[6];
 					configuration.triggerButtonRight = buttons[7];
@@ -451,7 +639,7 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
-				if (productID != ps3ID_Wired)
+				if (productID_GUID != ps3ID_Wired)
 				{
 					configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
 					configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
@@ -479,11 +667,11 @@ namespace Orbital.Input.DirectInput
 
 				configuration.axis2DMaps[1].invertAxisY = true;
 				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				if (productID == ps3ID_Wired) configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				if (productID_GUID == ps3ID_Wired) configuration.axis2DMaps[1].axisY = analogs_1D[3];
 				else configuration.axis2DMaps[1].axisY = analogs_1D[5];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID == ps3ID_Wireless)
+			else if (productID_GUID == ps3ID_Wireless)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.Buttons;
@@ -559,8 +747,8 @@ namespace Orbital.Input.DirectInput
 			var smashControllerID = Guid.Parse("01850e6f-0000-0000-0000-504944564944");
 			if
 			(
-				productID == Guid.Parse("2009057e-0000-0000-0000-504944564944") ||// Switch Pro Controller
-				productID == smashControllerID// Wired Smash controller for Switch
+				productID_GUID == Guid.Parse("2009057e-0000-0000-0000-504944564944") ||// Switch Pro Controller
+				productID_GUID == smashControllerID// Wired Smash controller for Switch
 			)
 			{
 				configuration.dpad_POV_Index = 0;
@@ -568,7 +756,7 @@ namespace Orbital.Input.DirectInput
 				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
 
 				// primary buttons
-				if (productID == smashControllerID)
+				if (productID_GUID == smashControllerID)
 				{
 					configuration.button1 = buttons[2];
 					configuration.button2 = buttons[1];
@@ -648,7 +836,7 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[3];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// GameCube
+			else if (productID_GUID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// GameCube
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
@@ -725,6 +913,77 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[5];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
+
+			// ================
+			// Generic
+			// ================
+			/*if (productID == Guid.Parse("00060079-0000-0000-0000-504944564944"))
+			{
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+
+				// primary buttons
+				configuration.button1 = buttons[2];
+				configuration.button2 = buttons[1];
+				configuration.button3 = buttons[3];
+				configuration.button4 = buttons[0];
+				configuration.button1.name = "A";
+				configuration.button2.name = "B";
+				configuration.button3.name = "X";
+				configuration.button4.name = "Y";
+
+				// dpad
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
+
+				// options
+				configuration.menu = buttons[9];
+				configuration.back = buttons[8];
+				configuration.menu.name = "Menu";
+				configuration.back.name = "Back";
+
+				// bumbers
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
+
+				// trigger buttons
+				configuration.triggerButtonLeft = buttons[6];
+				configuration.triggerButtonRight = buttons[7];
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
+
+				// joystick buttons
+				configuration.joystickButtonLeft = buttons[10];
+				configuration.joystickButtonRight = buttons[11];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+			}*/
 
 			// configure input
 			Configure(ref configuration);

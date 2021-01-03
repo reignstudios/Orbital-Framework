@@ -59,14 +59,9 @@
             Primary device configured in Windows control panel
             </summary>
         </member>
-        <member name="P:Orbital.Input.DirectInput.Device.productID">
+        <member name="P:Orbital.Input.DirectInput.Device.productID_GUID">
             <summary>
-            Product ID from manufacture
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DirectInput.Device.productName">
-            <summary>
-            Product name from manufacture
+            Product ID GUID from manufacture
             </summary>
         </member>
         <member name="P:Orbital.Input.DirectInput.Device.supportsForceFeedback">
@@ -77,6 +72,18 @@
         <member name="P:Orbital.Input.DirectInput.Device.index">
             <summary>
             The device index
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Orbital.Input.DirectInput.Device.deviceInfoType_FeatureLevel1" -->
+        <!-- Badly formed XML comment ignored for member "P:Orbital.Input.DirectInput.Device.deviceInfoSubType_FeatureLevel1" -->
+        <member name="P:Orbital.Input.DirectInput.Device.deviceInfoType_FeatureLevel8">
+            <summary>
+            Type info for DirectInput FeatureLevel 8
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DirectInput.Device.deviceInfoSubType_FeatureLevel8">
+            <summary>
+            Sub-Type info for DirectInput FeatureLevel 8
             </summary>
         </member>
         <member name="M:Orbital.Input.DirectInput.Device.Configure(Orbital.Input.DirectInput.InputConfiguration@)">

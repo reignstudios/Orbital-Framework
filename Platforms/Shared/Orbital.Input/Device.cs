@@ -7,18 +7,75 @@ namespace Orbital.Input
 {
 	public enum DeviceType
 	{
+		/// <summary>
+		/// Unknown device
+		/// </summary>
 		Unknown,
+
+		/// <summary>
+		/// Common gamepad
+		/// </summary>
 		Gamepad,
+
+		/// <summary>
+		/// Fighting / Arcade style controllers
+		/// </summary>
 		ArcadeStick,
+
+		/// <summary>
+		/// Flight-Stick for plane or space-shit simulators
+		/// </summary>
 		FlightStick,
+
+		/// <summary>
+		/// Steering-Wheel for racing games etc
+		/// </summary>
 		SteeringWheel,
+
+		/// <summary>
+		/// Keyboard
+		/// </summary>
 		Keyboard,
-		Mouse
+
+		/// <summary>
+		/// Mouse
+		/// </summary>
+		Mouse,
+
+		/// <summary>
+		/// Remote control for video players or UI navigation
+		/// </summary>
+		Remote,
+
+		/// <summary>
+		/// Light-gun, screen-pointer, etc
+		/// </summary>
+		Pointer
 	}
 
 	public abstract class DeviceBase : IDisposable
 	{
 		public InstanceBase instance { get; private set; }
+
+		/// <summary>
+		/// Name of device
+		/// </summary>
+		public string name { get; protected set; }
+
+		/// <summary>
+		/// Product ID from manufacture
+		/// </summary>
+		public ushort productID { get; protected set; }
+
+		/// <summary>
+		/// Vendor ID from manufacture
+		/// </summary>
+		public ushort vendorID { get; protected set; }
+
+		/// <summary>
+		/// Device type
+		/// </summary>
+		public DeviceType type { get; protected set; }
 
 		/// <summary>
 		/// Is true if device connected

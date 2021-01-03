@@ -35,6 +35,9 @@ extern "C"
 		// copy produce name
 		wcscpy_s(device->productName, pdidInstance->tszProductName);
 
+		// get device type
+		device->type = pdidInstance->dwDevType;
+
 		// finish
 		++handle->deviceCount;
 		return handle->deviceCount >= 8 ? DIENUM_STOP : DIENUM_CONTINUE;
@@ -106,7 +109,11 @@ extern "C"
 		EnumControllersContext enumContext;
 		enumContext.handle = handle;
 		enumContext.joyConfig = &joyConfig;
+		#if DIRECTINPUT_VERSION > 0x0700
 		if (FAILED(handle->diInterface->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumControllersCallback, &enumContext, DIEDFL_ATTACHEDONLY))) return 0;
+		#else
+		if (FAILED(handle->diInterface->EnumDevices(DIDEVTYPE_JOYSTICK, EnumControllersCallback, &enumContext, DIEDFL_ATTACHEDONLY))) return 0;
+		#endif
 
 		// configure device
 		if (window == nullptr) window = GetActiveWindow();
@@ -201,6 +208,7 @@ extern "C"
 	{
 		GUID productID;
 		WCHAR* productName;
+		DWORD type;
 		int supportsForceFeedback;
 		int isPrimary;
 
@@ -218,6 +226,7 @@ extern "C"
 
 		info->productID = device->productID;
 		info->productName = device->productName;
+		info->type = device->type;
 		info->supportsForceFeedback = device->supportsForceFeedback;
 		info->isPrimary = device->isPrimary;
 

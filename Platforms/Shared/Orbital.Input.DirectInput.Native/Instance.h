@@ -42,6 +42,7 @@ struct Device
 	GUID productID;
 	WCHAR productName[MAX_PATH];
 	bool supportsForceFeedback;
+	DWORD type;
 
 	int buttonCount;
 	int keyCount;

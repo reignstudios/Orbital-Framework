@@ -129,6 +129,71 @@
             Button was released
             </summary>
         </member>
+        <member name="F:Orbital.Input.DeviceType.Unknown">
+            <summary>
+            Unknown device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.Gamepad">
+            <summary>
+            Common gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.ArcadeStick">
+            <summary>
+            Fighting / Arcade style controllers
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.FlightStick">
+            <summary>
+            Flight-Stick for plane or space-shit simulators
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.SteeringWheel">
+            <summary>
+            Steering-Wheel for racing games etc
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.Keyboard">
+            <summary>
+            Keyboard
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.Mouse">
+            <summary>
+            Mouse
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.Remote">
+            <summary>
+            Remote control for video players or UI navigation
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceType.Pointer">
+            <summary>
+            Light-gun, screen-pointer, etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.name">
+            <summary>
+            Name of device
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.productID">
+            <summary>
+            Product ID from manufacture
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.vendorID">
+            <summary>
+            Vendor ID from manufacture
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.type">
+            <summary>
+            Device type
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.connected">
             <summary>
             Is true if device connected
