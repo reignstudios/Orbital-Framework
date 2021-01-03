@@ -74,8 +74,16 @@
             The device index
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Orbital.Input.DirectInput.Device.deviceInfoType_FeatureLevel1" -->
-        <!-- Badly formed XML comment ignored for member "P:Orbital.Input.DirectInput.Device.deviceInfoSubType_FeatureLevel1" -->
+        <member name="P:Orbital.Input.DirectInput.Device.deviceInfoType_FeatureLevel1">
+            <summary>
+            Type info for DirectInput FeatureLevels 1,2 and 7
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DirectInput.Device.deviceInfoSubType_FeatureLevel1">
+            <summary>
+            Sub-Type info for DirectInput FeatureLevels 1,2 and 7
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DirectInput.Device.deviceInfoType_FeatureLevel8">
             <summary>
             Type info for DirectInput FeatureLevel 8

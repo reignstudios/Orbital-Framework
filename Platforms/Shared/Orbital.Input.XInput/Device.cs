@@ -27,6 +27,7 @@ namespace Orbital.Input.XInput
 		{
 			instanceXI = instance;
 			this.index = index;
+			type = DeviceType.Gamepad;
 
 			CreatePhysicalObjects(16, 2, 2, 0, 0);
 			int buttonIndex = 0;

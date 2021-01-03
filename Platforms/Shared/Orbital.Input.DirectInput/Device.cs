@@ -280,12 +280,12 @@ namespace Orbital.Input.DirectInput
 		public int index { get; private set; }
 
 		/// <summary>
-		/// Type info for DirectInput FeatureLevels 1,2 & 7
+		/// Type info for DirectInput FeatureLevels 1,2 and 7
 		/// </summary>
 		public DeviceInfoType_FeatureLevel1 deviceInfoType_FeatureLevel1 { get; private set; }
 
 		/// <summary>
-		/// Sub-Type info for DirectInput FeatureLevels 1,2 & 7
+		/// Sub-Type info for DirectInput FeatureLevels 1,2 and 7
 		/// </summary>
 		public DeviceInfoSubType_FeatureLevel1 deviceInfoSubType_FeatureLevel1 { get; private set; }
 
@@ -836,7 +836,7 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[3];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID_GUID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// GameCube
+			else if (productID_GUID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// Generic GameCube USB adapter for PC
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
@@ -913,77 +913,6 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[5];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-
-			// ================
-			// Generic
-			// ================
-			/*if (productID == Guid.Parse("00060079-0000-0000-0000-504944564944"))
-			{
-				configuration.dpad_POV_Index = 0;
-				configuration.dpadMode = DeviceDPadMode.POV;
-				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
-
-				// primary buttons
-				configuration.button1 = buttons[2];
-				configuration.button2 = buttons[1];
-				configuration.button3 = buttons[3];
-				configuration.button4 = buttons[0];
-				configuration.button1.name = "A";
-				configuration.button2.name = "B";
-				configuration.button3.name = "X";
-				configuration.button4.name = "Y";
-
-				// dpad
-				configuration.dpadLeft = new Button(true);
-				configuration.dpadRight = new Button(true);
-				configuration.dpadDown = new Button(true);
-				configuration.dpadUp = new Button(true);
-				configuration.dpadLeft.name = "Left";
-				configuration.dpadRight.name = "Right";
-				configuration.dpadDown.name = "Down";
-				configuration.dpadUp.name = "Up";
-
-				// options
-				configuration.menu = buttons[9];
-				configuration.back = buttons[8];
-				configuration.menu.name = "Menu";
-				configuration.back.name = "Back";
-
-				// bumbers
-				configuration.bumperLeft = buttons[4];
-				configuration.bumperRight = buttons[5];
-				configuration.bumperLeft.name = "BL";
-				configuration.bumperRight.name = "BR";
-
-				// trigger buttons
-				configuration.triggerButtonLeft = buttons[6];
-				configuration.triggerButtonRight = buttons[7];
-				configuration.triggerButtonLeft.name = "TBL";
-				configuration.triggerButtonRight.name = "TBR";
-
-				// joystick buttons
-				configuration.joystickButtonLeft = buttons[10];
-				configuration.joystickButtonRight = buttons[11];
-				configuration.joystickButtonLeft.name = "JBL";
-				configuration.joystickButtonRight.name = "JBR";
-
-				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
-				configuration.joystickLeft.name = "JL";
-				configuration.joystickRight.name = "JR";
-
-				configuration.axis2DMaps = new DeviceAxis2DMap[2];
-				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
-
-				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				configuration.axis2DMaps[1].axisY = analogs_1D[3];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
-			}*/
 
 			// configure input
 			Configure(ref configuration);
