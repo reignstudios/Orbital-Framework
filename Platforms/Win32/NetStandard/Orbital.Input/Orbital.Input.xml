@@ -199,6 +199,11 @@
             Special button: Touch-Pad (Sony), etc
             </summary>
         </member>
+        <member name="P:Orbital.Input.DeviceBase.special2">
+            <summary>
+            Special button: Mute (Sony), etc
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.dpadLeft">
             <summary>
             Common button: DPad Left

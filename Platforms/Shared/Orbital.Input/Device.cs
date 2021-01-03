@@ -98,6 +98,11 @@ namespace Orbital.Input
 		public Button special1 { get; protected set; }
 
 		/// <summary>
+		/// Special button: Mute (Sony), etc
+		/// </summary>
+		public Button special2 { get; protected set; }
+
+		/// <summary>
 		/// Common button: DPad Left
 		/// </summary>
 		public Button dpadLeft { get; protected set; }
@@ -228,6 +233,7 @@ namespace Orbital.Input
 
 			// special
 			if (special1 == null) special1 = new Button(false);
+			if (special2 == null) special2 = new Button(false);
 
 			// dpad
 			if (dpadLeft == null) dpadLeft = new Button(false);
@@ -328,6 +334,7 @@ namespace Orbital.Input
 
 			// special
 			special1.Update(false);
+			special2.Update(false);
 
 			// dpad
 			dpadLeft.Update(false);

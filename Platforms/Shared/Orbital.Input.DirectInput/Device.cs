@@ -50,54 +50,6 @@ namespace Orbital.Input.DirectInput
 		Buttons
 	}
 
-	public enum DeviceTriggerMode
-	{
-		/// <summary>
-		/// Each trigger as its own axis
-		/// </summary>
-		Seperate,
-
-		/// <summary>
-		/// Left & Right trigger effect same axis
-		/// </summary>
-		Shared
-	}
-
-	public enum DeviceTriggerSharedAxis
-	{
-		X_Position,
-		Y_Position,
-		Z_Position,
-
-		X_Rotation,
-		Y_Rotation,
-		Z_Rotation,
-
-		X_Velocity,
-		Y_Velocity,
-		Z_Velocity,
-
-		X_AngularVelocity,
-		Y_AngularVelocity,
-		Z_AngularVelocity,
-
-		X_Acceleration,
-		Y_Acceleration,
-		Z_Acceleration,
-
-		X_AngularAcceleration,
-		Y_AngularAcceleration,
-		Z_AngularAcceleration,
-
-		X_Force,
-		Y_Force,
-		Z_Force,
-
-		X_Torque,
-		Y_Torque,
-		Z_Torque,
-	}
-
 	public enum DeviceTriggerButtonMode
 	{
 		/// <summary>
@@ -134,15 +86,12 @@ namespace Orbital.Input.DirectInput
 
 	public struct InputConfiguration
 	{
-		public DeviceDPadMode dpadMode;
 		public int dpad_POV_Index;
-
-		public DeviceTriggerMode triggerMode;
-		public DeviceTriggerSharedAxis triggerSharedAxis;
+		public DeviceDPadMode dpadMode;
 		public DeviceTriggerButtonMode triggerButtonMode;
 
 		public Button button1, button2, button3, button4, button5, button6;
-		public Button special1;
+		public Button special1, special2;
 		public Button dpadLeft, dpadRight, dpadDown, dpadUp;
 		public Button menu, back, home;
 		public Button bumperLeft, bumperRight;
@@ -206,8 +155,6 @@ namespace Orbital.Input.DirectInput
 
 		private int dpad_POV_Index;
 		private DeviceDPadMode dpadMode = DeviceDPadMode.POV;
-		private DeviceTriggerMode triggerMode = DeviceTriggerMode.Seperate;
-		private DeviceTriggerSharedAxis triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
 		private DeviceTriggerButtonMode triggerButtonMode = DeviceTriggerButtonMode.Virtual;
 
 		private DeviceAxis1DMap[] axis1DMaps;
@@ -251,16 +198,18 @@ namespace Orbital.Input.DirectInput
 			// ================
 			// Microsoft
 			// ================
+			var xbox360ID = Guid.Parse("028e045e-0000-0000-0000-504944564944");
+			var logitechXInputID = Guid.Parse("c21d046d-0000-0000-0000-504944564944");// Logitech XInput mode
+			var logitechDirecInputID = Guid.Parse("c216046d-0000-0000-0000-504944564944");// Logitech DirectInput mode
+			bool isXbox360 = productID == xbox360ID || productID == logitechXInputID;
 			if
 			(
-				productID == Guid.Parse("028e045e-0000-0000-0000-504944564944") ||// Xbox 360
-				productID == Guid.Parse("02ff045e-0000-0000-0000-504944564944") ||// Xbox One
-				productID == Guid.Parse("c21d046d-0000-0000-0000-504944564944")// Logitech
+				isXbox360 ||// Xbox 360
+				productID == Guid.Parse("02ff045e-0000-0000-0000-504944564944")// Xbox One
 			)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
-				configuration.triggerSharedAxis = DeviceTriggerSharedAxis.Z_Position;
 				configuration.triggerButtonMode = DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
@@ -286,9 +235,9 @@ namespace Orbital.Input.DirectInput
 				// options
 				configuration.menu = buttons[7];
 				configuration.back = buttons[6];
-				configuration.menu.name = "Menu";
+				configuration.menu.name = isXbox360 ? "Start" : "Menu";
 				configuration.back.name = "Back";
-				if (buttons.Count >= 11)// only some controllers supply this
+				if (!isXbox360 && buttons.Count >= 11)// only some controllers supply this
 				{
 					configuration.home = buttons[10];
 					configuration.home.name = "Xbox";
@@ -341,21 +290,90 @@ namespace Orbital.Input.DirectInput
 				configuration.axis2DMaps[1].axisY = analogs_1D[4];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
+			else if (productID == logitechDirecInputID)// Logitech DirectInput mode
+			{
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.POV;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+
+				// primary buttons
+				configuration.button1 = buttons[1];
+				configuration.button2 = buttons[2];
+				configuration.button3 = buttons[0];
+				configuration.button4 = buttons[3];
+				configuration.button1.name = "A";
+				configuration.button2.name = "B";
+				configuration.button3.name = "X";
+				configuration.button4.name = "Y";
+
+				// dpad
+				configuration.dpadLeft = new Button(true);
+				configuration.dpadRight = new Button(true);
+				configuration.dpadDown = new Button(true);
+				configuration.dpadUp = new Button(true);
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
+
+				// options
+				configuration.menu = buttons[9];
+				configuration.back = buttons[8];
+				configuration.menu.name = "Start";
+				configuration.back.name = "Back";
+
+				// bumbers
+				configuration.bumperLeft = buttons[4];
+				configuration.bumperRight = buttons[5];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
+
+				// trigger buttons
+				configuration.triggerButtonLeft = buttons[6];
+				configuration.triggerButtonRight = buttons[7];
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
+
+				// joystick buttons
+				configuration.joystickButtonLeft = buttons[10];
+				configuration.joystickButtonRight = buttons[11];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+			}
 
 			// ================
 			// Sony
 			// ================
-			var ps3ID = Guid.Parse("0268054c-0000-0000-0000-504944564944");
-			var ps3ID_GameStop = Guid.Parse("63020e6f-0000-0000-0000-504944564944");
+			var ps3ID_Wireless = Guid.Parse("0268054c-0000-0000-0000-504944564944");
+			var ps3ID_Wired = Guid.Parse("63020e6f-0000-0000-0000-504944564944");
+			var ps5ID = Guid.Parse("0ce6054c-0000-0000-0000-504944564944");
 			if
 			(
 				productID == Guid.Parse("05c4054c-0000-0000-0000-504944564944") ||// PS4
-				productID == ps3ID_GameStop// Wired PS3 GameStop controller
+				productID == ps5ID ||// PS5
+				productID == ps3ID_Wired// Wired PS3 controller
 			)
 			{
 				configuration.dpad_POV_Index = 0;
 				configuration.dpadMode = DeviceDPadMode.POV;
-				configuration.triggerButtonMode = DeviceTriggerButtonMode.Virtual;
+				configuration.triggerButtonMode = productID == ps3ID_Wired ? DeviceTriggerButtonMode.Physical : DeviceTriggerButtonMode.Virtual;
 
 				// primary buttons
 				configuration.button1 = buttons[1];
@@ -368,10 +386,16 @@ namespace Orbital.Input.DirectInput
 				configuration.button4.name = "Triangle";
 
 				// special button
-				if (productID != ps3ID_GameStop)
+				if (productID != ps3ID_Wired)
 				{
 					configuration.special1 = buttons[13];
 					configuration.special1.name = "Touch-Pad";
+				}
+
+				if (productID == ps5ID)
+				{
+					configuration.special2 = buttons[14];
+					configuration.special2.name = "Mute";
 				}
 
 				// dpad
@@ -387,7 +411,7 @@ namespace Orbital.Input.DirectInput
 				// options
 				configuration.menu = buttons[9];
 				configuration.back = buttons[8];
-				if (productID == ps3ID_GameStop)
+				if (productID == ps3ID_Wired)
 				{
 					configuration.menu.name = "Start";
 					configuration.back.name = "Select";
@@ -407,9 +431,8 @@ namespace Orbital.Input.DirectInput
 				configuration.bumperRight.name = "BR";
 
 				// trigger buttons
-				if (productID == ps3ID_GameStop)
+				if (productID == ps3ID_Wired)
 				{
-					configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
 					configuration.triggerButtonLeft = buttons[6];
 					configuration.triggerButtonRight = buttons[7];
 				}
@@ -428,7 +451,7 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
-				if (productID != ps3ID_GameStop)
+				if (productID != ps3ID_Wired)
 				{
 					configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
 					configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
@@ -456,13 +479,78 @@ namespace Orbital.Input.DirectInput
 
 				configuration.axis2DMaps[1].invertAxisY = true;
 				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				if (productID == ps3ID_GameStop) configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				if (productID == ps3ID_Wired) configuration.axis2DMaps[1].axisY = analogs_1D[3];
 				else configuration.axis2DMaps[1].axisY = analogs_1D[5];
 				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
-			else if (productID == ps3ID)
+			else if (productID == ps3ID_Wireless)
 			{
-				// TODO
+				configuration.dpad_POV_Index = 0;
+				configuration.dpadMode = DeviceDPadMode.Buttons;
+				configuration.triggerButtonMode = DeviceTriggerButtonMode.Physical;
+
+				// primary buttons
+				configuration.button1 = buttons[14];
+				configuration.button2 = buttons[13];
+				configuration.button3 = buttons[15];
+				configuration.button4 = buttons[12];
+				configuration.button1.name = "X";
+				configuration.button2.name = "O";
+				configuration.button3.name = "Square";
+				configuration.button4.name = "Triangle";
+
+				// dpad
+				configuration.dpadLeft = buttons[7];
+				configuration.dpadRight = buttons[5];
+				configuration.dpadDown = buttons[6];
+				configuration.dpadUp = buttons[4];
+				configuration.dpadLeft.name = "Left";
+				configuration.dpadRight.name = "Right";
+				configuration.dpadDown.name = "Down";
+				configuration.dpadUp.name = "Up";
+
+				// options
+				configuration.menu = buttons[3];
+				configuration.back = buttons[0];
+				configuration.home = buttons[16];
+				configuration.menu.name = "Start";
+				configuration.back.name = "Select";
+				configuration.home.name = "PS";
+
+				// bumbers
+				configuration.bumperLeft = buttons[10];
+				configuration.bumperRight = buttons[11];
+				configuration.bumperLeft.name = "BL";
+				configuration.bumperRight.name = "BR";
+
+				// trigger buttons
+				configuration.triggerButtonLeft = buttons[8];
+				configuration.triggerButtonRight = buttons[9];
+				configuration.triggerButtonLeft.name = "TBL";
+				configuration.triggerButtonRight.name = "TBR";
+
+				// joystick buttons
+				configuration.joystickButtonLeft = buttons[1];
+				configuration.joystickButtonRight = buttons[2];
+				configuration.joystickButtonLeft.name = "JBL";
+				configuration.joystickButtonRight.name = "JBR";
+
+				// joysticks
+				configuration.joystickLeft = new Analog2D(true);
+				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft.name = "JL";
+				configuration.joystickRight.name = "JR";
+
+				configuration.axis2DMaps = new DeviceAxis2DMap[2];
+				configuration.axis2DMaps[0].invertAxisY = true;
+				configuration.axis2DMaps[0].axisX = analogs_1D[0];
+				configuration.axis2DMaps[0].axisY = analogs_1D[1];
+				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+
+				configuration.axis2DMaps[1].invertAxisY = true;
+				configuration.axis2DMaps[1].axisX = analogs_1D[2];
+				configuration.axis2DMaps[1].axisY = analogs_1D[3];
+				configuration.axis2DMaps[1].analog = configuration.joystickRight;
 			}
 
 			// ================
@@ -665,8 +753,6 @@ namespace Orbital.Input.DirectInput
 			// copy mode settings
 			dpad_POV_Index = configuration.dpad_POV_Index;
 			dpadMode = configuration.dpadMode;
-			triggerMode = configuration.triggerMode;
-			triggerSharedAxis = configuration.triggerSharedAxis;
 			triggerButtonMode = configuration.triggerButtonMode;
 
 			// copy maps
@@ -698,6 +784,7 @@ namespace Orbital.Input.DirectInput
 
 			// special
 			special1 = configuration.special1;
+			special2 = configuration.special2;
 
 			// dpad
 			dpadLeft = configuration.dpadLeft;
@@ -808,14 +895,6 @@ namespace Orbital.Input.DirectInput
 			Update(connected);
 			if (!connected) return;
 
-			//for (int i = 0; i != 128; ++i)
-			//{
-			//	if (state.rgbButtons[i] != 0)
-			//	{
-			//		Console.WriteLine($"{i} = {state.rgbButtons[i]}");
-			//	}
-			//}
-
 			// update all buttons
 			for (int i = 0; i != nativeInfo.buttonCount; ++i)
 			{
@@ -844,15 +923,6 @@ namespace Orbital.Input.DirectInput
 				dpadRight.Update(value >= 4500 && value < 13500);
 				dpadDown.Update(value >= 13500 && value < 22500);
 				dpadLeft.Update(value >= 22500 && value < 31500);
-			}
-
-			// trigger buttons
-			if (triggerButtonMode == DeviceTriggerButtonMode.Virtual)
-			{
-				float triggerLeftValue = state.lZ / 1000f;
-				float triggerRightValue = -(state.lZ / 1000f);
-				triggerButtonLeft.Update(triggerLeftValue >= .75f);
-				triggerButtonRight.Update(triggerRightValue >= .75f);
 			}
 
 			// analog mappings
@@ -888,6 +958,13 @@ namespace Orbital.Input.DirectInput
 					if (map.invertAxisZ) value.z = -value.z;
 					map.analog.Update(value);
 				}
+			}
+
+			// trigger buttons (NOTE: must be ran after analog mappings)
+			if (triggerButtonMode == DeviceTriggerButtonMode.Virtual)
+			{
+				triggerButtonLeft.Update(triggerLeft.value >= .75f);
+				triggerButtonRight.Update(triggerRight.value >= .75f);
 			}
 		}
 	}

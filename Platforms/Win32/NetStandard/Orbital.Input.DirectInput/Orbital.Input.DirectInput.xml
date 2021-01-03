@@ -44,12 +44,6 @@
             Dpad is a set of normal buttons
             </summary>
         </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceTriggerMode.Seperate">
-            <summary>
-            Each trigger as its own axis
-            </summary>
-        </member>
-        <!-- Badly formed XML comment ignored for member "F:Orbital.Input.DirectInput.DeviceTriggerMode.Shared" -->
         <member name="F:Orbital.Input.DirectInput.DeviceTriggerButtonMode.Virtual">
             <summary>
             Buttons are activated when trigger goes over 75%
