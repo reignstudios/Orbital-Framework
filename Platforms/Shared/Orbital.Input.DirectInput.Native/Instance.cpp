@@ -1,4 +1,5 @@
 #include "Instance.h"
+#include <dbt.h>
 
 extern "C"
 {
@@ -19,24 +20,37 @@ extern "C"
 		Instance* handle = context->handle;
 		Device* device = &handle->devices[handle->deviceCount];
 
-		// create DI controller device
-		if (FAILED(handle->diInterface->CreateDevice(pdidInstance->guidInstance, &device->diDevice, nullptr))) return DIENUM_CONTINUE;
-		handle->devices[handle->deviceCount].connected = true;
+		// only create device if its not connected
+		if (!device->connected)
+		{
+			// dispose old instance
+			if (device->diDevice != nullptr)
+			{
+				device->diDevice->Unacquire();
+				device->diDevice->Release();
+				memset(device, 0, sizeof(Device));
+			}
 
-		// check if controller is primary
-		if (IsEqualGUID(context->joyConfig->guidInstance, pdidInstance->guidInstance)) device->isPrimary = true;
+			// create DI controller device
+			if (FAILED(handle->diInterface->CreateDevice(pdidInstance->guidInstance, &device->diDevice, nullptr))) return DIENUM_CONTINUE;
+			device->connected = true;
+			device->newConnection = true;
 
-		// check if Force-Feedback is supported
-		if (!IsEqualGUID(pdidInstance->guidFFDriver, GUID_NULL)) device->supportsForceFeedback = true;
+			// check if controller is primary
+			if (IsEqualGUID(context->joyConfig->guidInstance, pdidInstance->guidInstance)) device->isPrimary = true;
 
-		// copy product id
-		device->productID = pdidInstance->guidProduct;
+			// check if Force-Feedback is supported
+			if (!IsEqualGUID(pdidInstance->guidFFDriver, GUID_NULL)) device->supportsForceFeedback = true;
 
-		// copy produce name
-		wcscpy_s(device->productName, pdidInstance->tszProductName);
+			// copy product id
+			device->productID = pdidInstance->guidProduct;
 
-		// get device type
-		device->type = pdidInstance->dwDevType;
+			// copy produce name
+			wcscpy_s(device->productName, pdidInstance->tszProductName);
+
+			// get device type
+			device->type = pdidInstance->dwDevType;
+		}
 
 		// finish
 		++handle->deviceCount;
@@ -82,30 +96,58 @@ extern "C"
 		return DIENUM_CONTINUE;
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_DirectInput_Instance_Init(Instance* handle, HWND window, FeatureLevel* minimumFeatureLevel)
+	bool refreshInputDevices = false;
+	LRESULT WndProc_Hook(int code, WPARAM wParam, LPARAM lParam)
 	{
-		// create interface
-		#if DIRECTINPUT_VERSION > 0x0700
-		handle->featureLevel = FeatureLevel::Level_8;
-		if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, DI_INTERFACE_ID, (void**)&handle->diInterface, nullptr))) return 0;
-		#else
-		DirectInputCreateEx(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, DI_INTERFACE_ID, (void**)&handle->diInterface, nullptr);
-		#endif
+		// invalid code skip
+		if (code < 0) return CallNextHookEx(NULL, code, wParam, lParam);
 
-		// report max feature level
-		*minimumFeatureLevel = handle->featureLevel;
+		// check if device was added/removed
+		PCWPSTRUCT pMsg = PCWPSTRUCT(lParam);
+		if (pMsg->message == WM_DEVICECHANGE)
+		{
+			switch (pMsg->wParam)
+			{
+			case DBT_DEVNODES_CHANGED:
+				refreshInputDevices = true;
+				break;
 
-		// query for joy interface
-		DI_JOY_CONFIG* config = nullptr;
-		if (FAILED(handle->diInterface->QueryInterface(DI_JOY_CONFIG_ID, (void**)&config))) return 0;
+			case DBT_DEVICEARRIVAL:
+				refreshInputDevices = true;
+				break;
+
+			case DBT_DEVICEREMOVECOMPLETE:
+				refreshInputDevices = true;
+				break;
+			}
+		}
+
+		// continue as normal
+		return CallNextHookEx(NULL, code, wParam, lParam);
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_DirectInput_Instance_RefreshDevices(Instance* handle)
+	{
+		// dispose existing devices
+		for (int i = 0; i != 8; ++i)
+		{
+			Device* device = &handle->devices[i];
+			if (device->diDevice != nullptr)
+			{
+				device->diDevice->Unacquire();
+				device->diDevice->Release();
+				memset(device, 0, sizeof(Device));
+			}
+		}
 
 		// get primary device config if avaliable
 		DIJOYCONFIG joyConfig = {};
 		joyConfig.dwSize = sizeof(DIJOYCONFIG);
-		HRESULT result = config->GetConfig(0, &joyConfig, DIJC_GUIDINSTANCE);
+		HRESULT result = handle->config->GetConfig(0, &joyConfig, DIJC_GUIDINSTANCE);
 		if (FAILED(result)) memset(&joyConfig, 0, sizeof(DIJOYCONFIG));
-
+		
 		// enum all controllers
+		handle->deviceCount = 0;
 		EnumControllersContext enumContext;
 		enumContext.handle = handle;
 		enumContext.joyConfig = &joyConfig;
@@ -116,22 +158,25 @@ extern "C"
 		#endif
 
 		// configure device
-		if (window == nullptr) window = GetActiveWindow();
-		if (window == nullptr) window = GetConsoleWindow();
-		if (window == nullptr) return 0;
 		for (int i = 0; i != handle->deviceCount; ++i)
 		{
+			Device* device = &handle->devices[i];
+
+			// only configure if new connection
+			if (!device->newConnection) continue;
+			device->newConnection = false;
+
 			// set data format
-			if (FAILED(handle->devices[i].diDevice->SetDataFormat(&c_dfDIJoystick2))) return 0;
+			if (FAILED(device->diDevice->SetDataFormat(&c_dfDIJoystick2))) return 0;
 
 			// set how the device can be accessed
-			if (FAILED(handle->devices[i].diDevice->SetCooperativeLevel(window, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
+			if (FAILED(device->diDevice->SetCooperativeLevel(handle->window, DISCL_NONEXCLUSIVE | DISCL_BACKGROUND)))
 			{
-				if (FAILED(handle->devices[i].diDevice->SetCooperativeLevel(window, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
+				if (FAILED(device->diDevice->SetCooperativeLevel(handle->window, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND)))
 				{
-					if (FAILED(handle->devices[i].diDevice->SetCooperativeLevel(window, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
+					if (FAILED(device->diDevice->SetCooperativeLevel(handle->window, DISCL_EXCLUSIVE | DISCL_BACKGROUND)))
 					{
-						if (FAILED(handle->devices[i].diDevice->SetCooperativeLevel(window, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) return 0;
+						if (FAILED(device->diDevice->SetCooperativeLevel(handle->window, DISCL_EXCLUSIVE | DISCL_FOREGROUND))) return 0;
 					}
 				}
 			}
@@ -139,25 +184,70 @@ extern "C"
 			// enum device capabilities
 			EnumControllerObjectsContext enumObjectsContext;
 			enumObjectsContext.handle = handle;
-			enumObjectsContext.device = &handle->devices[i];
-			if (FAILED(handle->devices[i].diDevice->EnumObjects(EnumControllerObjectsCallback, &enumObjectsContext, DIDFT_ALL))) return 0;
+			enumObjectsContext.device = device;
+			if (FAILED(device->diDevice->EnumObjects(EnumControllerObjectsCallback, &enumObjectsContext, DIDFT_ALL))) return 0;
 
 			// acquire device for use
-			handle->devices[i].diDevice->Acquire();// this can fail the first time so don't check for errors
+			device->diDevice->Acquire();// this can fail the first time so don't check for errors
 		}
+
+		return 1;
+	}
+
+	ORBITAL_EXPORT int Orbital_Video_DirectInput_Instance_Init(Instance* handle, HWND window, FeatureLevel* minimumFeatureLevel)
+	{
+		if (window == nullptr) window = GetActiveWindow();
+		if (window == nullptr) window = GetConsoleWindow();
+		if (window == nullptr) return 0;
+		handle->window = window;
+
+		// create interface
+		#if DIRECTINPUT_VERSION > 0x0700
+		handle->featureLevel = FeatureLevel::Level_8;
+		if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, DI_INTERFACE_ID, (void**)&handle->diInterface, nullptr))) return 0;
+		#else
+		DirectInputCreateEx(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, DI_INTERFACE_ID, (void**)&handle->diInterface, nullptr);
+		#endif
+		
+		// report max feature level
+		*minimumFeatureLevel = handle->featureLevel;
+
+		// query for joy interface
+		if (FAILED(handle->diInterface->QueryInterface(DI_JOY_CONFIG_ID, (void**)&handle->config))) return 0;
+
+		// gather existing devices
+		Orbital_Video_DirectInput_Instance_RefreshDevices(handle);
+
+		// hook WinProc to watch for device changes
+		HMODULE module = GetModuleHandleW(NULL);
+		DWORD threadID = GetCurrentThreadId();
+		handle->winprocHook = SetWindowsHookExW(WH_CALLWNDPROC, (HOOKPROC)&WndProc_Hook, module, threadID);
 
 		return 1;
 	}
 
 	ORBITAL_EXPORT void Orbital_Video_DirectInput_Instance_Dispose(Instance* handle)
 	{
+		if (handle->winprocHook != nullptr)
+		{
+			UnhookWindowsHookEx(handle->winprocHook);
+			handle->winprocHook = nullptr;
+		}
+
+		if (handle->config != nullptr)
+		{
+			handle->config->Release();
+			handle->config = nullptr;
+		}
+
 		for (int i = 0; i != handle->deviceCount; ++i)
 		{
-			if (handle->devices[i].diDevice != nullptr)
+			Device* device = &handle->devices[i];
+			if (device->diDevice != nullptr)
 			{
-				handle->devices[i].diDevice->Unacquire();
-				handle->devices[i].diDevice->Release();
-				handle->devices[i].diDevice = nullptr;
+				device->diDevice->Unacquire();
+				device->diDevice->Release();
+				memset(device, 0, sizeof(Device));
 			}
 		}
 
@@ -170,6 +260,14 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_DirectInput_Instance_GetDeviceState(Instance* handle, int deviceIndex, DIJOYSTATE2* state, int* connected)
 	{
+		// refresh devices
+		if (refreshInputDevices)
+		{
+			refreshInputDevices = false;
+			Orbital_Video_DirectInput_Instance_RefreshDevices(handle);
+		}
+
+		// get current device
 		Device* device = &handle->devices[deviceIndex];
 		DI_DEVICE* diDevice = device->diDevice;
 		if (diDevice == nullptr) return 0;

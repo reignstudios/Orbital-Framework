@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using Orbital.Primitives;
+using System.Runtime.InteropServices;
 
 using HMODULE = System.IntPtr;
 
@@ -6,12 +7,16 @@ namespace Orbital.Input.XInput
 {
 	public enum InstanceVersion
 	{
-		XInput_1_3
+		XInput_1_1,
+		XInput_1_2,
+		XInput_1_3,
+		XInput_1_4,
+		XInput9_1_0,
 	}
 
 	public sealed class Instance : InstanceBase
 	{
-		public const string lib_1_3 = "xinput1_3.dll";// TODO: add support for more lib versions
+		public const string lib_1_4 = "xinput1_4.dll";// TODO: add support for more lib versions
 		public const CallingConvention callingConvention = CallingConvention.StdCall;
 
 		[DllImport("Kernel32.dll", CallingConvention = CallingConvention.StdCall)]
@@ -22,46 +27,30 @@ namespace Orbital.Input.XInput
 		/// <summary>
 		/// 4 devices max
 		/// </summary>
-		public Device[] devices { get; private set; }
+		public ReadOnlyArray<Device> devicesXI { get; private set; }
 
 		public Instance()
 		{
-			devices = new Device[4];
-			for (int i = 0; i != devices.Length; ++i) devices[i] = new Device(this, i);
+			Device[] devices_backing;
+			devicesXI = new ReadOnlyArray<Device>(4, out devices_backing);
+			for (int i = 0; i != devices_backing.Length; ++i) devices_backing[i] = new Device(this, i);
+			devices = new ReadOnlyArray<DeviceBase>(devices_backing);
 		}
 
 		public unsafe bool Init()
 		{
-			// test for v1.3
-			fixed (char* libName = lib_1_3)
+			// test for v1.4
+			fixed (char* libName = lib_1_4)
 			{
 				var library = LoadLibraryW(libName);
 				if (library != HMODULE.Zero)
 				{
-					version = InstanceVersion.XInput_1_3;
+					version = InstanceVersion.XInput_1_4;
 					return true;
 				}
 			}
 
 			return false;
-		}
-
-		public override void Dispose()
-		{
-			// do nothing...
-		}
-
-		public override void Update()
-		{
-			foreach (var device in devices)
-			{
-				device.Update();
-			}
-		}
-
-		public override DeviceBase[] GetDevices()
-		{
-			return devices;
 		}
 	}
 }

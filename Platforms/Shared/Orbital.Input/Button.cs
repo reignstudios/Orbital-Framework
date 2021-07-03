@@ -3,16 +3,6 @@
 	public class Button
 	{
 		/// <summary>
-		/// Name of button
-		/// </summary>
-		public string name = "?";
-
-		/// <summary>
-		/// Is physically attached to a device. Otherwise virtually simulated
-		/// </summary>
-		public readonly bool physical;
-
-		/// <summary>
 		/// Button actively being pressed
 		/// </summary>
 		public bool on { get; private set; }
@@ -27,11 +17,6 @@
 		/// </summary>
 		public bool up { get; private set; }
 
-		public Button(bool physical)
-		{
-			this.physical = physical;
-		}
-
 		public void Update(bool on)
 		{
 			down = false;
@@ -42,6 +27,18 @@
 				else up = true;
 			}
 			this.on = on;
+		}
+	}
+
+	struct ButtonNameMap
+	{
+		public Button button;
+		public string name;
+
+		public ButtonNameMap(Button button, string name)
+		{
+			this.button = button;
+			this.name = name;
 		}
 	}
 }

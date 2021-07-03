@@ -1,5 +1,6 @@
 #pragma once
 #include "Common.h"
+#include <Windows.h>
 
 enum FeatureLevel
 {
@@ -38,7 +39,7 @@ enum FeatureLevel
 struct Device
 {
 	DI_DEVICE* diDevice;
-	bool connected, isPrimary;
+	bool newConnection, connected, isPrimary;
 	GUID productID;
 	WCHAR productName[MAX_PATH];
 	bool supportsForceFeedback;
@@ -55,6 +56,9 @@ struct Device
 struct Instance
 {
 	DI_INTERFACE* diInterface;
+	DI_JOY_CONFIG* config;
+	HWND window;
+	HHOOK winprocHook;
 	FeatureLevel featureLevel;
 
 	Device devices[8];

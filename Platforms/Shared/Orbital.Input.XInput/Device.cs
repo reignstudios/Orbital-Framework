@@ -16,11 +16,11 @@ namespace Orbital.Input.XInput
 		/// </summary>
 		public int index { get; private set; }
 
-		[DllImport(Instance.lib_1_3, CallingConvention = Instance.callingConvention, EntryPoint = "XInputGetState")]
-		private unsafe static extern DWORD XInputGetState_1_3(DWORD dwUserIndex, XINPUT_STATE* pState);
+		[DllImport(Instance.lib_1_4, CallingConvention = Instance.callingConvention, EntryPoint = "XInputGetState")]
+		private unsafe static extern DWORD XInputGetState_1_4(DWORD dwUserIndex, XINPUT_STATE* pState);
 
-		[DllImport(Instance.lib_1_3, CallingConvention = Instance.callingConvention, EntryPoint = "XInputSetState")]
-		private unsafe static extern DWORD XInputSetState_1_3(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
+		[DllImport(Instance.lib_1_4, CallingConvention = Instance.callingConvention, EntryPoint = "XInputSetState")]
+		private unsafe static extern DWORD XInputSetState_1_4(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
 
 		public Device(Instance instance, int index)
 		: base(instance)
@@ -28,8 +28,9 @@ namespace Orbital.Input.XInput
 			instanceXI = instance;
 			this.index = index;
 			type = DeviceType.Gamepad;
+			CreatePhysicalObjects(16, 2, 2, 0, 0, 0);
 
-			CreatePhysicalObjects(16, 2, 2, 0, 0);
+			/*CreatePhysicalObjects(16, 2, 2, 0, 0);
 			int buttonIndex = 0;
 
 			// primary buttons
@@ -77,29 +78,19 @@ namespace Orbital.Input.XInput
 			joystickButtonRight.name = "JBR";
 
 			// triggers
-			triggerLeft = analogs_1D[0];
-			triggerRight = analogs_1D[1];
+			triggerLeft = axes1D[0];
+			triggerRight = axes1D[1];
 			triggerLeft.name = "TL";
 			triggerRight.name = "TR";
 
 			// triggers
-			joystickLeft = analogs_2D[0];
-			joystickRight = analogs_2D[1];
+			joystickLeft = axes2D[0];
+			joystickRight = axes2D[1];
 			joystickLeft.name = "JL";
 			joystickRight.name = "JR";
 
 			// create any missing objects this API doesn't support
-			CreateMissingObjects();
-		}
-
-		public bool Init()
-		{
-			return true;
-		}
-
-		public override void Dispose()
-		{
-			// do nothing...
+			CreateMissingObjects();*/
 		}
 
 		public unsafe override void Update()
@@ -109,18 +100,18 @@ namespace Orbital.Input.XInput
 			bool connected;
 			switch (instanceXI.version)
 			{
-				case InstanceVersion.XInput_1_3: connected = XInputGetState_1_3((uint)index, &state) == 0; break;
+				case InstanceVersion.XInput_1_4: connected = XInputGetState_1_4((uint)index, &state) == 0; break;
 				default: throw new NotImplementedException();
 			}
 
 			// validate is connected
-			Update(connected);
+			UpdateStart(connected);
 			if (!connected) return;
 
 			// grab gamepad state
 			var gamepad = state.Gamepad;
 
-			// primary buttons
+			/*// primary buttons
 			button1.Update((gamepad.wButtons & 0x1000) != 0);
 			button2.Update((gamepad.wButtons & 0x2000) != 0);
 			button3.Update((gamepad.wButtons & 0x4000) != 0);
@@ -156,7 +147,12 @@ namespace Orbital.Input.XInput
 
 			// joysticks
 			joystickLeft.Update(new Vec2(gamepad.sThumbLX / (float)short.MaxValue, gamepad.sThumbLY / (float)short.MaxValue));
-			joystickRight.Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));
+			joystickRight.Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));*/
+		}
+
+		protected override void RefreshDeviceInfo()
+		{
+			// Do nothing: XInput doesn't provide device info by design and all configurations are gamepads
 		}
 
 		public unsafe override void SetRumble(float value)
@@ -170,7 +166,7 @@ namespace Orbital.Input.XInput
 			};
 			switch (instanceXI.version)
 			{
-				case InstanceVersion.XInput_1_3: XInputSetState_1_3((DWORD)index, &desc); break;
+				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
 				default: throw new NotImplementedException();
 			}
 		}
@@ -188,7 +184,7 @@ namespace Orbital.Input.XInput
 			};
 			switch (instanceXI.version)
 			{
-				case InstanceVersion.XInput_1_3: XInputSetState_1_3((DWORD)index, &desc); break;
+				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
 				default: throw new NotImplementedException();
 			}
 		}
@@ -202,7 +198,7 @@ namespace Orbital.Input.XInput
 			if (motorIndex == 1) desc.wRightMotorSpeed = (WORD)(WORD.MaxValue * value);
 			switch (instanceXI.version)
 			{
-				case InstanceVersion.XInput_1_3: XInputSetState_1_3((DWORD)index, &desc); break;
+				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
 				default: throw new NotImplementedException();
 			}
 		}

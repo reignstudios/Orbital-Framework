@@ -7,10 +7,10 @@ namespace Orbital.Primitives
 	{
 		private List<T> list;
 
-		public static ReadOnlyList<T> Create(out List<T> backingList)
+		public ReadOnlyList(out List<T> backingList)
 		{
 			backingList = new List<T>();
-			return new ReadOnlyList<T>(backingList);
+			list = backingList;
 		}
 
 		public ReadOnlyList(List<T> backingList)

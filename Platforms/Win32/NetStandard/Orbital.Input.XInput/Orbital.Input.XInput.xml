@@ -9,7 +9,7 @@
             The device index
             </summary>
         </member>
-        <member name="P:Orbital.Input.XInput.Instance.devices">
+        <member name="P:Orbital.Input.XInput.Instance.devicesXI">
             <summary>
             4 devices max
             </summary>

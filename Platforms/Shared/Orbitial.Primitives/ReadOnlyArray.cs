@@ -7,10 +7,10 @@ namespace Orbital.Primitives
 	{
 		private T[] array;
 
-		public static ReadOnlyArray<T> Create(int length, out T[] backingArray)
+		public ReadOnlyArray(int length, out T[] backingArray)
 		{
 			backingArray = new T[length];
-			return new ReadOnlyArray<T>(backingArray);
+			array = backingArray;
 		}
 
 		public ReadOnlyArray(T[] backingArray)
@@ -30,12 +30,50 @@ namespace Orbital.Primitives
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			return (IEnumerator<T>)array.GetEnumerator();
+			return new Enumerator(array);
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return array.GetEnumerator();
+		}
+
+		public struct Enumerator : IEnumerator<T>
+		{
+			private T[] array;
+			private int index;
+
+			public Enumerator(T[] array)
+			{
+				this.array = array;
+				index = -1;
+			}
+
+			public T Current
+			{
+				get
+				{
+					return array[index];
+				}
+			}
+
+			object IEnumerator.Current => throw new System.NotImplementedException();
+
+			public void Dispose()
+			{
+				array = null;
+			}
+
+			public bool MoveNext()
+			{
+				++index;
+				return index != array.Length;
+			}
+
+			public void Reset()
+			{
+				index = -1;
+			}
 		}
 	}
 }

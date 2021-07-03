@@ -53,7 +53,167 @@ namespace Orbital.Input
 		Pointer
 	}
 
-	public abstract class DeviceBase : IDisposable
+	public enum DeviceHardware
+	{
+		/// <summary>
+		/// Unknown device
+		/// </summary>
+		Unknown,
+
+		/// <summary>
+		/// Generic gamepad
+		/// </summary>
+		Generic_Gamepad,
+
+		/// <summary>
+		/// Microsoft Xbox 360 gamepad
+		/// </summary>
+		Xbox360_Gamepad,
+
+		/// <summary>
+		/// Microsoft Xbox One gamepad
+		/// </summary>
+		XboxOne_Gamepad,
+
+		/// <summary>
+		/// Microsoft Xbox SX/SS gamepad
+		/// </summary>
+		XboxSeries_Gamepad,
+
+		/// <summary>
+		/// Sony PS3 gamepad
+		/// </summary>
+		PS3_Gamepad,
+
+		/// <summary>
+		/// Sony PS4 gamepad
+		/// </summary>
+		PS4_Gamepad,
+
+		/// <summary>
+		/// Sony PS5 gamepad
+		/// </summary>
+		PS5_Gamepad,
+		
+		/// <summary>
+		/// Nintendo GameCube gamepad
+		/// </summary>
+		GameCube_Gamepas
+	}
+
+	public enum DeviceDPadMode
+	{
+		/// <summary>
+		/// Dpad maps buttons from POV (point-of-view hats)
+		/// </summary>
+		POV,
+
+		/// <summary>
+		/// Dpad is a set of normal buttons
+		/// </summary>
+		Buttons
+	}
+
+	public enum DeviceTriggerButtonMode
+	{
+		/// <summary>
+		/// Buttons are activated when trigger goes over 75%
+		/// </summary>
+		Virtual,
+
+		/// <summary>
+		/// Trigger buttons exist physically on the hardware
+		/// </summary>
+		Physical
+	}
+
+	public struct DeviceConfig_Object
+	{
+		/// <summary>
+		/// Index of button in Device
+		/// </summary>
+		public int? index;
+
+		/// <summary>
+		/// Name of object
+		/// </summary>
+		public string name;
+
+		public DeviceConfig_Object(int? index, string name)
+		{
+			this.index = index;
+			this.name = name;
+		}
+	}
+
+	public struct DeviceConfig_Axis1D
+	{
+		/// <summary>
+		/// Index of button in Device
+		/// </summary>
+		public int? index;
+
+		/// <summary>
+		/// Name of object
+		/// </summary>
+		public string name;
+
+		/// <summary>
+		/// How the update values are processed
+		/// </summary>
+		public Axis1DUpdateMode updateMode;
+
+		public DeviceConfig_Axis1D(int? index, string name, Axis1DUpdateMode updateMode)
+		{
+			this.index = index;
+			this.name = name;
+			this.updateMode = updateMode;
+		}
+	}
+
+	public struct DeviceMapConfig_Axis1D
+	{
+		public bool invertSrc;
+		public int axis1D_Src;
+		public int axis1D_Dst;
+	}
+
+	public struct DeviceMapConfig_Axis2D
+	{
+		public bool invertAxisX, invertAxisY;
+		public int axis1D_X_Src, axis1D_Y_Src;
+		public int axis2D_Dst;
+	}
+
+	public struct DeviceMapConfig_Axis3D
+	{
+		public bool invertAxisX, invertAxisY, invertAxisZ;
+		public int axis1D_X_Src, axis1D_Y_Src, axis1D_Z_Src;
+		public int axis3D_Dst;
+	}
+
+	public struct DeviceMap_Axis1D
+	{
+		public bool invertSrc;
+		public Axis1D axisSrc;
+		public Axis1D axisDst;
+	}
+
+	public struct DeviceMap_Axis2D
+	{
+		public bool invertAxisX, invertAxisY;
+		public Axis1D axisX_Src, axisY_Src;
+		public Axis2D axisDst;
+	}
+
+	public struct DeviceMap_Axis3D
+	{
+		public bool invertAxisX, invertAxisY, invertAxisZ;
+		public Axis1D axisX_Src, axisY_Src, axisZ_Src;
+		public Axis3D axisDst;
+	}
+
+	public abstract class DeviceBase
 	{
 		public InstanceBase instance { get; private set; }
 
@@ -63,19 +223,24 @@ namespace Orbital.Input
 		public string name { get; protected set; }
 
 		/// <summary>
-		/// Product ID from manufacture
-		/// </summary>
-		public ushort productID { get; protected set; }
-
-		/// <summary>
 		/// Vendor ID from manufacture
 		/// </summary>
 		public ushort vendorID { get; protected set; }
 
 		/// <summary>
+		/// Product ID from manufacture
+		/// </summary>
+		public ushort productID { get; protected set; }
+
+		/// <summary>
 		/// Device type
 		/// </summary>
 		public DeviceType type { get; protected set; }
+
+		/// <summary>
+		/// Known/Common device hardware detection
+		/// </summary>
+		public DeviceHardware hardware { get; protected set; }
 
 		/// <summary>
 		/// Is true if device connected
@@ -89,165 +254,71 @@ namespace Orbital.Input
 		public delegate void DisconnectedCallbackMethod(DeviceBase device);
 
 		/// <summary>
+		/// Called when device abstractions are ready for updating
+		/// </summary>
+		public event UpdateAbstractionCallbackMethod UpdateAbstractionCallback;
+		public delegate void UpdateAbstractionCallbackMethod();
+
+		/// <summary>
 		/// All buttons this device supports
 		/// </summary>
-		public ReadOnlyList<Button> buttons { get; protected set; }
-		protected List<Button> buttons_backing;
+		public ReadOnlyArray<Button> buttons { get; protected set; }
+		internal Button[] buttons_backing;
 
 		/// <summary>
-		/// All 1D analog/triggers/etc this device supports
+		/// All 1D axis/triggers/etc this device supports
 		/// </summary>
-		public ReadOnlyList<Analog1D> analogs_1D { get; protected set; }
-		protected List<Analog1D> analogs_1D_backing;
+		public ReadOnlyArray<Axis1D> axes1D { get; protected set; }
+		internal Axis1D[] axes1D_backing;
 
 		/// <summary>
-		/// All 2D analog/joystick/etc this device supports
+		/// All 2D axis/joystick/etc this device supports
 		/// </summary>
-		public ReadOnlyList<Analog2D> analogs_2D { get; protected set; }
-		protected List<Analog2D> analogs_2D_backing;
+		public ReadOnlyArray<Axis2D> axes2D { get; protected set; }
+		internal Axis2D[] axes2D_backing;
 
 		/// <summary>
-		/// All 3D analog etc this device supports
+		/// All 3D axis etc this device supports
 		/// </summary>
-		public ReadOnlyList<Analog3D> analogs_3D { get; protected set; }
-		protected List<Analog3D> analogs_3D_backing;
+		public ReadOnlyArray<Axis3D> axes3D { get; protected set; }
+		internal Axis3D[] axes3D_backing;
 
 		/// <summary>
 		/// All sliders this device supports
 		/// </summary>
-		public ReadOnlyList<Slider> sliders { get; protected set; }
-		protected List<Slider> sliders_backing;
-
-		#region Common Buttons
-		/// <summary>
-		/// Common button: A (XB), X (PS), B {Nintendo), etc
-		/// </summary>
-		public Button button1 { get; protected set; }
+		public ReadOnlyArray<Slider> sliders { get; protected set; }
+		internal Slider[] sliders_backing;
 
 		/// <summary>
-		/// Common button: B (XB), O (PS), A {Nintendo), etc
+		/// All POV directions this device supports
 		/// </summary>
-		public Button button2 { get; protected set; }
+		public ReadOnlyArray<uint> povDirections { get; protected set; }
+		protected internal uint[] povDirections_backing;
 
 		/// <summary>
-		/// Common button: X (XB), □ (PS), Y {Nintendo), etc
+		/// Physical count without any virtually mapped types
 		/// </summary>
-		public Button button3 { get; protected set; }
+		public int physicalButtonCount { get; protected set; }
 
 		/// <summary>
-		/// Common button: Y (XB), △ (PS), X {Nintendo), etc
+		/// Physical count without any virtually mapped types
 		/// </summary>
-		public Button button4 { get; protected set; }
+		public int physicalAxis1DCount { get; protected set; }
 
 		/// <summary>
-		/// Common button: C (Sega, MS), etc
+		/// Physical count without any virtually mapped types
 		/// </summary>
-		public Button button5 { get; protected set; }
+		public int physicalAxis2DCount { get; protected set; }
 
 		/// <summary>
-		/// Common button: Z (Sega, MS), etc
+		/// Physical count without any virtually mapped types
 		/// </summary>
-		public Button button6 { get; protected set; }
+		public int physicalAxis3DCount { get; protected set; }
 
 		/// <summary>
-		/// Special button: Touch-Pad (Sony), etc
+		/// Physical count without any virtually mapped types
 		/// </summary>
-		public Button special1 { get; protected set; }
-
-		/// <summary>
-		/// Special button: Mute (Sony), etc
-		/// </summary>
-		public Button special2 { get; protected set; }
-
-		/// <summary>
-		/// Common button: DPad Left
-		/// </summary>
-		public Button dpadLeft { get; protected set; }
-
-		/// <summary>
-		/// Common button: DPad Right
-		/// </summary>
-		public Button dpadRight { get; protected set; }
-
-		/// <summary>
-		/// Common button: DPad Down
-		/// </summary>
-		public Button dpadDown { get; protected set; }
-
-		/// <summary>
-		/// Common button: DPad Up
-		/// </summary>
-		public Button dpadUp { get; protected set; }
-
-		/// <summary>
-		/// Special button: System menu, OS home, etc
-		/// </summary>
-		public Button home { get; protected set; }
-
-		/// <summary>
-		/// Common button: Menu, Start, Options, etc
-		/// </summary>
-		public Button menu { get; protected set; }
-
-		/// <summary>
-		/// Common button: Back, Select, etc
-		/// </summary>
-		public Button back { get; protected set; }
-
-		/// <summary>
-		/// Common button: Bumper Left
-		/// </summary>
-		public Button bumperLeft { get; protected set; }
-
-		/// <summary>
-		/// Common button: Bumper Right
-		/// </summary>
-		public Button bumperRight { get; protected set; }
-
-		/// <summary>
-		/// Common button: Trigger Button Left
-		/// </summary>
-		public Button triggerButtonLeft { get; protected set; }
-
-		/// <summary>
-		/// Common button: Trigger Button Right
-		/// </summary>
-		public Button triggerButtonRight { get; protected set; }
-
-		/// <summary>
-		/// Common button: Joystick Left
-		/// </summary>
-		public Button joystickButtonLeft { get; protected set; }
-
-		/// <summary>
-		/// Common button: Joystick Right
-		/// </summary>
-		public Button joystickButtonRight { get; protected set; }
-		#endregion
-
-		#region Common 1D Analogs
-		/// <summary>
-		/// Common analog: Trigger Left
-		/// </summary>
-		public Analog1D triggerLeft { get; protected set; }
-
-		/// <summary>
-		/// Common analog: Trigger Right
-		/// </summary>
-		public Analog1D triggerRight { get; protected set; }
-		#endregion
-
-		#region Common 2D Analogs
-		/// <summary>
-		/// Common analog: Joystick Left
-		/// </summary>
-		public Analog2D joystickLeft { get; protected set; }
-
-		/// <summary>
-		/// Common analog: Joystick Right
-		/// </summary>
-		public Analog2D joystickRight { get; protected set; }
-		#endregion
+		public int physicalSliderCount { get; protected set; }
 
 		public DeviceBase(InstanceBase instance)
 		{
@@ -255,173 +326,65 @@ namespace Orbital.Input
 		}
 
 		/// <summary>
-		/// Create physical buttons, analogs, etc
+		/// Create physical buttons, axes, etc
 		/// </summary>
-		protected void CreatePhysicalObjects(int buttonCount, int analog1DCount, int analog2DCount, int analog3DCount, int sliderCount)
+		protected void CreatePhysicalObjects(int buttonCount, int axis1DCount, int axis2DCount, int axis3DCount, int sliderCount, int povCount)
 		{
-			buttons = ReadOnlyList<Button>.Create(out buttons_backing);
-			for (int i = 0; i != buttonCount; ++i) buttons_backing.Add(new Button(true));
+			buttons = new ReadOnlyArray<Button>(buttonCount, out buttons_backing);
+			for (int i = 0; i != buttonCount; ++i) buttons_backing[i] = new Button();
 
-			analogs_1D = ReadOnlyList<Analog1D>.Create(out analogs_1D_backing);
-			for (int i = 0; i != analog1DCount; ++i) analogs_1D_backing.Add(new Analog1D(true, Analog1DUpdateMode.Bidirectional));
+			axes1D = new ReadOnlyArray<Axis1D>(axis1DCount, out axes1D_backing);
+			for (int i = 0; i != axis1DCount; ++i) axes1D_backing[i] = new Axis1D(Axis1DUpdateMode.Bidirectional);
 
-			analogs_2D = ReadOnlyList<Analog2D>.Create(out analogs_2D_backing);
-			for (int i = 0; i != analog2DCount; ++i) analogs_2D_backing.Add(new Analog2D(true));
+			axes2D = new ReadOnlyArray<Axis2D>(axis2DCount, out axes2D_backing);
+			for (int i = 0; i != axis2DCount; ++i) axes2D_backing[i] = new Axis2D();
 
-			analogs_3D = ReadOnlyList<Analog3D>.Create(out analogs_3D_backing);
-			for (int i = 0; i != analog3DCount; ++i) analogs_3D_backing.Add(new Analog3D(true));
+			axes3D = new ReadOnlyArray<Axis3D>(axis3DCount, out axes3D_backing);
+			for (int i = 0; i != axis3DCount; ++i) axes3D_backing[i] = new Axis3D();
 
-			sliders = ReadOnlyList<Slider>.Create(out sliders_backing);
-			for (int i = 0; i != sliderCount; ++i) sliders_backing.Add(new Slider(true));
+			sliders = new ReadOnlyArray<Slider>(sliderCount, out sliders_backing);
+			for (int i = 0; i != sliderCount; ++i) sliders_backing[i] = new Slider();
+
+			povDirections = new ReadOnlyArray<uint>(povCount, out povDirections_backing);
+			for (int i = 0; i != povCount; ++i) povDirections_backing[i] = uint.MaxValue;
 		}
 
-		/// <summary>
-		/// If any buttons, analogs, etc are null an instance will be created to avoid null-refs when used
-		/// </summary>
-		protected void CreateMissingObjects()
+		protected internal virtual void Dispose()
 		{
-			// primary buttons
-			if (button1 == null) button1 = new Button(false);
-			if (button2 == null) button2 = new Button(false);
-			if (button3 == null) button3 = new Button(false);
-			if (button4 == null) button4 = new Button(false);
-			if (button5 == null) button5 = new Button(false);
-			if (button6 == null) button6 = new Button(false);
-
-			// special
-			if (special1 == null) special1 = new Button(false);
-			if (special2 == null) special2 = new Button(false);
-
-			// dpad
-			if (dpadLeft == null) dpadLeft = new Button(false);
-			if (dpadRight == null) dpadRight = new Button(false);
-			if (dpadDown == null) dpadDown = new Button(false);
-			if (dpadUp == null) dpadUp = new Button(false);
-
-			// options
-			if (menu == null) menu = new Button(false);
-			if (back == null) back = new Button(false);
-
-			// bumbers
-			if (bumperLeft == null) bumperLeft = new Button(false);
-			if (bumperRight == null) bumperRight = new Button(false);
-
-			// trigger buttons
-			if (triggerButtonLeft == null) triggerButtonLeft = new Button(false);
-			if (triggerButtonRight == null) triggerButtonRight = new Button(false);
-
-			// joystick buttons
-			if (joystickButtonLeft == null) joystickButtonLeft = new Button(false);
-			if (joystickButtonRight == null) joystickButtonRight = new Button(false);
-
-			// triggers
-			if (triggerLeft == null) triggerLeft = new Analog1D(false, Analog1DUpdateMode.Positive);
-			if (triggerRight == null) triggerRight = new Analog1D(false, Analog1DUpdateMode.Positive);
-
-			// joysticks
-			if (joystickLeft == null) joystickLeft = new Analog2D(false);
-			if (joystickRight == null) joystickRight = new Analog2D(false);
+			if (connected && DisconnectedCallback != null) DisconnectedCallback(this);
+			connected = false;
+			DisconnectedCallback = null;
+			UpdateAbstractionCallback = null;
 		}
 
-		/// <summary>
-		/// Add object if it doesn't exist
-		/// </summary>
-		protected void AddVirtualObject(Button button)
+		public virtual void Update()
 		{
-			if (button != null && !buttons_backing.Contains(button)) buttons_backing.Add(button);
+			if (UpdateAbstractionCallback != null) UpdateAbstractionCallback();
 		}
 
-		/// <summary>
-		/// Add object if it doesn't exist
-		/// </summary>
-		protected void AddVirtualObject(Analog1D analog)
-		{
-			if (analog != null && !analogs_1D_backing.Contains(analog)) analogs_1D_backing.Add(analog);
-		}
-
-		/// <summary>
-		/// Add object if it doesn't exist
-		/// </summary>
-		protected void AddVirtualObject(Analog2D analog)
-		{
-			if (analog != null && !analogs_2D_backing.Contains(analog)) analogs_2D_backing.Add(analog);
-		}
-
-		/// <summary>
-		/// Add object if it doesn't exist
-		/// </summary>
-		protected void AddVirtualObject(Analog3D analog)
-		{
-			if (analog != null && !analogs_3D_backing.Contains(analog)) analogs_3D_backing.Add(analog);
-		}
-
-		/// <summary>
-		/// Add object if it doesn't exist
-		/// </summary>
-		protected void AddVirtualObject(Slider slider)
-		{
-			if (slider != null && !sliders_backing.Contains(slider)) sliders_backing.Add(slider);
-		}
-
-		public abstract void Dispose();
-		public abstract void Update();
-
-		protected void Update(bool connected)
+		protected void UpdateStart(bool connected)
 		{
 			if (!connected) UpdateDisconnected();
 			if (connected != this.connected)
 			{
-				if (!connected && DisconnectedCallback != null) DisconnectedCallback(this);
+				if (connected) RefreshDeviceInfo();
+				else if (!connected && DisconnectedCallback != null) DisconnectedCallback(this);
 			}
 			this.connected = connected;
 		}
+
+		protected abstract void RefreshDeviceInfo();
 
 		/// <summary>
 		/// Set state back to default
 		/// </summary>
 		protected void UpdateDisconnected()
 		{
-			// primary buttons
-			button1.Update(false);
-			button2.Update(false);
-			button3.Update(false);
-			button4.Update(false);
-			button5.Update(false);
-			button6.Update(false);
-
-			// special
-			special1.Update(false);
-			special2.Update(false);
-
-			// dpad
-			dpadLeft.Update(false);
-			dpadRight.Update(false);
-			dpadDown.Update(false);
-			dpadUp.Update(false);
-
-			// options
-			menu.Update(false);
-			back.Update(false);
-
-			// bumbers
-			bumperLeft.Update(false);
-			bumperRight.Update(false);
-
-			// trigger buttons
-			triggerButtonLeft.Update(false);
-			triggerButtonRight.Update(false);
-
-			// joystick buttons
-			joystickButtonLeft.Update(false);
-			joystickButtonRight.Update(false);
-
-			// triggers
-			triggerLeft.Update(0);
-			triggerRight.Update(0);
-
-			// joysticks
-			joystickLeft.Update(Vec2.zero);
-			joystickRight.Update(Vec2.zero);
+			foreach (var button in buttons) button.Update(false);
+			foreach (var axis in axes1D) axis.Update(0);
+			foreach (var axis in axes2D) axis.Update(Vec2.zero);
+			foreach (var axis in axes3D) axis.Update(Vec3.zero);
+			foreach (var slider in sliders) slider.Update(0);
 		}
 
 		/// <summary>
@@ -451,6 +414,69 @@ namespace Orbital.Input
 		public virtual void SetRumble(float value, int motorIndex)
 		{
 			// do nothing if not supported...
+		}
+
+		public Button GetOrCreate_Button(int? index)
+		{
+			if (index == null || index < 0 || index >= buttons_backing.Length) return new Button();
+			return buttons_backing[(int)index];
+		}
+
+		public Axis1D GetOrCreate_Axis1D(int? index, Axis1DUpdateMode mode)
+		{
+			if (index == null || index < 0 || index >= axes1D_backing.Length) return new Axis1D(mode);
+			return axes1D_backing[(int)index];
+		}
+
+		public Axis2D GetOrCreate_Axis2D(int? index)
+		{
+			if (index == null || index < 0 || index >= axes2D_backing.Length) return new Axis2D();
+			return axes2D_backing[(int)index];
+		}
+
+		public Axis3D GetOrCreate_Axis3D(int? index)
+		{
+			if (index == null || index < 0 || index >= axes3D_backing.Length) return new Axis3D();
+			return axes3D_backing[(int)index];
+		}
+
+		public Slider GetOrCreate_Slider(int? index)
+		{
+			if (index == null || index < 0 || index >= sliders_backing.Length) return new Slider();
+			return sliders_backing[(int)index];
+		}
+
+		public DeviceMap_Axis1D CreateAxis1DMap(DeviceMapConfig_Axis1D config, Axis1D axis)
+		{
+			var result = new DeviceMap_Axis1D();
+			result.invertSrc = config.invertSrc;
+			result.axisSrc = axes1D_backing[config.axis1D_Src];
+			result.axisDst = axis;
+			return result;
+		}
+
+		public DeviceMap_Axis2D CreateAxis2DMap(DeviceMapConfig_Axis2D config, Axis2D axis)
+		{
+			var result = new DeviceMap_Axis2D();
+			result.invertAxisX = config.invertAxisX;
+			result.invertAxisY = config.invertAxisY;
+			result.axisX_Src = axes1D_backing[config.axis1D_X_Src];
+			result.axisY_Src = axes1D_backing[config.axis1D_Y_Src];
+			result.axisDst = axis;
+			return result;
+		}
+
+		public DeviceMap_Axis3D CreateAxis3DMap(DeviceMapConfig_Axis3D config, Axis3D axis)
+		{
+			var result = new DeviceMap_Axis3D();
+			result.invertAxisX = config.invertAxisX;
+			result.invertAxisY = config.invertAxisY;
+			result.invertAxisZ = config.invertAxisZ;
+			result.axisX_Src = axes1D_backing[config.axis1D_X_Src];
+			result.axisY_Src = axes1D_backing[config.axis1D_Y_Src];
+			result.axisZ_Src = axes1D_backing[config.axis1D_Z_Src];
+			result.axisDst = axis;
+			return result;
 		}
 	}
 }

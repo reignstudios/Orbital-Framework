@@ -7,10 +7,10 @@ namespace Orbital.Primitives
 	{
 		private HashSet<T> hashset;
 
-		public static ReadOnlyHashSet<T> Create(out HashSet<T> backingHashSet)
+		public ReadOnlyHashSet(out HashSet<T> backingHashSet)
 		{
 			backingHashSet = new HashSet<T>();
-			return new ReadOnlyHashSet<T>(backingHashSet);
+			hashset = backingHashSet;
 		}
 
 		public ReadOnlyHashSet(HashSet<T> backingHashSet)

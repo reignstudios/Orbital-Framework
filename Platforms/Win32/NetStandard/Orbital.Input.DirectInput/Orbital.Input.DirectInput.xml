@@ -4,56 +4,6 @@
         <name>Orbital.Input.DirectInput</name>
     </assembly>
     <members>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.Unknown">
-            <summary>
-            Unknown device
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.Xbox360_Gamepad">
-            <summary>
-            Microsoft Xbox 360 gamepad
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.XboxOne_Gamepad">
-            <summary>
-            Microsoft Xbox One gamepad
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.XboxSeries_Gamepad">
-            <summary>
-            Microsoft Xbox SX/SS gamepad
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.PS3_Gamepad">
-            <summary>
-            Sony PS3 gamepad
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceHardware.PS4_Gamepad">
-            <summary>
-            Sony PS4 gamepad
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceDPadMode.POV">
-            <summary>
-            Dpad maps buttons from POV (point-of-view hats)
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceDPadMode.Buttons">
-            <summary>
-            Dpad is a set of normal buttons
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceTriggerButtonMode.Virtual">
-            <summary>
-            Buttons are activated when trigger goes over 75%
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.DirectInput.DeviceTriggerButtonMode.Physical">
-            <summary>
-            Trigger buttons exist physically on the hardware
-            </summary>
-        </member>
         <member name="P:Orbital.Input.DirectInput.Device.isPrimary">
             <summary>
             Primary device configured in Windows control panel
@@ -94,13 +44,7 @@
             Sub-Type info for DirectInput FeatureLevel 8
             </summary>
         </member>
-        <member name="M:Orbital.Input.DirectInput.Device.Configure(Orbital.Input.DirectInput.InputConfiguration@)">
-            <summary>
-            Custom device configuration mapping
-            </summary>
-            <param name="configuration">Configuration object to use</param>
-        </member>
-        <member name="P:Orbital.Input.DirectInput.Instance.devices">
+        <member name="P:Orbital.Input.DirectInput.Instance.devicesDI">
             <summary>
             8 devices max
             </summary>

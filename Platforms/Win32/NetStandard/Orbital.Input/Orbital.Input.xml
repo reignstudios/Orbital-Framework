@@ -4,114 +4,74 @@
         <name>Orbital.Input</name>
     </assembly>
     <members>
-        <member name="F:Orbital.Input.Analog1DUpdateMode.Bidirectional">
+        <member name="F:Orbital.Input.Axis1DUpdateMode.Bidirectional">
             <summary>
             Value can be positive or negitive
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1DUpdateMode.Positive">
+        <member name="F:Orbital.Input.Axis1DUpdateMode.Positive">
             <summary>
             (0)-(+1) values
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1DUpdateMode.Negitive">
+        <member name="F:Orbital.Input.Axis1DUpdateMode.Negitive">
             <summary>
             (0)-(-1) values
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1DUpdateMode.FullRange_ShiftedPositive">
+        <member name="F:Orbital.Input.Axis1DUpdateMode.FullRange_ShiftedPositive">
             <summary>
             (-1)-(+1) shifted into range of (0)-(+1)
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1D.name">
-            <summary>
-            Name of analog
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog1D.physical">
-            <summary>
-            Is physically attached to a device. Otherwise virtually simulated
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog1D.updateMode">
+        <member name="F:Orbital.Input.Axis1D.updateMode">
             <summary>
             How the update values are processed
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1D.tolerance">
+        <member name="F:Orbital.Input.Axis1D.tolerance">
             <summary>
             Any input under talerance will be forced to 0
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog1D.smoothing">
+        <member name="F:Orbital.Input.Axis1D.smoothing">
             <summary>
             0-1 smoothing value
             </summary>
         </member>
-        <member name="P:Orbital.Input.Analog1D.value">
+        <member name="P:Orbital.Input.Axis1D.value">
             <summary>
-            Value of the analog input
+            Value of the axis input
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog2D.name">
-            <summary>
-            Name of analog
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog2D.physical">
-            <summary>
-            Is physically attached to a device. Otherwise virtually simulated
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog2D.tolerance">
+        <member name="F:Orbital.Input.Axis2D.tolerance">
             <summary>
             Any input under talerance will be forced to Vec2.zero
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog2D.smoothing">
+        <member name="F:Orbital.Input.Axis2D.smoothing">
             <summary>
             0-1 smoothing value
             </summary>
         </member>
-        <member name="P:Orbital.Input.Analog2D.value">
+        <member name="P:Orbital.Input.Axis2D.value">
             <summary>
-            Value of the analog input
+            Value of the axis input
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog3D.name">
-            <summary>
-            Name of analog
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog3D.physical">
-            <summary>
-            Is physically attached to a device. Otherwise virtually simulated
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Analog3D.tolerance">
+        <member name="F:Orbital.Input.Axis3D.tolerance">
             <summary>
             Any input under talerance will be forced to Vec3.zero
             </summary>
         </member>
-        <member name="F:Orbital.Input.Analog3D.smoothing">
+        <member name="F:Orbital.Input.Axis3D.smoothing">
             <summary>
             0-1 smoothing value
             </summary>
         </member>
-        <member name="P:Orbital.Input.Analog3D.value">
+        <member name="P:Orbital.Input.Axis3D.value">
             <summary>
-            Value of the analog input
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Button.name">
-            <summary>
-            Name of button
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Button.physical">
-            <summary>
-            Is physically attached to a device. Otherwise virtually simulated
+            Value of the axis input
             </summary>
         </member>
         <member name="P:Orbital.Input.Button.on">
@@ -174,14 +134,99 @@
             Light-gun, screen-pointer, etc
             </summary>
         </member>
+        <member name="F:Orbital.Input.DeviceHardware.Unknown">
+            <summary>
+            Unknown device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.Generic_Gamepad">
+            <summary>
+            Generic gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.Xbox360_Gamepad">
+            <summary>
+            Microsoft Xbox 360 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.XboxOne_Gamepad">
+            <summary>
+            Microsoft Xbox One gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.XboxSeries_Gamepad">
+            <summary>
+            Microsoft Xbox SX/SS gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.PS3_Gamepad">
+            <summary>
+            Sony PS3 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.PS4_Gamepad">
+            <summary>
+            Sony PS4 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.PS5_Gamepad">
+            <summary>
+            Sony PS5 gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceHardware.GameCube_Gamepas">
+            <summary>
+            Nintendo GameCube gamepad
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceDPadMode.POV">
+            <summary>
+            Dpad maps buttons from POV (point-of-view hats)
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceDPadMode.Buttons">
+            <summary>
+            Dpad is a set of normal buttons
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceTriggerButtonMode.Virtual">
+            <summary>
+            Buttons are activated when trigger goes over 75%
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceTriggerButtonMode.Physical">
+            <summary>
+            Trigger buttons exist physically on the hardware
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceConfig_Object.index">
+            <summary>
+            Index of button in Device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceConfig_Object.name">
+            <summary>
+            Name of object
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceConfig_Axis1D.index">
+            <summary>
+            Index of button in Device
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceConfig_Axis1D.name">
+            <summary>
+            Name of object
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.DeviceConfig_Axis1D.updateMode">
+            <summary>
+            How the update values are processed
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.name">
             <summary>
             Name of device
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.productID">
-            <summary>
-            Product ID from manufacture
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.vendorID">
@@ -189,9 +234,19 @@
             Vendor ID from manufacture
             </summary>
         </member>
+        <member name="P:Orbital.Input.DeviceBase.productID">
+            <summary>
+            Product ID from manufacture
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.type">
             <summary>
             Device type
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.DeviceBase.hardware">
+            <summary>
+            Known/Common device hardware detection
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.connected">
@@ -204,24 +259,29 @@
             Called when device disconnects
             </summary>
         </member>
+        <member name="E:Orbital.Input.DeviceBase.UpdateAbstractionCallback">
+            <summary>
+            Called when device abstractions are ready for updating
+            </summary>
+        </member>
         <member name="P:Orbital.Input.DeviceBase.buttons">
             <summary>
             All buttons this device supports
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.analogs_1D">
+        <member name="P:Orbital.Input.DeviceBase.axes1D">
             <summary>
-            All 1D analog/triggers/etc this device supports
+            All 1D axis/triggers/etc this device supports
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.analogs_2D">
+        <member name="P:Orbital.Input.DeviceBase.axes2D">
             <summary>
-            All 2D analog/joystick/etc this device supports
+            All 2D axis/joystick/etc this device supports
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.analogs_3D">
+        <member name="P:Orbital.Input.DeviceBase.axes3D">
             <summary>
-            All 3D analog etc this device supports
+            All 3D axis etc this device supports
             </summary>
         </member>
         <member name="P:Orbital.Input.DeviceBase.sliders">
@@ -229,164 +289,39 @@
             All sliders this device supports
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button1">
+        <member name="P:Orbital.Input.DeviceBase.povDirections">
             <summary>
-            Common button: A (XB), X (PS), B {Nintendo), etc
+            All POV directions this device supports
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button2">
+        <member name="P:Orbital.Input.DeviceBase.physicalButtonCount">
             <summary>
-            Common button: B (XB), O (PS), A {Nintendo), etc
+            Physical count without any virtually mapped types
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button3">
+        <member name="P:Orbital.Input.DeviceBase.physicalAxis1DCount">
             <summary>
-            Common button: X (XB), □ (PS), Y {Nintendo), etc
+            Physical count without any virtually mapped types
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button4">
+        <member name="P:Orbital.Input.DeviceBase.physicalAxis2DCount">
             <summary>
-            Common button: Y (XB), △ (PS), X {Nintendo), etc
+            Physical count without any virtually mapped types
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button5">
+        <member name="P:Orbital.Input.DeviceBase.physicalAxis3DCount">
             <summary>
-            Common button: C (Sega, MS), etc
+            Physical count without any virtually mapped types
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.button6">
+        <member name="P:Orbital.Input.DeviceBase.physicalSliderCount">
             <summary>
-            Common button: Z (Sega, MS), etc
+            Physical count without any virtually mapped types
             </summary>
         </member>
-        <member name="P:Orbital.Input.DeviceBase.special1">
+        <member name="M:Orbital.Input.DeviceBase.CreatePhysicalObjects(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
-            Special button: Touch-Pad (Sony), etc
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.special2">
-            <summary>
-            Special button: Mute (Sony), etc
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.dpadLeft">
-            <summary>
-            Common button: DPad Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.dpadRight">
-            <summary>
-            Common button: DPad Right
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.dpadDown">
-            <summary>
-            Common button: DPad Down
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.dpadUp">
-            <summary>
-            Common button: DPad Up
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.home">
-            <summary>
-            Special button: System menu, OS home, etc
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.menu">
-            <summary>
-            Common button: Menu, Start, Options, etc
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.back">
-            <summary>
-            Common button: Back, Select, etc
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.bumperLeft">
-            <summary>
-            Common button: Bumper Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.bumperRight">
-            <summary>
-            Common button: Bumper Right
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.triggerButtonLeft">
-            <summary>
-            Common button: Trigger Button Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.triggerButtonRight">
-            <summary>
-            Common button: Trigger Button Right
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.joystickButtonLeft">
-            <summary>
-            Common button: Joystick Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.joystickButtonRight">
-            <summary>
-            Common button: Joystick Right
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.triggerLeft">
-            <summary>
-            Common analog: Trigger Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.triggerRight">
-            <summary>
-            Common analog: Trigger Right
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.joystickLeft">
-            <summary>
-            Common analog: Joystick Left
-            </summary>
-        </member>
-        <member name="P:Orbital.Input.DeviceBase.joystickRight">
-            <summary>
-            Common analog: Joystick Right
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.CreatePhysicalObjects(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Create physical buttons, analogs, etc
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.CreateMissingObjects">
-            <summary>
-            If any buttons, analogs, etc are null an instance will be created to avoid null-refs when used
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Button)">
-            <summary>
-            Add object if it doesn't exist
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog1D)">
-            <summary>
-            Add object if it doesn't exist
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog2D)">
-            <summary>
-            Add object if it doesn't exist
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Analog3D)">
-            <summary>
-            Add object if it doesn't exist
-            </summary>
-        </member>
-        <member name="M:Orbital.Input.DeviceBase.AddVirtualObject(Orbital.Input.Slider)">
-            <summary>
-            Add object if it doesn't exist
+            Create physical buttons, axes, etc
             </summary>
         </member>
         <member name="M:Orbital.Input.DeviceBase.UpdateDisconnected">
@@ -414,25 +349,220 @@
             <param name="value">0-1 min-max value</param>
             <param name="motorIndex">Motor index</param>
         </member>
+        <member name="P:Orbital.Input.Gamepad.connected">
+            <summary>
+            Is true if device connected
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button1">
+            <summary>
+            Common button: A (XB), X (PS), B {Nintendo), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button2">
+            <summary>
+            Common button: B (XB), O (PS), A {Nintendo), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button3">
+            <summary>
+            Common button: X (XB), □ (PS), Y {Nintendo), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button4">
+            <summary>
+            Common button: Y (XB), △ (PS), X {Nintendo), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button5">
+            <summary>
+            Common button: C (Sega, MS), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.button6">
+            <summary>
+            Common button: Z (Sega, MS), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.special1">
+            <summary>
+            Special button: Touch-Pad (Sony), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.special2">
+            <summary>
+            Special button: Mute (Sony), etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.dpadLeft">
+            <summary>
+            Common button: DPad Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.dpadRight">
+            <summary>
+            Common button: DPad Right
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.dpadDown">
+            <summary>
+            Common button: DPad Down
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.dpadUp">
+            <summary>
+            Common button: DPad Up
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.home">
+            <summary>
+            Special button: System menu, OS home, etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.menu">
+            <summary>
+            Common button: Menu, Start, Options, etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.back">
+            <summary>
+            Common button: Back, Select, etc
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.bumperLeft">
+            <summary>
+            Common button: Bumper Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.bumperRight">
+            <summary>
+            Common button: Bumper Right
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.triggerButtonLeft">
+            <summary>
+            Common button: Trigger Button Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.triggerButtonRight">
+            <summary>
+            Common button: Trigger Button Right
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.joystickButtonLeft">
+            <summary>
+            Common button: Joystick Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.joystickButtonRight">
+            <summary>
+            Common button: Joystick Right
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.triggerLeft">
+            <summary>
+            Common axes: Trigger Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.triggerRight">
+            <summary>
+            Common axes: Trigger Right
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.joystickLeft">
+            <summary>
+            Common axes: Joystick Left
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.Gamepad.joystickRight">
+            <summary>
+            Common axes: Joystick Right
+            </summary>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.Configure(Orbital.Input.GamepadConfiguration)">
+            <summary>
+            Configure device with specific settings
+            </summary>
+            <param name="configuration">Configuration to use</param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:Orbital.Input.Gamepad.Configure(Orbital.Input.GamepadHardwareConfiguration[])" -->
+        <!-- Badly formed XML comment ignored for member "M:Orbital.Input.Gamepad.FindHardwareConfiguration(Orbital.Input.DeviceBase,Orbital.Input.GamepadHardwareConfiguration[])" -->
+        <member name="M:Orbital.Input.Gamepad.SetRumble(System.Single)">
+            <summary>
+            Sets all motors rumble on supported controllers
+            </summary>
+            <param name="value">0-1 min-max value</param>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.SetRumble(System.Single,System.Single)">
+            <summary>
+            Sets motor rumble on supported controllers
+            </summary>
+            <param name="leftValue">0-1 min-max value on left motor</param>
+            <param name="rightValue">0-1 min-max value on right motor</param>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.SetRumble(System.Single,System.Int32)">
+            <summary>
+            Sets motor rumble on supported controllers
+            </summary>
+            <param name="value">0-1 min-max value</param>
+            <param name="motorIndex">Motor index</param>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.GetButtonName(Orbital.Input.Button)">
+            <summary>
+            Searches for Button config name. (returns null if not found)
+            </summary>
+            <param name="button">Button part of this Gamepad</param>
+            <returns>Button name</returns>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.GetTriggerName(Orbital.Input.Axis1D)">
+            <summary>
+            Searches for Trigger config name. (returns null if not found)
+            </summary>
+            <param name="trigger">Trigger part of this Gamepad</param>
+            <returns>Trigger name</returns>
+        </member>
+        <member name="M:Orbital.Input.Gamepad.GetJoystickName(Orbital.Input.Axis2D)">
+            <summary>
+            Searches for Joystick config name. (returns null if not found)
+            </summary>
+            <param name="joystick">Joystick part of this Gamepad</param>
+            <returns>Joystick name</returns>
+        </member>
+        <member name="E:Orbital.Input.InstanceBase.DeviceConnectedCallback">
+            <summary>
+            Called when device connects
+            </summary>
+        </member>
+        <member name="E:Orbital.Input.InstanceBase.GamepadConnectedCallback">
+            <summary>
+            Called when Gamepad connects
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.InstanceBase.devices">
+            <summary>
+            Add devices this instance has access to
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.InstanceBase.gamepadHardwareConfigurations">
+            <summary>
+            Gamepad hardware configurations used to auto create 'gamepads'
+            </summary>
+        </member>
+        <member name="P:Orbital.Input.InstanceBase.gamepads">
+            <summary>
+            Gamepads configured from hardware configurations
+            </summary>
+        </member>
         <member name="M:Orbital.Input.InstanceBase.Update">
             <summary>
             Update devices states
             </summary>
         </member>
-        <member name="M:Orbital.Input.InstanceBase.GetDevices">
+        <member name="M:Orbital.Input.InstanceBase.GetGamepadHardwareConfigurations">
             <summary>
-            Gets an array of all possible devices
+            Gets built in / well-known configurations
             </summary>
-        </member>
-        <member name="F:Orbital.Input.Slider.name">
-            <summary>
-            Name of button
-            </summary>
-        </member>
-        <member name="F:Orbital.Input.Slider.physical">
-            <summary>
-            Is physically attached to a device. Otherwise virtually simulated
-            </summary>
+            <returns>Common hardware configurations</returns>
         </member>
         <member name="F:Orbital.Input.Slider.smoothing">
             <summary>
@@ -441,7 +571,7 @@
         </member>
         <member name="P:Orbital.Input.Slider.value">
             <summary>
-            Value of the analog input
+            Value of the slider input
             </summary>
         </member>
     </members>

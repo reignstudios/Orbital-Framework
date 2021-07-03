@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Orbital.Primitives;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Orbital.Input.DirectInput
@@ -11,7 +12,7 @@ namespace Orbital.Input.DirectInput
 		Level_8
 	}
 
-	public sealed class Instance : InstanceBase
+	public sealed partial class Instance : InstanceBase
 	{
 		internal IntPtr handle;
 		public FeatureLevel featureLevel { get; private set; }
@@ -19,7 +20,7 @@ namespace Orbital.Input.DirectInput
 		/// <summary>
 		/// 8 devices max
 		/// </summary>
-		public Device[] devices { get; private set; }
+		public ReadOnlyArray<Device> devicesDI { get; private set; }
 
 		public const string lib = "Orbital.Input.DirectInput.Native.dll";
 		public const CallingConvention callingConvention = CallingConvention.Cdecl;
@@ -36,8 +37,10 @@ namespace Orbital.Input.DirectInput
 		public Instance()
 		{
 			handle = Orbital_Video_DirectInput_Instance_Create();
-			devices = new Device[8];
-			for (int i = 0; i != devices.Length; ++i) devices[i] = new Device(this, i);
+			Device[] devices_backing;
+			devicesDI = new ReadOnlyArray<Device>(8, out devices_backing);
+			for (int i = 0; i != devices_backing.Length; ++i) devices_backing[i] = new Device(this, i);
+			devices = new ReadOnlyArray<DeviceBase>(devices_backing);
 		}
 
 		public bool Init(FeatureLevel minimumFeatureLevel)
@@ -52,9 +55,6 @@ namespace Orbital.Input.DirectInput
 			featureLevel = level;
 			if (level < minimumFeatureLevel) return false;
 
-			// init devices
-			for (int i = 0; i != devices.Length; ++i) devices[i].Init();
-
 			return true;
 		}
 
@@ -65,19 +65,8 @@ namespace Orbital.Input.DirectInput
 				Orbital_Video_DirectInput_Instance_Dispose(handle);
 				handle = IntPtr.Zero;
 			}
-		}
 
-		public override void Update()
-		{
-			foreach (var device in devices)
-			{
-				device.Update();
-			}
-		}
-
-		public override DeviceBase[] GetDevices()
-		{
-			return devices;
+			base.Dispose();
 		}
 	}
 }

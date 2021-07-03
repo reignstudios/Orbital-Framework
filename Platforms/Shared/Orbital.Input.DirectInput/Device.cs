@@ -4,108 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace Orbital.Input.DirectInput
 {
-	public enum DeviceHardware
-	{
-		/// <summary>
-		/// Unknown device
-		/// </summary>
-		Unknown,
-
-		/// <summary>
-		/// Microsoft Xbox 360 gamepad
-		/// </summary>
-		Xbox360_Gamepad,
-
-		/// <summary>
-		/// Microsoft Xbox One gamepad
-		/// </summary>
-		XboxOne_Gamepad,
-
-		/// <summary>
-		/// Microsoft Xbox SX/SS gamepad
-		/// </summary>
-		XboxSeries_Gamepad,
-
-		/// <summary>
-		/// Sony PS3 gamepad
-		/// </summary>
-		PS3_Gamepad,
-
-		/// <summary>
-		/// Sony PS4 gamepad
-		/// </summary>
-		PS4_Gamepad
-	}
-
-	public enum DeviceDPadMode
-	{
-		/// <summary>
-		/// Dpad maps buttons from POV (point-of-view hats)
-		/// </summary>
-		POV,
-
-		/// <summary>
-		/// Dpad is a set of normal buttons
-		/// </summary>
-		Buttons
-	}
-
-	public enum DeviceTriggerButtonMode
-	{
-		/// <summary>
-		/// Buttons are activated when trigger goes over 75%
-		/// </summary>
-		Virtual,
-
-		/// <summary>
-		/// Trigger buttons exist physically on the hardware
-		/// </summary>
-		Physical
-	}
-
-	public struct DeviceAxis1DMap
-	{
-		public bool invertSrc;
-		public Analog1D analogSrc;
-		public Analog1D analogDst;
-	}
-
-	public struct DeviceAxis2DMap
-	{
-		public bool invertAxisX, invertAxisY;
-		public Analog1D axisX, axisY;
-		public Analog2D analog;
-	}
-
-	public struct DeviceAxis3DMap
-	{
-		public bool invertAxisX, invertAxisY, invertAxisZ;
-		public Analog1D axisX, axisY, axisZ;
-		public Analog3D analog;
-	}
-
-	public struct InputConfiguration
-	{
-		public int dpad_POV_Index;
-		public DeviceDPadMode dpadMode;
-		public DeviceTriggerButtonMode triggerButtonMode;
-
-		public Button button1, button2, button3, button4, button5, button6;
-		public Button special1, special2;
-		public Button dpadLeft, dpadRight, dpadDown, dpadUp;
-		public Button menu, back, home;
-		public Button bumperLeft, bumperRight;
-		public Button triggerButtonLeft, triggerButtonRight;
-		public Button joystickButtonLeft, joystickButtonRight;
-
-		public Analog1D triggerLeft, triggerRight;
-		public Analog2D joystickLeft, joystickRight;
-
-		public DeviceAxis1DMap[] axis1DMaps;
-		public DeviceAxis2DMap[] axis2DMaps;
-		public DeviceAxis3DMap[] axis3DMaps;
-	}
-
 	[StructLayout(LayoutKind.Sequential)]
 	struct DeviceInfo
 	{
@@ -255,7 +153,7 @@ namespace Orbital.Input.DirectInput
 		DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS = 13
 	}
 
-	public sealed class Device : DeviceBase
+	public sealed partial class Device : DeviceBase
 	{
 		public Instance instanceDI { get; private set; }
 
@@ -300,14 +198,17 @@ namespace Orbital.Input.DirectInput
 		public DeviceInfoSubType_FeatureLevel8 deviceInfoSubType_FeatureLevel8 { get; private set; }
 
 		private DeviceInfo nativeInfo;
+		//private uint[] pov_State = new uint[4];
 
-		private int dpad_POV_Index;
-		private DeviceDPadMode dpadMode = DeviceDPadMode.POV;
-		private DeviceTriggerButtonMode triggerButtonMode = DeviceTriggerButtonMode.Virtual;
+		//private int dpad_POV_Index;
+		//private DeviceDPadMode dpadMode = DeviceDPadMode.POV;
+		//private DeviceTriggerButtonMode triggerButtonMode = DeviceTriggerButtonMode.Virtual;
+		//private DeviceAxis1DMap[] axis1DMaps;
+		//private DeviceAxis2DMap[] axis2DMaps;
+		//private DeviceAxis3DMap[] axis3DMaps;
 
-		private DeviceAxis1DMap[] axis1DMaps;
-		private DeviceAxis2DMap[] axis2DMaps;
-		private DeviceAxis3DMap[] axis3DMaps;
+		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
+		private unsafe static extern int Orbital_Video_DirectInput_Instance_RefreshDevices(IntPtr handle);
 
 		[DllImport(Instance.lib, CallingConvention = Instance.callingConvention)]
 		private unsafe static extern int Orbital_Video_DirectInput_Instance_GetDeviceState(IntPtr handle, int deviceIndex, DIJOYSTATE2* state, int* connected);
@@ -320,11 +221,12 @@ namespace Orbital.Input.DirectInput
 		{
 			instanceDI = instance;
 			this.index = index;
+			CreatePhysicalObjects(0, 0, 0, 0, 0, 0);
 		}
 
-		public unsafe void Init()
-		{
-			// get device info
+		//public unsafe void Init()
+		//{
+			/*// get device info
 			DeviceInfo info;
 			Orbital_Video_DirectInput_Instance_GetDeviceInfo(instanceDI.handle, index, &info);
 			nativeInfo = info;
@@ -372,15 +274,20 @@ namespace Orbital.Input.DirectInput
 				}
 			}
 
-			// get total axis count
-			int axisCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
-			axisCount += info.rxAxisCount + info.ryAxisCount + info.rzAxisCount;
+			// get physical counts
+			povCount = info.povCount;
+			physicalButtonCount = info.buttonCount;
+			physicalAxis1DCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
+			physicalAxis1DCount += info.rxAxisCount + info.ryAxisCount + info.rzAxisCount;
+			physicalSliderCount = info.sliderCount;
+			//int axisCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
+			//axisCount += info.rxAxisCount + info.ryAxisCount + info.rzAxisCount;
 
 			// create objects
-			CreatePhysicalObjects(info.buttonCount, axisCount, 0, 0, info.sliderCount);
+			CreatePhysicalObjects(info.buttonCount, physicalAxis1DCount, 0, 0, info.sliderCount);*/
 
-			// configure input settings
-			var configuration = new InputConfiguration();
+			/*// configure input settings
+			var configuration = new GamepadConfiguration();
 
 			// ================
 			// Microsoft
@@ -450,33 +357,33 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// triggers
-				configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.Positive);
-				configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.Negitive);
+				configuration.triggerLeft = new Axis1D(true, Axis1DUpdateMode.Positive);
+				configuration.triggerRight = new Axis1D(true, Axis1DUpdateMode.Negitive);
 				configuration.triggerLeft.name = "TL";
 				configuration.triggerRight.name = "TR";
 
 				configuration.axis1DMaps = new DeviceAxis1DMap[2];
-				configuration.axis1DMaps[0].analogSrc = analogs_1D[2];
-				configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
-				configuration.axis1DMaps[1].analogSrc = analogs_1D[2];
-				configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
+				configuration.axis1DMaps[0].axisSrc = axes1D[2];
+				configuration.axis1DMaps[0].axisDst = configuration.triggerLeft;
+				configuration.axis1DMaps[1].axisSrc = axes1D[2];
+				configuration.axis1DMaps[1].axisDst = configuration.triggerRight;
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[3];
-				configuration.axis2DMaps[1].axisY = analogs_1D[4];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[3];
+				configuration.axis2DMaps[1].axisY_Src = axes1D[4];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 			else if (productID_GUID == logitechDirecInputID)// Logitech DirectInput mode
 			{
@@ -529,21 +436,21 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				configuration.axis2DMaps[1].axisY = analogs_1D[3];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[2];
+				configuration.axis2DMaps[1].axisY_Src = axes1D[3];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 
 			// ================
@@ -641,35 +548,35 @@ namespace Orbital.Input.DirectInput
 				// triggers
 				if (productID_GUID != ps3ID_Wired)
 				{
-					configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
-					configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+					configuration.triggerLeft = new Axis1D(true, Axis1DUpdateMode.FullRange_ShiftedPositive);
+					configuration.triggerRight = new Axis1D(true, Axis1DUpdateMode.FullRange_ShiftedPositive);
 					configuration.triggerLeft.name = "TL";
 					configuration.triggerRight.name = "TR";
 
 					configuration.axis1DMaps = new DeviceAxis1DMap[2];
-					configuration.axis1DMaps[0].analogSrc = analogs_1D[3];
-					configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
-					configuration.axis1DMaps[1].analogSrc = analogs_1D[4];
-					configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
+					configuration.axis1DMaps[0].axisSrc = axes1D[3];
+					configuration.axis1DMaps[0].axisDst = configuration.triggerLeft;
+					configuration.axis1DMaps[1].axisSrc = axes1D[4];
+					configuration.axis1DMaps[1].axisDst = configuration.triggerRight;
 				}
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				if (productID_GUID == ps3ID_Wired) configuration.axis2DMaps[1].axisY = analogs_1D[3];
-				else configuration.axis2DMaps[1].axisY = analogs_1D[5];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[2];
+				if (productID_GUID == ps3ID_Wired) configuration.axis2DMaps[1].axisY_Src = axes1D[3];
+				else configuration.axis2DMaps[1].axisY_Src = axes1D[5];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 			else if (productID_GUID == ps3ID_Wireless)
 			{
@@ -724,21 +631,21 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				configuration.axis2DMaps[1].axisY = analogs_1D[3];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[2];
+				configuration.axis2DMaps[1].axisY_Src = axes1D[3];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 
 			// ================
@@ -820,21 +727,21 @@ namespace Orbital.Input.DirectInput
 				configuration.joystickButtonRight.name = "JBR";
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				configuration.axis2DMaps[1].axisY = analogs_1D[3];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[2];
+				configuration.axis2DMaps[1].axisY_Src = axes1D[3];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 			else if (productID_GUID == Guid.Parse("18460079-0000-0000-0000-504944564944"))// Generic GameCube USB adapter for PC
 			{
@@ -885,47 +792,47 @@ namespace Orbital.Input.DirectInput
 				configuration.triggerButtonRight.name = "TBR";
 
 				// triggers
-				configuration.triggerLeft = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
-				configuration.triggerRight = new Analog1D(true, Analog1DUpdateMode.FullRange_ShiftedPositive);
+				configuration.triggerLeft = new Axis1D(true, Axis1DUpdateMode.FullRange_ShiftedPositive);
+				configuration.triggerRight = new Axis1D(true, Axis1DUpdateMode.FullRange_ShiftedPositive);
 				configuration.triggerLeft.name = "TL";
 				configuration.triggerRight.name = "TR";
 
 				configuration.axis1DMaps = new DeviceAxis1DMap[2];
-				configuration.axis1DMaps[0].analogSrc = analogs_1D[3];
-				configuration.axis1DMaps[0].analogDst = configuration.triggerLeft;
-				configuration.axis1DMaps[1].analogSrc = analogs_1D[4];
-				configuration.axis1DMaps[1].analogDst = configuration.triggerRight;
+				configuration.axis1DMaps[0].axisSrc = axes1D[3];
+				configuration.axis1DMaps[0].axisDst = configuration.triggerLeft;
+				configuration.axis1DMaps[1].axisSrc = axes1D[4];
+				configuration.axis1DMaps[1].axisDst = configuration.triggerRight;
 
 				// joysticks
-				configuration.joystickLeft = new Analog2D(true);
-				configuration.joystickRight = new Analog2D(true);
+				configuration.joystickLeft = new Axis2D(true);
+				configuration.joystickRight = new Axis2D(true);
 				configuration.joystickLeft.name = "JL";
 				configuration.joystickRight.name = "JR";
 
 				configuration.axis2DMaps = new DeviceAxis2DMap[2];
 				configuration.axis2DMaps[0].invertAxisY = true;
-				configuration.axis2DMaps[0].axisX = analogs_1D[0];
-				configuration.axis2DMaps[0].axisY = analogs_1D[1];
-				configuration.axis2DMaps[0].analog = configuration.joystickLeft;
+				configuration.axis2DMaps[0].axisX_Src = axes1D[0];
+				configuration.axis2DMaps[0].axisY_Src = axes1D[1];
+				configuration.axis2DMaps[0].axisDst = configuration.joystickLeft;
 
 				configuration.axis2DMaps[1].invertAxisY = true;
-				configuration.axis2DMaps[1].axisX = analogs_1D[2];
-				configuration.axis2DMaps[1].axisY = analogs_1D[5];
-				configuration.axis2DMaps[1].analog = configuration.joystickRight;
+				configuration.axis2DMaps[1].axisX_Src = axes1D[2];
+				configuration.axis2DMaps[1].axisY_Src = axes1D[5];
+				configuration.axis2DMaps[1].axisDst = configuration.joystickRight;
 			}
 
 			// configure input
 			Configure(ref configuration);
 
 			// create any missing objects this API doesn't support
-			CreateMissingObjects();
-		}
+			CreateMissingObjects();*/
+		//}
 
-		/// <summary>
+		/*/// <summary>
 		/// Custom device configuration mapping
 		/// </summary>
 		/// <param name="configuration">Configuration object to use</param>
-		public void Configure(ref InputConfiguration configuration)
+		public void Configure(ref GamepadConfiguration configuration)
 		{
 			// get total axis count
 			int axisCount = nativeInfo.xAxisCount + nativeInfo.yAxisCount + nativeInfo.zAxisCount;
@@ -935,8 +842,8 @@ namespace Orbital.Input.DirectInput
 			int delta = nativeInfo.buttonCount - buttons.Count;
 			if (delta > 0) buttons_backing.RemoveRange(nativeInfo.buttonCount, delta);
 
-			delta = axisCount - analogs_1D.Count;
-			if (delta > 0) analogs_1D_backing.RemoveRange(axisCount, delta);
+			delta = axisCount - axes1D.Count;
+			if (delta > 0) axes1D_backing.RemoveRange(axisCount, delta);
 
 			// copy mode settings
 			dpad_POV_Index = configuration.dpad_POV_Index;
@@ -1035,13 +942,13 @@ namespace Orbital.Input.DirectInput
 			AddVirtualObject(triggerButtonLeft);
 			AddVirtualObject(triggerButtonRight);
 
-			// ensure analog map objects are added
+			// ensure axis map objects are added
 			if (configuration.axis1DMaps != null)
 			{
 				foreach (var map in configuration.axis1DMaps)
 				{
-					AddVirtualObject(map.analogSrc);
-					AddVirtualObject(map.analogDst);
+					AddVirtualObject(map.axisSrc);
+					AddVirtualObject(map.axisDst);
 				}
 			}
 
@@ -1049,9 +956,9 @@ namespace Orbital.Input.DirectInput
 			{
 				foreach (var map in configuration.axis2DMaps)
 				{
-					AddVirtualObject(map.axisX);
-					AddVirtualObject(map.axisY);
-					AddVirtualObject(map.analog);
+					AddVirtualObject(map.axisX_Src);
+					AddVirtualObject(map.axisY_Src);
+					AddVirtualObject(map.axisDst);
 				}
 			}
 
@@ -1059,18 +966,13 @@ namespace Orbital.Input.DirectInput
 			{
 				foreach (var map in configuration.axis3DMaps)
 				{
-					AddVirtualObject(map.axisX);
-					AddVirtualObject(map.axisY);
-					AddVirtualObject(map.axisZ);
-					AddVirtualObject(map.analog);
+					AddVirtualObject(map.axisX_Src);
+					AddVirtualObject(map.axisY_Src);
+					AddVirtualObject(map.axisZ_Src);
+					AddVirtualObject(map.axisDst);
 				}
 			}
-		}
-
-		public override void Dispose()
-		{
-			// do nothing...
-		}
+		}*/
 
 		public unsafe override void Update()
 		{
@@ -1080,28 +982,31 @@ namespace Orbital.Input.DirectInput
 			bool connected = Orbital_Video_DirectInput_Instance_GetDeviceState(instanceDI.handle, index, &state, &connectedValue) != 0 && connectedValue != 0;
 
 			// validate is connected
-			Update(connected);
+			UpdateStart(connected);
 			if (!connected) return;
 
-			// update all buttons
+			// update all physical buttons
 			for (int i = 0; i != nativeInfo.buttonCount; ++i)
 			{
 				buttons[i].Update(state.rgbButtons[i] != 0);
 			}
 
-			// update all analogs1D
-			int axisCount = nativeInfo.xAxisCount + nativeInfo.yAxisCount + nativeInfo.zAxisCount;
-			axisCount += nativeInfo.rxAxisCount + nativeInfo.ryAxisCount + nativeInfo.rzAxisCount;
-
+			// update all physical axes1D
 			int ax = 0;
-			if (nativeInfo.xAxisCount != 0) analogs_1D[ax++].Update(state.lX / 1000f);
-			if (nativeInfo.yAxisCount != 0) analogs_1D[ax++].Update(state.lY / 1000f);
-			if (nativeInfo.zAxisCount != 0) analogs_1D[ax++].Update(state.lZ / 1000f);
-			if (nativeInfo.rxAxisCount != 0) analogs_1D[ax++].Update(state.lRx / 1000f);
-			if (nativeInfo.ryAxisCount != 0) analogs_1D[ax++].Update(state.lRy / 1000f);
-			if (nativeInfo.rzAxisCount != 0) analogs_1D[ax++].Update(state.lRz / 1000f);
+			if (nativeInfo.xAxisCount != 0) axes1D[ax++].Update(state.lX / 1000f);
+			if (nativeInfo.yAxisCount != 0) axes1D[ax++].Update(state.lY / 1000f);
+			if (nativeInfo.zAxisCount != 0) axes1D[ax++].Update(state.lZ / 1000f);
+			if (nativeInfo.rxAxisCount != 0) axes1D[ax++].Update(state.lRx / 1000f);
+			if (nativeInfo.ryAxisCount != 0) axes1D[ax++].Update(state.lRy / 1000f);
+			if (nativeInfo.rzAxisCount != 0) axes1D[ax++].Update(state.lRz / 1000f);
 
-			// dpad (clock-wise 0-36000)
+			// copy pov state
+			for (int i = 0; i != 4; ++i) povDirections_backing[i] = state.rgdwPOV[i];
+
+			// update abstractions
+			base.Update();
+
+			/*// dpad (clock-wise 0-36000)
 			if (dpadMode == DeviceDPadMode.POV && nativeInfo.povCount != 0)
 			{
 				if (dpad_POV_Index < 0) dpad_POV_Index = 0;
@@ -1113,14 +1018,14 @@ namespace Orbital.Input.DirectInput
 				dpadLeft.Update(value >= 22500 && value < 31500);
 			}
 
-			// analog mappings
+			// axes mappings
 			if (axis1DMaps != null)
 			{
 				foreach (var map in axis1DMaps)
 				{
-					float value = map.analogSrc.value;
+					float value = map.axisSrc.value;
 					if (map.invertSrc) value = -value;
-					map.analogDst.Update(value);
+					map.axisDst.Update(value);
 				}
 			}
 
@@ -1128,32 +1033,92 @@ namespace Orbital.Input.DirectInput
 			{
 				foreach (var map in axis2DMaps)
 				{
-					var value = new Vec2(map.axisX.value, map.axisY.value);
+					var value = new Vec2(map.axisX_Src.value, map.axisY_Src.value);
 					if (map.invertAxisX) value.x = -value.x;
 					if (map.invertAxisY) value.y = -value.y;
-					map.analog.Update(value);
+					map.axisDst.Update(value);
 				}
 			}
 
-			// analog3D mappings
 			if (axis3DMaps != null)
 			{
 				foreach (var map in axis3DMaps)
 				{
-					var value = new Vec3(map.axisX.value, map.axisY.value, map.axisZ.value);
+					var value = new Vec3(map.axisX_Src.value, map.axisY_Src.value, map.axisZ_Src.value);
 					if (map.invertAxisX) value.x = -value.x;
 					if (map.invertAxisY) value.y = -value.y;
 					if (map.invertAxisZ) value.z = -value.z;
-					map.analog.Update(value);
+					map.axisDst.Update(value);
 				}
 			}
 
-			// trigger buttons (NOTE: must be ran after analog mappings)
+			// trigger buttons (NOTE: must be ran after axis mappings)
 			if (triggerButtonMode == DeviceTriggerButtonMode.Virtual)
 			{
 				triggerButtonLeft.Update(triggerLeft.value >= .75f);
 				triggerButtonRight.Update(triggerRight.value >= .75f);
+			}*/
+		}
+
+		protected unsafe override void RefreshDeviceInfo()
+		{
+			// get device info
+			DeviceInfo info;
+			Orbital_Video_DirectInput_Instance_GetDeviceInfo(instanceDI.handle, index, &info);
+			nativeInfo = info;
+			productID_GUID = info.productID;
+			name = new string(info.productName);
+			supportsForceFeedback = info.supportsForceFeedback != 0;
+			isPrimary = info.isPrimary != 0;
+
+			// get device product & vendor id numbers
+			var productBytes = (byte*)&info.productID;
+			vendorID = *(ushort*)(&productBytes[0]);
+			productID = *(ushort*)(&productBytes[sizeof(ushort)]);
+
+			// get device type
+			if (instanceDI.featureLevel < FeatureLevel.Level_8)
+			{
+				deviceInfoType_FeatureLevel1 = (DeviceInfoType_FeatureLevel1)(info.type & 0x000000FF);
+				deviceInfoSubType_FeatureLevel1 = (DeviceInfoSubType_FeatureLevel1)(info.type & 0xFF000000);
+				switch (deviceInfoType_FeatureLevel1)
+				{
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_JOYSTICK: type = DeviceType.Gamepad; break;
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_KEYBOARD: type = DeviceType.Keyboard; break;
+					case DeviceInfoType_FeatureLevel1.DIDEVTYPE_MOUSE: type = DeviceType.Mouse; break;
+				}
 			}
+			else
+			{
+				deviceInfoType_FeatureLevel8 = (DeviceInfoType_FeatureLevel8)(info.type & 0x000000FF);
+				deviceInfoSubType_FeatureLevel8 = (DeviceInfoSubType_FeatureLevel8)(info.type & 0xFF000000);
+				switch (deviceInfoType_FeatureLevel8)
+				{
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_1STPERSON:
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_GAMEPAD:
+						type = DeviceType.Gamepad; break;
+
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_JOYSTICK:
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_FLIGHT:
+						type = DeviceType.FlightStick; break;
+
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_DRIVING: type = DeviceType.SteeringWheel; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_KEYBOARD: type = DeviceType.Keyboard; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_MOUSE: type = DeviceType.Mouse; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_REMOTE: type = DeviceType.Remote; break;
+					case DeviceInfoType_FeatureLevel8.DI8DEVTYPE_SCREENPOINTER: type = DeviceType.Pointer; break;
+				}
+			}
+
+			// get physical counts
+			//povCount = info.povCount;
+			physicalButtonCount = info.buttonCount;
+			physicalAxis1DCount = info.xAxisCount + info.yAxisCount + info.zAxisCount;
+			physicalAxis1DCount += info.rxAxisCount + info.ryAxisCount + info.rzAxisCount;
+			physicalSliderCount = info.sliderCount;
+
+			// create objects
+			CreatePhysicalObjects(info.buttonCount, physicalAxis1DCount, 0, 0, info.sliderCount, 4);
 		}
 	}
 }
