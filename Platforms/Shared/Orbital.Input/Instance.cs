@@ -34,9 +34,13 @@ namespace Orbital.Input
 		public ReadOnlyList<Gamepad> gamepads { get; private set; }
 		private List<Gamepad> gamepads_backing;
 
-		public InstanceBase()
+		public InstanceBase(bool autoConfigureAbstractions)
 		{
 			gamepads = new ReadOnlyList<Gamepad>(out gamepads_backing);
+			if (autoConfigureAbstractions)
+			{
+				gamepadHardwareConfigurations = GetGamepadHardwareConfigurations();
+			}
 		}
 
 		public virtual void Dispose()

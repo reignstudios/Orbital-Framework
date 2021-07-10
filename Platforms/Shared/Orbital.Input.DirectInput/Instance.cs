@@ -34,7 +34,8 @@ namespace Orbital.Input.DirectInput
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_DirectInput_Instance_Dispose(IntPtr handle);
 
-		public Instance()
+		public Instance(bool autoConfigureAbstractions)
+		: base(autoConfigureAbstractions)
 		{
 			handle = Orbital_Video_DirectInput_Instance_Create();
 			Device[] devices_backing;

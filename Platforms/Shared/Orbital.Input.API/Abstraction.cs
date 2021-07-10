@@ -92,6 +92,11 @@ namespace Orbital.Input.API
 		/// </summary>
 		public AbstractionInputRequirments inputRequirments;
 
+		/// <summary>
+		/// Auto configure device abstractions such as 'gamepads' etc
+		/// </summary>
+		public bool autoConfigureAbstractions;
+
 		#if WIN32 || WINRT
 		public string nativeLibPathDirectInput;
 		#endif
@@ -111,6 +116,9 @@ namespace Orbital.Input.API
 				AbstractionAPI.DirectInput
 				#endif
 			};
+
+			// auto init device abstractions
+			autoConfigureAbstractions = true;
 		}
 	}
 
@@ -159,7 +167,7 @@ namespace Orbital.Input.API
 
 					case AbstractionAPI.XInput:
 					{
-						var instanceXInput = new XInput.Instance();
+						var instanceXInput = new XInput.Instance(desc.autoConfigureAbstractions);
 						if (instanceXInput.Init())
 						{
 							instance = instanceXInput;
@@ -175,7 +183,7 @@ namespace Orbital.Input.API
 					case AbstractionAPI.DirectInput:
 					{
 						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathDirectInput, DirectInput.Instance.lib))) continue;
-						var instanceXInput = new DirectInput.Instance();
+						var instanceXInput = new DirectInput.Instance(desc.autoConfigureAbstractions);
 						if (instanceXInput.Init(IntPtr.Zero, DirectInput.FeatureLevel.Level_1))
 						{
 							instance = instanceXInput;

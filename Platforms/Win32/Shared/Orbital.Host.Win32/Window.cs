@@ -33,6 +33,7 @@ namespace Orbital.Host.Win32
 		public ATOM atom { get; private set; }
 		public HWND hWnd { get; private set; }
 		private bool isClosed;
+		private WndProcDelegate wndProcDelegate;
 
 		public Window(Point2 position, Size2 size, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -50,11 +51,11 @@ namespace Orbital.Host.Win32
 			var wcex = new WNDCLASSEXA();
 			wcex.cbSize = (UINT)Marshal.SizeOf<WNDCLASSEXA>();
 			wcex.style = CS_HREDRAW | CS_VREDRAW;
-			var WndProcDelegate = new WndProcDelegate(WndProc);
+			wndProcDelegate = new WndProcDelegate(WndProc);
 			#if CS2X
-			Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate, out _, out wcex.lpfnWndProc);
+			Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate, out _, out wcex.lpfnWndProc);
 			#else
-			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(WndProcDelegate);
+			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate);
 			#endif
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = 0;

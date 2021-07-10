@@ -9,6 +9,31 @@
             The device index
             </summary>
         </member>
+        <member name="F:Orbital.Input.XInput.InstanceVersion.XInput_1_1">
+            <summary>
+            Legacy version
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.XInput.InstanceVersion.XInput_1_2">
+            <summary>
+            Legacy version
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.XInput.InstanceVersion.XInput_1_3">
+            <summary>
+            Support started with Windows XP
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.XInput.InstanceVersion.XInput_1_4">
+            <summary>
+            Support started with Windows 8
+            </summary>
+        </member>
+        <member name="F:Orbital.Input.XInput.InstanceVersion.XInput_9_1_0">
+            <summary>
+            Limited feature lib starting in Vista for broad compatibility
+            </summary>
+        </member>
         <member name="P:Orbital.Input.XInput.Instance.devicesXI">
             <summary>
             4 devices max

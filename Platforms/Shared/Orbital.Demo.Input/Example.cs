@@ -49,7 +49,18 @@ namespace Orbital.Demo
 			if (!Abstraction.InitFirstAvaliable(abstractionDesc, out instance)) throw new Exception("Failed to init abstraction");
 			instance.DeviceConnectedCallback += Instance_DeviceConnectedCallback;
 			instance.GamepadConnectedCallback += Instance_GamepadConnectedCallback;
-			instance.gamepadHardwareConfigurations = instance.GetGamepadHardwareConfigurations(); 
+
+			if (instance is Orbital.Input.XInput.Instance)
+			{
+				var instanceXI = (Orbital.Input.XInput.Instance)instance;
+				Console.WriteLine("Version: " + instanceXI.version.ToString());
+			}
+
+			if (instance is Orbital.Input.DirectInput.Instance)
+			{
+				var instanceDI = (Orbital.Input.DirectInput.Instance)instance;
+				Console.WriteLine("FeatureLevel: " + instanceDI.featureLevel.ToString());
+			}
 		}
 
 		private void Instance_DeviceConnectedCallback(DeviceBase device)
@@ -179,7 +190,7 @@ namespace Orbital.Demo
 				}
 
 				// keep within 60fps
-				System.Threading.Thread.Sleep(16);
+				System.Threading.Thread.Sleep(1000 / 60);
 
 				// run application events
 				application.RunEvents();

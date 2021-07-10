@@ -1,8 +1,4 @@
-﻿using Orbital.Primitives;
-using System;
-using System.Runtime.InteropServices;
-
-namespace Orbital.Input.DirectInput
+﻿namespace Orbital.Input.DirectInput
 {
 	public sealed partial class Instance : InstanceBase
 	{

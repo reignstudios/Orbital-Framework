@@ -64,6 +64,11 @@
             API input flag requirments
             </summary>
         </member>
+        <member name="F:Orbital.Input.API.AbstractionDesc.autoConfigureAbstractions">
+            <summary>
+            Auto configure device abstractions such as 'gamepads' etc
+            </summary>
+        </member>
         <member name="M:Orbital.Input.API.Abstraction.InitFirstAvaliable(Orbital.Input.API.AbstractionDesc,Orbital.Input.InstanceBase@)">
             <summary>
             Initializes first API avaliable to the hardware

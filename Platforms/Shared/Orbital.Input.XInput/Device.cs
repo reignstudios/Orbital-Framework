@@ -1,6 +1,4 @@
 ﻿using Orbital.Numerics;
-using System;
-using System.Runtime.InteropServices;
 
 using DWORD = System.UInt32;
 using WORD = System.UInt16;
@@ -16,12 +14,6 @@ namespace Orbital.Input.XInput
 		/// </summary>
 		public int index { get; private set; }
 
-		[DllImport(Instance.lib_1_4, CallingConvention = Instance.callingConvention, EntryPoint = "XInputGetState")]
-		private unsafe static extern DWORD XInputGetState_1_4(DWORD dwUserIndex, XINPUT_STATE* pState);
-
-		[DllImport(Instance.lib_1_4, CallingConvention = Instance.callingConvention, EntryPoint = "XInputSetState")]
-		private unsafe static extern DWORD XInputSetState_1_4(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
-
 		public Device(Instance instance, int index)
 		: base(instance)
 		{
@@ -29,80 +21,13 @@ namespace Orbital.Input.XInput
 			this.index = index;
 			type = DeviceType.Gamepad;
 			CreatePhysicalObjects(16, 2, 2, 0, 0, 0);
-
-			/*CreatePhysicalObjects(16, 2, 2, 0, 0);
-			int buttonIndex = 0;
-
-			// primary buttons
-			button1 = buttons[buttonIndex++];
-			button2 = buttons[buttonIndex++];
-			button3 = buttons[buttonIndex++];
-			button4 = buttons[buttonIndex++];
-			button1.name = "A";
-			button2.name = "B";
-			button3.name = "X";
-			button4.name = "Y";
-
-			// dpad
-			dpadLeft = buttons[buttonIndex++];
-			dpadRight = buttons[buttonIndex++];
-			dpadDown = buttons[buttonIndex++];
-			dpadUp = buttons[buttonIndex++];
-			dpadLeft.name = "Left";
-			dpadRight.name = "Right";
-			dpadDown.name = "Down";
-			dpadUp.name = "Up";
-
-			// options
-			menu = buttons[buttonIndex++];
-			back = buttons[buttonIndex++];
-			menu.name = "Menu";
-			back.name = "Back";
-
-			// bumbers
-			bumperLeft = buttons[buttonIndex++];
-			bumperRight = buttons[buttonIndex++];
-			bumperLeft.name = "BL";
-			bumperRight.name = "BR";
-
-			// trigger buttons
-			triggerButtonLeft = buttons[buttonIndex++];
-			triggerButtonRight = buttons[buttonIndex++];
-			triggerButtonLeft.name = "TBL";
-			triggerButtonRight.name = "TBR";
-
-			// joystick buttons
-			joystickButtonLeft = buttons[buttonIndex++];
-			joystickButtonRight = buttons[buttonIndex++];
-			joystickButtonLeft.name = "JBL";
-			joystickButtonRight.name = "JBR";
-
-			// triggers
-			triggerLeft = axes1D[0];
-			triggerRight = axes1D[1];
-			triggerLeft.name = "TL";
-			triggerRight.name = "TR";
-
-			// triggers
-			joystickLeft = axes2D[0];
-			joystickRight = axes2D[1];
-			joystickLeft.name = "JL";
-			joystickRight.name = "JR";
-
-			// create any missing objects this API doesn't support
-			CreateMissingObjects();*/
 		}
 
 		public unsafe override void Update()
 		{
 			// get device state
 			XINPUT_STATE state;
-			bool connected;
-			switch (instanceXI.version)
-			{
-				case InstanceVersion.XInput_1_4: connected = XInputGetState_1_4((uint)index, &state) == 0; break;
-				default: throw new NotImplementedException();
-			}
+			bool connected = instanceXI.XInputGetState((uint)index, &state) == 0;
 
 			// validate is connected
 			UpdateStart(connected);
@@ -111,43 +36,43 @@ namespace Orbital.Input.XInput
 			// grab gamepad state
 			var gamepad = state.Gamepad;
 
-			/*// primary buttons
-			button1.Update((gamepad.wButtons & 0x1000) != 0);
-			button2.Update((gamepad.wButtons & 0x2000) != 0);
-			button3.Update((gamepad.wButtons & 0x4000) != 0);
-			button4.Update((gamepad.wButtons & 0x8000) != 0);
+			// primary buttons
+			buttons[0].Update((gamepad.wButtons & 0x1000) != 0);// 1
+			buttons[1].Update((gamepad.wButtons & 0x2000) != 0);// 2
+			buttons[2].Update((gamepad.wButtons & 0x4000) != 0);// 3
+			buttons[3].Update((gamepad.wButtons & 0x8000) != 0);// 4
 
 			// dpad
-			dpadLeft.Update((gamepad.wButtons & 0x0004) != 0);
-			dpadRight.Update((gamepad.wButtons & 0x0008) != 0);
-			dpadDown.Update((gamepad.wButtons & 0x0002) != 0);
-			dpadUp.Update((gamepad.wButtons & 0x0001) != 0);
+			buttons[4].Update((gamepad.wButtons & 0x0004) != 0);// left
+			buttons[5].Update((gamepad.wButtons & 0x0008) != 0);// right
+			buttons[6].Update((gamepad.wButtons & 0x0002) != 0);// down
+			buttons[7].Update((gamepad.wButtons & 0x0001) != 0);// up
 
 			// options
-			menu.Update((gamepad.wButtons & 0x0010) != 0);
-			back.Update((gamepad.wButtons & 0x0020) != 0);
+			buttons[8].Update((gamepad.wButtons & 0x0010) != 0);// menu
+			buttons[9].Update((gamepad.wButtons & 0x0020) != 0);// back
 
 			// bumbers
-			bumperLeft.Update((gamepad.wButtons & 0x0100) != 0);
-			bumperRight.Update((gamepad.wButtons & 0x0200) != 0);
+			buttons[10].Update((gamepad.wButtons & 0x0100) != 0);// bumper left
+			buttons[11].Update((gamepad.wButtons & 0x0200) != 0);// bumper right
 
 			// trigger buttons
 			float triggerLeftValue = gamepad.bLeftTrigger / 255f;
 			float triggerRightValue = gamepad.bRightTrigger / 255f;
-			triggerButtonLeft.Update(triggerLeftValue >= .75f);
-			triggerButtonRight.Update(triggerRightValue >= .75f);
+			buttons[12].Update(triggerLeftValue >= .75f);// trigger button left
+			buttons[13].Update(triggerRightValue >= .75f);// trigger button right
 
 			// joystick buttons
-			joystickButtonLeft.Update((gamepad.wButtons & 0x0040) != 0);
-			joystickButtonRight.Update((gamepad.wButtons & 0x0080) != 0);
+			buttons[14].Update((gamepad.wButtons & 0x0040) != 0);// joystick button left
+			buttons[15].Update((gamepad.wButtons & 0x0080) != 0);// joystick button right
 
 			// triggers
-			triggerLeft.Update(triggerLeftValue);
-			triggerRight.Update(triggerRightValue);
+			axes1D[0].Update(triggerLeftValue);// trigger left
+			axes1D[1].Update(triggerRightValue);// trigger right
 
 			// joysticks
-			joystickLeft.Update(new Vec2(gamepad.sThumbLX / (float)short.MaxValue, gamepad.sThumbLY / (float)short.MaxValue));
-			joystickRight.Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));*/
+			axes2D[0].Update(new Vec2(gamepad.sThumbLX / (float)short.MaxValue, gamepad.sThumbLY / (float)short.MaxValue));// joystick left
+			axes2D[1].Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));// joystick right
 		}
 
 		protected override void RefreshDeviceInfo()
@@ -164,11 +89,7 @@ namespace Orbital.Input.XInput
 				wLeftMotorSpeed = (WORD)(WORD.MaxValue * value),
 				wRightMotorSpeed = (WORD)(WORD.MaxValue * value)
 			};
-			switch (instanceXI.version)
-			{
-				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
-				default: throw new NotImplementedException();
-			}
+			instanceXI.XInputSetState((DWORD)index, &desc);
 		}
 
 		public unsafe override void SetRumble(float leftValue, float rightValue)
@@ -182,11 +103,7 @@ namespace Orbital.Input.XInput
 				wLeftMotorSpeed = (WORD)(WORD.MaxValue * leftValue),
 				wRightMotorSpeed = (WORD)(WORD.MaxValue * rightValue)
 			};
-			switch (instanceXI.version)
-			{
-				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
-				default: throw new NotImplementedException();
-			}
+			instanceXI.XInputSetState((DWORD)index, &desc);
 		}
 
 		public unsafe override void SetRumble(float value, int motorIndex)
@@ -196,11 +113,7 @@ namespace Orbital.Input.XInput
 			var desc = new XINPUT_VIBRATION();
 			if (motorIndex == 0) desc.wLeftMotorSpeed = (WORD)(WORD.MaxValue * value);
 			if (motorIndex == 1) desc.wRightMotorSpeed = (WORD)(WORD.MaxValue * value);
-			switch (instanceXI.version)
-			{
-				case InstanceVersion.XInput_1_4: XInputSetState_1_4((DWORD)index, &desc); break;
-				default: throw new NotImplementedException();
-			}
+			instanceXI.XInputSetState((DWORD)index, &desc);
 		}
 	}
 }
