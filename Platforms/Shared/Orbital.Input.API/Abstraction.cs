@@ -93,6 +93,11 @@ namespace Orbital.Input.API
 		public AbstractionInputRequirments inputRequirments;
 
 		/// <summary>
+		/// Disables XInput devices on non-XInput APIs
+		/// </summary>
+		public bool ignoreXInputDevices;
+
+		/// <summary>
 		/// Auto configure device abstractions such as 'gamepads' etc
 		/// </summary>
 		public bool autoConfigureAbstractions;
@@ -116,6 +121,9 @@ namespace Orbital.Input.API
 				AbstractionAPI.DirectInput
 				#endif
 			};
+
+			// disable XInput devices on non-XInput APIs
+			ignoreXInputDevices = true;
 
 			// auto init device abstractions
 			autoConfigureAbstractions = true;
@@ -183,7 +191,7 @@ namespace Orbital.Input.API
 					case AbstractionAPI.DirectInput:
 					{
 						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathDirectInput, DirectInput.Instance.lib))) continue;
-						var instanceXInput = new DirectInput.Instance(desc.autoConfigureAbstractions);
+						var instanceXInput = new DirectInput.Instance(desc.ignoreXInputDevices, desc.autoConfigureAbstractions);
 						if (instanceXInput.Init(IntPtr.Zero, DirectInput.FeatureLevel.Level_1))
 						{
 							instance = instanceXInput;

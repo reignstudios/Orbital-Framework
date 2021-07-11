@@ -26,7 +26,7 @@ namespace Orbital.Input.DirectInput
 		public const CallingConvention callingConvention = CallingConvention.Cdecl;
 
 		[DllImport(lib, CallingConvention = callingConvention)]
-		private static extern IntPtr Orbital_Video_DirectInput_Instance_Create();
+		private static extern IntPtr Orbital_Video_DirectInput_Instance_Create(int ignoreXInputDevices);
 
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private unsafe static extern int Orbital_Video_DirectInput_Instance_Init(IntPtr handle, IntPtr window, FeatureLevel* minimumFeatureLevel);
@@ -34,10 +34,10 @@ namespace Orbital.Input.DirectInput
 		[DllImport(lib, CallingConvention = callingConvention)]
 		private static extern void Orbital_Video_DirectInput_Instance_Dispose(IntPtr handle);
 
-		public Instance(bool autoConfigureAbstractions)
+		public Instance(bool ignoreXInputDevices, bool autoConfigureAbstractions)
 		: base(autoConfigureAbstractions)
 		{
-			handle = Orbital_Video_DirectInput_Instance_Create();
+			handle = Orbital_Video_DirectInput_Instance_Create(ignoreXInputDevices ? 1 : 0);
 			Device[] devices_backing;
 			devicesDI = new ReadOnlyArray<Device>(8, out devices_backing);
 			for (int i = 0; i != devices_backing.Length; ++i) devices_backing[i] = new Device(this, i);

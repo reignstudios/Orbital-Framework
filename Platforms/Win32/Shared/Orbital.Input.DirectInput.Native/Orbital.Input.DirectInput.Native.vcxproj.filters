@@ -13,6 +13,9 @@
     <ClInclude Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Common.h">
       <Filter>Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Shared\Orbital.Input.XInput\FindXInputControllers.h">
+      <Filter>Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Shared\Orbital.Input.DirectInput.Native\Instance.cpp">

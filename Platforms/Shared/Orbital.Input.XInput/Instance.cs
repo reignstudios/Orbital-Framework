@@ -6,6 +6,7 @@ using HMODULE = System.IntPtr;
 using FARPROC = System.IntPtr;
 using DWORD = System.UInt32;
 using WORD = System.UInt16;
+using BYTE = System.Byte;
 
 namespace Orbital.Input.XInput
 {
@@ -37,6 +38,16 @@ namespace Orbital.Input.XInput
 		XInput_9_1_0,
 	}
 
+	[StructLayout(LayoutKind.Sequential)]
+	struct XINPUT_CAPABILITIES
+	{
+		public BYTE Type;
+		public BYTE SubType;
+		public WORD Flags;
+		public XINPUT_GAMEPAD Gamepad;
+		public XINPUT_VIBRATION Vibration;
+	}
+
 	public sealed partial class Instance : InstanceBase
 	{
 		public const string lib_1_1 = "xinput1_1.dll";
@@ -58,6 +69,10 @@ namespace Orbital.Input.XInput
 		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
 		internal unsafe delegate DWORD XInputSetState_Method(DWORD dwUserIndex, XINPUT_VIBRATION* pVibration);
 		internal XInputSetState_Method XInputSetState;
+
+		[UnmanagedFunctionPointer(CallingConvention.StdCall)]
+		internal unsafe delegate DWORD XInputGetCapabilities_Method(DWORD dwUserIndex, DWORD dwFlags, XINPUT_CAPABILITIES* pCapabilities);
+		internal XInputGetCapabilities_Method XInputGetCapabilities;
 
 		public InstanceVersion version { get; private set; }
 
@@ -149,6 +164,11 @@ namespace Orbital.Input.XInput
 			fixed (byte* namePtr = name) address = GetProcAddress(library, namePtr);
 			if (address == FARPROC.Zero) return false;
 			XInputSetState = Marshal.GetDelegateForFunctionPointer<XInputSetState_Method>(address);
+
+			// NOTE: only some APIs support this function
+			name = Encoding.ASCII.GetBytes("XInputGetCapabilities");
+			fixed (byte* namePtr = name) address = GetProcAddress(library, namePtr);
+			if (address != FARPROC.Zero) XInputGetCapabilities = Marshal.GetDelegateForFunctionPointer<XInputGetCapabilities_Method>(address);
 
 			return true;
 		}

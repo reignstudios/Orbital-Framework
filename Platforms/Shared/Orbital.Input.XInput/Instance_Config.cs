@@ -1,10 +1,26 @@
 ﻿namespace Orbital.Input.XInput
 {
+	enum XINPUT_DEVSUBTYPE : byte
+	{
+		UNKNOWN = 0,
+		GAMEPAD,
+		WHEEL,
+		ARCADE_STICK,
+		FLIGHT_STICK,
+		DANCE_PAD,
+		GUITAR,
+		GUITAR_ALTERNATE,
+		GUITAR_BASS,
+		DRUM_KIT,
+		ARCADE_PAD
+	}
+
 	public sealed partial class Instance : InstanceBase
 	{
 		public override GamepadHardwareConfiguration[] GetGamepadHardwareConfigurations()
 		{
 			var hardwareConfig = new GamepadHardwareConfiguration();
+			hardwareConfig.productID = (int)XINPUT_DEVSUBTYPE.GAMEPAD;
 			hardwareConfig.config = GamepadConfiguration_Micorsoft_Xbox();
 
 			var hardwareConfigurations = new GamepadHardwareConfiguration[1];

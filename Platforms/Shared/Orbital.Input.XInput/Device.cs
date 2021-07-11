@@ -27,7 +27,7 @@ namespace Orbital.Input.XInput
 		{
 			// get device state
 			XINPUT_STATE state;
-			bool connected = instanceXI.XInputGetState((uint)index, &state) == 0;
+			bool connected = instanceXI.XInputGetState((DWORD)index, &state) == 0;
 
 			// validate is connected
 			UpdateStart(connected);
@@ -75,9 +75,30 @@ namespace Orbital.Input.XInput
 			axes2D[1].Update(new Vec2(gamepad.sThumbRX / (float)short.MaxValue, gamepad.sThumbRY / (float)short.MaxValue));// joystick right
 		}
 
-		protected override void RefreshDeviceInfo()
+		protected unsafe override void RefreshDeviceInfo()
 		{
-			// Do nothing: XInput doesn't provide device info by design and all configurations are gamepads
+			if
+			(
+				instanceXI.XInputGetCapabilities != null &&
+				instanceXI.version != InstanceVersion.XInput_1_1 &&
+				instanceXI.version != InstanceVersion.XInput_1_2 &&
+				instanceXI.version != InstanceVersion.XInput_1_3
+			)
+			{
+				var caps = new XINPUT_CAPABILITIES();
+				if (instanceXI.XInputGetCapabilities((DWORD)index, 0, &caps) == 0)
+				{
+					productID = caps.Type;
+				}
+				else
+				{
+					productID = (int)XINPUT_DEVSUBTYPE.GAMEPAD;
+				}
+			}
+			else
+			{
+				productID = (int)XINPUT_DEVSUBTYPE.GAMEPAD;
+			}
 		}
 
 		public unsafe override void SetRumble(float value)

@@ -60,6 +60,7 @@ struct Instance
 	HWND window;
 	HHOOK winprocHook;
 	FeatureLevel featureLevel;
+	bool ignoreXInputDevices;
 
 	Device devices[8];
 	int deviceCount;

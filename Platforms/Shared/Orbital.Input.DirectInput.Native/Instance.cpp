@@ -1,11 +1,17 @@
 #include "Instance.h"
 #include <dbt.h>
 
+#if (DIRECTINPUT_VERSION >= 0x0800)
+#include "../../Shared/Orbital.Input.XInput/FindXInputControllers.h"
+#endif
+
 extern "C"
 {
-	ORBITAL_EXPORT Instance* Orbital_Video_DirectInput_Instance_Create()
+	ORBITAL_EXPORT Instance* Orbital_Video_DirectInput_Instance_Create(int ignoreXInputDevices)
 	{
-		return (Instance*)calloc(1, sizeof(Instance));
+		Instance* handle = (Instance*)calloc(1, sizeof(Instance));
+		handle->ignoreXInputDevices = ignoreXInputDevices != 0;
+		return handle;
 	}
 
 	struct EnumControllersContext
@@ -19,6 +25,13 @@ extern "C"
 		EnumControllersContext* context = (EnumControllersContext*)pContext;
 		Instance* handle = context->handle;
 		Device* device = &handle->devices[handle->deviceCount];
+
+		#if (DIRECTINPUT_VERSION >= 0x0800)
+		if (handle->ignoreXInputDevices)
+		{
+			if (XInputVIDPIDExists(pdidInstance->guidProduct.Data1)) return DIENUM_CONTINUE;
+		}
+		#endif
 
 		// only create device if its not connected
 		if (!device->connected)
@@ -128,6 +141,14 @@ extern "C"
 
 	ORBITAL_EXPORT int Orbital_Video_DirectInput_Instance_RefreshDevices(Instance* handle)
 	{
+		// scan for XInput controllers if needed
+		#if (DIRECTINPUT_VERSION >= 0x0800)
+		if (handle->ignoreXInputDevices != 0)
+		{
+			if (!FindXInputControllers()) return 0;
+		}
+		#endif
+
 		// dispose existing devices
 		for (int i = 0; i != 8; ++i)
 		{
@@ -151,7 +172,7 @@ extern "C"
 		EnumControllersContext enumContext;
 		enumContext.handle = handle;
 		enumContext.joyConfig = &joyConfig;
-		#if DIRECTINPUT_VERSION > 0x0700
+		#if (DIRECTINPUT_VERSION >= 0x0800)
 		if (FAILED(handle->diInterface->EnumDevices(DI8DEVCLASS_GAMECTRL, EnumControllersCallback, &enumContext, DIEDFL_ATTACHEDONLY))) return 0;
 		#else
 		if (FAILED(handle->diInterface->EnumDevices(DIDEVTYPE_JOYSTICK, EnumControllersCallback, &enumContext, DIEDFL_ATTACHEDONLY))) return 0;
@@ -202,7 +223,7 @@ extern "C"
 		handle->window = window;
 
 		// create interface
-		#if DIRECTINPUT_VERSION > 0x0700
+		#if (DIRECTINPUT_VERSION >= 0x0800)
 		handle->featureLevel = FeatureLevel::Level_8;
 		if (FAILED(DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION, DI_INTERFACE_ID, (void**)&handle->diInterface, nullptr))) return 0;
 		#else

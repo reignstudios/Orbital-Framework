@@ -38,7 +38,7 @@ namespace Orbital.Demo
 
 			// load api abstraction (api-instance and hardware-device)
 			var abstractionDesc = new AbstractionDesc(AbstractionInitType.SingleAPI);
-			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.DirectInput};
+			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.XInput};
 
 			#if DEBUG
 			abstractionDesc.nativeLibPathDirectInput = Path.Combine(platformPath, @"Shared\Orbital.Input.DirectInput.Native\bin", libFolderBit, config);

@@ -64,6 +64,11 @@
             API input flag requirments
             </summary>
         </member>
+        <member name="F:Orbital.Input.API.AbstractionDesc.ignoreXInputDevices">
+            <summary>
+            Disables XInput devices on non-XInput APIs
+            </summary>
+        </member>
         <member name="F:Orbital.Input.API.AbstractionDesc.autoConfigureAbstractions">
             <summary>
             Auto configure device abstractions such as 'gamepads' etc
