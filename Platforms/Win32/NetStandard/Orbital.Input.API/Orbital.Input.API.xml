@@ -80,5 +80,10 @@
             NOTE: 'desc' may be modified
             </summary>
         </member>
+        <member name="P:Orbital.Input.API.Instance.devicesAPI">
+            <summary>
+            16 devices max
+            </summary>
+        </member>
     </members>
 </doc>

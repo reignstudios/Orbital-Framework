@@ -263,31 +263,31 @@ namespace Orbital.Input
 		/// All buttons this device supports
 		/// </summary>
 		public ReadOnlyArray<Button> buttons { get; protected set; }
-		internal Button[] buttons_backing;
+		protected internal Button[] buttons_backing;
 
 		/// <summary>
 		/// All 1D axis/triggers/etc this device supports
 		/// </summary>
 		public ReadOnlyArray<Axis1D> axes1D { get; protected set; }
-		internal Axis1D[] axes1D_backing;
+		protected internal Axis1D[] axes1D_backing;
 
 		/// <summary>
 		/// All 2D axis/joystick/etc this device supports
 		/// </summary>
 		public ReadOnlyArray<Axis2D> axes2D { get; protected set; }
-		internal Axis2D[] axes2D_backing;
+		protected internal Axis2D[] axes2D_backing;
 
 		/// <summary>
 		/// All 3D axis etc this device supports
 		/// </summary>
 		public ReadOnlyArray<Axis3D> axes3D { get; protected set; }
-		internal Axis3D[] axes3D_backing;
+		protected internal Axis3D[] axes3D_backing;
 
 		/// <summary>
 		/// All sliders this device supports
 		/// </summary>
 		public ReadOnlyArray<Slider> sliders { get; protected set; }
-		internal Slider[] sliders_backing;
+		protected internal Slider[] sliders_backing;
 
 		/// <summary>
 		/// All POV directions this device supports

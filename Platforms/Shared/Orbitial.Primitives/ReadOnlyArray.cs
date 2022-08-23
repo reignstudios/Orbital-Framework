@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Orbital.Primitives
@@ -6,6 +7,11 @@ namespace Orbital.Primitives
 	public class ReadOnlyArray<T> : IEnumerable<T>
 	{
 		private T[] array;
+
+		public void Copy(T[] dstArray)
+		{
+			Array.Copy(array, dstArray, dstArray.Length);
+		}
 
 		public ReadOnlyArray(int length, out T[] backingArray)
 		{
