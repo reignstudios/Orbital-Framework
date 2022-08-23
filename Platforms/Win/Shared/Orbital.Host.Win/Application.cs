@@ -14,7 +14,7 @@ using LRESULT = System.IntPtr;
 using HINSTANCE = System.IntPtr;
 using LPSTR = System.IntPtr;
 
-namespace Orbital.Host.Win32
+namespace Orbital.Host.Win
 {
 	public unsafe sealed class Application : ApplicationBase
 	{

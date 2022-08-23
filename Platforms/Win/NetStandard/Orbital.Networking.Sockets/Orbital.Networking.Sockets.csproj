@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\NetworkDiscovery\P2P.cs" Link="NetworkDiscovery\P2P.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\NetworkDiscovery\P2PBroadcaster.cs" Link="NetworkDiscovery\P2PBroadcaster.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\NetworkDiscovery\P2PListener.cs" Link="NetworkDiscovery\P2PListener.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\Socket.cs" Link="Socket.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\SocketUtils.cs" Link="SocketUtils.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocket.cs" Link="TCPSocket.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocketClient.cs" Link="TCPSocketClient.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocketConnection.cs" Link="TCPSocketConnection.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocketServer.cs" Link="TCPSocketServer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\UDPSocket.cs" Link="UDPSocket.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NetworkDiscovery\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Networking\Orbital.Networking.csproj" />
+  </ItemGroup>
+
+</Project>

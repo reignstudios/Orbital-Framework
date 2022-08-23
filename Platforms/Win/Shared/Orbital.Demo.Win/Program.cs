@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using Orbital.Host;
-using Orbital.Host.Win32;
+using Orbital.Host.Win;
 
-namespace Orbital.Demo.Win32
+namespace Orbital.Demo.Win
 {
 	static class Program
 	{
@@ -14,18 +14,18 @@ namespace Orbital.Demo.Win32
 			// init app and window
 			var application = new Application();
 			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
-			window.SetTitle("Demo: Win32");
+			window.SetTitle("Demo: Win");
 			window.Show();
 
 			// run example
 			using (var example = new Example(application, window))
 			{
 				#if NET_CORE
-				example.Init(@"..\..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..\..", "x64", "Win");
 				#elif NET_FRAMEWORK
-				example.Init(@"..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..", "x64", "Win");
 				#elif CS2X
-				example.Init(@"..\..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..\..", "x64", "Win");
 				#else
 				throw new NotImplementedException();
 				#endif

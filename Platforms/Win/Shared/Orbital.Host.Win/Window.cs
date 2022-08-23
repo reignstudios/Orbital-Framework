@@ -24,7 +24,7 @@ using HBRUSH = System.IntPtr;
 using LPCSTR = System.IntPtr;
 using HMENU = System.IntPtr;
 
-namespace Orbital.Host.Win32
+namespace Orbital.Host.Win
 {
 	public unsafe sealed class Window : WindowBase
 	{

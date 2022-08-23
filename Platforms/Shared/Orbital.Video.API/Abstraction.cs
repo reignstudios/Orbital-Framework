@@ -11,7 +11,7 @@ namespace Orbital.Video.API
 	/// </summary>
 	public enum AbstractionAPI
 	{
-		#if WIN32 || WINRT
+		#if WIN || WINRT
 		D3D12,
 		Vulkan
 		#endif
@@ -76,7 +76,7 @@ namespace Orbital.Video.API
 		/// </summary>
 		public AdapterVendor[] vendorIgnores_MixedDevices;
 
-		#if WIN32 || WINRT
+		#if WIN || WINRT
 		public D3D12.InstanceDesc instanceDescD3D12;
 		public D3D12.DeviceDesc deviceDescD3D12;
 		public string nativeLibPathD3D12;
@@ -95,7 +95,7 @@ namespace Orbital.Video.API
 			// set default apis
 			supportedAPIs = new AbstractionAPI[]
 			{
-				#if WIN32 || WINRT
+				#if WIN || WINRT
 				AbstractionAPI.D3D12,
 				AbstractionAPI.Vulkan
 				#endif
@@ -112,7 +112,7 @@ namespace Orbital.Video.API
 			}
 
 			// set D3D12 defualts
-			#if WIN32 || WINRT
+			#if WIN || WINRT
 			instanceDescD3D12.minimumFeatureLevel = D3D12.FeatureLevel.Level_11_0;
 			deviceDescD3D12.adapterIndex = -1;
 			deviceDescD3D12.ensureSwapChainMatchesWindowSize = true;
@@ -135,7 +135,7 @@ namespace Orbital.Video.API
 			#endif
 
 			// set Vulkan defualts
-			#if WIN32 || WINRT
+			#if WIN || WINRT
 			instanceDescVulkan.minimumFeatureLevel = Vulkan.FeatureLevel.Level_1_0;
 			deviceDescVulkan.adapterIndex = -1;
 			deviceDescVulkan.ensureSwapChainMatchesWindowSize = true;
@@ -161,7 +161,7 @@ namespace Orbital.Video.API
 
 	public static class Abstraction
 	{
-		#if WIN32
+		#if WIN
 		[DllImport("Kernel32.dll", EntryPoint = "LoadLibraryA")]
 		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
 		#endif
@@ -171,7 +171,7 @@ namespace Orbital.Video.API
 			byte[] libNameEncoded = Encoding.Default.GetBytes(libPath);
 			fixed (byte* libNameEncodedPtr = libNameEncoded)
 			{
-				#if WIN32
+				#if WIN
 				IntPtr lib = LoadLibraryA(libNameEncodedPtr);
 				#endif
 				return lib != IntPtr.Zero;
@@ -327,7 +327,7 @@ namespace Orbital.Video.API
 			{
 				switch (api)
 				{
-					#if WIN32 || WIN32
+					#if WIN || WINRT
 					case AbstractionAPI.D3D12:
 					{
 						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathD3D12, D3D12.Instance.lib))) continue;
@@ -411,7 +411,7 @@ namespace Orbital.Video.API
 			{
 				switch (api)
 				{
-					#if WIN32 || WIN32
+					#if WIN || WINRT
 					case AbstractionAPI.D3D12:
 					{
 						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathD3D12, D3D12.Instance.lib))) continue;

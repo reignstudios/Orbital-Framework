@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>Orbital.Host.Win32</name>
+        <name>Orbital.Host.Win</name>
     </assembly>
     <members>
-        <member name="M:Orbital.Host.Win32.Application.#ctor(System.IntPtr)">
+        <member name="M:Orbital.Host.Win.Application.#ctor(System.IntPtr)">
             <summary>
             Pass the argument: Marshal.GetHINSTANCE(typeof(Application).Module)
             </summary>

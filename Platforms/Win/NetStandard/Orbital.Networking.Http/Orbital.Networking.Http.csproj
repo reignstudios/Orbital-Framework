@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Http\HttpExtensions.cs" Link="HttpExtensions.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Http\HttpServer.cs" Link="HttpServer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Http\HttpUtils.cs" Link="HttpUtils.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="6.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Networking\Orbital.Networking.csproj" />
+  </ItemGroup>
+
+</Project>

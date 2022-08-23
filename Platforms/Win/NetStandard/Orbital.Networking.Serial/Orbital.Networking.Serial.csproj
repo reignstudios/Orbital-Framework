@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\Common.cs" Link="Common.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\SerialDevice.cs" Link="SerialDevice.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\SerialDeviceConnectDesc.cs" Link="SerialDeviceConnectDesc.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\SerialDeviceDesc.cs" Link="SerialDeviceDesc.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\SerialUtils.cs" Link="SerialUtils.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\SetupAPI.cs" Link="SetupAPI.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Serial\WinNT.cs" Link="WinNT.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Networking\Orbital.Networking.csproj" />
+  </ItemGroup>
+
+</Project>

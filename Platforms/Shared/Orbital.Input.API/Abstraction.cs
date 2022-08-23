@@ -10,7 +10,7 @@ namespace Orbital.Input.API
 	/// </summary>
 	public enum AbstractionAPI
 	{
-		#if WIN32 || WINRT
+		#if WIN || WINRT
 		WindowsGamingInput,
 		XInput,
 		DirectInput
@@ -102,7 +102,7 @@ namespace Orbital.Input.API
 		/// </summary>
 		public bool autoConfigureAbstractions;
 
-		#if WIN32 || WINRT
+		#if WIN || WINRT
 		public string nativeLibPathDirectInput;
 		#endif
 
@@ -115,7 +115,7 @@ namespace Orbital.Input.API
 			// set default apis
 			supportedAPIs = new AbstractionAPI[]
 			{
-				#if WIN32 || WINRT
+				#if WIN || WINRT
 				AbstractionAPI.WindowsGamingInput,
 				AbstractionAPI.XInput,
 				AbstractionAPI.DirectInput
@@ -132,7 +132,7 @@ namespace Orbital.Input.API
 
 	public static class Abstraction
 	{
-		#if WIN32
+		#if WIN
 		[DllImport("Kernel32.dll", EntryPoint = "LoadLibraryA")]
 		private static extern unsafe IntPtr LoadLibraryA(byte* lpLibFileName);
 		#endif
@@ -142,7 +142,7 @@ namespace Orbital.Input.API
 			byte[] libNameEncoded = Encoding.Default.GetBytes(libPath);
 			fixed (byte* libNameEncodedPtr = libNameEncoded)
 			{
-				#if WIN32
+				#if WIN
 				IntPtr lib = LoadLibraryA(libNameEncodedPtr);
 				#endif
 				return lib != IntPtr.Zero;

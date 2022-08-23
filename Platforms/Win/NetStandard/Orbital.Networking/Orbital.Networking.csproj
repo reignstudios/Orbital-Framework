@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Networking\DataProcessors\DataProcessor.cs" Link="DataProcessors\DataProcessor.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking\DataProcessors\MessageDataProcessor.cs" Link="DataProcessors\MessageDataProcessor.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking\DataProcessors\StreamDataProcessor.cs" Link="DataProcessors\StreamDataProcessor.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking\INetworkDataSender.cs" Link="INetworkDataSender.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DataProcessors\" />
+  </ItemGroup>
+
+</Project>

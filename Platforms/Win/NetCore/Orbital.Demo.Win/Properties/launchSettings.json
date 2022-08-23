@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Orbital.Demo.Win32": {
+    "Orbital.Demo.Win": {
       "commandName": "Project",
       "environmentVariables": {
         "VK_LAYER_PATH": "%VULKAN_SDK%\\Bin"

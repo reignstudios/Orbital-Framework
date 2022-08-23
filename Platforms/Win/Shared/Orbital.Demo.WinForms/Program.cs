@@ -21,9 +21,9 @@ namespace Orbital.Demo.WinForms
 			using (var example = new Example(application, window))
 			{
 				#if NET_CORE
-				example.Init(@"..\..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..\..", "x64", "Win");
 				#elif NET_FRAMEWORK
-				example.Init(@"..\..\..\..", "x64", "Win32");
+				example.Init(@"..\..\..\..", "x64", "Win");
 				#endif
 				example.Run();
 			}
