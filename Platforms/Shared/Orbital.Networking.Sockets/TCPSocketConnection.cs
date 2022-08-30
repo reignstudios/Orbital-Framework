@@ -170,14 +170,15 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public void Send(string text, Encoding encoding)
+		public int Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
 			int sent = 0;
 			do
 			{
-				sent += Send(data);
+				sent += Send(data, sent, data.Length - sent);
 			} while (sent < data.Length);
+			return data.Length;
 		}
 
 		public delegate void SendFilePercentCallbackMethod(int percent);

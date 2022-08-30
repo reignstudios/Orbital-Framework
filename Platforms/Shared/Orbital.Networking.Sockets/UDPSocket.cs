@@ -202,14 +202,10 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public void Send(string text, Encoding encoding)
+		public int Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			int sent = 0;
-			do
-			{
-				sent += Send(data);
-			} while (sent < data.Length);
+			return Send(data);
 		}
 
 		public int Recieve(byte[] recieveBuffer)

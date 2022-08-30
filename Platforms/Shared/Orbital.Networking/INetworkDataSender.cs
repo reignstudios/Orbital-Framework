@@ -8,6 +8,6 @@ namespace Orbital.Networking
 	{
 		int Send(byte[] buffer);
 		int Send(byte[] buffer, int offset, int size);
-		void Send(string text, Encoding encoding);
+		int Send(string text, Encoding encoding);
 	}
 }

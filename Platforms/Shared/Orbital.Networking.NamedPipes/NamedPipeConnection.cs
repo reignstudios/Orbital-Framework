@@ -139,10 +139,10 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 
-		public void Send(string text, Encoding encoding)
+		public int Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			Send(data);
+			return Send(data);
 		}
 	}
 }
