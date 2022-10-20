@@ -15,7 +15,7 @@ namespace Orbital.Video.Vulkan
 		/// <summary>
 		/// Allow the use of multiple GPUs that are linked when avaliable. Resources will be duplicated on all linked GPUs
 		/// </summary>
-		public bool allowMultiGPU;
+		public bool allowImplicitMultiGPU;
 
 		/// <summary>
 		/// Window to the device will present to. Can be null for background devices

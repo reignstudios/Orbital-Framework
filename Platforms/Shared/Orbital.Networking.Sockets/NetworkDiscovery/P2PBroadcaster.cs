@@ -14,7 +14,7 @@ namespace Orbital.Networking.Sockets.NetworkDiscovery
 
     public class P2PBroadcaster : P2P
     {
-		private Timer timer;
+		private System.Timers.Timer timer;
 		private byte[] metaData;
 		private byte[] transmissionData;
 		private P2PBroadcasterEndPoint broadcastEndPoint;
@@ -80,7 +80,7 @@ namespace Orbital.Networking.Sockets.NetworkDiscovery
 				Stop();
 
 				// start new broadcast timer
-				timer = new Timer(interval);
+				timer = new System.Timers.Timer(interval);
 				timer.Elapsed += Timer_Elapsed;
 				timer.Enabled = true;
 			}

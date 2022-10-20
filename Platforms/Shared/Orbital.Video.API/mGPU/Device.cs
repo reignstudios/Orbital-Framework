@@ -4,15 +4,23 @@ using System.IO;
 
 namespace Orbital.Video.API.mGPU
 {
+	public struct SubDeviceDesc
+	{
+		public InstanceBase instance;
+		public AdapterInfo adapter;
+	}
+
 	public sealed class Device : DeviceBase
 	{
+		public Instance instanceMGPU { get; private set; }
+
 		public DeviceBase[] devices { get; private set; }
 		public DeviceBase primaryDevice { get; private set; }
 
 		public int activeDeviceIndex { get; private set; }
 		public DeviceBase activeDevice { get; private set; }
 
-		public Device(InstanceBase instance, DeviceType type, AdapterInfo[] adapters)
+		/*public Device(InstanceBase instance, DeviceType type, AdapterInfo[] adapters)
 		: base(instance, type)
 		{
 			if (adapters == null || adapters.Length <= 1) throw new ArgumentException("Adapters must be at least two in length");
@@ -20,9 +28,20 @@ namespace Orbital.Video.API.mGPU
 			for (int i = 0; i != devices.Length; ++i)
 			{
 				// allocate API specific device
-				if (instance is D3D12.Instance) devices[i] = new D3D12.Device((D3D12.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
-				else if (instance is Vulkan.Instance) devices[i] = new Vulkan.Device((Vulkan.Instance)instance, adapters[i].isPrimary ? type : DeviceType.Background);
-				else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+				if (instance is D3D12.Instance)
+				{
+					var instanceD3D12 = (D3D12.Instance)instance;
+					devices[i] = new D3D12.Device(instanceD3D12, adapters[i].isPrimary ? type : DeviceType.Background);
+				}
+				else if (instance is Vulkan.Instance)
+				{
+					var instanceVulkan = (Vulkan.Instance)instance;
+					devices[i] = new Vulkan.Device(instanceVulkan, adapters[i].isPrimary ? type : DeviceType.Background);
+				}
+				else
+				{
+					throw new NotImplementedException("Failed to create instance based on type: " + instance.GetType().ToString());
+				}
 
 				// set primary device
 				if (adapters[i].isPrimary) primaryDevice = devices[i];
@@ -43,7 +62,43 @@ namespace Orbital.Video.API.mGPU
 					var deviceVulkan = (Vulkan.Device)devices[i];
 					if (!deviceVulkan.Init(desc.deviceDescVulkan)) return false;
 				}
-				else throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+				else
+				{
+					throw new NotImplementedException("Failed to create devices based on instance type: " + instance.GetType().ToString());
+				}
+			}
+
+			return true;
+		}*/
+
+		public Device(Instance instance, DeviceType type)
+		: base(instance, type)
+		{
+			instanceMGPU = instance;
+		}
+
+		public bool Init(AbstractionDesc abstractionDesc, SubDeviceDesc[] deviceDescs)
+		{
+			devices = new DeviceBase[deviceDescs.Length];
+			for (int i = 0; i != deviceDescs.Length; ++i)
+			{
+				var desc = deviceDescs[i];
+				if (desc.instance is D3D12.Instance)
+				{
+					var deviceD3D12 = new D3D12.Device((D3D12.Instance)desc.instance, type);
+					devices[i] = deviceD3D12;
+					if (!deviceD3D12.Init(abstractionDesc.deviceDescD3D12)) return false;
+				}
+				else if (desc.instance is Vulkan.Instance)
+				{
+					var deviceVulkan = new Vulkan.Device((Vulkan.Instance)desc.instance, type);
+					devices[i] = deviceVulkan;
+					if (!deviceVulkan.Init(abstractionDesc.deviceDescVulkan)) return false;
+				}
+				else
+				{
+					throw new NotImplementedException("Failed to create devices based on instance type: " + desc.instance.GetType().ToString());
+				}
 			}
 
 			return true;
@@ -156,22 +211,48 @@ namespace Orbital.Video.API.mGPU
 
 		public override RenderStateBase CreateRenderState(RenderStateDesc desc)
 		{
-			return activeDevice.CreateRenderState(desc);
+			var abstractions = new RenderStateBase[devices.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				abstractions[i] = devices[i].CreateRenderState(desc);
+			}
+			var abstraction = new RenderState(this, abstractions);
+			abstraction.Init(desc);
+			return abstraction;
 		}
 
 		public override ShaderEffectBase CreateShaderEffect(Stream stream, ShaderSamplerAnisotropy anisotropyOverride)
 		{
-			return activeDevice.CreateShaderEffect(stream, anisotropyOverride);
+			var abstractions = new ShaderEffectBase[devices.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				abstractions[i] = devices[i].CreateShaderEffect(stream, anisotropyOverride);
+			}
+			var abstraction = new ShaderEffect(this, abstractions);
+			return abstraction;
 		}
 
 		public override ShaderEffectBase CreateShaderEffect(ShaderBase vs, ShaderBase ps, ShaderBase hs, ShaderBase ds, ShaderBase gs, ShaderEffectDesc desc, bool disposeShaders)
 		{
-			return activeDevice.CreateShaderEffect(vs, ps, hs, ds, gs, desc, disposeShaders);
+			var abstractions = new ShaderEffectBase[devices.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				abstractions[i] = devices[i].CreateShaderEffect(vs, ps, hs, ds, gs, desc, disposeShaders);
+			}
+			var abstraction = new ShaderEffect(this, abstractions);
+			return abstraction;
 		}
 
 		public override ComputeStateBase CreateComputeState(ComputeStateDesc desc)
 		{
-			return activeDevice.CreateComputeState(desc);
+			var abstractions = new ComputeStateBase[devices.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				abstractions[i] = devices[i].CreateComputeState(desc);
+			}
+			var abstraction = new ComputeState(this, abstractions);
+			abstraction.Init(desc);
+			return abstraction;
 		}
 
 		public override ComputeShaderBase CreateComputeShader(Stream stream, ComputeShaderDesc desc)
@@ -226,7 +307,14 @@ namespace Orbital.Video.API.mGPU
 
 		public override VertexBufferStreamerBase CreateVertexBufferStreamer(VertexBufferStreamLayout layout)
 		{
-			return activeDevice.CreateVertexBufferStreamer(layout);
+			var abstractions = new VertexBufferStreamerBase[devices.Length];
+			for (int i = 0; i != devices.Length; ++i)
+			{
+				abstractions[i] = devices[i].CreateVertexBufferStreamer(layout);
+			}
+			var abstraction = new VertexBufferStreamer(this, abstractions);
+			abstraction.Init(layout);
+			return abstraction;
 		}
 
 		public override ConstantBufferBase CreateConstantBuffer(int size, ConstantBufferMode mode)

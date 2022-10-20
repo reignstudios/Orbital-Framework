@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29418.71
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{51EF7356-1961-4A05-A6FB-8F293A55FF4F}"
 EndProject
@@ -27,7 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.API", "Orbita
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.Vulkan", "Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj", "{5C35162C-ADDB-4DF5-A635-D013EE2E8DDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.IO", "Orbital.IO\Orbital.IO.csproj", "{DA5C12FC-F2FC-44C7-A968-93327883EABE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "Orbital.IO\Orbital.IO.csproj", "{DA5C12FC-F2FC-44C7-A968-93327883EABE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking", "Orbital.Networking\Orbital.Networking.csproj", "{302A0694-9338-45A9-8234-389055CE7E0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.NamedPipes", "Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{CD839911-EE4B-43DF-B842-8A368629FA4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.Sockets", "Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{621BA768-5F0B-4905-A84C-7E07E11283DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +93,18 @@ Global
 		{DA5C12FC-F2FC-44C7-A968-93327883EABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA5C12FC-F2FC-44C7-A968-93327883EABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA5C12FC-F2FC-44C7-A968-93327883EABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302A0694-9338-45A9-8234-389055CE7E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302A0694-9338-45A9-8234-389055CE7E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302A0694-9338-45A9-8234-389055CE7E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302A0694-9338-45A9-8234-389055CE7E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD839911-EE4B-43DF-B842-8A368629FA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD839911-EE4B-43DF-B842-8A368629FA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD839911-EE4B-43DF-B842-8A368629FA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD839911-EE4B-43DF-B842-8A368629FA4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

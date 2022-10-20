@@ -20,7 +20,7 @@ namespace Orbital.Video.D3D12
 		/// <summary>
 		/// Allow the use of multiple GPUs that are linked when avaliable. Resources will be duplicated on all linked GPUs
 		/// </summary>
-		public bool allowMultiGPU;
+		public bool allowImplicitMultiGPU;
 
 		/// <summary>
 		/// Window to the device will present to. Can be null for background devices
@@ -112,7 +112,7 @@ namespace Orbital.Video.D3D12
 		public unsafe bool Init(DeviceDesc desc)
 		{
 			int nodeCount = 0;
-			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.softwareRasterizer ? 1 : 0, desc.allowMultiGPU ? 1 : 0, &nodeCount) == 0) return false;
+			if (Orbital_Video_D3D12_Device_Init(handle, desc.adapterIndex, desc.softwareRasterizer ? 1 : 0, desc.allowImplicitMultiGPU ? 1 : 0, &nodeCount) == 0) return false;
 			this.nodeCount = nodeCount;
 			if (type == DeviceType.Presentation)
 			{

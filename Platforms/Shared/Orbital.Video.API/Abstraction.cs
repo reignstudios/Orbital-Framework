@@ -62,6 +62,16 @@ namespace Orbital.Video.API
 		private AbstractionInitType _type;
 
 		/// <summary>
+		/// Allow software accelerated devices
+		/// </summary>
+		public bool allowSoftwareDevices;
+
+		/// <summary>
+		/// Allow the use of multiple GPUs that are not-linked when avaliable. Resources will be duplicated on all linked GPUs
+		/// </summary>
+		public bool allowExplicitMultiGPU;
+
+		/// <summary>
 		/// Type of device to init
 		/// </summary>
 		public DeviceType deviceType = DeviceType.Presentation;
@@ -119,12 +129,12 @@ namespace Orbital.Video.API
 			deviceDescD3D12.swapChainBufferCount = 2;
 			if (type == AbstractionInitType.SingleGPU_Standard)
 			{
-				deviceDescD3D12.allowMultiGPU = false;
+				deviceDescD3D12.allowImplicitMultiGPU = false;
 				deviceDescD3D12.swapChainType = SwapChainType.SingleGPU_Standard;
 			}
 			else if (isAFR)
 			{
-				deviceDescD3D12.allowMultiGPU = true;
+				deviceDescD3D12.allowImplicitMultiGPU = true;
 				deviceDescD3D12.swapChainType = SwapChainType.MultiGPU_AFR;
 			}
 			else
@@ -142,12 +152,12 @@ namespace Orbital.Video.API
 			deviceDescVulkan.swapChainBufferCount = 2;
 			if (type == AbstractionInitType.SingleGPU_Standard)
 			{
-				deviceDescVulkan.allowMultiGPU = false;
+				deviceDescVulkan.allowImplicitMultiGPU = false;
 				deviceDescVulkan.swapChainType = SwapChainType.SingleGPU_Standard;
 			}
 			else if (isAFR)
 			{
-				deviceDescVulkan.allowMultiGPU = true;
+				deviceDescVulkan.allowImplicitMultiGPU = true;
 				deviceDescVulkan.swapChainType = SwapChainType.MultiGPU_AFR;
 			}
 			else
@@ -187,7 +197,95 @@ namespace Orbital.Video.API
 			return false;
 		}
 
-		private static DeviceBase CreateDevice(AbstractionDesc desc, InstanceBase instance)
+		/// <summary>
+		/// Initializes first API avaliable to the hardware
+		/// NOTE: 'desc' may be modified
+		/// </summary>
+		public static bool InitFirstAvaliable(AbstractionDesc desc, out InstanceBase instance, out DeviceBase device)
+		{
+			// validate supported APIs is configured
+			if (desc.supportedAPIs == null)
+			{
+				instance = null;
+				device = null;
+				return false;
+			}
+
+			// try to init each API until we find one supported by this hardware
+			List<DeviceBase> devices = null;
+			if (desc.allowExplicitMultiGPU) devices = new List<DeviceBase>();
+			foreach (var api in desc.supportedAPIs)
+			{
+				switch (api)
+				{
+					#if WIN || WINRT
+					case AbstractionAPI.D3D12:
+					{
+						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathD3D12, D3D12.Instance.lib))) continue;
+						var instanceD3D12 = new D3D12.Instance();
+						if (instanceD3D12.Init(desc.instanceDescD3D12))
+						{
+							if (desc.deviceDescD3D12.allowImplicitMultiGPU)
+							{
+								
+							}
+							
+							if (desc.allowExplicitMultiGPU && instanceD3D12.QuerySupportedAdapters(desc.allowSoftwareDevices, out var adapters))
+							{
+								
+							}
+
+							var deviceD3D12 = new D3D12.Device(instanceD3D12, desc.deviceType);
+							if (deviceD3D12.Init(desc.deviceDescD3D12))
+							{
+								instance = instanceD3D12;
+								device = deviceD3D12;
+								return true;
+							}
+							deviceD3D12.Dispose();
+							instanceD3D12.Dispose();
+						}
+						else
+						{
+							instanceD3D12.Dispose();
+						}
+					}
+					break;
+
+					//case AbstractionAPI.Vulkan:
+					//{
+					//	if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, "vulkan-1.dll"))) continue;
+					//	if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
+					//	var instanceVulkan = new Vulkan.Instance();
+					//	if (instanceVulkan.Init(desc.instanceDescVulkan))
+					//	{
+					//		var deviceVulkan = new Vulkan.Device(instanceVulkan, desc.deviceType);
+					//		if (deviceVulkan.Init(desc.deviceDescVulkan))
+					//		{
+					//			instance = instanceVulkan;
+					//			device = deviceVulkan;
+					//			return true;
+					//		}
+
+					//		deviceVulkan.Dispose();
+					//		instanceVulkan.Dispose();
+					//	}
+					//	else
+					//	{
+					//		instanceVulkan.Dispose();
+					//	}
+					//}
+					//break;
+					#endif
+				}
+			}
+
+			instance = null;
+			device = null;
+			return false;
+		}
+
+		/*private static DeviceBase CreateDevice(AbstractionDesc desc, InstanceBase instance)
 		{
 			DeviceBase device = null;
 			AdapterInfo[] adapters = null;
@@ -369,30 +467,30 @@ namespace Orbital.Video.API
 					}
 					break;
 
-					/*case AbstractionAPI.Vulkan:
-					{
-						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, "vulkan-1.dll"))) continue;
-						if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
-						var instanceVulkan = new Vulkan.Instance();
-						if (instanceVulkan.Init(desc.instanceDescVulkan))
-						{
-							var deviceVulkan = new Vulkan.Device(instanceVulkan, desc.deviceType);
-							if (deviceVulkan.Init(desc.deviceDescVulkan))
-							{
-								instance = instanceVulkan;
-								device = deviceVulkan;
-								return true;
-							}
+					//case AbstractionAPI.Vulkan:
+					//{
+					//	if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, "vulkan-1.dll"))) continue;
+					//	if (!LoadNativeLib(Path.Combine(desc.nativeLibPathVulkan, Vulkan.Instance.lib))) continue;
+					//	var instanceVulkan = new Vulkan.Instance();
+					//	if (instanceVulkan.Init(desc.instanceDescVulkan))
+					//	{
+					//		var deviceVulkan = new Vulkan.Device(instanceVulkan, desc.deviceType);
+					//		if (deviceVulkan.Init(desc.deviceDescVulkan))
+					//		{
+					//			instance = instanceVulkan;
+					//			device = deviceVulkan;
+					//			return true;
+					//		}
 
-							deviceVulkan.Dispose();
-							instanceVulkan.Dispose();
-						}
-						else
-						{
-							instanceVulkan.Dispose();
-						}
-					}
-					break;*/
+					//		deviceVulkan.Dispose();
+					//		instanceVulkan.Dispose();
+					//	}
+					//	else
+					//	{
+					//		instanceVulkan.Dispose();
+					//	}
+					//}
+					//break;
 					#endif
 				}
 			}
@@ -400,7 +498,7 @@ namespace Orbital.Video.API
 			instance = null;
 			device = null;
 			return false;
-		}
+		}*/
 
 		public static bool InitAllAvaliableInstances(AbstractionDesc desc, out List<InstanceBase> instances)
 		{

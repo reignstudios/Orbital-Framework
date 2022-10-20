@@ -23,6 +23,7 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\DepthStencil.cs" Link="mGPU\DepthStencil.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\Device.cs" Link="mGPU\Device.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\IndexBuffer.cs" Link="mGPU\IndexBuffer.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\Instance.cs" Link="mGPU\Instance.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RasterizeCommandList.cs" Link="mGPU\RasterizeCommandList.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RenderPass.cs" Link="mGPU\RenderPass.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Video.API\mGPU\RenderState.cs" Link="mGPU\RenderState.cs" />

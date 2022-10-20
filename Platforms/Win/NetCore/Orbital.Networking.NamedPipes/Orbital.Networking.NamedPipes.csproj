@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Networking.NamedPipes\NamedPipe.cs" Link="NamedPipe.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.NamedPipes\NamedPipeClient.cs" Link="NamedPipeClient.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.NamedPipes\NamedPipeConnection.cs" Link="NamedPipeConnection.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.NamedPipes\NamedPipeServer.cs" Link="NamedPipeServer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Networking\Orbital.Networking.csproj" />
+  </ItemGroup>
+
+</Project>

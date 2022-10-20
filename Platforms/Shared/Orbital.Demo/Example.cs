@@ -190,10 +190,13 @@ namespace Orbital.Demo
 
 			// load api abstraction (api-instance and hardware-device)
 			var abstractionDesc = new AbstractionDesc(AbstractionInitType.SingleGPU_Standard);
-			abstractionDesc.supportedAPIs = new AbstractionAPI[] {AbstractionAPI.D3D12};
+			abstractionDesc.supportedAPIs = new AbstractionAPI[]
+			{
+				AbstractionAPI.D3D12
+			};
 
 			abstractionDesc.deviceDescD3D12.window = window;
-			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
+			//abstractionDesc.deviceDescD3D12.adapterIndex = 2;
 			//abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			#if DEBUG
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
