@@ -4,11 +4,10 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using System.Linq;
 
 namespace Orbital.Networking.Sockets
 {
-	public enum RUDPPacketType : byte
+	enum RUDPPacketType : byte
 	{
 		Request,
 		Response,
@@ -16,24 +15,21 @@ namespace Orbital.Networking.Sockets
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	public struct RUPDPacketHeader
+	struct RUPDPacketHeader
 	{
 		public uint id;
 		public uint dataSize;
-		public uint part, totalParts;
 		public RUDPPacketType type;
 
-		public RUPDPacketHeader(uint id, uint dataSize, uint part, uint totalParts, RUDPPacketType type)
+		public RUPDPacketHeader(uint id, uint dataSize, RUDPPacketType type)
 		{
 			this.id = id;
 			this.dataSize = dataSize;
-			this.part = part;
-			this.totalParts = totalParts;
 			this.type = type;
 		}
 	}
 
-	public class RUDPSocket : Socket, INetworkDataSender
+	public abstract class RUDPSocket : Socket, INetworkDataSender
 	{
 		class BufferPool
 		{
@@ -84,31 +80,24 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		struct SendingPacketPart
-		{
-			public uint part;
-			public bool transmissionSuccessful;
-			public BufferPool.Pool pool;
-		}
-
-		public UDPSocket socket;
+		public UDPSocket socket { get; private set; }
 		private Guid connectionTestID;
 		private bool isConnected;
 		private Timer tryToConnectTimer;
 		private BufferPool bufferPool;
 		private uint nextPacketID;
-
 		private Dictionary<uint, BufferPool.Pool> sendingBuffers;
-		private Dictionary<uint, Dictionary<uint, BufferPool.Pool>> recievingBuffers;
 
 		public delegate void ConnectedCallbackMethod(RUDPSocket socket, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
+
+		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int size);
+		public event DataRecievedCallbackMethod DataRecievedCallback;
 
 		public RUDPSocket(IPAddress remoteAddress, IPAddress localAddress, int port, int receiveBufferSize)
 		: base(remoteAddress, port)
 		{
 			sendingBuffers = new Dictionary<uint, BufferPool.Pool>();
-			recievingBuffers = new Dictionary<uint, Dictionary<uint, BufferPool.Pool>>();
 			bufferPool = new BufferPool();
 
 			socket = new UDPSocket(remoteAddress, localAddress, port, false, receiveBufferSize);
@@ -144,7 +133,7 @@ namespace Orbital.Networking.Sockets
 				{
 					fixed (Guid* id = &connectionTestID)
 					{
-						SendCustomPacket(uint.MaxValue, 0, 1, (byte*)id, Marshal.SizeOf<Guid>(), RUDPPacketType.Request);
+						SendCustomPacket(uint.MaxValue, (byte*)id, Marshal.SizeOf<Guid>(), RUDPPacketType.Request);
 					}
 				}
 			}
@@ -167,11 +156,11 @@ namespace Orbital.Networking.Sockets
 					var header = (RUPDPacketHeader*)dataPtrOffset;
 					dataRead += Marshal.SizeOf<RUPDPacketHeader>();
 
-					// make sure packet data doesn't overflow
+					// validate expected data size
 					if (size < headerSize + header->dataSize) return;
 
 					// check if this is a connection validation communication
-					if (header->id == uint.MaxValue && header->part == 0 && size == headerSize + Marshal.SizeOf<Guid>())
+					if (header->id == uint.MaxValue && size == headerSize + Marshal.SizeOf<Guid>())
 					{
 						if (header->type == RUDPPacketType.Response)// check if this is a connection validation response
 						{
@@ -201,25 +190,25 @@ namespace Orbital.Networking.Sockets
 						{
 							if (sendingBuffers.ContainsKey(header->id))// ignore potentially redundent packets
 							{
-								if (!recievingBuffers.ContainsKey(header->id))// add new recieving buffer
+								/*if (!recievingBuffers.ContainsKey(header->id))// add new recieving buffer
 								{
-									var parts = new Dictionary<uint, BufferPool.Pool>();
+									//var parts = new Dictionary<uint, BufferPool.Pool>();// TODO: avoid allocation
 									var pool = bufferPool.GetAvaliable((int)header->dataSize);
 									Array.Copy(data, dataRead, pool.data, 0, header->dataSize);
-									parts.Add(header->part, pool);
-									recievingBuffers.Add(header->id, parts);
+									//parts.Add(header->part, pool);
+									recievingBuffers.Add(header->id, pool);
 								}
 								else if (!recievingBuffers[header->id].ContainsKey(header->part))// add part or ignore redundent packets
 								{
 									var pool = bufferPool.GetAvaliable((int)header->dataSize);
 									Array.Copy(data, dataRead, pool.data, 0, header->dataSize);
 									recievingBuffers[header->id].Add(header->part, pool);
-								}
+								}*/
 							}
 						}
 						else if (header->type == RUDPPacketType.Request)
 						{
-							if (recievingBuffers.ContainsKey(header->id))
+							/*if (recievingBuffers.ContainsKey(header->id))
 							{
 								if (!recievingBuffers[header->id].ContainsKey(header->part))// add part or ignore redundent packets
 								{
@@ -230,12 +219,12 @@ namespace Orbital.Networking.Sockets
 							}
 							else// add new recieving buffer
 							{
-								var parts = new Dictionary<uint, BufferPool.Pool>();
+								var parts = new Dictionary<uint, BufferPool.Pool>();// TODO: avoid allocation
 								var pool = bufferPool.GetAvaliable((int)header->dataSize);
 								Array.Copy(data, dataRead, pool.data, 0, header->dataSize);
 								parts.Add(header->part, pool);
 								recievingBuffers.Add(header->id, parts);
-							}
+							}*/
 						}
 						else if (header->type == RUDPPacketType.PacketRecievedResponse)
 						{
@@ -247,7 +236,7 @@ namespace Orbital.Networking.Sockets
 						}
 
 						// always respond packet recieved to sender
-						SendCustomPacket(header->id, header->part, header->totalParts, null, RUDPPacketType.PacketRecievedResponse);
+						SendCustomPacket(header->id, null, RUDPPacketType.PacketRecievedResponse);
 					}
 
 					// offset read data
@@ -267,22 +256,22 @@ namespace Orbital.Networking.Sockets
 			return isConnected;
 		}
 
-		private unsafe void SendCustomPacket(uint id, uint part, uint totalParts, byte[] data, RUDPPacketType type)
+		private unsafe void SendCustomPacket(uint id, byte[] data, RUDPPacketType type)
 		{
 			if (data != null)
 			{
 				fixed (byte* dataPtr = data)
 				{
-					SendCustomPacket(id, part, totalParts, dataPtr, data.Length, type);
+					SendCustomPacket(id, dataPtr, data.Length, type);
 				}
 			}
 			else
 			{
-				SendCustomPacket(id, part, totalParts, null, 0, type);
+				SendCustomPacket(id, null, 0, type);
 			}
 		}
 
-		private unsafe void SendCustomPacket(uint id, uint part, uint totalParts, byte* data, int dataSize, RUDPPacketType type)
+		private unsafe void SendCustomPacket(uint id, byte* data, int dataSize, RUDPPacketType type)
 		{
 			int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
 
@@ -290,7 +279,7 @@ namespace Orbital.Networking.Sockets
 			var pool = bufferPool.GetAvaliable(headerSize + dataSize);
 
 			// copy header & data into packet-data
-			var header = new RUPDPacketHeader(id, (uint)dataSize, part, totalParts, type);
+			var header = new RUPDPacketHeader(id, (uint)dataSize, type);
 			fixed (byte* packetDataPtr = pool.data)
 			{
 				Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
@@ -315,7 +304,7 @@ namespace Orbital.Networking.Sockets
 			// copy header & data into pool
 			unsafe
 			{
-				var header = new RUPDPacketHeader(nextPacketID, (uint)size, 0, 1, RUDPPacketType.Request);
+				var header = new RUPDPacketHeader(nextPacketID, (uint)size, RUDPPacketType.Request);
 				fixed (byte* poolDataPtr = pool.data)
 				fixed (byte* bufferPtr = buffer)
 				{
@@ -337,12 +326,12 @@ namespace Orbital.Networking.Sockets
 
 		public int Send(byte[] buffer)
 		{
-			return SendPacket(buffer, 0, buffer.Length);
+			lock (this) return SendPacket(buffer, 0, buffer.Length);
 		}
 
 		public int Send(byte[] buffer, int offset, int size)
 		{
-			return SendPacket(buffer, offset, size);
+			lock (this) return SendPacket(buffer, offset, size);
 		}
 
 		public int Send(string text, Encoding encoding)
