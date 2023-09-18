@@ -3,22 +3,6 @@
 # Orbital-Framework (Under development)
 Graphics / Video, Audio and Input frameworks. (Agnostic / Portable / Easy / Powerful / Fast)
 
-## Cloning source
-### Clone new repo
-* git clone --recursive https://github.com/reignstudios/Orbital-Framework.git<br>
-
-### Updating existing cloned repos:
-* git pull
-* git submodule update --init --recursive
-
-## Project structure layout
-* "Platforms": <b>OS / API targets</b>
-* "Platforms/Shared": <b>Code shared accross platforms</b>
-* "Platforms/\<Platform\>": <b>C# projects specifically setup for different host enviroments</b>
-* "Platforms/\<Platform\>/NetCore": <b>.NET Core runtime targets</b>
-* "Platforms/\<Platform\>/NetFramework": <b>.NET/Mono Framework runtime targets</b>
-* "Platforms/\<Platform\>/CS2X": <b>CS2X runtime targets</b>
-
 ## Goals
 This project will focus on an extremely portable, fast and powerful yet simple to understand agnostic set of frameworks for use in C# / .NET or CS2X runtimes.<br>
 
@@ -75,7 +59,6 @@ API Agnostic DSP effects can be written in C#<br>
 * Apple: Carbon
 
 ## Building
-* Prerequisites
-	* Visual Studios 2019 (VS for Mac / MonoDevelop or VSCode have not yet been tested)
-	* .NET Core, .NET Framework or CS2X. Depends on what you're targeting.
-* Debugging CS2X Analyzer errors: Open projects after running "CS2X.Ayalizer.Vsix"
+* Prerequisites (Depends on what you're targeting)
+	* IDE: Visual Studios, Rider, VSCode
+	* .NET Core, .NET Framework, Mono
