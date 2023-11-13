@@ -46,10 +46,12 @@ API Agnostic DSP effects can be written in C#<br>
 * Apple: Carbon
 
 ### Input / Mouse,Keyboard,GamePads,Touch
-* MS: DirectInput
+* MS: HID
 * MS: XInput
-* MS: Win16 / Win32 / WinForms / WPF Input
+* MS: DirectInput
+* MS: Windows.Gaming.Input
 * MS: WinRT XAML Input
+* MS: Win16 / Win32 / WinForms / WPF Input
 * POSIX: HID
 * POSIX: X11
 * POSIX: Wayland
