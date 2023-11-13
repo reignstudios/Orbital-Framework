@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;VULKAN;CS_7_3</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_FRAMEWORK;CS_7_3;WIN;VULKAN</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;VULKAN;CS_7_3</DefineConstants>
+    <DefineConstants>TRACE;NET_FRAMEWORK;CS_7_3;WIN;VULKAN</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -46,6 +46,9 @@
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\CommandList.cs">
       <Link>CommandList.cs</Link>
     </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeCommandList.cs">
+      <Link>ComputeCommandList.cs</Link>
+    </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\ComputeShader.cs">
       <Link>ComputeShader.cs</Link>
     </Compile>
@@ -63,6 +66,9 @@
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\Instance.cs">
       <Link>Instance.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RasterizeCommandList.cs">
+      <Link>RasterizeCommandList.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.Vulkan\RenderPass.cs">
       <Link>RenderPass.cs</Link>

@@ -1,0 +1,1 @@
+dotnet publish -r win-arm32 -c Release --no-self-contained

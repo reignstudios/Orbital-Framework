@@ -183,6 +183,8 @@ namespace Orbital.Video.API
 			{
 				#if WIN
 				IntPtr lib = LoadLibraryA(libNameEncodedPtr);
+				#else
+				IntPtr lib = IntPtr.Zero;
 				#endif
 				return lib != IntPtr.Zero;
 			}

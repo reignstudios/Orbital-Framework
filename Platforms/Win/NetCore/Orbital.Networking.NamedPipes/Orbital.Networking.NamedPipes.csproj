@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

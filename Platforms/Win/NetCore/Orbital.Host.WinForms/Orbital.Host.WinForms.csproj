@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

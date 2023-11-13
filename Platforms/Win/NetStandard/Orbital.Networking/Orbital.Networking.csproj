@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DefineConstants>TRACE;NET_STANDARD_20;CS_7_3;WIN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

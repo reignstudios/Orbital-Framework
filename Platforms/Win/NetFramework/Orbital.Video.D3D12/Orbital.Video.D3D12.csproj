@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CS_7_3;D3D12</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_FRAMEWORK;CS_7_3;WIN;D3D12</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CS_7_3;D3D12</DefineConstants>
+    <DefineConstants>TRACE;NET_FRAMEWORK;CS_7_3;WIN;D3D12</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -45,6 +45,9 @@
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\CommandList.cs">
       <Link>CommandList.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ComputeCommandList.cs">
+      <Link>ComputeCommandList.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\ComputeShader.cs">
       <Link>ComputeShader.cs</Link>
@@ -66,6 +69,9 @@
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\Instance.cs">
       <Link>Instance.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RasterizeCommandList.cs">
+      <Link>RasterizeCommandList.cs</Link>
     </Compile>
     <Compile Include="..\..\..\Shared\Orbital.Video.D3D12\RenderPass.cs">
       <Link>RenderPass.cs</Link>
