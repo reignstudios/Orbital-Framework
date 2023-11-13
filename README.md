@@ -65,5 +65,5 @@ API Agnostic DSP effects can be written in C#<br>
 
 ## Building
 * Prerequisites (Depends on what you're targeting)
-	* IDE: Visual Studios, Rider, VSCode
+	* IDE: Visual Studios, Rider, VSCode, MonoDevelop, VS for Mac, etc
 	* .NET Core, .NET Framework, Mono
