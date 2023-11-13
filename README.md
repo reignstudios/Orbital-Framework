@@ -58,6 +58,9 @@ API Agnostic DSP effects can be written in C#<br>
 * Apple: Cocoa
 * Apple: Carbon
 
+### Framework should compile with IL2X runtime (for portability & speed)
+* A .NET IL => C89 (or other targets): https://github.com/reignstudios/IL2X
+
 ## Building
 * Prerequisites (Depends on what you're targeting)
 	* IDE: Visual Studios, Rider, VSCode
