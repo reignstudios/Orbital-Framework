@@ -62,7 +62,7 @@
       <Project>{363f2af2-cba8-4bd8-aece-ff289e068fe4}</Project>
       <Name>Orbital.Host.Win</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Host\Orbital.Host.csproj">
       <Project>{aaef4109-5b5b-4fa4-aea0-436de1a01a5d}</Project>
       <Name>Orbital.Host</Name>
     </ProjectReference>
@@ -78,19 +78,19 @@
       <Project>{bee0670f-22ee-40f2-bf74-751d1c8e0c93}</Project>
       <Name>Orbital.Input.XInput</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Input\Orbital.Input.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Input\Orbital.Input.csproj">
       <Project>{323a7b0e-08e5-47f8-90c0-1e8d4e125758}</Project>
       <Name>Orbital.Input</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.NetCore\Orbital.NetCore.csproj">
       <Project>{d178ef59-c07d-4f4c-93f2-9c63cc144435}</Project>
       <Name>Orbital.NetCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{6f119961-7ba2-4d88-af79-28be31b55f4b}</Project>
       <Name>Orbital.Numerics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Primitives\Orbital.Primitives.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Primitives\Orbital.Primitives.csproj">
       <Project>{ec650d32-d981-4908-a0f0-ae99beb15708}</Project>
       <Name>Orbital.Primitives</Name>
     </ProjectReference>

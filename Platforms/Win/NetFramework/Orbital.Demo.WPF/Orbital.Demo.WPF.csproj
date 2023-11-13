@@ -84,11 +84,11 @@
       <Project>{9d7a2f47-c95d-4627-92f3-5d519e70db3d}</Project>
       <Name>Orbital.Host.WPF</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
       <Name>Orbital.Numerics</Name>
     </ProjectReference>

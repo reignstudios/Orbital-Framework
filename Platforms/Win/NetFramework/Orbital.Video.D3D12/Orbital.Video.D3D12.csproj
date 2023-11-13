@@ -109,19 +109,19 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.IO\Orbital.IO.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.IO\Orbital.IO.csproj">
       <Project>{e618a9ca-0a48-4682-b1b8-44c4f3ecd300}</Project>
       <Name>Orbital.IO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Numerics\Orbital.Numerics.csproj">
       <Project>{638a7529-efff-4fec-8f73-7a65d2972e0d}</Project>
       <Name>Orbital.Numerics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Video\Orbital.Video.csproj">
       <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
       <Name>Orbital.Video</Name>
     </ProjectReference>

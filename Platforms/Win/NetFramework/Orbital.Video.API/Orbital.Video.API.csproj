@@ -49,7 +49,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Host\Orbital.Host.csproj">
       <Project>{1dbe6afb-fa57-424e-a56a-9b573828fffd}</Project>
       <Name>Orbital.Host</Name>
     </ProjectReference>
@@ -61,7 +61,7 @@
       <Project>{806db229-803d-4006-be14-1f9908613dbf}</Project>
       <Name>Orbital.Video.Vulkan</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj">
+    <ProjectReference Include="..\..\..\Portable\NetFramework\Orbital.Video\Orbital.Video.csproj">
       <Project>{adc7ca61-0dc3-4a17-960e-086f36e06f39}</Project>
       <Name>Orbital.Video</Name>
     </ProjectReference>

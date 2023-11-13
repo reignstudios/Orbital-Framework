@@ -13,6 +13,9 @@
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\NetworkDiscovery\P2PBroadcaster.cs" Link="NetworkDiscovery\P2PBroadcaster.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\NetworkDiscovery\P2PListener.cs" Link="NetworkDiscovery\P2PListener.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\RUDPSocket.cs" Link="RUDPSocket.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\RUDPSocketClient.cs" Link="RUDPSocketClient.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\RUDPSocketConnection.cs" Link="RUDPSocketConnection.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\RUDPSocketServer.cs" Link="RUDPSocketServer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\Socket.cs" Link="Socket.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\SocketUtils.cs" Link="SocketUtils.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocket.cs" Link="TCPSocket.cs" />

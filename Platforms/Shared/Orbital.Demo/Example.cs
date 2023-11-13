@@ -199,14 +199,14 @@ namespace Orbital.Demo
 			//abstractionDesc.deviceDescD3D12.adapterIndex = 2;
 			//abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			#if DEBUG
-			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Shared\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
+			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Native\Orbital.Video.D3D12.Native\bin", libFolderBit, config);
 			#else
 			abstractionDesc.nativeLibPathD3D12 = string.Empty;
 			#endif
 
 			abstractionDesc.deviceDescVulkan.window = window;
 			#if DEBUG
-			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Shared\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
+			abstractionDesc.nativeLibPathVulkan = Path.Combine(platformPath, @"Native\Orbital.Video.Vulkan.Native\bin", libFolderBit, config);
 			#else
 			abstractionDesc.nativeLibPathVulkan = string.Empty;
 			#endif

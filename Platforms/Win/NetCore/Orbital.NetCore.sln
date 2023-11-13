@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "Orbital.Numerics\Orbital.Numerics.csproj", "{51EF7356-1961-4A05-A6FB-8F293A55FF4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "..\..\Portable\NetCore\Orbital.Numerics\Orbital.Numerics.csproj", "{51EF7356-1961-4A05-A6FB-8F293A55FF4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "Orbital.Host\Orbital.Host.csproj", "{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj", "{2C1343EE-D09E-4EA4-A7CD-F3649AE02703}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.WinForms", "Orbital.Host.WinForms\Orbital.Host.WinForms.csproj", "{5C1F418A-9D5B-44C1-A07C-B7B29359799D}"
 EndProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Win", "Orbital
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.Win", "Orbital.Demo.Win\Orbital.Demo.Win.csproj", "{F25F9861-354B-4CCD-9D45-C1DA0E2304F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video", "Orbital.Video\Orbital.Video.csproj", "{453ECD81-1052-4784-A99A-01C5B135ED49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video", "..\..\Portable\NetCore\Orbital.Video\Orbital.Video.csproj", "{453ECD81-1052-4784-A99A-01C5B135ED49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.D3D12", "Orbital.Video.D3D12\Orbital.Video.D3D12.csproj", "{FB06F31C-A293-4512-92CC-0DC4FC7510B5}"
 EndProject
@@ -27,13 +27,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.API", "Orbita
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.Vulkan", "Orbital.Video.Vulkan\Orbital.Video.Vulkan.csproj", "{5C35162C-ADDB-4DF5-A635-D013EE2E8DDA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "Orbital.IO\Orbital.IO.csproj", "{DA5C12FC-F2FC-44C7-A968-93327883EABE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "..\..\Portable\NetCore\Orbital.IO\Orbital.IO.csproj", "{DA5C12FC-F2FC-44C7-A968-93327883EABE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking", "Orbital.Networking\Orbital.Networking.csproj", "{302A0694-9338-45A9-8234-389055CE7E0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking", "..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj", "{302A0694-9338-45A9-8234-389055CE7E0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.NamedPipes", "Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{CD839911-EE4B-43DF-B842-8A368629FA4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.NamedPipes", "..\..\Portable\NetCore\Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{CD839911-EE4B-43DF-B842-8A368629FA4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.Sockets", "Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{621BA768-5F0B-4905-A84C-7E07E11283DA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.Sockets", "..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{621BA768-5F0B-4905-A84C-7E07E11283DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

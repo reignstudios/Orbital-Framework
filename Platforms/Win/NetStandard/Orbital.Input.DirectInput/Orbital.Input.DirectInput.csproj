@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Input\Orbital.Input.csproj" />
-    <ProjectReference Include="..\Orbital.NetCore\Orbital.NetCore.csproj" />
-    <ProjectReference Include="..\Orbital.Numerics\Orbital.Numerics.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Input\Orbital.Input.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.NetCore\Orbital.NetCore.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Numerics\Orbital.Numerics.csproj" />
   </ItemGroup>
 
 </Project>

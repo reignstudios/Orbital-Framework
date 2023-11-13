@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN</DefineConstants>
+    <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN;VULKAN</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Video\Orbital.Video.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Video\Orbital.Video.csproj" />
   </ItemGroup>
 
 </Project>

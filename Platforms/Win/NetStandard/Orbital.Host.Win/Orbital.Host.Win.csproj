@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbital.Host\Orbital.Host.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Host\Orbital.Host.csproj" />
   </ItemGroup>
 
 </Project>
