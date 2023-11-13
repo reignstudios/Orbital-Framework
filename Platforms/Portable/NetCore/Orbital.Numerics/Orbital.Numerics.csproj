@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN</DefineConstants>
+    <DefineConstants>TRACE;NET_CORE;CS_7_3</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
