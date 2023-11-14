@@ -10,3 +10,8 @@ git submodule update --remote --merge
 <<< Push git submodule changes >>>
 git push origin HEAD:master
 NOTE old git method: git push --recurse-submodules=on-demand
+
+<<< dotnet solution create commands >>>
+dotnet new classlib
+dotnet new sln
+dotnet sln add <path>.csproj
