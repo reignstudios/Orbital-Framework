@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Orbital.Demo.Host</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Orbital.Host.Cocoa\Orbital.Host.Cocoa.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Demo.Cocoa\Program.cs">
+        <Link>Program.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+</Project>

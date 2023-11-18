@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Carbon", "Orbi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Xamarin", "Orbital.Host.Xamarin\Orbital.Host.Xamarin.csproj", "{FDDC0480-DC89-4EFF-99B2-67165389E598}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Cocoa", "Orbital.Demo.Cocoa\Orbital.Demo.Cocoa.csproj", "{0BE78FAE-DEF6-466C-A96F-F3141C50A367}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BE78FAE-DEF6-466C-A96F-F3141C50A367}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BE78FAE-DEF6-466C-A96F-F3141C50A367}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BE78FAE-DEF6-466C-A96F-F3141C50A367}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE78FAE-DEF6-466C-A96F-F3141C50A367}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
