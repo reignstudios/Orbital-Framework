@@ -56,19 +56,9 @@ namespace Orbital.Host.Carbon
 			// TODO
 		}
 
-		public override void Hide()
-		{
-			// TODO
-		}
-
 		public override void Close()
 		{
 			// TODO
-		}
-
-		public override bool IsVisible()
-		{
-			return false;// TODO
 		}
 
 		public override bool IsClosed()
@@ -82,11 +72,6 @@ namespace Orbital.Host.Carbon
 			return new Point2();
 		}
 
-		public override void SetPosition(Point2 position)
-		{
-			SetPosition(position.x, position.y);
-		}
-
 		public override void SetPosition(int x, int y)
 		{
 			// TODO
@@ -96,11 +81,6 @@ namespace Orbital.Host.Carbon
 		{
 			// TODO
 			return new Size2();
-		}
-
-		public override void SetSize(Size2 size, WindowSizeType type)
-		{
-			SetSize(size.width, size.height, type);
 		}
 
 		public override void SetSize(int width, int height, WindowSizeType type)

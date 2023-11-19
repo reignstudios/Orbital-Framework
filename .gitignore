@@ -13,6 +13,7 @@
 *.xcuserstate
 project.xcworkspace/
 xcuserdata/
+DerivedData/
 
 # User-specific files
 *.suo

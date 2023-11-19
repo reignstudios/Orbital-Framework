@@ -1,5 +1,9 @@
 #import "Common.h"
 
-@interface Window : NSWindow
+@interface Window : NSObject
+{
+    @public NSWindow* window;
+}
 
+- (void)initWindow;
 @end

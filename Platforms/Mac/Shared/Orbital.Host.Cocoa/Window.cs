@@ -6,12 +6,28 @@ using Orbital.Numerics;
 
 namespace Orbital.Host.Cocoa
 {
-	public unsafe sealed class Window : WindowBase
+	public sealed class Window : WindowBase
 	{
-		private static List<Window> windows = new List<Window>();
+		[DllImport(Application.lib)]
+		private static extern IntPtr Orbital_Host_Window_Create();
 
+		[DllImport(Application.lib)]
+		private static extern void Orbital_Host_Window_Init(IntPtr window);
+
+		[DllImport(Application.lib)]
+		private static extern void Orbital_Host_Window_Dispose(IntPtr window);
+
+		[DllImport(Application.lib)]
+		private static extern void Orbital_Host_Window_Show(IntPtr window);
+
+		[DllImport(Application.lib)]
+		private static extern void Orbital_Host_Window_Close(IntPtr window);
+
+		[DllImport(Application.lib)]
+		private static extern int Orbital_Host_Window_IsClosed(IntPtr window);
+		
+		private static List<Window> windows = new List<Window>();
 		public IntPtr handle { get; private set; }
-		private bool isClosed;
 
 		public Window(Point2 position, Size2 size, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -25,7 +41,8 @@ namespace Orbital.Host.Cocoa
 
 		private void Init(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
 		{
-			// TODO
+			handle = Orbital_Host_Window_Create();
+			Orbital_Host_Window_Init(handle);
 
 			// track window
 			windows.Add(this);
@@ -34,6 +51,7 @@ namespace Orbital.Host.Cocoa
 		public override void Dispose()
 		{
 			Close();
+			Orbital_Host_Window_Dispose(handle);
 		}
 
 		public override IntPtr GetHandle()
@@ -53,38 +71,23 @@ namespace Orbital.Host.Cocoa
 
 		public override void Show()
 		{
-			// TODO
-		}
-
-		public override void Hide()
-		{
-			// TODO
+			Orbital_Host_Window_Show(handle);
 		}
 
 		public override void Close()
 		{
-			// TODO
-		}
-
-		public override bool IsVisible()
-		{
-			return false;// TODO
+			Orbital_Host_Window_Close(handle);
 		}
 
 		public override bool IsClosed()
 		{
-			return isClosed;
+			return Orbital_Host_Window_IsClosed(handle) != 0;
 		}
 
 		public override Point2 GetPosition()
 		{
 			// TODO
 			return new Point2();
-		}
-
-		public override void SetPosition(Point2 position)
-		{
-			SetPosition(position.x, position.y);
 		}
 
 		public override void SetPosition(int x, int y)
@@ -96,11 +99,6 @@ namespace Orbital.Host.Cocoa
 		{
 			// TODO
 			return new Size2();
-		}
-
-		public override void SetSize(Size2 size, WindowSizeType type)
-		{
-			SetSize(size.width, size.height, type);
 		}
 
 		public override void SetSize(int width, int height, WindowSizeType type)
