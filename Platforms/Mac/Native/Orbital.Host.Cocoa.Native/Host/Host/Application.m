@@ -1,16 +1,16 @@
 #import "Application.h"
 
 @implementation AppDelegate
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender;
+/*- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender;
 {
     return YES;
-}
+}*/
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+/*- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
     isQuit = true;
     return NSTerminateNow;
-}
+}*/
 @end
 
 @implementation Application
@@ -28,13 +28,31 @@
     [menubar addItem:appMenuItem];
     [NSApp setMainMenu:menubar];
     id appMenu = [NSMenu new];
-    id quitMenuItem = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(stop:) keyEquivalent:@"q"];
+    id quitMenuItem = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(quitCallback:) keyEquivalent:@"q"];
+    [quitMenuItem setTarget:self];
     [appMenu addItem:quitMenuItem];
     [appMenuItem setSubmenu:appMenu];
     
     // activate
     [NSApp activateIgnoringOtherApps:NO];
     [NSApp finishLaunching];
+}
+
+- (void)quitCallback: (id)sender
+{
+    [NSApp stop:app];
+    //[NSApp terminate:app];
+    
+    //CGEventRef cgEvent = CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, 0, 0);
+    //CGEventPost(kCGHIDEventTap, cgEvent);
+    
+    //id e = [NSEvent otherEventWithType:NSEventTypeSystemDefined location:NSMakePoint(0., 0.) modifierFlags:0 timestamp:0 windowNumber:0 context:nil subtype:0 data1:0 data2:0];
+    //id e = [NSEvent new];
+    //e.type =NSEventTypeSystemDefined;
+    //[e type:NSEventTypeSystemDefined];
+    //[app postEvent:e atStart:YES];
+    
+    //[[NSApplication sharedApplication] stop:nil];
 }
 @end
 

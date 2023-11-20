@@ -40,5 +40,6 @@ void Orbital_Host_Window_Close(Window* window)
 
 int Orbital_Host_Window_IsClosed(Window* window)
 {
-    return [window->window screen] == nil ? 1 : 0;
+    //return [window->window screen] == nil ? 1 : 0;
+    return [window->window isVisible] ? 0 : 1;
 }

@@ -5,8 +5,8 @@
     @public bool isQuit;
 }
 
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
+//- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
+//- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
 @end
 
 @interface Application : NSObject
@@ -16,4 +16,5 @@
 }
 
 - (void)initApplication;
+- (void)quitCallback: (id)sender;
 @end

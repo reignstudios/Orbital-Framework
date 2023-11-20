@@ -51,9 +51,9 @@ namespace Orbital.Host.Cocoa
 		{
 			while (Orbital_Host_Application_RunEvents(handle) != 0)
 			{
-				Console.WriteLine("Orbital_Host_Application_RunEvents");
+				//Console.WriteLine("Orbital_Host_Application_RunEvents");
 			}
-			Thread.Sleep(1);// TODO: remove 
+			Thread.Sleep(1);// TODO: remove
 		}
 
 		public override void Exit()
