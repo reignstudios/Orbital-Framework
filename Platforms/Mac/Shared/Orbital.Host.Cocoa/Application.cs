@@ -6,7 +6,7 @@ namespace Orbital.Host.Cocoa
 {
 	public sealed class Application : ApplicationBase
 	{
-		public const string lib = "/Users/awitte/Dev/Orbital-Framework/Platforms/Mac/Native/Orbital.Host.Cocoa.Native/Host/DerivedData/Host/Build/Products/Debug/libHost.dylib";
+		public const string lib = "../../../../../Native/Orbital.Host.Cocoa.Native/Host/DerivedData/Host/Build/Products/Debug/libHost.dylib";
 
 		[DllImport(lib)]
 		private static extern IntPtr Orbital_Host_Application_Create();
