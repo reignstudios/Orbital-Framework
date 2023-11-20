@@ -18,10 +18,13 @@ namespace Orbital.Host.Cocoa
 		private static extern void Orbital_Host_Application_Run();
 
 		[DllImport(lib)]
-		private static extern int Orbital_Host_Application_RunEvents(IntPtr application);
+		private static extern int Orbital_Host_Application_RunEvent();
 		
 		[DllImport(lib)]
-		private static extern void Orbital_Host_Application_Quit();
+		private static extern void Orbital_Host_Application_Quit(IntPtr application);
+
+		[DllImport(lib)]
+		private static extern int Orbital_Host_Application_IsQuit(IntPtr application);
 		
 		public static IntPtr handle { get; private set; }
 
@@ -38,27 +41,21 @@ namespace Orbital.Host.Cocoa
 
 		public override void Run(WindowBase window)
 		{
-			while (!window.IsClosed())
+			while (Orbital_Host_Application_IsQuit(handle) == 0 && !window.IsClosed())
 			{
-				//Console.WriteLine("IsClosed 1");
 				RunEvents();
-				//Console.WriteLine("IsClosed 2");
 			}
 			Console.WriteLine("QUIT");
 		}
 
 		public override void RunEvents()
 		{
-			while (Orbital_Host_Application_RunEvents(handle) != 0)
-			{
-				//Console.WriteLine("Orbital_Host_Application_RunEvents");
-			}
-			Thread.Sleep(1);// TODO: remove
+			Orbital_Host_Application_RunEvent();// only run one event at a time or we can create dead-locks
 		}
 
 		public override void Exit()
 		{
-			Orbital_Host_Application_Quit();
+			Orbital_Host_Application_Quit(handle);
 		}
 	}
 }

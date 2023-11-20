@@ -5,8 +5,15 @@
 {
     window = [[NSWindow alloc] initWithContentRect:NSMakeRect(100, 100, 320, 240) styleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO];
     
+    [window setDelegate:self];
     [window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
     [window setTitle: @"TODO Title"];
+    [window setReleasedWhenClosed:YES];
+}
+
+- (void)windowWillClose:(NSNotification*)notification
+{
+    isClosed = true;
 }
 @end
 
@@ -40,6 +47,5 @@ void Orbital_Host_Window_Close(Window* window)
 
 int Orbital_Host_Window_IsClosed(Window* window)
 {
-    //return [window->window screen] == nil ? 1 : 0;
-    return [window->window isVisible] ? 0 : 1;
+    return window->isClosed ? 1 : 0;
 }

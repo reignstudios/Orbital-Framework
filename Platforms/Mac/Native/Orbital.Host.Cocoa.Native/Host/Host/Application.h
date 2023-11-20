@@ -1,20 +1,15 @@
 #import "Common.h"
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
+@interface Application : NSObject <NSApplicationDelegate>
 {
-    @public bool isQuit;
-}
-
-//- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
-//- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
-@end
-
-@interface Application : NSObject
-{
-    @public AppDelegate* appDelegate;
     @public NSApplication* app;
+    @public bool isQuit;
 }
 
 - (void)initApplication;
 - (void)quitCallback: (id)sender;
+
+// NSApplicationDelegate methods
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
+- (void)applicationWillTerminate:(NSNotification *)notification;
 @end

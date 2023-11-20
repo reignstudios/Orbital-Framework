@@ -3,6 +3,7 @@
 
 # Apple
 *.DS_Store
+._*
 .Trashes
 *.swp
 *~.nib
