@@ -9,13 +9,14 @@ namespace Orbital.Demo.Cocoa
         {
             // init app and window
             var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
+            var window = new Window(0, 0, 320, 240, WindowType.Default, WindowStartupPosition.CenterScreen);
             window.SetTitle("Demo: Mac");
             window.Show();
             
             // run app till quit
             application.Run(window);
             //application.Run();
+            application.Dispose();
         }
     }
 }

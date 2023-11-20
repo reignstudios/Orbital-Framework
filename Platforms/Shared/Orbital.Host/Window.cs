@@ -2,23 +2,7 @@
 using Orbital.Numerics;
 
 namespace Orbital.Host
-{
-	/// <summary>
-	/// Meaning of window size
-	/// </summary>
-	public enum WindowSizeType
-	{
-		/// <summary>
-		/// Size includes client side decorations
-		/// </summary>
-		ClientDecorations,
-
-		/// <summary>
-		/// Size only represents usable area
-		/// </summary>
-		WorkingArea
-	}
-
+{	
 	/// <summary>
 	/// Window creation type presets
 	/// </summary>
@@ -46,7 +30,7 @@ namespace Orbital.Host
 	public enum WindowStartupPosition
 	{
 		/// <summary>
-		/// Let the host decide
+		/// Let the host decide if possible
 		/// </summary>
 		Default,
 
@@ -56,7 +40,7 @@ namespace Orbital.Host
 		Custom,
 
 		/// <summary>
-		/// Center hosts screen if possible
+		/// Center on screen if possible
 		/// </summary>
 		CenterScreen
 	}
@@ -84,8 +68,8 @@ namespace Orbital.Host
 		public void SetPosition(Point2 position) => SetPosition(position.x, position.y);
 		public abstract void SetPosition(int x, int y);
 		
-		public abstract Size2 GetSize(WindowSizeType type);
-		public void SetSize(Size2 size, WindowSizeType type) => SetSize(size.width, size.height, type);
-		public abstract void SetSize(int width, int height, WindowSizeType type);
+		public abstract Size2 GetSize();
+		public void SetSize(Size2 size) => SetSize(size.width, size.height);
+		public abstract void SetSize(int width, int height);
 	}
 }

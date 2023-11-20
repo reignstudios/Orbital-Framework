@@ -6,7 +6,7 @@
     @public bool isClosed;
 }
 
-- (void)initWindow;
+- (void)initWindow:(int)x :(int)y :(int)width :(int)height :(bool)center;
 
 // NSWindowDelegate methods
 - (void)windowWillClose:(NSNotification*)notification;

@@ -50,6 +50,11 @@ Application* Orbital_Host_Application_Create(void)
     return[Application new];
 }
 
+void Orbital_Host_Application_Dispose(Application* application)
+{
+    [application release];
+}
+
 void Orbital_Host_Application_Init(Application* application)
 {
     [application initApplication];

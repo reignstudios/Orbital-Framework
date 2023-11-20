@@ -28,7 +28,7 @@ namespace Orbital.Host.Win
 {
 	public unsafe sealed class Window : WindowBase
 	{
-		private static List<Window> windows = new List<Window>();
+		public static IReadOnlyList<Window> windows = new List<Window>();
 
 		public ATOM atom { get; private set; }
 		public HWND hWnd { get; private set; }
@@ -175,6 +175,7 @@ namespace Orbital.Host.Win
 
 		public override void Close()
 		{
+			windows.Remove(window);
 			isClosed = true;
 			if (hWnd != HWND.Zero)
 			{
@@ -277,8 +278,7 @@ namespace Orbital.Host.Win
 						if (window.hWnd == hWnd)
 						{
 							window.hWnd = HWND.Zero;
-							window.Close();
-							windows.Remove(window);
+							window.Dispose();
 							break;
 						}
 					}
