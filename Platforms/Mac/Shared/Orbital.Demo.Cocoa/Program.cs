@@ -9,7 +9,7 @@ namespace Orbital.Demo.Cocoa
         {
             // init app and window
             var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowType.Default, WindowStartupPosition.CenterScreen);
+            var window = new Window(320, 240, WindowType.Standard, WindowStartupPosition.CenterScreen);
             window.SetTitle("Demo: Mac");
             window.Show();
             

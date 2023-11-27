@@ -1,25 +1,29 @@
 #import "Window.h"
 
 @implementation Window
-- (void)initWindow:(int)x :(int)y :(int)width :(int)height :(bool)center
+- (void)initWindow:(int)width :(int)height :(WindowType)type :(WindowStartupPosition)startupPosition
 {
-    //window = [[NSWindow alloc] initWithContentRect:NSMakeRect(x, y, width, height) styleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO];
-    
+    // create window
     window = [NSWindow new];
-    
-    NSRect screenFrame = [NSScreen.mainScreen frame];
-    CGSize screenSize = [NSScreen.mainScreen frame].size;
-    [window setContentSize:NSMakeSize(width, height)];
-    [window setFrameTopLeftPoint:NSMakePoint(x, screenSize.height - y)];
-    
     [window setStyleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable)];
-    
     [window setBackingType:NSBackingStoreBuffered];
-    
     [window setDelegate:self];
     [window setReleasedWhenClosed:YES];
     
-    //if (center) [window center];
+    // set window size
+    [window setContentSize:NSMakeSize(width, height)];
+    
+    // set window position
+    if (startupPosition == WindowStartupPosition_CenterScreen)
+    {
+        [window center];
+    }
+    else// default
+    {
+        NSRect screenFrame = [NSScreen.mainScreen frame];
+        CGSize screenSize = [NSScreen.mainScreen frame].size;
+        [window setFrameTopLeftPoint:NSMakePoint(20, screenSize.height - 40)];
+    }
 }
 
 - (void)windowWillClose:(NSNotification*)notification
@@ -41,9 +45,9 @@ void Orbital_Host_Window_Dispose(Window* window)
     [window release];
 }
 
-void Orbital_Host_Window_Init(Window* window, int x, int y, int width, int height, int center)
+void Orbital_Host_Window_Init(Window* window, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 {
-    [window initWindow: x :y :width :height :(center != 0 ? true : false)];
+    [window initWindow :width :height :type :startupPosition];
 }
 
 void Orbital_Host_Window_SetTitle(Window* window, unichar* title, int titleLength)
@@ -65,4 +69,11 @@ void Orbital_Host_Window_Close(Window* window)
 int Orbital_Host_Window_IsClosed(Window* window)
 {
     return window->isClosed ? 1 : 0;
+}
+
+void Orbital_Host_Window_GetSize(Window* window, int* width, int* height)
+{
+    CGSize size = [[window->window contentView] frame].size;
+    *width = size.width;
+    *height = size.height;
 }

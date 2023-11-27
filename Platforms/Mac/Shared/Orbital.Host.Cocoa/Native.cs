@@ -1,10 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Orbital.Numerics;
-
-namespace Orbital.Host.Cocoa
+﻿namespace Orbital.Host.Cocoa
 {
 	public static class Native
 	{

@@ -9,9 +9,9 @@ namespace Orbital.Host
 	public enum WindowType
 	{
 		/// <summary>
-		/// Whatever the host defaults to
+		/// Whatever the host defaults to (resize, minimize & maximize enabled if available)
 		/// </summary>
-		Default,
+		Standard,
 
 		/// <summary>
 		/// No resize, minimize or maximize if possible on host
@@ -21,7 +21,7 @@ namespace Orbital.Host
 		/// <summary>
 		/// No client side decorations if possible on host
 		/// </summary>
-		Popup
+		Borderless
 	}
 
 	/// <summary>
@@ -30,19 +30,43 @@ namespace Orbital.Host
 	public enum WindowStartupPosition
 	{
 		/// <summary>
-		/// Let the host decide if possible
+		/// Let the host decide
 		/// </summary>
 		Default,
-
-		/// <summary>
-		/// Use position parameters if possible
-		/// </summary>
-		Custom,
 
 		/// <summary>
 		/// Center on screen if possible
 		/// </summary>
 		CenterScreen
+	}
+
+	/// <summary>
+	/// Window orientation
+	/// </summary>
+	[Flags]
+	public enum WindowOrientation
+	{
+		All = 0,
+
+		/// <summary>
+		/// Landscape left
+		/// </summary>
+		Landscape = 1,
+
+		/// <summary>
+		/// Landscape right
+		/// </summary>
+		LandscapeFlipped = 2,
+
+		/// <summary>
+		/// Portrait up
+		/// </summary>
+		Portrait = 4,
+
+		/// <summary>
+		/// Portrait down
+		/// </summary>
+		PortraitFlipped = 8
 	}
 
 	public abstract class WindowBase : IDisposable
@@ -63,13 +87,6 @@ namespace Orbital.Host
 		public virtual void Show() { }
 		public virtual void Close() { }
 		public virtual bool IsClosed() => false;
-		
-		public virtual Point2 GetPosition() => Point2.zero;
-		public void SetPosition(Point2 position) => SetPosition(position.x, position.y);
-		public abstract void SetPosition(int x, int y);
-		
 		public abstract Size2 GetSize();
-		public void SetSize(Size2 size) => SetSize(size.width, size.height);
-		public abstract void SetSize(int width, int height);
 	}
 }

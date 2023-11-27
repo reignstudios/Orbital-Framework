@@ -13,17 +13,17 @@ namespace Orbital.Host.Xamarin
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Point2 position, Size2 size, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(position.x, position.y, size.width, size.height, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition);
 		}
 
-		public Window(int x, int y, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(x, y, width, height, type, startupPosition);
+			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int x, int y, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			// TODO
 
@@ -66,26 +66,10 @@ namespace Orbital.Host.Xamarin
 			return isClosed;
 		}
 
-		public override Point2 GetPosition()
-		{
-			// TODO
-			return new Point2();
-		}
-
-		public override void SetPosition(int x, int y)
-		{
-			// TODO
-		}
-
 		public override Size2 GetSize()
 		{
 			// TODO
 			return new Size2();
-		}
-
-		public override void SetSize(int width, int height)
-		{
-			// TODO
 		}
 	}
 }

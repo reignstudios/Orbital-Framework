@@ -12,7 +12,7 @@ namespace Orbital.Host.Cocoa
 		private static extern IntPtr Orbital_Host_Window_Create();
 
 		[DllImport(Native.lib)]
-		private static extern void Orbital_Host_Window_Init(IntPtr window, int x, int y, int width, int height, int center);
+		private static extern void Orbital_Host_Window_Init(IntPtr window, int width, int height, WindowType type, WindowStartupPosition center);
 
 		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Dispose(IntPtr window);
@@ -28,27 +28,29 @@ namespace Orbital.Host.Cocoa
 
 		[DllImport(Native.lib)]
 		private static extern int Orbital_Host_Window_IsClosed(IntPtr window);
+
+		[DllImport(Native.lib)]
+		private static extern void Orbital_Host_Window_GetSize(IntPtr window, out int width, out int height);
 		
 		private static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
 		
 		public IntPtr handle { get; private set; }
 
-		public Window(Point2 position, Size2 size, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(position.x, position.y, size.width, size.height, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition);
 		}
 
-		public Window(int x, int y, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(x, y, width, height, type, startupPosition);
+			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int x, int y, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			handle = Orbital_Host_Window_Create();
-			int center = (startupPosition == WindowStartupPosition.CenterScreen) ? 1 : 0;
-			Orbital_Host_Window_Init(handle, x, y, width, height, center);
+			Orbital_Host_Window_Init(handle, width, height, type, startupPosition);
 			_windows.Add(this);
 		}
 
@@ -97,26 +99,11 @@ namespace Orbital.Host.Cocoa
 			return Orbital_Host_Window_IsClosed(handle) != 0;
 		}
 
-		public override Point2 GetPosition()
-		{
-			// TODO
-			return new Point2();
-		}
-
-		public override void SetPosition(int x, int y)
-		{
-			// TODO
-		}
-
 		public override Size2 GetSize()
 		{
-			// TODO
-			return new Size2();
-		}
-
-		public override void SetSize(int width, int height)
-		{
-			// TODO
+			Size2 result;
+			Orbital_Host_Window_GetSize(handle, out result.width, out result.height);
+			return result;
 		}
 
 		internal void Update()
