@@ -8,25 +8,25 @@ namespace Orbital.Host.Cocoa
 {
 	public sealed class Window : WindowBase
 	{
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern IntPtr Orbital_Host_Window_Create();
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Init(IntPtr window, int x, int y, int width, int height, int center);
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Dispose(IntPtr window);
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern unsafe void Orbital_Host_Window_SetTitle(IntPtr window, char* title, int titleLength);
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Show(IntPtr window);
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Close(IntPtr window);
 
-		[DllImport(Application.lib)]
+		[DllImport(Native.lib)]
 		private static extern int Orbital_Host_Window_IsClosed(IntPtr window);
 		
 		private static List<Window> _windows = new List<Window>();
@@ -123,7 +123,6 @@ namespace Orbital.Host.Cocoa
 		{
 			if (IsClosed())
 			{
-				_windows.Remove(this);
 				Dispose();
 			}
 		}
