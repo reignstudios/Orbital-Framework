@@ -3,14 +3,17 @@ using System.Text;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Orbital.Numerics;
+using AppKit;
+using ObjCRuntime;
 
-namespace Orbital.Host.Xamarin
+namespace Orbital.Host.Microsoft
 {
-	public unsafe sealed class Window : WindowBase
+	public sealed class Window : WindowBase
 	{
-		private static List<Window> windows = new List<Window>();
+		private static List<Window> _windows = new List<Window>();
+		public static IReadOnlyList<Window> windows => _windows;
 
-		public IntPtr handle { get; private set; }
+		public NSWindow handle { get; private set; }
 		private bool isClosed;
 
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
@@ -28,7 +31,7 @@ namespace Orbital.Host.Xamarin
 			// TODO
 
 			// track window
-			windows.Add(this);
+			_windows.Add(this);
 		}
 
 		public override void Dispose()
@@ -38,12 +41,12 @@ namespace Orbital.Host.Xamarin
 
 		public override IntPtr GetHandle()
 		{
-			return handle;
+			return handle.GetHandle();
 		}
 
 		public override object GetManagedHandle()
 		{
-			return this;
+			return handle;
 		}
 
 		public override void SetTitle(string title)
@@ -58,7 +61,7 @@ namespace Orbital.Host.Xamarin
 
 		public override void Close()
 		{
-			// TODO
+			_windows.Remove(this);
 		}
 
 		public override bool IsClosed()

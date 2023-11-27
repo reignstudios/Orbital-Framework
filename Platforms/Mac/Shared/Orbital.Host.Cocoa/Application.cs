@@ -48,10 +48,7 @@ namespace Orbital.Host.Cocoa
 		public override void Dispose()
 		{
 			updateThreadRunning = false;
-			if (updateThread != null)
-			{
-				updateThread = null;
-			}
+			updateThread = null;
 			
 			if (handle != IntPtr.Zero)
 			{

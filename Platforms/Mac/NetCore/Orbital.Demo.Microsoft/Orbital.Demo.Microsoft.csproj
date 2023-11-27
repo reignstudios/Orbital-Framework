@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0-macos</TargetFramework>
+        <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Orbital.Demo.Xamarin</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Demo.Microsoft\Program.cs">
+        <Link>Program.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Orbital.Host.Microsoft\Orbital.Host.Microsoft.csproj" />
+    </ItemGroup>
+
+</Project>

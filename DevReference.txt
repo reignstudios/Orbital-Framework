@@ -15,3 +15,7 @@ NOTE old git method: git push --recurse-submodules=on-demand
 dotnet new classlib
 dotnet new sln
 dotnet sln add <path>.csproj
+
+<<< dotnet workload commands >>>
+dotnet workload search
+sudo dotnet workload install macos

@@ -1,7 +1,7 @@
 ﻿using Orbital.Host;
-using Orbital.Host.Cocoa;
+using Orbital.Host.Carbon;
 
-namespace Orbital.Demo.Cocoa
+namespace Orbital.Demo.Carbon
 {
     static class Program
     {
@@ -9,12 +9,13 @@ namespace Orbital.Demo.Cocoa
         {
             // init app and window
             var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Mac");
+            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
+            window.SetTitle("Demo: Carbon");
             window.Show();
             
             // run app till quit
             application.Run();
+            application.Dispose();
         }
     }
 }

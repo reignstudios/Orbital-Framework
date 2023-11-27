@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>net8.0-macos</TargetFramework>
+    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;NET_CORE;CS_7_3;MAC</DefineConstants>
+    <RootNamespace>Orbital.Host.Xamarin</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Shared\Orbital.Host.Xamarin\Application.cs">
+    <Compile Include="..\..\Shared\Orbital.Host.Microsoft\Application.cs">
       <Link>Application.cs</Link>
     </Compile>
-    <Compile Include="..\..\Shared\Orbital.Host.Xamarin\Window.cs">
+    <Compile Include="..\..\Shared\Orbital.Host.Microsoft\Window.cs">
       <Link>Window.cs</Link>
     </Compile>
   </ItemGroup>

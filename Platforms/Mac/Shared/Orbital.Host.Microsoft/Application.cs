@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Runtime.InteropServices;
+using AppKit;
+using ObjCRuntime;
 
-namespace Orbital.Host.Xamarin
+namespace Orbital.Host.Microsoft
 {
-	public unsafe sealed class Application : ApplicationBase
+	public sealed class Application : ApplicationBase
 	{
-		public static IntPtr handle { get; private set; }
+		public static NSApplication handle { get; private set; }
 		private bool exit;
 
 		public Application()
@@ -17,6 +19,16 @@ namespace Orbital.Host.Xamarin
 		public override void Dispose()
 		{
 			// TODO
+		}
+		
+		public override IntPtr GetHandle()
+		{
+			return handle.GetHandle();
+		}
+
+		public override object GetManagedHandle()
+		{
+			return handle;
 		}
 
 		public override void Run()

@@ -35,6 +35,16 @@ namespace Orbital.Host
 	{
 		public virtual void Dispose() {}
 		
+		/// <summary>
+		/// Returns pointer to platform specific native handle
+		/// </summary>
+		public virtual IntPtr GetHandle() => IntPtr.Zero;
+
+		/// <summary>
+		/// Returns pointer to platform specific managed handle
+		/// </summary>
+		public virtual object GetManagedHandle() => this;
+		
 		public abstract void Run();
 		public abstract void Run(WindowBase window);
 		public abstract void RunEvents();
