@@ -1,18 +1,11 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Runtime.InteropServices;
 
-using BOOL = System.Int32;
-using WORD = System.UInt16;
-using DWORD = System.UInt32;
-using UINT = System.UInt32;
 using HANDLE = System.IntPtr;
-using HWND = System.IntPtr;
-using WPARAM = System.IntPtr;
-using LPARAM = System.IntPtr;
-using LRESULT = System.IntPtr;
 using HINSTANCE = System.IntPtr;
-using LPSTR = System.IntPtr;
+
+using Kernel32 = Orbital.OS.Win.Kernel32;
+using User32 = Orbital.OS.Win.User32;
 
 namespace Orbital.Host.Win
 {
@@ -41,8 +34,8 @@ namespace Orbital.Host.Win
 			{
 				const int STARTF_USESHOWWINDOW = 0x00000001;
 				const int SW_SHOWDEFAULT = 10;
-				var info = new STARTUPINFOA();
-				GetStartupInfoA(&info);
+				var info = new Kernel32.STARTUPINFOA();
+				Kernel32.GetStartupInfoA(&info);
 				if ((info.dwFlags & STARTF_USESHOWWINDOW) == 0) nCmdShow = SW_SHOWDEFAULT;
 				else nCmdShow = info.wShowWindow;
 			}
@@ -67,13 +60,13 @@ namespace Orbital.Host.Win
 
 		public override void Run()
 		{
-			var msg = new MSG();
+			var msg = new User32.MSG();
 			while (exit)
 			{
-				while (GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
+				while (User32.GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
 				{
-					TranslateMessage(&msg);
-					DispatchMessageA(&msg);
+					User32.TranslateMessage(&msg);
+					User32.DispatchMessageA(&msg);
 				}
 
 				Thread.Sleep(1);
@@ -83,22 +76,22 @@ namespace Orbital.Host.Win
 		public override void Run(WindowBase window)
 		{
 			var windowAbstraction = (Window)window;
-			var msg = new MSG();
-			while (GetMessageA(&msg, windowAbstraction.hWnd, 0, 0) != 0)
+			var msg = new User32.MSG();
+			while (User32.GetMessageA(&msg, windowAbstraction.hWnd, 0, 0) != 0)
 			{
-				TranslateMessage(&msg);
-				DispatchMessageA(&msg);
+				User32.TranslateMessage(&msg);
+				User32.DispatchMessageA(&msg);
 			}
 		}
 
 		public override void RunEvents()
 		{
 			const uint PM_REMOVE = 0x0001;
-			var msg = new MSG();
-			while (PeekMessageA(&msg, HANDLE.Zero, 0, 0, PM_REMOVE) != 0)
+			var msg = new User32.MSG();
+			while (User32.PeekMessageA(&msg, HANDLE.Zero, 0, 0, PM_REMOVE) != 0)
 			{
-				TranslateMessage(&msg);
-				DispatchMessageA(&msg);
+				User32.TranslateMessage(&msg);
+				User32.DispatchMessageA(&msg);
 			}
 		}
 
@@ -106,68 +99,5 @@ namespace Orbital.Host.Win
 		{
 			exit = true;
 		}
-
-		#region Native Helpers
-		[StructLayout(LayoutKind.Sequential)]
-		unsafe struct STARTUPINFOA
-		{
-			public DWORD cb;
-			public LPSTR lpReserved;
-			public LPSTR lpDesktop;
-			public LPSTR lpTitle;
-			public DWORD dwX;
-			public DWORD dwY;
-			public DWORD dwXSize;
-			public DWORD dwYSize;
-			public DWORD dwXCountChars;
-			public DWORD dwYCountChars;
-			public DWORD dwFillAttribute;
-			public DWORD dwFlags;
-			public WORD wShowWindow;
-			public WORD cbReserved2;
-			public IntPtr lpReserved2;
-			public HANDLE hStdInput;
-			public HANDLE hStdOutput;
-			public HANDLE hStdError;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		struct POINT
-		{
-			public int x, y;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		struct MSG
-		{
-			public HWND hwnd;
-			public UINT message;
-			public WPARAM wParam;
-			public LPARAM lParam;
-			public DWORD time;
-			public POINT pt;
-			//#ifdef _MAC
-			//public DWORD lPrivate;
-			//#endif
-		}
-
-		private const string kernalLib = "Kernel32.dll";
-		private const string user32Lib = "User32.dll";
-
-		[DllImport(kernalLib, EntryPoint = "GetStartupInfoA")]
-		private static extern void GetStartupInfoA(STARTUPINFOA* lpStartupInfo);
-
-		[DllImport(user32Lib, EntryPoint = "GetMessageA")]
-		private static extern BOOL GetMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
-
-		[DllImport(user32Lib, EntryPoint = "PeekMessageA")]
-		private static extern BOOL PeekMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
-
-		[DllImport(user32Lib, EntryPoint = "TranslateMessage")]
-		private static extern BOOL TranslateMessage(MSG* lpMsg);
-
-		[DllImport(user32Lib, EntryPoint = "DispatchMessageA")]
-		private static extern LRESULT DispatchMessageA(MSG* lpMsg);
-		#endregion
 	}
 }

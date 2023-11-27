@@ -29,11 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video.Vulkan", "Orb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "..\..\Portable\NetCore\Orbital.IO\Orbital.IO.csproj", "{DA5C12FC-F2FC-44C7-A968-93327883EABE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking", "..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj", "{302A0694-9338-45A9-8234-389055CE7E0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking", "..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj", "{302A0694-9338-45A9-8234-389055CE7E0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.NamedPipes", "..\..\Portable\NetCore\Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{CD839911-EE4B-43DF-B842-8A368629FA4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.NamedPipes", "..\..\Portable\NetCore\Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{CD839911-EE4B-43DF-B842-8A368629FA4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.Sockets", "..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{621BA768-5F0B-4905-A84C-7E07E11283DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.Sockets", "..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{621BA768-5F0B-4905-A84C-7E07E11283DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.OS.Win", "Orbital.OS.Win\Orbital.OS.Win.csproj", "{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +107,10 @@ Global
 		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{621BA768-5F0B-4905-A84C-7E07E11283DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

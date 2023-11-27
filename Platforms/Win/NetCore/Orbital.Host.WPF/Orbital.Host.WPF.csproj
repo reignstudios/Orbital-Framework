@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;NET_CORE;CS_7_3;WIN</DefineConstants>
   </PropertyGroup>
 
@@ -13,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj" />
+    <ProjectReference Include="..\Orbital.OS.Win\Orbital.OS.Win.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,9 @@
-﻿using WPFWindow = System.Windows.Window;
-
-using System;
+﻿using System;
 using System.Windows.Interop;
 using Orbital.Numerics;
-using System.Runtime.InteropServices;
+
+using WPFWindow = System.Windows.Window;
+using User32 = Orbital.OS.Win.User32;
 
 namespace Orbital.Host.WPF
 {
@@ -63,18 +63,18 @@ namespace Orbital.Host.WPF
 			window.Closed += Window_Closed;
 		}
 
-		private void SetSize(int width, int height)
+		private unsafe void SetSize(int width, int height)
 		{
 			// get window rect and size
-			RECT rect = new RECT();
-			int result = GetWindowRect(handle, ref rect);
+			var rect = new User32.RECT();
+			int result = User32.GetWindowRect(handle, &rect);
 			if (result == 0) throw new Exception("GetWindowRect failed");
 			int rectWidth = rect.right - rect.left;
 			int rectHeight = rect.bottom - rect.top;
 
 			// get client rect and size
-			RECT clientRect = new RECT();
-			result = GetClientRect(handle, ref clientRect);
+			var clientRect = new User32.RECT();
+			result = User32.GetClientRect(handle, &clientRect);
 			if (result == 0) throw new Exception("GetClientRect failed");
 			int clientRectWidth = clientRect.right - clientRect.left;
 			int clientRectHeight = clientRect.bottom - clientRect.top;
@@ -84,7 +84,7 @@ namespace Orbital.Host.WPF
 			height = height + (rectHeight - clientRectHeight);
 
 			// apply new adjusted window size
-			result = SetWindowPos(handle, IntPtr.Zero, 0, 0, width, height, SWP_NOMOVE);
+			result = User32.SetWindowPos(handle, IntPtr.Zero, 0, 0, width, height, User32.SWP_NOMOVE);
 			if (result == 0) throw new Exception("SetWindowPos failed");
 		}
 
@@ -132,25 +132,5 @@ namespace Orbital.Host.WPF
         {
             return new Size2((int)window.Width, (int)window.Height);
         }
-
-        #region Native Helpers
-        [StructLayout(LayoutKind.Sequential)]
-		struct RECT
-		{
-			public int left, top, right, bottom;
-		}
-
-		private const string lib = "User32.dll";
-
-		[DllImport(lib, EntryPoint = "GetWindowRect")]
-		private extern static int GetWindowRect(IntPtr hWnd, ref RECT lpRect);
-
-		[DllImport(lib, EntryPoint = "GetClientRect")]
-		private extern static int GetClientRect(IntPtr hWnd, ref RECT lpRect);
-
-		[DllImport(lib, EntryPoint = "SetWindowPos")]
-		private extern static int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-		private const int SWP_NOMOVE = 0x0002;
-		#endregion
 	}
 }
