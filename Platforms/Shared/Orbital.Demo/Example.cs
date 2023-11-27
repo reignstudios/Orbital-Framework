@@ -218,7 +218,7 @@ namespace Orbital.Demo
 			
 			// create msaa render texture
 			if (!device.GetMaxMSAALevel(TextureFormat.Default, out var msaaLevel)) throw new Exception("Failed to get MSAA level");
-			var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+			var windowSize = window.GetSize();
 			renderTextureMSAA = device.CreateRenderTexture2D(windowSize.width, windowSize.height, TextureFormat.Default, RenderTextureUsage.Discard, TextureMode.GPUOptimized, StencilUsage.Discard, DepthStencilFormat.DefaultDepth, DepthStencilMode.GPUOptimized, msaaLevel, false, MultiGPUNodeResourceVisibility.All);
 
 			// create command list
@@ -580,7 +580,7 @@ namespace Orbital.Demo
 			while (!window.IsClosed())
 			{
 				// get window size and viewport
-				var windowSize = window.GetSize(WindowSizeType.WorkingArea);
+				var windowSize = window.GetSize();
 				var viewPort = new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height));
 
 				// update camera

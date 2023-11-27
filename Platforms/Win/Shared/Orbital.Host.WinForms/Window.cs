@@ -14,19 +14,19 @@ namespace Orbital.Host.WinForms
 			this.form = form;
 		}
 
-		public Window(Point2 position, Size2 size, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
 			form = new Form();
-			Init(position.x, position.y, size.width, size.height, sizeType, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition);
 		}
 
-		public Window(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			form = new Form();
-			Init(x, y, width, height, sizeType, type, startupPosition);
+			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			// set form type
 			switch (type)
@@ -37,7 +37,7 @@ namespace Orbital.Host.WinForms
 					form.FormBorderStyle = FormBorderStyle.FixedSingle;
 					break;
 
-				case WindowType.Popup:
+				case WindowType.Borderless:
 					form.MaximizeBox = false;
 					form.MinimizeBox = false;
 					form.FormBorderStyle = FormBorderStyle.None;
@@ -45,16 +45,11 @@ namespace Orbital.Host.WinForms
 			}
 
 			// set form size
-			SetSize(width, height, sizeType);
+			form.ClientSize = new Size(width, height);
 
 			// set form startup position
 			switch (startupPosition)
 			{
-				case WindowStartupPosition.Custom:
-					form.StartPosition = FormStartPosition.Manual;
-					SetPosition(x, y);
-					break;
-
 				case WindowStartupPosition.CenterScreen:
 				form.StartPosition = FormStartPosition.CenterScreen;
 					break;
@@ -86,19 +81,9 @@ namespace Orbital.Host.WinForms
 			form.Show();
 		}
 
-		public override void Hide()
-		{
-			form.Hide();
-		}
-
 		public override void Close()
 		{
 			form.Close();
-		}
-
-		public override bool IsVisible()
-		{
-			return form.Visible;
 		}
 
 		public override bool IsClosed()
@@ -106,45 +91,10 @@ namespace Orbital.Host.WinForms
 			return form.IsDisposed;
 		}
 
-		public override Point2 GetPosition()
+		public override Size2 GetSize()
 		{
-			var position = form.Location;
-			return new Point2(position.X, position.Y);
-		}
-
-		public override void SetPosition(Point2 position)
-		{
-			SetPosition(position.x, position.y);
-		}
-
-		public override void SetPosition(int x, int y)
-		{
-			form.Location = new Point(x, y);
-		}
-
-		public override Size2 GetSize(WindowSizeType type)
-		{
-			if (type == WindowSizeType.WorkingArea)
-			{
-				var size = form.ClientSize;
-				return new Size2(size.Width, size.Height);
-			}
-			else
-			{
-				var size = form.Size;
-				return new Size2(size.Width, size.Height);
-			}
-		}
-
-		public override void SetSize(Size2 size, WindowSizeType type)
-		{
-			SetSize(size.width, size.height, type);
-		}
-
-		public override void SetSize(int width, int height, WindowSizeType type)
-		{
-			if (type == WindowSizeType.WorkingArea) form.ClientSize = new Size(width, height);
-			else form.Size = new Size(width, height);
+			var size = form.ClientSize;
+			return new Size2(size.Width, size.Height);
 		}
 	}
 }

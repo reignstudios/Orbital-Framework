@@ -13,11 +13,11 @@ namespace Orbital.Demo.WinForms
 		{
 			// init app and window
 			var application = new Application();
-			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
+			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: WinForms");
 			window.Show();
 
-			// run example
+			/*// run example
 			using (var example = new Example(application, window))
 			{
 				#if NET_CORE
@@ -26,7 +26,10 @@ namespace Orbital.Demo.WinForms
 				example.Init(@"..\..\..\..", "x64", "Win");
 				#endif
 				example.Run();
-			}
+			}*/
+
+			application.Run(window);
+			application.Dispose();
 		}
 	}
 }

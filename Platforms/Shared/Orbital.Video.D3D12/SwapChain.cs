@@ -46,7 +46,7 @@ namespace Orbital.Video.D3D12
 
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, SwapChainVSyncMode vSyncMode)
 		{
-			var size = window.GetSize(WindowSizeType.WorkingArea);
+			var size = window.GetSize();
 			IntPtr hWnd = window.GetHandle();
 			if (Orbital_Video_D3D12_SwapChain_Init(handle, hWnd, (uint)size.width, (uint)size.height, (uint)bufferCount, (fullscreen ? 1 : 0), format, vSyncMode) == 0) return false;
 			return true;
@@ -54,7 +54,7 @@ namespace Orbital.Video.D3D12
 
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen, SwapChainFormat format, StencilUsage stencilUsage, DepthStencilFormat depthStencilFormat, DepthStencilMode depthStencilMode, SwapChainVSyncMode vSyncMode)
 		{
-			var size = window.GetSize(WindowSizeType.WorkingArea);
+			var size = window.GetSize();
 			depthStencilD3D12 = new DepthStencil(deviceD3D12, stencilUsage, depthStencilMode);
 			depthStencil = depthStencilD3D12;
 			if (!depthStencilD3D12.Init(size.width, size.height, depthStencilFormat, MSAALevel.Disabled)) return false;

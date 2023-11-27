@@ -40,35 +40,6 @@ namespace Orbital.Host
 		CenterScreen
 	}
 
-	/// <summary>
-	/// Window orientation
-	/// </summary>
-	[Flags]
-	public enum WindowOrientation
-	{
-		All = 0,
-
-		/// <summary>
-		/// Landscape left
-		/// </summary>
-		Landscape = 1,
-
-		/// <summary>
-		/// Landscape right
-		/// </summary>
-		LandscapeFlipped = 2,
-
-		/// <summary>
-		/// Portrait up
-		/// </summary>
-		Portrait = 4,
-
-		/// <summary>
-		/// Portrait down
-		/// </summary>
-		PortraitFlipped = 8
-	}
-
 	public abstract class WindowBase : IDisposable
 	{
 		public abstract void Dispose();

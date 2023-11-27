@@ -40,7 +40,7 @@ namespace Orbital.Video.Vulkan
 		public bool Init(WindowBase window, int bufferCount, bool fullscreen)
 		{
 			//InitBase(type);
-			var size = window.GetSize(WindowSizeType.WorkingArea);
+			var size = window.GetSize();
 			uint width = (uint)size.width;
 			uint height = (uint)size.height;
 			int sizeEnforcedResult = 0;

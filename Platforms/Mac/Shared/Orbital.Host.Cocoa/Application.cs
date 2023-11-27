@@ -67,7 +67,8 @@ namespace Orbital.Host.Cocoa
 
 		public override void Run(WindowBase window)
 		{
-			while (Orbital_Host_Application_IsQuit(handle) == 0 && !window.IsClosed())
+			var windowAbstraction = (Window)window;
+			while (Orbital_Host_Application_IsQuit(handle) == 0 && !windowAbstraction.IsClosed())
 			{
 				RunEvents();
 			}

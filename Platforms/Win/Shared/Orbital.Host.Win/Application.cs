@@ -22,7 +22,7 @@ namespace Orbital.Host.Win
 		public static int nCmdShow { get; private set; }
 		private bool exit;
 
-		static Application()
+		public Application()
 		{
 			// get hInstance
 			#if !NET_STANDARD_20
@@ -58,6 +58,12 @@ namespace Orbital.Host.Win
 			Application.hInstance = hInstance;
 		}
 		#endif
+
+		public override void Dispose()
+		{
+			hInstance = HINSTANCE.Zero;
+			nCmdShow = 0;
+		}
 
 		public override void Run()
 		{
