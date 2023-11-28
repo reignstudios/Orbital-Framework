@@ -19,6 +19,8 @@ using HCURSOR = System.IntPtr;
 using HBRUSH = System.IntPtr;
 using LPCSTR = System.IntPtr;
 using HMENU = System.IntPtr;
+using HMONITOR = System.IntPtr;
+using MONITORENUMPROC = System.IntPtr;
 
 namespace Orbital.OS.Win
 {
@@ -102,68 +104,77 @@ namespace Orbital.OS.Win
 		public const uint WM_PAINT = 0x000F;
 		public const uint WM_DESTROY = 0x0002;
 
-		public const string user32Lib = "User32.dll";
+		public const int SM_CMONITORS = 80;
+
+		public const string lib = "User32.dll";
 
 		// Application
-		[DllImport(user32Lib, EntryPoint = "GetMessageA")]
+		[DllImport(lib, EntryPoint = "GetMessageA")]
 		public static extern BOOL GetMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 
-		[DllImport(user32Lib, EntryPoint = "PeekMessageA")]
+		[DllImport(lib, EntryPoint = "PeekMessageA")]
 		public static extern BOOL PeekMessageA(MSG* lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 
-		[DllImport(user32Lib, EntryPoint = "TranslateMessage")]
+		[DllImport(lib, EntryPoint = "TranslateMessage")]
 		public static extern BOOL TranslateMessage(MSG* lpMsg);
 
-		[DllImport(user32Lib, EntryPoint = "DispatchMessageA")]
+		[DllImport(lib, EntryPoint = "DispatchMessageA")]
 		public static extern LRESULT DispatchMessageA(MSG* lpMsg);
 
 		// Windows
-		[DllImport(user32Lib, EntryPoint = "RegisterClassExA")]
+		[DllImport(lib, EntryPoint = "RegisterClassExA")]
 		public static extern ATOM RegisterClassExA(WNDCLASSEXA* c);
 
-		[DllImport(user32Lib, EntryPoint = "GetDesktopWindow")]
+		[DllImport(lib, EntryPoint = "GetDesktopWindow")]
 		public static extern HWND GetDesktopWindow();
 
-		[DllImport(user32Lib, EntryPoint = "GetWindowRect")]
+		[DllImport(lib, EntryPoint = "GetWindowRect")]
 		public static extern BOOL GetWindowRect(HWND hWnd, RECT* lpRect);
 
-		[DllImport(user32Lib, EntryPoint = "GetClientRect")]
+		[DllImport(lib, EntryPoint = "GetClientRect")]
 		public static extern BOOL GetClientRect(HWND hWnd, RECT* lpRect);
 
-		[DllImport(user32Lib, EntryPoint = "SetWindowPos")]
+		[DllImport(lib, EntryPoint = "SetWindowPos")]
 		public static extern BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, UINT uFlags);
 
-		[DllImport(user32Lib, EntryPoint = "CreateWindowExA")]
+		[DllImport(lib, EntryPoint = "CreateWindowExA")]
 		public static extern HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, IntPtr lpParam);
 
-		[DllImport(user32Lib, EntryPoint = "SetWindowTextA")]
+		[DllImport(lib, EntryPoint = "SetWindowTextA")]
 		public static extern BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString);
 
-		[DllImport(user32Lib, EntryPoint = "ShowWindow")]
+		[DllImport(lib, EntryPoint = "ShowWindow")]
 		public static extern BOOL ShowWindow(HWND hWnd, int nCmdShow);
 
-		[DllImport(user32Lib, EntryPoint = "UpdateWindow")]
+		[DllImport(lib, EntryPoint = "UpdateWindow")]
 		public static extern BOOL UpdateWindow(HWND hWnd);
 
-		[DllImport(user32Lib, EntryPoint = "CloseWindow")]
+		[DllImport(lib, EntryPoint = "CloseWindow")]
 		public static extern BOOL CloseWindow(HWND hWnd);
 
-		[DllImport(user32Lib, EntryPoint = "IsWindowVisible")]
+		[DllImport(lib, EntryPoint = "IsWindowVisible")]
 		public static extern BOOL IsWindowVisible(HWND hWnd);
 
-		[DllImport(user32Lib, EntryPoint = "DestroyWindow")]
+		[DllImport(lib, EntryPoint = "DestroyWindow")]
 		public static extern BOOL DestroyWindow(HWND hWnd);
 
-		[DllImport(user32Lib, EntryPoint = "BeginPaint")]
+		[DllImport(lib, EntryPoint = "BeginPaint")]
 		public static extern HDC BeginPaint(HWND hWnd, PAINTSTRUCT* lpPaint);
 
-		[DllImport(user32Lib, EntryPoint = "EndPaint")]
+		[DllImport(lib, EntryPoint = "EndPaint")]
 		public static extern BOOL EndPaint(HWND hWnd, PAINTSTRUCT* lpPaint);
 
-		[DllImport(user32Lib, EntryPoint = "PostQuitMessage")]
+		[DllImport(lib, EntryPoint = "PostQuitMessage")]
 		public static extern void PostQuitMessage(int nExitCode);
 
-		[DllImport(user32Lib, EntryPoint = "DefWindowProcA")]
+		[DllImport(lib, EntryPoint = "DefWindowProcA")]
 		public static extern LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
+		// Screens
+		[DllImport(lib, EntryPoint = "EnumDisplayMonitors")]
+		public static extern BOOL EnumDisplayMonitors(HDC hdc, Windows.RECT* lprcClip, MONITORENUMPROC lpfnEnum, LPARAM dwData);
+
+		[DllImport(lib, EntryPoint = "GetSystemMetrics")]
+		public static extern int GetSystemMetrics(int nIndex);
 	}
 }

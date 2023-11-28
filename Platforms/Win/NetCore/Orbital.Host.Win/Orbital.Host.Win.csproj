@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\Shared\Orbital.Host.Win\Application.cs" Link="Application.cs" />
+    <Compile Include="..\..\Shared\Orbital.Host.Win\Screen.cs" Link="Screen.cs" />
     <Compile Include="..\..\Shared\Orbital.Host.Win\Window.cs" Link="Window.cs" />
   </ItemGroup>
 

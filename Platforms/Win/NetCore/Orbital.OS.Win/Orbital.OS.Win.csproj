@@ -8,8 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\Shared\Orbital.OS.Win\Gdi32.cs" Link="Gdi32.cs" />
     <Compile Include="..\..\Shared\Orbital.OS.Win\Kernel32.cs" Link="Kernel32.cs" />
     <Compile Include="..\..\Shared\Orbital.OS.Win\User32.cs" Link="User32.cs" />
+    <Compile Include="..\..\Shared\Orbital.OS.Win\Windows.cs" Link="Windows.cs" />
   </ItemGroup>
 
 </Project>

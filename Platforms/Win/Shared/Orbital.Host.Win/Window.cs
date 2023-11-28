@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Orbital.Numerics;
+using Orbital.OS.Win;
 
 using ATOM = System.UInt16;
 using DWORD = System.UInt32;
@@ -16,7 +17,6 @@ using HBRUSH = System.IntPtr;
 using LPCSTR = System.IntPtr;
 using HMENU = System.IntPtr;
 
-using User32 = Orbital.OS.Win.User32;
 
 namespace Orbital.Host.Win
 {
@@ -28,7 +28,15 @@ namespace Orbital.Host.Win
 		public ATOM atom { get; private set; }
 		public HWND hWnd { get; private set; }
 		private bool isClosed;
-		private WndProcDelegate wndProcDelegate;
+
+		private static WndProcDelegate wndProcDelegate;
+		private static IntPtr wndProcDelegatePtr;
+
+		static Window()
+		{
+			wndProcDelegate = new WndProcDelegate(WndProc);
+			wndProcDelegatePtr = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate);
+		}
 
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -46,12 +54,7 @@ namespace Orbital.Host.Win
 			var wcex = new User32.WNDCLASSEXA();
 			wcex.cbSize = (UINT)Marshal.SizeOf<User32.WNDCLASSEXA>();
 			wcex.style = User32.CS_HREDRAW | User32.CS_VREDRAW;
-			wndProcDelegate = new WndProcDelegate(WndProc);
-			#if CS2X
-			Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate, out _, out wcex.lpfnWndProc);
-			#else
-			wcex.lpfnWndProc = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate);
-			#endif
+			wcex.lpfnWndProc = wndProcDelegatePtr;
 			wcex.cbClsExtra = 0;
 			wcex.cbWndExtra = 0;
 			wcex.hInstance = Application.hInstance;
@@ -94,6 +97,10 @@ namespace Orbital.Host.Win
 
 				case WindowType.Borderless:
 					windowStyle = User32.WS_POPUPWINDOW;
+					break;
+
+				case WindowType.Fullscreen:
+					windowStyle = User32.WS_POPUP;
 					break;
 			}
 

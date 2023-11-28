@@ -1,22 +1,25 @@
 ﻿using System.Threading;
 using System.Runtime.InteropServices;
+using Orbital.OS.Win;
 
+using HDC = System.IntPtr;
 using HANDLE = System.IntPtr;
 using HINSTANCE = System.IntPtr;
-
-using Kernel32 = Orbital.OS.Win.Kernel32;
-using User32 = Orbital.OS.Win.User32;
 
 namespace Orbital.Host.Win
 {
 	public unsafe sealed class Application : ApplicationBase
 	{
+		public static HDC hdc { get; private set; }
 		public static HINSTANCE hInstance { get; private set; }
 		public static int nCmdShow { get; private set; }
 		private bool exit;
 
 		public Application()
 		{
+			// get hdc
+			hdc = Gdi32.CreateCompatibleDC(HDC.Zero);
+
 			// get hInstance
 			#if !NET_STANDARD_20
 			if (hInstance == HINSTANCE.Zero)
@@ -54,6 +57,7 @@ namespace Orbital.Host.Win
 
 		public override void Dispose()
 		{
+			hdc = HDC.Zero;
 			hInstance = HINSTANCE.Zero;
 			nCmdShow = 0;
 		}

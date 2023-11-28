@@ -21,7 +21,13 @@ namespace Orbital.Host
 		/// <summary>
 		/// No client side decorations if possible on host
 		/// </summary>
-		Borderless
+		Borderless,
+
+		/// <summary>
+		/// Overlays other system elements if possible and auto sets its width & height to match the screen.
+		/// Startup Position is also ignored
+		/// </summary>
+		Fullscreen
 	}
 
 	/// <summary>

@@ -32,9 +32,9 @@ namespace Orbital.OS.Win
 			public HANDLE hStdError;
 		}
 
-		public const string kernalLib = "Kernel32.dll";
+		public const string lib = "Kernel32.dll";
 
-		[DllImport(kernalLib, EntryPoint = "GetStartupInfoA")]
+		[DllImport(lib, EntryPoint = "GetStartupInfoA")]
 		public static extern void GetStartupInfoA(STARTUPINFOA* lpStartupInfo);
 	}
 }
