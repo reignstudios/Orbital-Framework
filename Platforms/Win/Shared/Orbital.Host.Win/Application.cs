@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using Orbital.OS.Win;
 
 using HDC = System.IntPtr;
@@ -8,14 +7,14 @@ using HINSTANCE = System.IntPtr;
 
 namespace Orbital.Host.Win
 {
-	public unsafe sealed class Application : ApplicationBase
+	public unsafe static class Application
 	{
 		public static HDC hdc { get; private set; }
 		public static HINSTANCE hInstance { get; private set; }
 		public static int nCmdShow { get; private set; }
-		private bool exit;
+		private static bool exit;
 
-		public Application()
+		static Application()
 		{
 			// get hdc
 			hdc = Gdi32.CreateCompatibleDC(HDC.Zero);
@@ -49,59 +48,50 @@ namespace Orbital.Host.Win
 		/// Pass the argument: Marshal.GetHINSTANCE(typeof(Application).Module)
 		/// </summary>
 		/// <param name="hInstance">Marshal.GetHINSTANCE(typeof(Application).Module)</param>
-		public Application(HINSTANCE hInstance)
+		public static void Init(HINSTANCE hInstance)
 		{
 			Application.hInstance = hInstance;
 		}
 		#endif
 
-		public override void Dispose()
-		{
-			hdc = HDC.Zero;
-			hInstance = HINSTANCE.Zero;
-			nCmdShow = 0;
-		}
-
-		public override void Run()
+		public static void Run()
 		{
 			var msg = new User32.MSG();
-			while (exit)
-			{
-				while (User32.GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
-				{
-					User32.TranslateMessage(&msg);
-					User32.DispatchMessageA(&msg);
-				}
-
-				Thread.Sleep(1);
-			}
-		}
-
-		public override void Run(WindowBase window)
-		{
-			var windowAbstraction = (Window)window;
-			var msg = new User32.MSG();
-			while (User32.GetMessageA(&msg, windowAbstraction.hWnd, 0, 0) != 0)
+			while (!exit && User32.GetMessageA(&msg, HANDLE.Zero, 0, 0) != 0)
 			{
 				User32.TranslateMessage(&msg);
 				User32.DispatchMessageA(&msg);
 			}
 		}
 
-		public override void RunEvents()
+		public static void Run(Window window)
+		{
+			var msg = new User32.MSG();
+			while (!exit && User32.GetMessageA(&msg, window.hWnd, 0, 0) != 0)
+			{
+				User32.TranslateMessage(&msg);
+				User32.DispatchMessageA(&msg);
+			}
+		}
+
+		public static void RunEvents()
 		{
 			const uint PM_REMOVE = 0x0001;
 			var msg = new User32.MSG();
-			while (User32.PeekMessageA(&msg, HANDLE.Zero, 0, 0, PM_REMOVE) != 0)
+			while (!exit && User32.PeekMessageA(&msg, HANDLE.Zero, 0, 0, PM_REMOVE) != 0)
 			{
 				User32.TranslateMessage(&msg);
 				User32.DispatchMessageA(&msg);
 			}
 		}
 
-		public override void Exit()
+		public static void Exit()
 		{
 			exit = true;
+			foreach (var window in Window.windows)
+			{
+				window.Close();
+			}
 		}
 	}
 }

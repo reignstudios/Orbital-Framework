@@ -2,25 +2,24 @@
 
 namespace Orbital.Host.WinForms
 {
-	public sealed class Application : ApplicationBase
+	public static class Application
 	{
-		public override void Run()
+		public static void Run()
 		{
 			App.Run();
 		}
 
-		public override void Run(WindowBase window)
+		public static void Run(Window window)
 		{
-			var windowAbstraction = (Window)window;
-			App.Run(windowAbstraction.form);
+			App.Run(window.form);
 		}
 
-		public override void RunEvents()
+		public static void RunEvents()
 		{
 			App.DoEvents();
 		}
 
-		public override void Exit()
+		public static void Exit()
 		{
 			App.Exit();
 		}

@@ -104,6 +104,8 @@ namespace Orbital.OS.Win
 		public const uint WM_PAINT = 0x000F;
 		public const uint WM_DESTROY = 0x0002;
 
+		public const int SM_CXSCREEN = 0;
+		public const int SM_CYSCREEN = 1;
 		public const int SM_CMONITORS = 80;
 
 		public const string lib = "User32.dll";

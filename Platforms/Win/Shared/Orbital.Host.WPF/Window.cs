@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Windows.Interop;
 using Orbital.Numerics;
+using Orbital.OS.Win;
 
 using WPFWindow = System.Windows.Window;
-using User32 = Orbital.OS.Win.User32;
 
 namespace Orbital.Host.WPF
 {

@@ -145,7 +145,6 @@ namespace Orbital.Demo
 
 	public sealed class Example : IDisposable
 	{
-		private ApplicationBase application;
 		private WindowBase window;
 
 		private InstanceBase instance;
@@ -168,9 +167,8 @@ namespace Orbital.Demo
 		private Camera camera;
 		private float rot = .85f;
 
-		public Example(ApplicationBase application, WindowBase window)
+		public Example(WindowBase window)
 		{
-			this.application = application;
 			this.window = window;
 		}
 
@@ -576,61 +574,54 @@ namespace Orbital.Demo
 		
 		public void Run()
 		{
-			application.RunEvents();// run this once before checking window
-			while (!window.IsClosed())
-			{
-				// get window size and viewport
-				var windowSize = window.GetSize();
-				var viewPort = new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height));
+			// get window size and viewport
+			var windowSize = window.GetSize();
+			var viewPort = new ViewPort(new Rect2(0, 0, windowSize.width, windowSize.height));
 
-				// update camera
-				camera.position = new Vec3(MathF.Cos(rot), .5f, MathF.Sin(rot)) * 3;
-				camera.aspect = viewPort.GetAspect();
-				camera.LookAt(Vec3.zero);
+			// update camera
+			camera.position = new Vec3(MathF.Cos(rot), .5f, MathF.Sin(rot)) * 3;
+			camera.aspect = viewPort.GetAspect();
+			camera.LookAt(Vec3.zero);
 
-				// update constant buffer
-				if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
-				constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
-				constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
-				constantBuffer.EndUpdate();
-				rot += 0.01f;
+			// update constant buffer
+			if (!constantBuffer.BeginUpdate(device.swapChain)) throw new Exception("Failed to update ConstantBuffer");
+			constantBuffer.Update(MathF.Abs(MathF.Cos(rot * .5f)), shaderEffectVar_Constrast);
+			constantBuffer.Update(camera.matrix, shaderEffectVar_Camera);
+			constantBuffer.EndUpdate();
+			rot += 0.01f;
 
-				// render frame and present
-				device.BeginFrame();
+			// render frame and present
+			device.BeginFrame();
 
-				commandList.Start(device.swapChain);// RENDER INTO: RenderTexture
-				commandList.BeginRenderPass(renderTextureTest.renderPass);
-				commandList.SetViewPort(new ViewPort(0, 0, renderTextureTest.renderTexture.width, renderTextureTest.renderTexture.height));
-				commandList.SetRenderState(renderTextureTest.renderState);
-				commandList.Draw();
-				commandList.EndRenderPass();
-				commandList.Finish();
-				commandList.Execute();
+			commandList.Start(device.swapChain);// RENDER INTO: RenderTexture
+			commandList.BeginRenderPass(renderTextureTest.renderPass);
+			commandList.SetViewPort(new ViewPort(0, 0, renderTextureTest.renderTexture.width, renderTextureTest.renderTexture.height));
+			commandList.SetRenderState(renderTextureTest.renderState);
+			commandList.Draw();
+			commandList.EndRenderPass();
+			commandList.Finish();
+			commandList.Execute();
 
-				// execute compute shader
-				commandList_Compute.Start(device.swapChain);
-				commandList_Compute.SetComputeState(computeState);
-				commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
-				commandList_Compute.Finish();
-				commandList_Compute.Execute();
+			// execute compute shader
+			commandList_Compute.Start(device.swapChain);
+			commandList_Compute.SetComputeState(computeState);
+			commandList_Compute.ExecuteComputeShader(renderTextureTest.renderTexture.width / 8, renderTextureTest.renderTexture.height / 8, 1);
+			commandList_Compute.Finish();
+			commandList_Compute.Execute();
 
-				commandList.Start(device.swapChain);// RENDER INTO: MSAA RenderTexture
-				commandList.BeginRenderPass(renderPass);
-				commandList.SetViewPort(viewPort);
-				commandList.SetRenderState(renderState);
-				commandList.Draw();
-				commandList.EndRenderPass();
-				commandList.Finish();
-				commandList.Execute();
+			commandList.Start(device.swapChain);// RENDER INTO: MSAA RenderTexture
+			commandList.BeginRenderPass(renderPass);
+			commandList.SetViewPort(viewPort);
+			commandList.SetRenderState(renderState);
+			commandList.Draw();
+			commandList.EndRenderPass();
+			commandList.Finish();
+			commandList.Execute();
 
-				// copy render-texture into swap-chain surface
-				if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
-				else device.swapChain.CopyTexture(renderTextureMSAA);
-				device.EndFrame();
-
-				// run application events
-				application.RunEvents();
-			}
+			// copy render-texture into swap-chain surface
+			if (renderTextureMSAA.msaaLevel != MSAALevel.Disabled) device.swapChain.ResolveMSAA(renderTextureMSAA);
+			else device.swapChain.CopyTexture(renderTextureMSAA);
+			device.EndFrame();
 		}
 	}
 }

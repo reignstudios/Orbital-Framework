@@ -12,13 +12,12 @@ namespace Orbital.Demo.Win
 			//AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			
 			// init app and window
-			var application = new Application();
-			var window = new Window(320, 240, WindowType.Fullscreen, WindowStartupPosition.CenterScreen);
+			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: Win");
 			window.Show();
 
-			// run example
-			/*using (var example = new Example(application, window))
+			/*// run example
+			using (var example = new Example(window))
 			{
 				#if NET_CORE
 				example.Init(@"..\..\..\..\..", "x64", "Win");
@@ -29,11 +28,16 @@ namespace Orbital.Demo.Win
 				#else
 				throw new NotImplementedException();
 				#endif
-				example.Run();
+
+				Application.RunEvents();
+				while (!window.IsClosed())
+				{
+					example.Run();
+					Application.RunEvents();
+				}
 			}*/
 
-			application.Run(window);
-			application.Dispose();
+			Application.Run(window);
 		}
 
 		/*private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

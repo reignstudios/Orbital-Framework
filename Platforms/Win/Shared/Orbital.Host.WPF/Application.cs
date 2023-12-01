@@ -1,33 +1,25 @@
-﻿using System;
-
-namespace Orbital.Host.WPF
+﻿namespace Orbital.Host.WPF
 {
-	public sealed class Application : ApplicationBase
+	public static class Application
 	{
-		public readonly System.Windows.Application application;
+		public static readonly System.Windows.Application application;
 
-		public Application()
+		static Application()
 		{
 			application = new System.Windows.Application();
 		}
 
-		public override void Run()
+		public static void Run()
 		{
 			application.Run();
 		}
 
-		public override void Run(WindowBase window)
+		public static void Run(Window window)
 		{
-			var windowAbstraction = (Window)window;
-			application.Run(windowAbstraction.window);
+			application.Run(window.window);
 		}
 
-		public override void RunEvents()
-		{
-			throw new NotSupportedException("WPF doesn't support manual event pumping");
-		}
-
-		public override void Exit()
+		public static void Exit()
 		{
 			application.Shutdown();
 		}
