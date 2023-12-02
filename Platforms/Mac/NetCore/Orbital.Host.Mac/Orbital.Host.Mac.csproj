@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\Shared\Orbital.Host.Microsoft\Application.cs">
+    <Compile Include="..\..\Shared\Orbital.Host.Mac\Application.cs">
       <Link>Application.cs</Link>
     </Compile>
-    <Compile Include="..\..\Shared\Orbital.Host.Microsoft\Window.cs">
+    <Compile Include="..\..\Shared\Orbital.Host.Mac\Window.cs">
       <Link>Window.cs</Link>
     </Compile>
   </ItemGroup>

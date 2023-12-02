@@ -3,7 +3,7 @@ using AppKit;
 using Foundation;
 using ObjCRuntime;
 
-namespace Orbital.Host.Microsoft
+namespace Orbital.Host.Mac
 {
 	public static class Application
 	{

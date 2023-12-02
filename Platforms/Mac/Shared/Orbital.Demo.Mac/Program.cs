@@ -1,6 +1,6 @@
 ﻿using System;
 using Orbital.Host;
-using Orbital.Host.Microsoft;
+using Orbital.Host.Mac;
 
 namespace Orbital.Demo.Microsoft
 {
@@ -11,7 +11,7 @@ namespace Orbital.Demo.Microsoft
             // init app and window
             Application.Init();
             var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Microsoft");
+            window.SetTitle("Demo: Mac");
             window.Show();
             
             // run app till quit

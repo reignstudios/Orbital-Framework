@@ -6,7 +6,7 @@ using ObjCRuntime;
 using CoreGraphics;
 using Foundation;
 
-namespace Orbital.Host.Microsoft
+namespace Orbital.Host.Mac
 {
 	public sealed class Window : WindowBase
 	{

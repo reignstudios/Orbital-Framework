@@ -8,13 +8,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Include="..\..\Shared\Orbital.Demo.Microsoft\Program.cs">
+      <Compile Include="..\..\Shared\Orbital.Demo.Mac\Program.cs">
         <Link>Program.cs</Link>
       </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Orbital.Host.Microsoft\Orbital.Host.Microsoft.csproj" />
+      <ProjectReference Include="..\Orbital.Host.Mac\Orbital.Host.Mac.csproj" />
     </ItemGroup>
 
 </Project>
