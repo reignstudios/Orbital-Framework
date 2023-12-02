@@ -7,7 +7,7 @@
 }
 
 - (void)initApplication;
-- (void)quitCallback: (id)sender;
+- (void)quitMenuCallback: (id)sender;
 
 // NSApplicationDelegate methods
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;

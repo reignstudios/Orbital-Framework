@@ -1,15 +1,32 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using Orbital.Numerics;
 using AppKit;
 using ObjCRuntime;
+using CoreGraphics;
+using Foundation;
 
 namespace Orbital.Host.Microsoft
 {
 	public sealed class Window : WindowBase
 	{
+		sealed class WindowDelegates : NSWindowDelegate
+		{
+			private Window window;
+			
+			public WindowDelegates(Window window)
+			{
+				this.window = window;
+			}
+			
+			public override void WillClose(NSNotification notification)
+			{
+				window.isClosed = true;
+				_windows.Remove(window);
+				window.handle.Dispose();
+			}
+		}
+		
 		private static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
 
@@ -28,7 +45,26 @@ namespace Orbital.Host.Microsoft
 
 		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			// TODO
+			handle = new NSWindow();
+			handle.StyleMask = NSWindowStyle.Titled | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Resizable;
+			handle.BackingType = NSBackingStore.Buffered;
+			handle.Delegate = new WindowDelegates(this);
+			//handle.ReleaseWhenClosed(true);// NOTE: this throws an nonsense exception for some reason
+
+			// set window size
+			handle.SetContentSize(new CGSize(width, height));
+
+			// set window position
+			if (startupPosition == WindowStartupPosition.CenterScreen)
+			{
+				handle.Center();
+			}
+			else// default
+			{
+				var screenFrame = NSScreen.MainScreen.Frame;
+				var screenSize = screenFrame.Size;
+				handle.SetFrameTopLeftPoint(new CGPoint(20, screenSize.Height - 40));
+			}
 
 			// track window
 			_windows.Add(this);
@@ -51,17 +87,20 @@ namespace Orbital.Host.Microsoft
 
 		public override void SetTitle(string title)
 		{
-			// TODO
+			handle.Title = title;
 		}
 
 		public override void Show()
 		{
-			// TODO
+			handle.MakeKeyAndOrderFront(null);
 		}
 
 		public override void Close()
 		{
+			isClosed = true;
 			_windows.Remove(this);
+			handle.Close();
+			handle.Dispose();
 		}
 
 		public override bool IsClosed()
@@ -71,8 +110,8 @@ namespace Orbital.Host.Microsoft
 
 		public override Size2 GetSize()
 		{
-			// TODO
-			return new Size2();
+			var size = handle.Frame.Size;
+			return new Size2((int)size.Width, (int)size.Height);
 		}
 	}
 }

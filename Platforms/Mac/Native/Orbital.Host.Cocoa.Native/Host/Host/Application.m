@@ -14,7 +14,7 @@
     [menubar addItem:appMenuItem];
     [NSApp setMainMenu:menubar];
     id appMenu = [NSMenu new];
-    id quitMenuItem = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(quitCallback:) keyEquivalent:@"q"];
+    id quitMenuItem = [[NSMenuItem alloc] initWithTitle:@"Quit" action:@selector(quitMenuCallback:) keyEquivalent:@"q"];
     [quitMenuItem setTarget:self];
     [appMenu addItem:quitMenuItem];
     [appMenuItem setSubmenu:appMenu];
@@ -24,7 +24,7 @@
     [NSApp finishLaunching];
 }
 
-- (void)quitCallback: (id)sender
+- (void)quitMenuCallback: (id)sender
 {
     isQuit = true;
     [NSApp stop:app];

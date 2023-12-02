@@ -29,14 +29,13 @@ namespace Orbital.Host.Cocoa
 		
 		public static IntPtr handle { get; private set; }
 
-		static Application()
+		public static void Init()
 		{
 			handle = Orbital_Host_Application_Create();
 			Orbital_Host_Application_Init(handle);
-			AppDomain.CurrentDomain.ProcessExit += ProcessExit;
 		}
 
-		private static void ProcessExit(object sender, EventArgs args)
+		public static void Shutdown()
 		{
 			if (handle != IntPtr.Zero)
 			{
@@ -50,10 +49,9 @@ namespace Orbital.Host.Cocoa
 			Orbital_Host_Application_Run();
 		}
 
-		public static void Run(WindowBase window)
+		public static void Run(Window window)
 		{
-			var windowAbstraction = (Window)window;
-			while (Orbital_Host_Application_IsQuit(handle) == 0 && !windowAbstraction.IsClosed())
+			while (Orbital_Host_Application_IsQuit(handle) == 0 && !window.IsClosed())
 			{
 				RunEvents();
 			}
