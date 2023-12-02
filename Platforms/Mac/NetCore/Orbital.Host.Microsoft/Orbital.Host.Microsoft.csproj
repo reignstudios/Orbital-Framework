@@ -5,7 +5,7 @@
     <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;NET_CORE;CS_7_3;MAC</DefineConstants>
-    <RootNamespace>Orbital.Host.Xamarin</RootNamespace>
+    <RootNamespace>Orbital.Host.Microsoft</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

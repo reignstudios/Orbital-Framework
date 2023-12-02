@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace Orbital.Host.Cocoa
 {
-	public sealed class Application : ApplicationBase
+	public static class Application
 	{
 		[DllImport(Native.lib)]
 		private static extern IntPtr Orbital_Host_Application_Create();
@@ -31,7 +31,7 @@ namespace Orbital.Host.Cocoa
 		private static Thread updateThread;
 		private static bool updateThreadRunning;
 
-		public Application()
+		static Application()
 		{
 			handle = Orbital_Host_Application_Create();
 			Orbital_Host_Application_Init(handle);
@@ -45,7 +45,7 @@ namespace Orbital.Host.Cocoa
 			}
 		}
 
-		public override void Dispose()
+		public static void Shutdown()
 		{
 			updateThreadRunning = false;
 			updateThread = null;
@@ -57,12 +57,12 @@ namespace Orbital.Host.Cocoa
 			}
 		}
 
-		public override void Run()
+		public static void Run()
 		{
 			Orbital_Host_Application_Run();
 		}
 
-		public override void Run(WindowBase window)
+		public static void Run(WindowBase window)
 		{
 			var windowAbstraction = (Window)window;
 			while (Orbital_Host_Application_IsQuit(handle) == 0 && !windowAbstraction.IsClosed())
@@ -71,12 +71,12 @@ namespace Orbital.Host.Cocoa
 			}
 		}
 
-		public override void RunEvents()
+		public static void RunEvents()
 		{
 			Orbital_Host_Application_RunEvent();// only run one event at a time or we can create dead-locks
 		}
 
-		public override void Exit()
+		public static void Exit()
 		{
 			Orbital_Host_Application_Quit(handle);
 		}

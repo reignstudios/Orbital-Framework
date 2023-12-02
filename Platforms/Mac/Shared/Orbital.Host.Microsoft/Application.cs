@@ -6,47 +6,32 @@ using ObjCRuntime;
 
 namespace Orbital.Host.Microsoft
 {
-	public sealed class Application : ApplicationBase
+	public static class Application
 	{
 		public static NSApplication handle { get; private set; }
-		private bool exit;
+		private static bool exit;
 
-		public Application()
+		static Application()
 		{
 			// TODO
 		}
 
-		public override void Dispose()
-		{
-			// TODO
-		}
-		
-		public override IntPtr GetHandle()
-		{
-			return handle.GetHandle();
-		}
-
-		public override object GetManagedHandle()
-		{
-			return handle;
-		}
-
-		public override void Run()
+		public static void Run()
 		{
 			// TODO
 		}
 
-		public override void Run(WindowBase window)
+		public static void Run(WindowBase window)
 		{
 			// TODO
 		}
 
-		public override void RunEvents()
+		public static void RunEvents()
 		{
 			// TODO
 		}
 
-		public override void Exit()
+		public static void Exit()
 		{
 			exit = true;
 		}
