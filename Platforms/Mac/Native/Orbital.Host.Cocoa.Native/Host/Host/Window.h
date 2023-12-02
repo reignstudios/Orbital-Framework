@@ -13,10 +13,13 @@ typedef enum WindowStartupPosition
     WindowStartupPosition_CenterScreen
 }WindowStartupPosition;
 
+typedef void (*WindowClosedCallbackMethod)(void);
+
 @interface Window : NSObject <NSWindowDelegate>
 {
     @public NSWindow* window;
     @public bool isClosed;
+    @public WindowClosedCallbackMethod WindowClosedCallback;
 }
 
 - (void)initWindow:(int)width :(int)height :(WindowType)type :(WindowStartupPosition)startupPosition;

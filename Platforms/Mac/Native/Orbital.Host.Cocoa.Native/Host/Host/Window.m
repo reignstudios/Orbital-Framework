@@ -21,7 +21,7 @@
     else// default
     {
         NSRect screenFrame = [NSScreen.mainScreen frame];
-        CGSize screenSize = [NSScreen.mainScreen frame].size;
+        CGSize screenSize = screenFrame.size;
         [window setFrameTopLeftPoint:NSMakePoint(20, screenSize.height - 40)];
     }
 }
@@ -29,6 +29,7 @@
 - (void)windowWillClose:(NSNotification*)notification
 {
     isClosed = true;
+    WindowClosedCallback();
 }
 @end
 
@@ -76,4 +77,9 @@ void Orbital_Host_Window_GetSize(Window* window, int* width, int* height)
     CGSize size = [[window->window contentView] frame].size;
     *width = size.width;
     *height = size.height;
+}
+
+void Orbital_Host_Window_SetWindowClosedCallback(Window* window, WindowClosedCallbackMethod funcPtr)
+{
+    window->WindowClosedCallback = funcPtr;
 }

@@ -31,11 +31,18 @@ namespace Orbital.Host.Cocoa
 
 		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_GetSize(IntPtr window, out int width, out int height);
+
+		[DllImport(Native.lib)]
+		private static extern void Orbital_Host_Window_SetWindowClosedCallback(IntPtr window, IntPtr funcPtr);
 		
 		private static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
 		
 		public IntPtr handle { get; private set; }
+
+		private delegate void NativeClosedCallbackDef();
+		private NativeClosedCallbackDef NativeClosedCallback;
+		private IntPtr NativeClosedCallbackFuncPtr;
 
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -49,9 +56,26 @@ namespace Orbital.Host.Cocoa
 
 		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
+			// create and init native window
 			handle = Orbital_Host_Window_Create();
 			Orbital_Host_Window_Init(handle, width, height, type, startupPosition);
+
+			// bind window closed callback
+			NativeClosedCallback = NativeClosed;
+			NativeClosedCallbackFuncPtr = Marshal.GetFunctionPointerForDelegate(NativeClosedCallback);
+			Orbital_Host_Window_SetWindowClosedCallback(handle, NativeClosedCallbackFuncPtr);
+
 			_windows.Add(this);
+		}
+
+		private void NativeClosed()
+		{
+			_windows.Remove(this);
+			if (handle != IntPtr.Zero)
+			{
+				Orbital_Host_Window_Dispose(handle);
+				handle = IntPtr.Zero;
+			}
 		}
 
 		public override void Dispose()
@@ -104,14 +128,6 @@ namespace Orbital.Host.Cocoa
 			Size2 result;
 			Orbital_Host_Window_GetSize(handle, out result.width, out result.height);
 			return result;
-		}
-
-		internal void Update()
-		{
-			if (IsClosed())
-			{
-				Dispose();
-			}
 		}
 	}
 }

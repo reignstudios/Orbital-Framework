@@ -14,7 +14,6 @@ namespace Orbital.Demo.Cocoa
             
             // run app till quit
             Application.Run(window);
-            Application.Shutdown();
         }
     }
 }

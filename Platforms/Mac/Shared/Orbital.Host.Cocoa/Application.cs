@@ -28,28 +28,16 @@ namespace Orbital.Host.Cocoa
 		private static extern int Orbital_Host_Application_IsQuit(IntPtr application);
 		
 		public static IntPtr handle { get; private set; }
-		private static Thread updateThread;
-		private static bool updateThreadRunning;
 
 		static Application()
 		{
 			handle = Orbital_Host_Application_Create();
 			Orbital_Host_Application_Init(handle);
-
-			if (updateThread == null)
-			{
-				updateThreadRunning = true;
-				updateThread = new Thread(Update);
-				updateThread.IsBackground = true;
-				updateThread.Start();
-			}
+			AppDomain.CurrentDomain.ProcessExit += ProcessExit;
 		}
 
-		public static void Shutdown()
+		private static void ProcessExit(object sender, EventArgs args)
 		{
-			updateThreadRunning = false;
-			updateThread = null;
-			
 			if (handle != IntPtr.Zero)
 			{
 				Orbital_Host_Application_Dispose(handle);
@@ -79,18 +67,6 @@ namespace Orbital.Host.Cocoa
 		public static void Exit()
 		{
 			Orbital_Host_Application_Quit(handle);
-		}
-		
-		private static void Update()
-		{
-			while (updateThreadRunning)
-			{
-				Thread.Sleep(100);
-				for (int i = Window.windows.Count - 1; i >= 0; --i)
-				{
-					Window.windows[i].Update();
-				}
-			}
 		}
 	}
 }
