@@ -11,6 +11,9 @@
     <Compile Include="..\..\Shared\Orbital.Host.Cocoa\Application.cs">
       <Link>Application.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Cocoa\Display.cs">
+      <Link>Display.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Orbital.Host.Cocoa\Window.cs">
       <Link>Window.cs</Link>
     </Compile>
