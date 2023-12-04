@@ -9,7 +9,12 @@ namespace Orbital.Host.Carbon
 		public static IntPtr handle { get; private set; }
 		private static bool exit;
 
-		static Application()
+		public static void Init()
+		{
+			// TODO
+		}
+		
+		public static void Shutdown()
 		{
 			// TODO
 		}

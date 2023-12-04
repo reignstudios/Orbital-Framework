@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>Orbital.Demo.Microsoft</string>
+	<string>Orbital.Demo.Mac</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.ReignStudios.Orbital</string>
 	<key>CFBundleShortVersionString</key>

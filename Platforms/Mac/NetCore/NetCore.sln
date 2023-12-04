@@ -19,15 +19,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.IO", "..\..\Portabl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj", "{128C9C2D-98C3-419C-B17D-1D3B47AD270B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Carbon", "Orbital.Host.Carbon\Orbital.Host.Carbon.csproj", "{E69FD527-13BE-4590-B47F-79BDD0C22776}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Mac", "Orbital.Host.Mac\Orbital.Host.Mac.csproj", "{FDDC0480-DC89-4EFF-99B2-67165389E598}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Cocoa", "Orbital.Demo.Cocoa\Orbital.Demo.Cocoa.csproj", "{0BE78FAE-DEF6-466C-A96F-F3141C50A367}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Mac", "Orbital.Demo.Mac\Orbital.Demo.Mac.csproj", "{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Carbon", "Orbital.Demo.Carbon\Orbital.Demo.Carbon.csproj", "{09F186E7-9B41-4DD8-AD7C-A0E69EEB24DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,10 +66,6 @@ Global
 		{128C9C2D-98C3-419C-B17D-1D3B47AD270B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{128C9C2D-98C3-419C-B17D-1D3B47AD270B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{128C9C2D-98C3-419C-B17D-1D3B47AD270B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E69FD527-13BE-4590-B47F-79BDD0C22776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E69FD527-13BE-4590-B47F-79BDD0C22776}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E69FD527-13BE-4590-B47F-79BDD0C22776}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E69FD527-13BE-4590-B47F-79BDD0C22776}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDDC0480-DC89-4EFF-99B2-67165389E598}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -86,9 +78,5 @@ Global
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{09F186E7-9B41-4DD8-AD7C-A0E69EEB24DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09F186E7-9B41-4DD8-AD7C-A0E69EEB24DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09F186E7-9B41-4DD8-AD7C-A0E69EEB24DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09F186E7-9B41-4DD8-AD7C-A0E69EEB24DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

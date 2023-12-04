@@ -4,7 +4,8 @@ typedef enum WindowType
 {
     WindowType_Standard,
     WindowType_Tool,
-    WindowType_Borderless
+    WindowType_Borderless,
+    WindowType_Fullscreen
 }WindowType;
 
 typedef enum WindowStartupPosition

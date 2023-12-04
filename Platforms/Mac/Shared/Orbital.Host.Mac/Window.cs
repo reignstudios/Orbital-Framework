@@ -46,10 +46,29 @@ namespace Orbital.Host.Mac
 		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			handle = new NSWindow();
-			handle.StyleMask = NSWindowStyle.Titled | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Resizable;
 			handle.BackingType = NSBackingStore.Buffered;
 			handle.Delegate = new WindowDelegates(this);
 			//handle.ReleaseWhenClosed(true);// NOTE: this throws an nonsense exception for some reason
+			
+			// configure window type
+			switch (type)
+			{
+				case WindowType.Standard:
+					handle.StyleMask = NSWindowStyle.Titled | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Resizable;
+					break;
+				
+				case WindowType.Tool:
+					handle.StyleMask = NSWindowStyle.Titled | NSWindowStyle.Closable;
+					break;
+				
+				case WindowType.Borderless:
+					handle.StyleMask = NSWindowStyle.Borderless;
+					break;
+				
+				case WindowType.Fullscreen:
+					throw new NotImplementedException();
+					break;
+			}
 
 			// set window size
 			handle.SetContentSize(new CGSize(width, height));

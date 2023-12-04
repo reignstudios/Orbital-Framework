@@ -61,7 +61,7 @@ namespace Orbital.Host.Mac
 			{
 				handle.Dispose();
 				handle = null;
-				Environment.Exit(0); // TODO: something is blocking app from fully exiting
+				Environment.Exit(0); // TODO: Rider IDE debugging isn't stopping for some reason if this isn't called (look into this later)
 			}
 		}
 

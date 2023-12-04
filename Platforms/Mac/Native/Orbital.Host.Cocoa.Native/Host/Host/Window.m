@@ -5,10 +5,29 @@
 {
     // create window
     window = [NSWindow new];
-    [window setStyleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable)];
     [window setBackingType:NSBackingStoreBuffered];
     [window setDelegate:self];
     [window setReleasedWhenClosed:YES];
+    
+    // configure window type
+    switch (type)
+    {
+        case WindowType_Standard:
+            [window setStyleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable)];
+            break;
+            
+        case WindowType_Tool:
+            [window setStyleMask:(NSWindowStyleMaskTitled|NSWindowStyleMaskClosable)];
+            break;
+            
+        case WindowType_Borderless:
+            [window setStyleMask:(NSWindowStyleMaskBorderless)];
+            break;
+            
+        case WindowType_Fullscreen:
+            [window setStyleMask:(NSWindowStyleMaskBorderless)];
+            break;
+    }
     
     // set window size
     [window setContentSize:NSMakeSize(width, height)];

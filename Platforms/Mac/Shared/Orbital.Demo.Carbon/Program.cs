@@ -14,6 +14,7 @@ namespace Orbital.Demo.Carbon
             
             // run app till quit
             Application.Run(window);
+            Application.Shutdown();
         }
     }
 }
