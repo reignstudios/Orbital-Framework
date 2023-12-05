@@ -9,29 +9,24 @@ namespace Orbital.Host.WPF
 {
 	public sealed class Window : WindowBase
 	{
-		public readonly WPFWindow window;
+		public WPFWindow window { get; private set; }
 		private IntPtr handle;
 		private bool isClosed;
 
-		public Window(WPFWindow window)
-		{
-			this.window = window;
-		}
-
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			window = new WPFWindow();
 			Init(size.width, size.height, type, startupPosition);
 		}
 
 		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			window = new WPFWindow();
 			Init(width, height, type, startupPosition);
 		}
 
 		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
+			window = new WPFWindow();
+
 			// get native HWND handle
 			handle = new WindowInteropHelper(window).EnsureHandle();
 			if (handle == IntPtr.Zero) throw new Exception("WindowInteropHelper HWND failed");
@@ -44,19 +39,39 @@ namespace Orbital.Host.WPF
 					break;
 
 				case WindowType.Borderless:
+					window.ResizeMode = System.Windows.ResizeMode.NoResize;
 					window.WindowStyle = System.Windows.WindowStyle.None;
+					break;
+
+				case WindowType.Fullscreen:
+					window.ResizeMode = System.Windows.ResizeMode.NoResize;
+					window.WindowStyle = System.Windows.WindowStyle.None;
+					window.Topmost = true;
+					var display = Displays.GetPrimaryDisplay();
+					width = display.width;
+					height = display.height;
 					break;
 			}
 
 			// set form size
+			window.SizeToContent = System.Windows.SizeToContent.Manual;
 			SetSize(width, height);
-
+			
 			// set form startup position
-			switch (startupPosition)
+			if (type == WindowType.Fullscreen)
 			{
-				case WindowStartupPosition.CenterScreen:
-					window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
-					break;
+				window.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+				window.Left = 0;
+				window.Top = 0;
+			}
+			else
+			{
+				switch (startupPosition)
+				{
+					case WindowStartupPosition.CenterScreen:
+						window.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+						break;
+				}
 			}
 
 			// watch for close event

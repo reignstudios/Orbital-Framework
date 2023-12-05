@@ -42,17 +42,35 @@ namespace Orbital.Host.WinForms
 					form.MinimizeBox = false;
 					form.FormBorderStyle = FormBorderStyle.None;
 					break;
+
+				case WindowType.Fullscreen:
+					form.MaximizeBox = false;
+					form.MinimizeBox = false;
+					form.FormBorderStyle = FormBorderStyle.None;
+					var display = Displays.GetPrimaryDisplay();
+					width = display.width;
+					height = display.height;
+					break;
 			}
 
 			// set form size
 			form.ClientSize = new Size(width, height);
 
 			// set form startup position
-			switch (startupPosition)
+			if (type == WindowType.Fullscreen)
 			{
-				case WindowStartupPosition.CenterScreen:
-				form.StartPosition = FormStartPosition.CenterScreen;
-					break;
+				form.StartPosition = FormStartPosition.Manual;
+				form.Left = 0;
+				form.Top = 0;
+			}
+			else
+			{
+				switch (startupPosition)
+				{
+					case WindowStartupPosition.CenterScreen:
+					form.StartPosition = FormStartPosition.CenterScreen;
+						break;
+				}
 			}
 		}
 

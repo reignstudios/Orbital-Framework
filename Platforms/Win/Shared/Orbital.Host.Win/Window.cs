@@ -101,6 +101,10 @@ namespace Orbital.Host.Win
 
 				case WindowType.Fullscreen:
 					windowStyle = User32.WS_POPUP;
+					var display = Displays.GetPrimaryDisplay();
+					x = y = 0;
+					width = display.width;
+					height = display.height;
 					break;
 			}
 
@@ -110,29 +114,32 @@ namespace Orbital.Host.Win
 			if (hWnd == HWND.Zero) throw new Exception("CreateWindowExA failed");
 
 			// adjust working area / client size and position
-			if (User32.GetWindowRect(hWnd, &rect) == 0) throw new Exception("GetWindowRect failed");
-			int rectWidth = rect.right - rect.left;
-			int rectHeight = rect.bottom - rect.top;
-
-			User32.RECT clientRect;
-			if (User32.GetClientRect(hWnd, &clientRect) == 0) throw new Exception("GetWindowRect failed");
-			int clientRectWidth = clientRect.right - clientRect.left;
-			int clientRectHeight = clientRect.bottom - clientRect.top;
-
-			int offsetX = (rectWidth - clientRectWidth);
-			int offsetY = (rectHeight - clientRectHeight);
-			width += offsetX;
-			height += offsetY;
-
-			UINT flags = User32.SWP_NOMOVE;
-			if (startupPosition == WindowStartupPosition.CenterScreen)
+			if (type != WindowType.Fullscreen)
 			{
-				flags = 0;
-				x -= offsetX / 2;
-				y -= offsetY;
-			}
+				if (User32.GetWindowRect(hWnd, &rect) == 0) throw new Exception("GetWindowRect failed");
+				int rectWidth = rect.right - rect.left;
+				int rectHeight = rect.bottom - rect.top;
 
-			if (User32.SetWindowPos(hWnd, HWND.Zero, x, y, width, height, flags) == 0) throw new Exception("SetWindowPos failed");
+				User32.RECT clientRect;
+				if (User32.GetClientRect(hWnd, &clientRect) == 0) throw new Exception("GetWindowRect failed");
+				int clientRectWidth = clientRect.right - clientRect.left;
+				int clientRectHeight = clientRect.bottom - clientRect.top;
+
+				int offsetX = (rectWidth - clientRectWidth);
+				int offsetY = (rectHeight - clientRectHeight);
+				width += offsetX;
+				height += offsetY;
+
+				UINT flags = User32.SWP_NOMOVE;
+				if (startupPosition == WindowStartupPosition.CenterScreen)
+				{
+					flags = 0;
+					x -= offsetX / 2;
+					y -= offsetY;
+				}
+
+				if (User32.SetWindowPos(hWnd, HWND.Zero, x, y, width, height, flags) == 0) throw new Exception("SetWindowPos failed");
+			}
 
 			// track window
 			_windows.Add(this);
