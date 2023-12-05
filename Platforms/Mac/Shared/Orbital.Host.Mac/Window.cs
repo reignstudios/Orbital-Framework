@@ -35,15 +35,25 @@ namespace Orbital.Host.Mac
 
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(size.width, size.height, type, startupPosition);
+			Init(size.width, size.height, type, false, startupPosition);
+		}
+
+		public Window(Size2 size, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
+		{
+			Init(size.width, size.height, type, fullscreenOverlay, startupPosition);
 		}
 
 		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(width, height, type, startupPosition);
+			Init(width, height, type, false, startupPosition);
 		}
 
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
+		{
+			Init(width, height, type, fullscreenOverlay, startupPosition);
+		}
+
+		private void Init(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
 		{
 			handle = new NSWindow();
 			handle.BackingType = NSBackingStore.Buffered;
@@ -66,7 +76,11 @@ namespace Orbital.Host.Mac
 					break;
 				
 				case WindowType.Fullscreen:
-					throw new NotImplementedException();
+					handle.StyleMask = NSWindowStyle.Borderless;
+					var screenFrame = NSScreen.MainScreen.Frame;
+					var screenSize = screenFrame.Size;
+					width = (int)screenSize.Width;
+					height = (int)screenSize.Height;
 					break;
 			}
 
@@ -74,15 +88,33 @@ namespace Orbital.Host.Mac
 			handle.SetContentSize(new CGSize(width, height));
 
 			// set window position
-			if (startupPosition == WindowStartupPosition.CenterScreen)
+			if (type == WindowType.Fullscreen)
 			{
-				handle.Center();
+				if (fullscreenOverlay)
+				{
+					handle.Level = NSWindowLevel.Status;
+					var screenFrame = NSScreen.MainScreen.Frame;
+					var screenSize = screenFrame.Size;
+					handle.SetFrameTopLeftPoint(new CGPoint(0, screenSize.Height));
+				}
+				else
+				{
+					handle.CollectionBehavior = NSWindowCollectionBehavior.FullScreenPrimary;
+					handle.ToggleFullScreen(null);
+				}
 			}
-			else// default
+			else
 			{
-				var screenFrame = NSScreen.MainScreen.Frame;
-				var screenSize = screenFrame.Size;
-				handle.SetFrameTopLeftPoint(new CGPoint(20, screenSize.Height - 40));
+				if (startupPosition == WindowStartupPosition.CenterScreen)
+				{
+					handle.Center();
+				}
+				else// default
+				{
+					var screenFrame = NSScreen.MainScreen.Frame;
+					var screenSize = screenFrame.Size;
+					handle.SetFrameTopLeftPoint(new CGPoint(20, screenSize.Height - 40));
+				}
 			}
 
 			// track window

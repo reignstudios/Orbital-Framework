@@ -1,7 +1,7 @@
 #import "Window.h"
 
 @implementation Window
-- (void)initWindow:(int)width :(int)height :(WindowType)type :(WindowStartupPosition)startupPosition
+- (void)initWindow:(int)width :(int)height :(WindowType)type :(bool)fullscreenOverlay :(WindowStartupPosition)startupPosition
 {
     // create window
     window = [NSWindow new];
@@ -26,6 +26,10 @@
             
         case WindowType_Fullscreen:
             [window setStyleMask:(NSWindowStyleMaskBorderless)];
+            NSRect screenFrame = [NSScreen.mainScreen frame];
+            CGSize screenSize = screenFrame.size;
+            width = screenSize.width;
+            height = screenSize.height;
             break;
     }
     
@@ -33,15 +37,33 @@
     [window setContentSize:NSMakeSize(width, height)];
     
     // set window position
-    if (startupPosition == WindowStartupPosition_CenterScreen)
+    if (type == WindowType_Fullscreen)
     {
-        [window center];
+        if (fullscreenOverlay)
+        {
+            window.level = NSStatusWindowLevel;
+            NSRect screenFrame = [NSScreen.mainScreen frame];
+            CGSize screenSize = screenFrame.size;
+            [window setFrameTopLeftPoint:NSMakePoint(0, screenSize.height)];
+        }
+        else
+        {
+            [window setCollectionBehavior:(NSWindowCollectionBehaviorFullScreenPrimary)];
+            [window toggleFullScreen:nil];
+        }
     }
-    else// default
+    else
     {
-        NSRect screenFrame = [NSScreen.mainScreen frame];
-        CGSize screenSize = screenFrame.size;
-        [window setFrameTopLeftPoint:NSMakePoint(20, screenSize.height - 40)];
+        if (startupPosition == WindowStartupPosition_CenterScreen)
+        {
+            [window center];
+        }
+        else// default
+        {
+            NSRect screenFrame = [NSScreen.mainScreen frame];
+            CGSize screenSize = screenFrame.size;
+            [window setFrameTopLeftPoint:NSMakePoint(20, screenSize.height - 40)];
+        }
     }
 }
 
@@ -65,9 +87,9 @@ void Orbital_Host_Window_Dispose(Window* window)
     [window release];
 }
 
-void Orbital_Host_Window_Init(Window* window, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+void Orbital_Host_Window_Init(Window* window, int width, int height, WindowType type, int fullscreenOverlay, WindowStartupPosition startupPosition)
 {
-    [window initWindow :width :height :type :startupPosition];
+    [window initWindow :width :height :type :(fullscreenOverlay != 0 ? true : false) :startupPosition];
 }
 
 void Orbital_Host_Window_SetTitle(Window* window, unichar* title, int titleLength)
