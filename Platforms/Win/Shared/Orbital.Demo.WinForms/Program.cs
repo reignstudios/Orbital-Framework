@@ -12,6 +12,7 @@ namespace Orbital.Demo.WinForms
 		static void Main()
 		{
 			// init app and window
+			Application.Init();
 			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: WinForms");
 			window.Show();
@@ -34,6 +35,7 @@ namespace Orbital.Demo.WinForms
 			}*/
 
 			Application.Run(window);
+			Application.Shutdown();
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Orbital.Host.Win
 		public static int nCmdShow { get; private set; }
 		private static bool exit;
 
-		static Application()
+		public static void Init()
 		{
 			// get hdc
 			hdc = Gdi32.CreateCompatibleDC(HDC.Zero);
@@ -51,8 +51,16 @@ namespace Orbital.Host.Win
 		public static void Init(HINSTANCE hInstance)
 		{
 			Application.hInstance = hInstance;
+			Init();
 		}
 		#endif
+
+		public static void Shutdown()
+		{
+			hdc = HDC.Zero;
+			hInstance = HINSTANCE.Zero;
+			nCmdShow = 0;
+		}
 
 		public static void Run()
 		{

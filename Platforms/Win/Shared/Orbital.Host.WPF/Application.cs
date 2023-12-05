@@ -2,11 +2,16 @@
 {
 	public static class Application
 	{
-		public static readonly System.Windows.Application application;
+		public static System.Windows.Application application { get; private set; }
 
-		static Application()
+		public static void Init()
 		{
 			application = new System.Windows.Application();
+		}
+
+		public static void Shutdown()
+		{
+			application = null;
 		}
 
 		public static void Run()

@@ -12,6 +12,7 @@ namespace Orbital.Demo.Win
 			//AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 			
 			// init app and window
+			Application.Init();
 			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: Win");
 			window.Show();
@@ -38,6 +39,7 @@ namespace Orbital.Demo.Win
 			}*/
 
 			Application.Run(window);
+			Application.Shutdown();
 		}
 
 		/*private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

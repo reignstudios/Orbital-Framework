@@ -4,6 +4,16 @@ namespace Orbital.Host.WinForms
 {
 	public static class Application
 	{
+		public static void Init()
+		{
+			// do nothing...
+		}
+
+		public static void Shutdown()
+		{
+			// do nothing...
+		}
+
 		public static void Run()
 		{
 			App.Run();

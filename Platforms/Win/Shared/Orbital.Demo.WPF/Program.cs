@@ -9,6 +9,8 @@ namespace Orbital.Demo.WPF
 		[STAThread]
 		static void Main(string[] args)
 		{
+			// init app and window
+			Application.Init();
 			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo: WPF");
 			window.Show();
@@ -16,6 +18,7 @@ namespace Orbital.Demo.WPF
 			// TODO: run rendering example
 
 			Application.Run(window);
+			Application.Shutdown();
 		}
 	}
 }
