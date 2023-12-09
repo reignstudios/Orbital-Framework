@@ -1,7 +1,7 @@
 ﻿using Orbital.Host;
-using Orbital.Host.Cocoa;
+using Orbital.Host.X11;
 
-namespace Orbital.Demo.Cocoa
+namespace Orbital.Demo.X11
 {
     static class Program
     {
@@ -10,7 +10,7 @@ namespace Orbital.Demo.Cocoa
             // init app and window
             Application.Init();
             var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Cocoa");
+            window.SetTitle("Demo: X11");
             window.Show();
             
             // run app till quit

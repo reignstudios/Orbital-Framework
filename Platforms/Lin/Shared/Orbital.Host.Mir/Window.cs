@@ -6,29 +6,30 @@ using Orbital.Numerics;
 
 namespace Orbital.Host.Mir
 {
-	public unsafe sealed class Window : WindowBase
+	public sealed class Window : WindowBase
 	{
-		private static List<Window> windows = new List<Window>();
+		private static List<Window> _windows = new List<Window>();
+		public static IReadOnlyList<Window> windows => _windows;
 
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Point2 position, Size2 size, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(position.x, position.y, size.width, size.height, sizeType, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition);
 		}
 
-		public Window(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(x, y, width, height, sizeType, type, startupPosition);
+			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int x, int y, int width, int height, WindowSizeType sizeType, WindowType type, WindowStartupPosition startupPosition)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			// TODO
 
 			// track window
-			windows.Add(this);
+			_windows.Add(this);
 		}
 
 		public override void Dispose()
@@ -56,19 +57,9 @@ namespace Orbital.Host.Mir
 			// TODO
 		}
 
-		public override void Hide()
-		{
-			// TODO
-		}
-
 		public override void Close()
 		{
-			// TODO
-		}
-
-		public override bool IsVisible()
-		{
-			return false;// TODO
+			_windows.Remove(this);
 		}
 
 		public override bool IsClosed()
@@ -76,36 +67,10 @@ namespace Orbital.Host.Mir
 			return isClosed;
 		}
 
-		public override Point2 GetPosition()
-		{
-			// TODO
-			return new Point2();
-		}
-
-		public override void SetPosition(Point2 position)
-		{
-			SetPosition(position.x, position.y);
-		}
-
-		public override void SetPosition(int x, int y)
-		{
-			// TODO
-		}
-
-		public override Size2 GetSize(WindowSizeType type)
+		public override Size2 GetSize()
 		{
 			// TODO
 			return new Size2();
-		}
-
-		public override void SetSize(Size2 size, WindowSizeType type)
-		{
-			SetSize(size.width, size.height, type);
-		}
-
-		public override void SetSize(int width, int height, WindowSizeType type)
-		{
-			// TODO
 		}
 	}
 }

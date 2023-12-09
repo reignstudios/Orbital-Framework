@@ -1,37 +1,38 @@
 ﻿using System;
-using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace Orbital.Host.X11
 {
-	public unsafe sealed class Application : ApplicationBase
+	public static class Application
 	{
-		public static IntPtr handle { get; private set; }
-		private bool exit;
-
-		static Application()
+		public static void Init()
 		{
 			// TODO
 		}
 
-		public override void Run()
+		public static void Shutdown()
 		{
 			// TODO
 		}
 
-		public override void Run(WindowBase window)
+		public static void Run()
 		{
 			// TODO
 		}
 
-		public override void RunEvents()
+		public static void Run(WindowBase window)
 		{
 			// TODO
 		}
 
-		public override void Exit()
+		public static void RunEvents()
 		{
-			exit = true;
+			// TODO
+		}
+
+		public static void Exit()
+		{
+			// TODO
 		}
 	}
 }
