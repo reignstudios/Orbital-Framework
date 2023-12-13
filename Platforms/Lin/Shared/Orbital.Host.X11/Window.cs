@@ -1,14 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using Orbital.Numerics;
+﻿using Orbital.Numerics;
 
 namespace Orbital.Host.X11
 {
 	public sealed class Window : WindowBase
 	{
-		private static List<Window> _windows = new List<Window>();
+		internal static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
 
 		public IntPtr handle { get; private set; }
@@ -24,9 +20,37 @@ namespace Orbital.Host.X11
 			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			// TODO
+			int sc = X11.XDefaultScreen(Application.dc);
+			handle = X11.XCreateSimpleWindow(Application.dc, X11.XRootWindow(Application.dc, sc), 0, 0, (uint)width, (uint)height, 0, X11.XBlackPixel(Application.dc, sc), X11.XWhitePixel(Application.dc, sc));
+			X11.XSelectInput(Application.dc, handle, X11.ExposureMask | X11.KeyPressMask | X11.KeyReleaseMask | X11.ButtonPressMask | X11.ButtonReleaseMask);
+			
+			// Enable Capture of close box
+			var normalHint = X11.XInternAtom(Application.dc, "WM_NORMAL_HINTS", false);
+			var deleteHint = X11.XInternAtom(Application.dc, "WM_DELETE_WINDOW", false);
+			X11.XSetWMProtocols(Application.dc, handle, new IntPtr[]{normalHint, deleteHint}, 2);
+			
+			// window properties
+			var sizeHints = new X11.XSizeHints();
+			var flags = X11.XSizeHintsFlags.PPosition;
+			
+			if (type != WindowType.Standard)// window cannot resize
+			{
+				flags |= X11.XSizeHintsFlags.PMinSize | X11.XSizeHintsFlags.PMaxSize;
+				sizeHints.min_width = sizeHints.max_width = width;
+				sizeHints.min_height = sizeHints.max_height = height;
+			}
+			
+			sizeHints.flags = (IntPtr)flags;
+			X11.XSetNormalHints(Application.dc, handle, &sizeHints);
+			
+			// center screen
+			/*if (startupPosition == WindowStartupPosition.CenterScreen)
+			{
+				var screenSize = OS.ScreenSize;
+				X11.XMoveWindow(dc, handle, (screenSize.Width - width) / 2, (screenSize.Height - height) / 2);
+			}*/
 
 			// track window
 			_windows.Add(this);
@@ -49,17 +73,23 @@ namespace Orbital.Host.X11
 
 		public override void SetTitle(string title)
 		{
-			// TODO
+			X11.XStoreName(Application.dc, handle, title);
 		}
 
 		public override void Show()
 		{
-			// TODO
+			X11.XMapWindow(Application.dc, handle);
 		}
 
 		public override void Close()
 		{
+			isClosed = true;
 			_windows.Remove(this);
+			if (handle != IntPtr.Zero)
+			{
+				X11.XDestroyWindow(Application.dc, handle);
+				handle = IntPtr.Zero;
+			}
 		}
 
 		public override bool IsClosed()
@@ -67,10 +97,11 @@ namespace Orbital.Host.X11
 			return isClosed;
 		}
 
-		public override Size2 GetSize()
+		public unsafe override Size2 GetSize()
 		{
-			// TODO
-			return new Size2();
+			X11.XWindowAttributes a;
+			if (X11.XGetWindowAttributes(Application.dc, handle, &a) != 0) return new Size2(a.width, a.height);
+			else return new Size2();
 		}
 	}
 }

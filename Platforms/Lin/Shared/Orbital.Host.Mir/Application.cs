@@ -20,7 +20,7 @@ namespace Orbital.Host.Mir
 			// TODO
 		}
 
-		public static void Run(WindowBase window)
+		public static void Run(Window window)
 		{
 			// TODO
 		}

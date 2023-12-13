@@ -4,7 +4,7 @@ using System.Security;
 
 namespace Orbital.Host.X11
 {
-	public static class X11
+	public unsafe static class X11
 	{
 		public const string DLL = "libX11.so.6";//";//.so.6";
 		public const string XF86DLL = "libXxf86vm.so.1";//";//.so.1";//"Xxf86vm";
@@ -948,7 +948,7 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XGetWindowAttributes", ExactSpelling = true)]
-		public static extern int XGetWindowAttributes(IntPtr display, IntPtr w, out XWindowAttributes window_attributes_return);
+		public static extern int XGetWindowAttributes(IntPtr display, IntPtr w, XWindowAttributes* window_attributes_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XOpenDisplay", ExactSpelling = true)]
@@ -992,7 +992,7 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XCreateWindow", ExactSpelling = true)]
-		public static extern IntPtr XCreateWindow(IntPtr display, IntPtr parent, int x, int y, uint width, uint height, uint border_width, int depth, uint _class, IntPtr visual, uint valuemask, ref XSetWindowAttributes attributes);
+		public static extern IntPtr XCreateWindow(IntPtr display, IntPtr parent, int x, int y, uint width, uint height, uint border_width, int depth, uint _class, IntPtr visual, uint valuemask, XSetWindowAttributes* attributes);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XDefaultRootWindow", ExactSpelling = true)]
@@ -1020,11 +1020,15 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XNextEvent", ExactSpelling = true)]
-		public static extern void XNextEvent(IntPtr display, ref XEvent event_return);
+		public static extern int XNextEvent(IntPtr display, XEvent* event_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XPeekEvent", ExactSpelling = true)]
-		public static extern void XPeekEvent(IntPtr display, ref XEvent event_return);
+		public static extern int XPeekEvent(IntPtr display, XEvent* event_return);
+		
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DLL, EntryPoint = "XSendEvent", ExactSpelling = true)]
+		public static extern int XSendEvent(IntPtr display, IntPtr w, int propagate, int event_mask, XEvent* event_send);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XPending", ExactSpelling = true)]
@@ -1032,7 +1036,7 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XWindowEvent", ExactSpelling = true)]
-		public static extern void XWindowEvent(IntPtr display, IntPtr w, int event_mask, ref XEvent event_return);
+		public static extern void XWindowEvent(IntPtr display, IntPtr w, int event_mask, XEvent* event_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XFlush", ExactSpelling = true)]
