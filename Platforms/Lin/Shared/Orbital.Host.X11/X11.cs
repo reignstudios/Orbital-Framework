@@ -2,6 +2,12 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
+using XID = System.Int32;
+using VisualID = System.Int32;
+using Colormap = System.Int32;
+using Bool = System.Int32;
+using Atom = System.IntPtr;
+
 namespace Orbital.Host.X11
 {
 	public unsafe static class X11
@@ -967,6 +973,10 @@ namespace Orbital.Host.X11
 		public static extern IntPtr XScreenOfDisplay(IntPtr display, int screen_number);
 		
 		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DLL, EntryPoint = "XScreenCount", ExactSpelling = true)]
+		public static extern int XScreenCount(IntPtr display);
+		
+		[SuppressUnmanagedCodeSecurity]	
 		[DllImport(DLL, EntryPoint = "XCloseDisplay", ExactSpelling = true)]
 		public static extern int XCloseDisplay(IntPtr display);
 		
@@ -1045,6 +1055,10 @@ namespace Orbital.Host.X11
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XInternAtom", ExactSpelling = true)]
 		public static extern IntPtr XInternAtom(IntPtr display, string atom_name, bool only_if_exists);
+		
+		[SuppressUnmanagedCodeSecurity]
+		[DllImport(DLL, EntryPoint = "XChangeProperty", ExactSpelling = true)]
+		public static extern int XChangeProperty(IntPtr display, IntPtr window, Atom property, Atom type, int format, int mode, byte* data, int nelements);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSetWMProtocols", ExactSpelling = true)]

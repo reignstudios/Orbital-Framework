@@ -29,7 +29,8 @@ namespace Orbital.Host.X11
 			// Enable Capture of close box
 			var normalHint = X11.XInternAtom(Application.dc, "WM_NORMAL_HINTS", false);
 			var deleteHint = X11.XInternAtom(Application.dc, "WM_DELETE_WINDOW", false);
-			X11.XSetWMProtocols(Application.dc, handle, new IntPtr[]{normalHint, deleteHint}, 2);
+			var hints = new IntPtr[] { normalHint, deleteHint };
+			X11.XSetWMProtocols(Application.dc, handle, hints, hints.Length);
 			
 			// window properties
 			var sizeHints = new X11.XSizeHints();
@@ -48,9 +49,15 @@ namespace Orbital.Host.X11
 			// center screen
 			/*if (startupPosition == WindowStartupPosition.CenterScreen)
 			{
-				var screenSize = OS.ScreenSize;
-				X11.XMoveWindow(dc, handle, (screenSize.Width - width) / 2, (screenSize.Height - height) / 2);
+				var display = Displays.GetPrimaryDisplay();
+				X11.XMoveWindow(Application.dc, handle, (display.width - width) / 2, (display.height - height) / 2);
 			}*/
+			
+			/*const uint XA_ATOM = 4;
+			const int PropModeReplace = 0;
+			var propertyType = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE", false);
+			var centerHint = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+			X11.XChangeProperty(Application.dc, handle, propertyType, (IntPtr)XA_ATOM, 32, PropModeReplace, (byte*)&centerHint, 1);*/
 
 			// track window
 			_windows.Add(this);

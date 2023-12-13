@@ -1,6 +1,6 @@
 ﻿namespace Orbital.Host.X11
 {
-	public static class Application
+	public unsafe static class Application
 	{
 		public static IntPtr dc {get; private set;}
 		private static bool exit;
@@ -23,7 +23,7 @@
 			X11.XCloseDisplay(dc);
 		}
 
-		private unsafe static void ProcessEvent(X11.XEvent e)
+		private static void ProcessEvent(X11.XEvent e)
 		{
 			int keyCode = (int)e.xkey.keycode;
 			switch (e.type)
@@ -97,7 +97,7 @@
 			}
 		}
 
-		public unsafe static void Run()
+		public static void Run()
 		{
 			while (!exit)
 			{
@@ -109,7 +109,7 @@
 			}
 		}
 
-		public unsafe static void Run(Window window)
+		public static void Run(Window window)
 		{
 			while (!exit && !window.IsClosed())
 			{
@@ -121,7 +121,7 @@
 			}
 		}
 
-		public unsafe static void RunEvents()
+		public static void RunEvents()
 		{
 			while (X11.XPending(dc) != 0)
 			{
