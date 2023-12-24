@@ -23,8 +23,10 @@ namespace Orbital.Host.X11
 		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			int sc = X11.XDefaultScreen(Application.dc);
-			handle = X11.XCreateSimpleWindow(Application.dc, X11.XRootWindow(Application.dc, sc), 0, 0, (uint)width, (uint)height, 0, X11.XBlackPixel(Application.dc, sc), X11.XWhitePixel(Application.dc, sc));
-			X11.XSelectInput(Application.dc, handle, X11.ExposureMask | X11.KeyPressMask | X11.KeyReleaseMask | X11.ButtonPressMask | X11.ButtonReleaseMask);
+			handle = X11.XCreateSimpleWindow(Application.dc, X11.XRootWindow(Application.dc, sc), 100, 50, (uint)width, (uint)height, 0, X11.XBlackPixel(Application.dc, sc), X11.XWhitePixel(Application.dc, sc));
+			
+			// handle input
+			//X11.XSelectInput(Application.dc, handle, X11.ExposureMask | X11.KeyPressMask | X11.KeyReleaseMask | X11.ButtonPressMask | X11.ButtonReleaseMask);
 			
 			// Enable Capture of close box
 			var normalHint = X11.XInternAtom(Application.dc, "WM_NORMAL_HINTS", false);
@@ -53,11 +55,11 @@ namespace Orbital.Host.X11
 				X11.XMoveWindow(Application.dc, handle, (display.width - width) / 2, (display.height - height) / 2);
 			}*/
 			
-			/*const uint XA_ATOM = 4;
+			const uint XA_ATOM = 4;
 			const int PropModeReplace = 0;
 			var propertyType = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE", false);
 			var centerHint = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_SPLASH", false);
-			X11.XChangeProperty(Application.dc, handle, propertyType, (IntPtr)XA_ATOM, 32, PropModeReplace, (byte*)&centerHint, 1);*/
+			X11.XChangeProperty(Application.dc, handle, propertyType, (IntPtr)XA_ATOM, 32, PropModeReplace, (byte*)&centerHint, 1);
 
 			// track window
 			_windows.Add(this);
