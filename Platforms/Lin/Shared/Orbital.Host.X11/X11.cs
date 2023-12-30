@@ -2,9 +2,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-using XID = System.Int32;
-using VisualID = System.Int32;
-using Colormap = System.Int32;
 using Bool = System.Int32;
 using Atom = System.IntPtr;
 
@@ -1091,6 +1088,35 @@ namespace Orbital.Host.X11
 		//[SuppressUnmanagedCodeSecurity]
 		//[DllImport(XF86DLL, EntryPoint = "XF86VidModeGetAllModeLines")]
 		//public unsafe static extern bool XF86VidModeGetAllModeLines(IntPtr dpy, int screen, [OutAttribute] out int modecount, [OutAttribute] XF86VidModeModeInfo*** modelinesPtr);
+		
+		public static class Ext
+		{
+			[StructLayout(LayoutKind.Sequential)]
+			public struct _MOTIF_WM_HINTS
+			{
+				public uint flags;
+				public uint functions;
+				public uint decorations;
+				public int input_mode;
+				public uint status;
+			};
+		
+			public enum _MOTIF_WM_HINTS__FLAGS : uint
+			{
+				FUNCTIONS = (1u << 0),
+				DECORATIONS =  (1u << 1)
+			}
+		
+			public enum _MOTIF_WM_HINTS__FUNCTIONS : uint
+			{
+				ALL = (1u << 0),
+				RESIZE = (1u << 1),
+				MOVE = (1u << 2),
+				MINIMIZE = (1u << 3),
+				MAXIMIZE = (1u << 4),
+				CLOSE = (1u << 5)
+			}
+		}
 	}
 }
 

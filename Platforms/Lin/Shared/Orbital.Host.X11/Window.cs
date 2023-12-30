@@ -10,18 +10,28 @@ namespace Orbital.Host.X11
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
-			Init(size.width, size.height, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition, borderlessIsSplash);
 		}
 
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
-			Init(width, height, type, startupPosition);
+			Init(width, height, type, startupPosition, borderlessIsSplash);
 		}
 
-		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
+			int x = 100, y = 50;
+			if (type == WindowType.Fullscreen)
+			{
+				var display = Displays.GetPrimaryDisplay();
+				x = 0;
+				y = 0;
+				width = display.width;
+				height = display.height;
+			}
+			
 			int sc = X11.XDefaultScreen(Application.dc);
 			handle = X11.XCreateSimpleWindow(Application.dc, X11.XRootWindow(Application.dc, sc), 100, 50, (uint)width, (uint)height, 0, X11.XBlackPixel(Application.dc, sc), X11.XWhitePixel(Application.dc, sc));
 			
@@ -48,18 +58,46 @@ namespace Orbital.Host.X11
 			sizeHints.flags = (IntPtr)flags;
 			X11.XSetNormalHints(Application.dc, handle, &sizeHints);
 			
+			// window style
+			const uint XA_ATOM = 4;
+			var atomProperty = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE", false);
+			var atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_NORMAL", false);
+			
+			if (type == WindowType.Tool)
+			{
+				atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_DIALOG", false);
+			}
+			else if (type == WindowType.Fullscreen || type == WindowType.Borderless)
+			{
+				if (borderlessIsSplash) atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+			}
+			
+			X11.XChangeProperty(Application.dc, handle, atomProperty, (IntPtr)XA_ATOM, 32, 0, (byte*)&atomState, 1);
+			
+			// make borderless window using X11 extensions
+			if (!borderlessIsSplash && (type == WindowType.Fullscreen || type == WindowType.Borderless))
+			{
+				atomProperty = X11.XInternAtom(Application.dc, "_MOTIF_WM_HINTS", false);
+				var state = new X11.Ext._MOTIF_WM_HINTS();
+				state.flags = (uint)X11.Ext._MOTIF_WM_HINTS__FLAGS.DECORATIONS;
+				state.decorations = 0;
+				X11.XChangeProperty(Application.dc, handle, atomProperty, (IntPtr)XA_ATOM, 32, 0, (byte*)&state, 1);
+			}
+
+			// fullscreen window
+			if (type == WindowType.Fullscreen)
+			{
+				atomProperty = X11.XInternAtom(Application.dc, "_NET_WM_STATE", false);
+				atomState = X11.XInternAtom(Application.dc, "_NET_WM_STATE_FULLSCREEN", false);
+				X11.XChangeProperty(Application.dc, handle, atomProperty, (IntPtr)XA_ATOM, 32, 0, (byte*)&atomState, 1);
+			}
+			
 			// center screen
-			/*if (startupPosition == WindowStartupPosition.CenterScreen)
+			if (startupPosition == WindowStartupPosition.CenterScreen && type != WindowType.Fullscreen)
 			{
 				var display = Displays.GetPrimaryDisplay();
 				X11.XMoveWindow(Application.dc, handle, (display.width - width) / 2, (display.height - height) / 2);
-			}*/
-			
-			const uint XA_ATOM = 4;
-			const int PropModeReplace = 0;
-			var propertyType = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE", false);
-			var centerHint = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_SPLASH", false);
-			X11.XChangeProperty(Application.dc, handle, propertyType, (IntPtr)XA_ATOM, 32, PropModeReplace, (byte*)&centerHint, 1);
+			}
 
 			// track window
 			_windows.Add(this);
