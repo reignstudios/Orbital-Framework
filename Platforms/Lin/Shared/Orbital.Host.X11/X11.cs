@@ -2,16 +2,19 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
+using XID = System.IntPtr;
+using Window = System.IntPtr;
 using Bool = System.Int32;
+using Long = System.IntPtr;
+using ULong = System.UIntPtr;
+using Time = System.UIntPtr;
 using Atom = System.IntPtr;
 
 namespace Orbital.Host.X11
 {
 	public unsafe static class X11
 	{
-		public const string DLL = "libX11.so.6";//";//.so.6";
-		public const string XF86DLL = "libXxf86vm.so.1";//";//.so.1";//"Xxf86vm";
-		public const string XineramaDLL = "libXinerama.so.1";//";
+		public const string DLL = "libX11.so.6";
 		
 		public const int KeyPress = 2;
 		public const int KeyRelease = 3;
@@ -223,30 +226,28 @@ namespace Orbital.Host.X11
 	    public struct XAnyEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
+	        public Window window;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XKeyEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr root;
-	        public IntPtr subwindow;
-	        public IntPtr time;
-	        public int x;
-	        public int y;
-	        public int x_root;
-	        public int y_root;
+	        public Window window;
+	        public Window root;
+	        public Window subwindow;
+	        public Time time;
+	        public int x, y;
+	        public int x_root, y_root;
 	        public uint state;
 	        public uint keycode;
-	        public bool same_screen;
+	        public Bool same_screen;
 	    }
 	    
 		[StructLayout(LayoutKind.Sequential)]
@@ -835,25 +836,7 @@ namespace Orbital.Host.X11
 			public int colormap_size;
 			public int bits_per_rgb;
 		}
-		/*
-		[StructLayout(LayoutKind.Sequential)]
-		public struct XF86VidModeModeInfo
-		{
-		    public uint	dotclock;
-		    public ushort hdisplay;
-		    public ushort hsyncstart;
-		    public ushort hsyncend;
-		    public ushort htotal;
-		    public ushort hskew;
-		    public ushort vdisplay;
-		    public ushort vsyncstart;
-		    public ushort vsyncend;
-		    public ushort vtotal;
-		    public uint	flags;
-		    public int privsize;
-		    public int c_private;
-		}
-		*/
+		
 		[StructLayout(LayoutKind.Sequential)]
 		public struct XWindowAttributes
 		{
@@ -910,28 +893,6 @@ namespace Orbital.Host.X11
 			public int base_width, base_height;
 			public int win_gravity;
 		}
-		
-		[StructLayout(LayoutKind.Sequential)]
-		public struct XineramaScreenInfo
-		{
-			public int screen_number;
-			public short x_org;
-			public short y_org;
-			public short width;
-			public short height;
-		}
-		
-		[SuppressUnmanagedCodeSecurity]
-		[DllImport(XineramaDLL, EntryPoint = "XInitThreads", ExactSpelling = true)]
-		public static extern int XInitThreads();
-		
-		[SuppressUnmanagedCodeSecurity]
-		[DllImport(XineramaDLL, EntryPoint = "XineramaQueryScreens", ExactSpelling = true)]
-		public unsafe static extern XineramaScreenInfo* XineramaQueryScreens(IntPtr dpy, int* number);
-		
-		[SuppressUnmanagedCodeSecurity]
-		[DllImport(XineramaDLL, EntryPoint = "XineramaIsActive", ExactSpelling = true)]
-		public static extern bool XineramaIsActive(IntPtr dpy);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSetWMNormalHints", ExactSpelling = true)]
@@ -1081,14 +1042,9 @@ namespace Orbital.Host.X11
 		[DllImport(DLL, EntryPoint = "XStoreName", ExactSpelling = true)]
 		public static extern void XStoreName(IntPtr display, IntPtr w, string name);
 		
-		//[SuppressUnmanagedCodeSecurity]
-		//[DllImport(XF86DLL, EntryPoint = "XF86VidModeQueryVersion", ExactSpelling = true)]
-		//public static extern bool XF86VidModeQueryVersion(IntPtr dpy, [OutAttribute] out int majorVersion, [OutAttribute] out int minorVersion);
-		
-		//[SuppressUnmanagedCodeSecurity]
-		//[DllImport(XF86DLL, EntryPoint = "XF86VidModeGetAllModeLines")]
-		//public unsafe static extern bool XF86VidModeGetAllModeLines(IntPtr dpy, int screen, [OutAttribute] out int modecount, [OutAttribute] XF86VidModeModeInfo*** modelinesPtr);
-		
+		/// <summary>
+		/// Extensions
+		/// </summary>
 		public static class Ext
 		{
 			[StructLayout(LayoutKind.Sequential)]

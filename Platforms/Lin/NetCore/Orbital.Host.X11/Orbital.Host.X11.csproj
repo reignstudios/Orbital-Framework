@@ -20,6 +20,12 @@
     <Compile Include="..\..\Shared\Orbital.Host.X11\X11.cs">
       <Link>X11.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.X11\Xinerama.cs">
+      <Link>Xinerama.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.X11\Xxf86vm.cs">
+      <Link>Xxf86vm.cs</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
