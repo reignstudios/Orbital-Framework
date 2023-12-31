@@ -1,6 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security;
 
+using Bool = System.Int32;
+
 namespace Orbital.Host.X11
 {
 	public unsafe static class Xxf86vm
@@ -27,10 +29,10 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(XF86DLL, EntryPoint = "XF86VidModeQueryVersion", ExactSpelling = true)]
-		public static extern bool XF86VidModeQueryVersion(IntPtr dpy, out int majorVersion, out int minorVersion);
+		public static extern Bool XF86VidModeQueryVersion(IntPtr dpy, int* major_version_return, int* minor_version_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(XF86DLL, EntryPoint = "XF86VidModeGetAllModeLines")]
-		public unsafe static extern bool XF86VidModeGetAllModeLines(IntPtr dpy, int screen, out int modecount, XF86VidModeModeInfo*** modelinesPtr);
+		public static extern Bool XF86VidModeGetAllModeLines(IntPtr dpy, int screen, int* modecount_return, XF86VidModeModeInfo*** modesinfo);
 	}
 }

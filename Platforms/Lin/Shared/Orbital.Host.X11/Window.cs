@@ -1,4 +1,5 @@
-﻿using Orbital.Numerics;
+﻿using System.Text;
+using Orbital.Numerics;
 
 namespace Orbital.Host.X11
 {
@@ -20,6 +21,14 @@ namespace Orbital.Host.X11
 			Init(width, height, type, startupPosition, borderlessIsSplash);
 		}
 
+		private unsafe static IntPtr XInternAtom(string atomName)
+		{
+			fixed (byte* ptr = Encoding.ASCII.GetBytes(atomName))
+			{
+				return X11.XInternAtom(Application.dc, ptr, 0);
+			}
+		}
+
 		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
 			int x = 100, y = 50;
@@ -39,10 +48,10 @@ namespace Orbital.Host.X11
 			//X11.XSelectInput(Application.dc, handle, X11.ExposureMask | X11.KeyPressMask | X11.KeyReleaseMask | X11.ButtonPressMask | X11.ButtonReleaseMask);
 			
 			// Enable Capture of close box
-			var normalHint = X11.XInternAtom(Application.dc, "WM_NORMAL_HINTS", false);
-			var deleteHint = X11.XInternAtom(Application.dc, "WM_DELETE_WINDOW", false);
-			var hints = new IntPtr[] { normalHint, deleteHint };
-			X11.XSetWMProtocols(Application.dc, handle, hints, hints.Length);
+			var hints = stackalloc IntPtr[2];
+			hints[0] = XInternAtom("WM_NORMAL_HINTS");
+			hints[1] = XInternAtom("WM_DELETE_WINDOW");
+			X11.XSetWMProtocols(Application.dc, handle, hints, 2);
 			
 			// window properties
 			var sizeHints = new X11.XSizeHints();
@@ -60,16 +69,16 @@ namespace Orbital.Host.X11
 			
 			// window style
 			const uint XA_ATOM = 4;
-			var atomProperty = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE", false);
-			var atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_NORMAL", false);
+			var atomProperty = XInternAtom("_NET_WM_WINDOW_TYPE");
+			var atomState = XInternAtom("_NET_WM_WINDOW_TYPE_NORMAL");
 			
 			if (type == WindowType.Tool)
 			{
-				atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_DIALOG", false);
+				atomState = XInternAtom("_NET_WM_WINDOW_TYPE_DIALOG");
 			}
 			else if (type == WindowType.Fullscreen || type == WindowType.Borderless)
 			{
-				if (borderlessIsSplash) atomState = X11.XInternAtom(Application.dc, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+				if (borderlessIsSplash) atomState = XInternAtom("_NET_WM_WINDOW_TYPE_SPLASH");
 			}
 			
 			X11.XChangeProperty(Application.dc, handle, atomProperty, (IntPtr)XA_ATOM, 32, 0, (byte*)&atomState, 1);
@@ -77,7 +86,7 @@ namespace Orbital.Host.X11
 			// make borderless window using X11 extensions
 			if (!borderlessIsSplash && (type == WindowType.Fullscreen || type == WindowType.Borderless))
 			{
-				atomProperty = X11.XInternAtom(Application.dc, "_MOTIF_WM_HINTS", false);
+				atomProperty = XInternAtom("_MOTIF_WM_HINTS");
 				var state = new X11.Ext._MOTIF_WM_HINTS();
 				state.flags = (uint)X11.Ext._MOTIF_WM_HINTS__FLAGS.DECORATIONS;
 				state.decorations = 0;
@@ -87,8 +96,8 @@ namespace Orbital.Host.X11
 			// fullscreen window
 			if (type == WindowType.Fullscreen)
 			{
-				atomProperty = X11.XInternAtom(Application.dc, "_NET_WM_STATE", false);
-				atomState = X11.XInternAtom(Application.dc, "_NET_WM_STATE_FULLSCREEN", false);
+				atomProperty = XInternAtom("_NET_WM_STATE");
+				atomState = XInternAtom("_NET_WM_STATE_FULLSCREEN");
 				X11.XChangeProperty(Application.dc, handle, atomProperty, (IntPtr)XA_ATOM, 32, 0, (byte*)&atomState, 1);
 			}
 			
@@ -118,9 +127,12 @@ namespace Orbital.Host.X11
 			return this;
 		}
 
-		public override void SetTitle(string title)
+		public unsafe override void SetTitle(string title)
 		{
-			X11.XStoreName(Application.dc, handle, title);
+			fixed (byte* ptr = Encoding.ASCII.GetBytes(title))
+			{
+				X11.XStoreName(Application.dc, handle, ptr);
+			}
 		}
 
 		public override void Show()

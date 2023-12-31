@@ -7,7 +7,7 @@
 		
 		public static void Init()
 		{
-			dc = X11.XOpenDisplay(IntPtr.Zero);
+			dc = X11.XOpenDisplay(null);
 			if (dc == IntPtr.Zero) throw new Exception("XOpenDisplay failed");
 		}
 

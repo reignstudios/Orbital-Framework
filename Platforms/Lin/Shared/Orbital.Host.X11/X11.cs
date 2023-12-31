@@ -3,12 +3,18 @@ using System.Runtime.InteropServices;
 using System.Security;
 
 using XID = System.IntPtr;
-using Window = System.IntPtr;
+using WindowX = System.IntPtr;
+using Drawable = System.IntPtr;
+using Colormap = System.IntPtr;
+using Pixmap = System.IntPtr;
+using Cursor = System.IntPtr;
+using VisualID = System.IntPtr;
 using Bool = System.Int32;
 using Long = System.IntPtr;
 using ULong = System.UIntPtr;
 using Time = System.UIntPtr;
 using Atom = System.IntPtr;
+using Status = System.Int32;
 
 namespace Orbital.Host.X11
 {
@@ -79,7 +85,7 @@ namespace Orbital.Host.X11
 		public const int ColormapChangeMask = (1<<23);
 		public const int OwnerGrabButtonMask = (1<<24);
 		
-		public enum XRequest : byte
+		/*public enum XRequest : byte
 	    {
 	        X_CreateWindow = 1,
 	        X_ChangeWindowAttributes = 2,
@@ -220,7 +226,7 @@ namespace Orbital.Host.X11
 	        NotifyPointer = 5,
 	        NotifyPointerRoot = 6,
 	        NotifyDetailNone = 7
-	    }
+	    }*/
 	    
 		[StructLayout(LayoutKind.Sequential)]
 	    public struct XAnyEvent
@@ -229,7 +235,7 @@ namespace Orbital.Host.X11
 	        public ULong serial;
 	        public Bool send_event;
 	        public IntPtr display;
-	        public Window window;
+	        public WindowX window;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
@@ -239,9 +245,9 @@ namespace Orbital.Host.X11
 	        public ULong serial;
 	        public Bool send_event;
 	        public IntPtr display;
-	        public Window window;
-	        public Window root;
-	        public Window subwindow;
+	        public WindowX window;
+	        public WindowX root;
+	        public WindowX subwindow;
 	        public Time time;
 	        public int x, y;
 	        public int x_root, y_root;
@@ -254,61 +260,55 @@ namespace Orbital.Host.X11
 	    public struct XButtonEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr root;
-	        public IntPtr subwindow;
-	        public IntPtr time;
-	        public int x;
-	        public int y;
-	        public int x_root;
-	        public int y_root;
+	        public WindowX window;
+	        public WindowX root;
+	        public WindowX subwindow;
+	        public Time time;
+	        public int x, y;
+	        public int x_root, y_root;
 	        public uint state;
 	        public uint button;
-	        public bool same_screen;
+	        public Bool same_screen;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XMotionEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr root;
-	        public IntPtr subwindow;
-	        public IntPtr time;
-	        public int x;
-	        public int y;
-	        public int x_root;
-	        public int y_root;
-	        public int state;
+	        public WindowX window;
+	        public WindowX root;
+	        public WindowX subwindow;
+	        public Time time;
+	        public int x, y;
+	        public int x_root, y_root;
+	        public uint state;
 	        public byte is_hint;
-	        public bool same_screen;
+	        public Bool same_screen;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XCrossingEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
+	        public ULong serial;
 	        public bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr root;
-	        public IntPtr subwindow;
-	        public IntPtr time;
-	        public int x;
-	        public int y;
-	        public int x_root;
-	        public int y_root;
-	        public NotifyMode mode;
-	        public NotifyDetail detail;
-	        public bool same_screen;
-	        public bool focus;
+	        public WindowX window;
+	        public WindowX root;
+	        public WindowX subwindow;
+	        public Time time;
+	        public int x, y;
+	        public int x_root, y_root;
+	        public int mode;
+	        public int detail;
+	        public Bool same_screen;
+	        public Bool focus;
 	        public uint state;
 	    }
 	    
@@ -316,26 +316,24 @@ namespace Orbital.Host.X11
 	    public struct XFocusChangeEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
+	        public WindowX window;
 	        public int mode;
-	        public NotifyDetail detail;
+	        public int detail;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XExposeEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public int x;
-	        public int y;
-	        public int width;
-	        public int height;
+	        public WindowX window;
+	        public int x, y;
+	        public int width, height;
 	        public int count;
 	    }
 	    
@@ -343,14 +341,12 @@ namespace Orbital.Host.X11
 	    public struct XGraphicsExposeEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr drawable;
-	        public int x;
-	        public int y;
-	        public int width;
-	        public int height;
+	        public Drawable drawable;
+	        public int x, y;
+	        public int width, height;
 	        public int count;
 	        public int major_code;
 	        public int minor_code;
@@ -360,10 +356,10 @@ namespace Orbital.Host.X11
 	    public struct XNoExposeEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr drawable;
+	        public Drawable drawable;
 	        public int major_code;
 	        public int minor_code;
 	    }
@@ -372,10 +368,10 @@ namespace Orbital.Host.X11
 	    public struct XVisibilityEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
+	        public WindowX window;
 	        public int state;
 	    }
 	    
@@ -383,151 +379,142 @@ namespace Orbital.Host.X11
 	    public struct XCreateWindowEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr parent;
-	        public IntPtr window;
-	        public int x;
-	        public int y;
-	        public int width;
-	        public int height;
+	        public WindowX parent;
+	        public WindowX window;
+	        public int x, y;
+	        public int width, height;
 	        public int border_width;
-	        public bool override_redirect;
+	        public Bool override_redirect;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XDestroyWindowEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
+	        public WindowX eventX;
+	        public WindowX window;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XUnmapEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
-	        public bool from_configure;
+	        public WindowX eventX;
+	        public WindowX window;
+	        public Bool from_configure;
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XMapEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
-	        public bool override_redirect;
+	        public WindowX eventX;
+	        public WindowX window;
+	        public Bool override_redirect;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XMapRequestEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr parent;
-	        public IntPtr window;
+	        public WindowX parent;
+	        public WindowX window;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XReparentEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
-	        public IntPtr parent;
-	        public int x;
-	        public int y;
-	        public bool override_redirect;
+	        public WindowX eventX;
+	        public WindowX window;
+	        public WindowX parent;
+	        public int x, y;
+	        public Bool override_redirect;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XConfigureEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
-	        public int x;
-	        public int y;
-	        public int width;
-	        public int height;
+	        public WindowX eventX;
+	        public WindowX window;
+	        public int x, y;
+	        public int width, height;
 	        public int border_width;
-	        public IntPtr above;
-	        public bool override_redirect;
+	        public WindowX above;
+	        public Bool override_redirect;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XGravityEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
+	        public ULong serial;
 	        public bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
-	        public int x;
-	        public int y;
+	        public WindowX eventX;
+	        public WindowX window;
+	        public int x, y;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XResizeRequestEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public int width;
-	        public int height;
+	        public WindowX window;
+	        public int width, height;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XConfigureRequestEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr parent;
-	        public IntPtr window;
-	        public int x;
-	        public int y;
-	        public int width;
-	        public int height;
+	        public WindowX parent;
+	        public WindowX window;
+	        public int x, y;
+	        public int width, height;
 	        public int border_width;
-	        public IntPtr above;
+	        public WindowX above;
 	        public int detail;
-	        public IntPtr value_mask;
+	        public ULong value_mask;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XCirculateEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr xevent;
-	        public IntPtr window;
+	        public WindowX eventX;
+	        public WindowX window;
 	        public int place;
 	    }
 	
@@ -535,11 +522,11 @@ namespace Orbital.Host.X11
 	    public struct XCirculateRequestEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr parent;
-	        public IntPtr window;
+	        public WindowX parent;
+	        public WindowX window;
 	        public int place;
 	    }
 	
@@ -547,12 +534,12 @@ namespace Orbital.Host.X11
 	    public struct XPropertyEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr atom;
-	        public IntPtr time;
+	        public WindowX window;
+	        public Atom atom;
+	        public Time time;
 	        public int state;
 	    }
 	
@@ -560,53 +547,53 @@ namespace Orbital.Host.X11
 	    public struct XSelectionClearEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr selection;
-	        public IntPtr time;
+	        public WindowX window;
+	        public Atom selection;
+	        public Time time;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XSelectionRequestEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr owner;
-	        public IntPtr requestor;
-	        public IntPtr selection;
-	        public IntPtr target;
-	        public IntPtr property;
-	        public IntPtr time;
+	        public WindowX owner;
+	        public WindowX requestor;
+	        public Atom selection;
+	        public Atom target;
+	        public Atom property;
+	        public Time time;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XSelectionEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr requestor;
-	        public IntPtr selection;
-	        public IntPtr target;
-	        public IntPtr property;
-	        public IntPtr time;
+	        public WindowX requestor;
+	        public Atom selection;
+	        public Atom target;
+	        public Atom property;
+	        public Time time;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XColormapEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
+	        public ULong serial;
 	        public bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr colormap;
-	        public bool c_new;
+	        public WindowX window;
+	        public Colormap colormap;
+	        public Bool c_new;
 	        public int state;
 	    }
 	
@@ -614,27 +601,27 @@ namespace Orbital.Host.X11
 	    public struct XClientMessageEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public IntPtr message_type;
+	        public WindowX window;
+	        public Atom message_type;
 	        public int format;
-	        public IntPtr ptr1;
-	        public IntPtr ptr2;
-	        public IntPtr ptr3;
-	        public IntPtr ptr4;
-	        public IntPtr ptr5;
+	        public Long data1;
+	        public Long data2;
+	        public Long data3;
+	        public Long data4;
+	        public Long data5;
 	    }
 	
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XMappingEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
+	        public WindowX window;
 	        public int request;
 	        public int first_keycode;
 	        public int count;
@@ -645,10 +632,10 @@ namespace Orbital.Host.X11
 	    {
 	        public int type;
 	        public IntPtr display;
-	        public IntPtr resourceid;
-	        public IntPtr serial;
+	        public XID resourceid;
+	        public ULong serial;
 	        public byte error_code;
-	        public XRequest request_code;
+	        public byte request_code;
 	        public byte minor_code;
 	    }
 	    
@@ -656,79 +643,19 @@ namespace Orbital.Host.X11
 	    public struct XKeymapEvent
 	    {
 	        public int type;
-	        public IntPtr serial;
-	        public bool send_event;
+	        public ULong serial;
+	        public Bool send_event;
 	        public IntPtr display;
-	        public IntPtr window;
-	        public byte key_vector0;
-	        public byte key_vector1;
-	        public byte key_vector2;
-	        public byte key_vector3;
-	        public byte key_vector4;
-	        public byte key_vector5;
-	        public byte key_vector6;
-	        public byte key_vector7;
-	        public byte key_vector8;
-	        public byte key_vector9;
-	        public byte key_vector10;
-	        public byte key_vector11;
-	        public byte key_vector12;
-	        public byte key_vector13;
-	        public byte key_vector14;
-	        public byte key_vector15;
-	        public byte key_vector16;
-	        public byte key_vector17;
-	        public byte key_vector18;
-	        public byte key_vector19;
-	        public byte key_vector20;
-	        public byte key_vector21;
-	        public byte key_vector22;
-	        public byte key_vector23;
-	        public byte key_vector24;
-	        public byte key_vector25;
-	        public byte key_vector26;
-	        public byte key_vector27;
-	        public byte key_vector28;
-	        public byte key_vector29;
-	        public byte key_vector30;
-	        public byte key_vector31;
-	    }
-	    
-	    [StructLayout(LayoutKind.Sequential)]
-	    public struct XEventPad
-	    {
-	        public IntPtr pad0;
-	        public IntPtr pad1;
-	        public IntPtr pad2;
-	        public IntPtr pad3;
-	        public IntPtr pad4;
-	        public IntPtr pad5;
-	        public IntPtr pad6;
-	        public IntPtr pad7;
-	        public IntPtr pad8;
-	        public IntPtr pad9;
-	        public IntPtr pad10;
-	        public IntPtr pad11;
-	        public IntPtr pad12;
-	        public IntPtr pad13;
-	        public IntPtr pad14;
-	        public IntPtr pad15;
-	        public IntPtr pad16;
-	        public IntPtr pad17;
-	        public IntPtr pad18;
-	        public IntPtr pad19;
-	        public IntPtr pad20;
-	        public IntPtr pad21;
-	        public IntPtr pad22;
-	        public IntPtr pad23;
+	        public WindowX window;
+	        public fixed byte key_vector[32];
 	    }
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XGenericEvent
 		{
 			public int type;
-			public IntPtr serial;
-			public bool send_event;
+			public ULong serial;
+			public Bool send_event;
 			public IntPtr display;
 			public int extension;
 			public int evtype;
@@ -738,13 +665,13 @@ namespace Orbital.Host.X11
 	    public struct XGenericEventCookie
 	    {
 		    public int type;
-		    public IntPtr serial;
-		    public bool send_event;
+		    public ULong serial;
+		    public Bool send_event;
 		    public IntPtr display;
 		    public int extension;
 		    public int evtype;
 		    public uint cookie;
-		    public IntPtr data;
+		    public void* data;
 		}
     
 		[StructLayout(LayoutKind.Explicit)]
@@ -784,10 +711,16 @@ namespace Orbital.Host.X11
 	        [FieldOffset(0)] public XKeymapEvent xkeymap;
 	        [FieldOffset(0)] public XGenericEvent xgeneric;
 	        [FieldOffset(0)] public XGenericEventCookie xcookie;
-	        [FieldOffset(0)] public XEventPad Pad;
+	        [FieldOffset(0)] public XEvent_Padding pad;
 	    }
+
+		[StructLayout(LayoutKind.Sequential)]
+		public struct XEvent_Padding
+		{
+			public Long pad1, pad2, pad3, pad4, pad5, pad6, pad7, pad8, pad9, pad10, pad11, pad12, pad13, pad14, pad15, pad16, pad17, pad18, pad19, pad20, pad21, pad22, pad23, pad24;
+		}
 	    
-	    public enum Gravity : int
+	    /*public enum Gravity : int
 	    {
 	        ForgetGravity = 0,
 	        NorthWestGravity = 1,
@@ -800,42 +733,27 @@ namespace Orbital.Host.X11
 	        SouthGravity = 8,
 	        SouthEastGravity = 9,
 	        StaticGravity = 10
-	    }
+	    }*/
 	    
 	    [StructLayout(LayoutKind.Sequential)]
 	    public struct XSetWindowAttributes
 	    {
-	        public IntPtr background_pixmap;
-	        public IntPtr background_pixel;
-	        public IntPtr border_pixmap;
-	        public IntPtr border_pixel;
-	        public Gravity bit_gravity;
-	        public Gravity win_gravity;
+	        public Pixmap background_pixmap;
+	        public ULong background_pixel;
+	        public Pixmap border_pixmap;
+	        public ULong border_pixel;
+	        public int bit_gravity;
+	        public int win_gravity;
 	        public int backing_store;
-	        public IntPtr backing_planes;
-	        public IntPtr backing_pixel;
-	        public bool save_under;
-	        public IntPtr event_mask;
-	        public IntPtr do_not_propagate_mask;
-	        public bool override_redirect;
-	        public IntPtr colormap;
-	        public IntPtr cursor;
+	        public ULong backing_planes;
+	        public ULong backing_pixel;
+	        public Bool save_under;
+	        public Long event_mask;
+	        public Long do_not_propagate_mask;
+	        public Bool override_redirect;
+	        public Colormap colormap;
+	        public Cursor cursor;
 	    }
-		
-		[StructLayout(LayoutKind.Sequential)] 
-		public struct XVisualInfo
-		{
-			public IntPtr visual;
-			public IntPtr visualid;
-			public int screen;
-			public uint depth;
-			public int c_class;
-			public IntPtr red_mask;
-			public IntPtr green_mask;
-			public IntPtr blue_mask;
-			public int colormap_size;
-			public int bits_per_rgb;
-		}
 		
 		[StructLayout(LayoutKind.Sequential)]
 		public struct XWindowAttributes
@@ -845,22 +763,37 @@ namespace Orbital.Host.X11
 			 public int border_width;
 			 public int depth;
 			 public IntPtr visual;
-			 public IntPtr root;
-			 public int _class;
+			 public WindowX root;
+			 public int c_class;
 			 public int bit_gravity;
 			 public int win_gravity;
 			 public int backing_store;
-			 public IntPtr backing_planes;
-			 public IntPtr backing_pixel;
-			 public bool save_under;
-			 public IntPtr colormap;
-			 public bool map_installed;
+			 public ULong backing_planes;
+			 public ULong backing_pixel;
+			 public Bool save_under;
+			 public Colormap colormap;
+			 public Bool map_installed;
 			 public int map_state;
-			 public IntPtr all_event_masks;
-			 public IntPtr your_event_mask;
-			 public IntPtr do_not_propagate_mask;
-			 public bool override_redirect;
+			 public Long all_event_masks;
+			 public Long your_event_mask;
+			 public Long do_not_propagate_mask;
+			 public Bool override_redirect;
 			 public IntPtr screen;
+		}
+		
+		[StructLayout(LayoutKind.Sequential)] 
+		public struct XVisualInfo
+		{
+			public IntPtr visual;
+			public VisualID visualid;
+			public int screen;
+			public int depth;
+			public int c_class;
+			public ULong red_mask;
+			public ULong green_mask;
+			public ULong blue_mask;
+			public int colormap_size;
+			public int bits_per_rgb;
 		}
 		
 		[Flags]
@@ -896,11 +829,11 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSetWMNormalHints", ExactSpelling = true)]
-		public unsafe static extern void XSetWMNormalHints(IntPtr display, IntPtr w, XSizeHints* hints);
+		public static extern void XSetWMNormalHints(IntPtr display, WindowX w, XSizeHints* hints);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSetNormalHints", ExactSpelling = true)]
-		public unsafe static extern int XSetNormalHints(IntPtr display, IntPtr w, XSizeHints* hints);
+		public static extern int XSetNormalHints(IntPtr display, WindowX w, XSizeHints* hints);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XDisplayWidth", ExactSpelling = true)]
@@ -912,11 +845,11 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XGetWindowAttributes", ExactSpelling = true)]
-		public static extern int XGetWindowAttributes(IntPtr display, IntPtr w, XWindowAttributes* window_attributes_return);
+		public static extern int XGetWindowAttributes(IntPtr display, WindowX w, XWindowAttributes* window_attributes_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XOpenDisplay", ExactSpelling = true)]
-		public static extern IntPtr XOpenDisplay(IntPtr display_name);
+		public static extern IntPtr XOpenDisplay(byte* display_name);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XDefaultScreen", ExactSpelling = true)]
@@ -940,7 +873,7 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XDestroyWindow", ExactSpelling = true)]
-		public static extern void XDestroyWindow(IntPtr display, IntPtr w);
+		public static extern int XDestroyWindow(IntPtr display, WindowX w);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XWidthOfScreen", ExactSpelling = true)]
@@ -951,40 +884,36 @@ namespace Orbital.Host.X11
 		public static extern int XHeightOfScreen(IntPtr screen);
 		
 		[SuppressUnmanagedCodeSecurity]
-		[DllImport("libGL.so.1", EntryPoint = "glXChooseVisual", ExactSpelling = true)]
-		public unsafe static extern XVisualInfo* glXChooseVisual(IntPtr dpy, int screen, int[] attribList);
-		
-		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XCreateSimpleWindow", ExactSpelling = true)]
-		public static extern IntPtr XCreateSimpleWindow(IntPtr display, IntPtr parent, int x, int y, uint width, uint height, uint border_width, uint border, uint background);
+		public static extern IntPtr XCreateSimpleWindow(IntPtr display, WindowX parent, int x, int y, uint width, uint height, uint border_width, ULong border, ULong background);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XCreateWindow", ExactSpelling = true)]
-		public static extern IntPtr XCreateWindow(IntPtr display, IntPtr parent, int x, int y, uint width, uint height, uint border_width, int depth, uint _class, IntPtr visual, uint valuemask, XSetWindowAttributes* attributes);
+		public static extern WindowX XCreateWindow(IntPtr display, WindowX parent, int x, int y, uint width, uint height, uint border_width, int depth, uint _class, IntPtr visual, ULong valuemask, XSetWindowAttributes* attributes);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XDefaultRootWindow", ExactSpelling = true)]
-		public static extern IntPtr XDefaultRootWindow(IntPtr display);
+		public static extern WindowX XDefaultRootWindow(IntPtr display);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XRootWindow", ExactSpelling = true)]
-		public static extern IntPtr XRootWindow(IntPtr display, int screen_number);
+		public static extern WindowX XRootWindow(IntPtr display, int screen_number);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XBlackPixel", ExactSpelling = true)]
-		public static extern uint XBlackPixel(IntPtr display, int screen_number);
+		public static extern ULong XBlackPixel(IntPtr display, int screen_number);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XWhitePixel", ExactSpelling = true)]
-		public static extern uint XWhitePixel(IntPtr display, int screen_number);
+		public static extern ULong XWhitePixel(IntPtr display, int screen_number);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSelectInput", ExactSpelling = true)]
-		public static extern void XSelectInput(IntPtr display, IntPtr w, int event_mask);
+		public static extern int XSelectInput(IntPtr display, WindowX w, Long event_mask);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XMapWindow", ExactSpelling = true)]
-		public static extern void XMapWindow(IntPtr display, IntPtr w);
+		public static extern int XMapWindow(IntPtr display, WindowX w);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XNextEvent", ExactSpelling = true)]
@@ -996,7 +925,7 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSendEvent", ExactSpelling = true)]
-		public static extern int XSendEvent(IntPtr display, IntPtr w, int propagate, int event_mask, XEvent* event_send);
+		public static extern Status XSendEvent(IntPtr display, WindowX w, Bool propagate, Long event_mask, XEvent* event_send);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XPending", ExactSpelling = true)]
@@ -1004,43 +933,43 @@ namespace Orbital.Host.X11
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XWindowEvent", ExactSpelling = true)]
-		public static extern void XWindowEvent(IntPtr display, IntPtr w, int event_mask, XEvent* event_return);
+		public static extern int XWindowEvent(IntPtr display, WindowX w, Long event_mask, XEvent* event_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XFlush", ExactSpelling = true)]
-		public static extern void XFlush(IntPtr display);
+		public static extern int XFlush(IntPtr display);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XInternAtom", ExactSpelling = true)]
-		public static extern IntPtr XInternAtom(IntPtr display, string atom_name, bool only_if_exists);
+		public static extern Atom XInternAtom(IntPtr display, byte* atom_name, Bool only_if_exists);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XChangeProperty", ExactSpelling = true)]
-		public static extern int XChangeProperty(IntPtr display, IntPtr window, Atom property, Atom type, int format, int mode, byte* data, int nelements);
+		public static extern int XChangeProperty(IntPtr display, WindowX window, Atom property, Atom type, int format, int mode, byte* data, int nelements);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XSetWMProtocols", ExactSpelling = true)]
-		public static extern IntPtr XSetWMProtocols(IntPtr display, IntPtr w, IntPtr[] protocols, int count);
+		public static extern Status XSetWMProtocols(IntPtr display, WindowX w, Atom* protocols, int count);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XMoveWindow", ExactSpelling = true)]
-		public static extern void XMoveWindow(IntPtr display, IntPtr w, int x, int y);
+		public static extern int XMoveWindow(IntPtr display, WindowX w, int x, int y);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XResizeWindow", ExactSpelling = true)]
-		public static extern void XResizeWindow(IntPtr display, IntPtr w, uint width, uint height);
+		public static extern int XResizeWindow(IntPtr display, WindowX w, uint width, uint height);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XWarpPointer", ExactSpelling = true)]
-		public static extern void XWarpPointer(IntPtr display, IntPtr src_w, IntPtr dest_w, int src_x, int src_y, uint src_width, uint src_height, int dest_x, int dest_y);
+		public static extern int XWarpPointer(IntPtr display, WindowX src_w, WindowX dest_w, int src_x, int src_y, uint src_width, uint src_height, int dest_x, int dest_y);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XQueryPointer", ExactSpelling = true)]
-		public static extern bool XQueryPointer(IntPtr display, IntPtr w, out IntPtr root_return, out IntPtr child_return, out int root_x_return, out int root_y_return, out int win_x_return, out int win_y_return, out uint mask_return);
+		public static extern Bool XQueryPointer(IntPtr display, WindowX w, WindowX* root_return, WindowX* child_return, int* root_x_return, int* root_y_return, int* win_x_return, int* win_y_return, uint* mask_return);
 		
 		[SuppressUnmanagedCodeSecurity]
 		[DllImport(DLL, EntryPoint = "XStoreName", ExactSpelling = true)]
-		public static extern void XStoreName(IntPtr display, IntPtr w, string name);
+		public static extern int XStoreName(IntPtr display, WindowX w, byte* name);
 		
 		/// <summary>
 		/// Extensions
