@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Mir", "Orbital
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.X11", "Orbital.Demo.X11\Orbital.Demo.X11.csproj", "{125F79D7-BCCC-4D92-9818-609CED3A1C4E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Wayland", "Orbital.Demo.Wayland\Orbital.Demo.Wayland.csproj", "{354AF67C-BD7B-4772-BC58-9556E22FCD96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +80,9 @@ Global
 		{125F79D7-BCCC-4D92-9818-609CED3A1C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{125F79D7-BCCC-4D92-9818-609CED3A1C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{125F79D7-BCCC-4D92-9818-609CED3A1C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
