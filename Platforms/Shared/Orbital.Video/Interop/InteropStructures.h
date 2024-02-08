@@ -1,12 +1,11 @@
 #pragma once
 #include <stdint.h>
 
-// ensures enums compile as 32-bit regardess of C compiler
-#define ENUM_BIT INT_MAX
+#define ENUM_BIT INT_MAX// ensures enums compile as 32-bit regardess of C compiler
 
 typedef struct AdapterInfo
 {
-	bool isPrimary;
+	int isPrimary;
 	int index;
 	byte* name;
 	uint32_t vendorID;
