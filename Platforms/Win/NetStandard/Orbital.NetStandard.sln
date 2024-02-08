@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.NamedPip
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.Sockets", "..\..\Portable\NetStandard\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{F976B69A-2884-4706-9059-F5F88257C4B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.OS.Win", "Orbital.OS.Win\Orbital.OS.Win.csproj", "{CBF6DFCD-08AC-4E1B-B300-D23CC5B1A395}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{F976B69A-2884-4706-9059-F5F88257C4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F976B69A-2884-4706-9059-F5F88257C4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F976B69A-2884-4706-9059-F5F88257C4B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBF6DFCD-08AC-4E1B-B300-D23CC5B1A395}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBF6DFCD-08AC-4E1B-B300-D23CC5B1A395}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBF6DFCD-08AC-4E1B-B300-D23CC5B1A395}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBF6DFCD-08AC-4E1B-B300-D23CC5B1A395}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

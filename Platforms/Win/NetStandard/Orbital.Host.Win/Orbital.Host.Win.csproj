@@ -9,11 +9,13 @@
 
   <ItemGroup>
     <Compile Include="..\..\Shared\Orbital.Host.Win\Application.cs" Link="Application.cs" />
+    <Compile Include="..\..\Shared\Orbital.Host.Win\Display.cs" Link="Display.cs" />
     <Compile Include="..\..\Shared\Orbital.Host.Win\Window.cs" Link="Window.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Portable\NetStandard\Orbital.Host\Orbital.Host.csproj" />
+    <ProjectReference Include="..\Orbital.OS.Win\Orbital.OS.Win.csproj" />
   </ItemGroup>
 
 </Project>

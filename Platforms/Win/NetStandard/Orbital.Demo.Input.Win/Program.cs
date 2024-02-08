@@ -17,13 +17,13 @@ namespace Orbital.Demo.Input.Win
 		static void Main(string[] args)
 		{
 			// init app and window
-			var application = new Application(Marshal.GetHINSTANCE(typeof(Application).Module));
-			var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
+			Application.Init(Marshal.GetHINSTANCE(typeof(Application).Module));
+			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo.Input: Win");
 			window.Show();
 
 			// run example
-			using (var example = new Example(application, window))
+			using (var example = new Example(window))
 			{
 				#if NET_CORE
 				example.Init(@"..\..\..\..\..", "x64", "Win");
@@ -34,8 +34,16 @@ namespace Orbital.Demo.Input.Win
 				#else
 				throw new NotImplementedException();
 				#endif
-				example.Run();
+				
+				Application.RunEvents();
+				while (!window.IsClosed())
+				{
+					example.Run();
+					Application.RunEvents();
+				}
 			}
+
+			Application.Shutdown();
 		}
 	}
 }
