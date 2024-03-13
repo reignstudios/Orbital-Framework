@@ -1,25 +1,18 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Orbital.Host.GTK3
 {
 	public unsafe static class Application
 	{
+		public static IntPtr context { get; private set; }
 		public static IntPtr app { get; private set; }
 		private static bool exit;
 		
-		static void Activate(IntPtr app, void* user_data)
-		{
-			IntPtr window = GTK3.gtk_application_window_new(app);
-			
-			fixed (byte* titlePtr = Encoding.ASCII.GetBytes("Demo: GTK3\0"))
-			{
-				GTK3.gtk_window_set_title(window, titlePtr);
-			}
-
-			GTK3.gtk_window_set_default_size(window, 200, 200);
-			GTK3.gtk_widget_show_all(window);
-		}
-		
+		/// <summary>
+		/// Init Application
+		/// </summary>
+		/// <param name="appID">Must be in the 'com.company.product' format</param>
 		public static void Init(string appID)
 		{
 			// create app instance
@@ -29,19 +22,16 @@ namespace Orbital.Host.GTK3
 				if (app == IntPtr.Zero) throw new Exception("Failed to create application instance");
 			}
 			
-			// activate app
-			fixed (byte* activatePtr = Encoding.ASCII.GetBytes("activate\0"))
+			// get context
+			context = GTK3.g_main_context_default();
+			if (GTK3.g_main_context_acquire(context) == 0) throw new Exception("Failed to aquire context");
+			
+			// register app
+			GTK3.GError *error = null;
+			if (GTK3.g_application_register(app, IntPtr.Zero, &error) == 0)
 			{
-				GTK3.g_signal_connect(app, activatePtr, GTK3.G_CALLBACK(&Activate), IntPtr.Zero);
-			}
-
-			// run
-			int status = GTK3.g_application_run(app, 0, null);// TODO: status should be returned from main
-
-			// shutdown
-			if (app != IntPtr.Zero)
-			{
-				GTK3.g_object_unref(app);
+				// TODO: capture error messages
+				throw new Exception("Failed to register app");
 			}
 		}
 
@@ -52,45 +42,68 @@ namespace Orbital.Host.GTK3
 			{
 				Window._windows[i].Close();
 			}
+			
+			// release context
+			if (context != IntPtr.Zero)
+			{
+				GTK3.g_main_context_release(context);
+				context = IntPtr.Zero;
+			}
+			
+			// release app handle
+			if (app != IntPtr.Zero)
+			{
+				GTK3.g_object_unref(app);
+				app = IntPtr.Zero;
+			}
 		}
 
-		public static void Run()
+		public static int Run(string[] args)
 		{
-			/*while (!exit)
+			if (args == null) return GTK3.g_application_run(app, 0, null);
+			
+			// buffer args into heap
+			byte** argsPtr = stackalloc byte*[args.Length];
+			for (int i = 0; i != args.Length; ++i)
 			{
-				X11.XEvent e;
-				while (!exit && X11.XNextEvent(dc, &e) >= 0)
+				byte[] arg = Encoding.ASCII.GetBytes(args[i]);
+				fixed (byte* argPtr = arg)
 				{
-					ProcessEvent(e);
+					argsPtr[i] = (byte*)Marshal.AllocHGlobal(arg.Length);
+					Buffer.MemoryCopy(argPtr, argsPtr[i], arg.Length, arg.Length);
 				}
-			}*/
+			}
+			
+			// run app
+			int result = GTK3.g_application_run(app, args.Length, argsPtr);
+			
+			// release arg heap
+			for (int i = 0; i != args.Length; ++i)
+			{
+				Marshal.FreeHGlobal((IntPtr)argsPtr[i]);
+			}
+			
+			// finish
+			return result;
 		}
 
 		public static void Run(Window window)
 		{
-			/*while (!exit && !window.IsClosed())
+			while (!exit && !window.IsClosed())
 			{
-				X11.XEvent e;
-				while (!exit && !window.IsClosed() && X11.XNextEvent(dc, &e) >= 0)
-				{
-					ProcessEvent(e);
-				}
-			}*/
+				GTK3.g_main_context_iteration(context, 1);
+			}
+			exit = true;
 		}
 
 		public static void RunEvents()
 		{
-			/*while (X11.XPending(dc) != 0)
-			{
-				X11.XEvent e;
-				X11.XPeekEvent(dc, &e);
-				ProcessEvent(e);
-				X11.XNextEvent(dc, &e);
-			}*/
+			GTK3.g_main_context_iteration(context, 0);
 		}
 
 		public static void Exit()
 		{
+			if (!exit) GTK3.g_application_quit(app);
 			exit = true;
 		}
 	}
