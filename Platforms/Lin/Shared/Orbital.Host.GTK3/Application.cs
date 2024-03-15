@@ -93,7 +93,6 @@ namespace Orbital.Host.GTK3
 			{
 				GTK3.g_main_context_iteration(context, 1);
 			}
-			exit = true;
 		}
 
 		public static void RunEvents()

@@ -14,11 +14,8 @@ namespace Orbital.Demo.GTK3
             window.Show();
             
             // run app till quit
-            //Application.Run(window);
-            Application.Run(args);
-            //int result = Application.Run(args);
+            Application.Run(window);
             Application.Shutdown();
-            //return result;
         }
     }
 }
