@@ -18,7 +18,6 @@ using guint32 = System.UInt32;
 using guint = System.UInt32;
 using gulong = System.UInt64;
 using gdouble = System.Double;
-using GdkRectangle = Orbital.Host.GTK3.GTK3.cairo_rectangle_int_t;
 using GQuark = System.UInt32;
 
 namespace Orbital.Host.GTK3
@@ -230,7 +229,7 @@ namespace Orbital.Host.GTK3
 		}
 		
 		[StructLayout(LayoutKind.Sequential)]
-		public struct cairo_rectangle_int_t
+		public struct GdkRectangle
 		{
 			public int x, y;
 			public int width, height;
@@ -665,5 +664,23 @@ namespace Orbital.Host.GTK3
 		{
 			return g_signal_connect_data(instance, detailed_signal, c_handler, data, IntPtr.Zero, 0);
 		}
+		
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern int gdk_display_get_n_monitors(IntPtr display);
+		
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern IntPtr gdk_display_get_monitor(IntPtr display, int monitor_num);
+
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern IntPtr gdk_display_get_default();
+		
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern IntPtr gdk_display_get_primary_monitor(IntPtr display);
+		
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern void gdk_monitor_get_workarea(IntPtr monitor, GdkRectangle* workarea);
+		
+		[DllImport(lib, ExactSpelling = true)]
+		public static extern void gdk_monitor_get_geometry(IntPtr monitor, GdkRectangle* workarea);
 	}
 }
