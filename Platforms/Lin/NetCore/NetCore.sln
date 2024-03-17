@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.X11", "Orbital
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Wayland", "Orbital.Demo.Wayland\Orbital.Demo.Wayland.csproj", "{354AF67C-BD7B-4772-BC58-9556E22FCD96}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.GTK3", "Orbital.Host.GTK3\Orbital.Host.GTK3.csproj", "{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.GTK3", "Orbital.Demo.GTK3\Orbital.Demo.GTK3.csproj", "{D0DB0A3D-FD07-446F-8467-D659B0E15606}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,5 +88,13 @@ Global
 		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{354AF67C-BD7B-4772-BC58-9556E22FCD96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0DB0A3D-FD07-446F-8467-D659B0E15606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0DB0A3D-FD07-446F-8467-D659B0E15606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0DB0A3D-FD07-446F-8467-D659B0E15606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0DB0A3D-FD07-446F-8467-D659B0E15606}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
