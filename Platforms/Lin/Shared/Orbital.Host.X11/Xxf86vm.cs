@@ -7,7 +7,7 @@ namespace Orbital.Host.X11
 {
 	public unsafe static class Xxf86vm
 	{
-		public const string XF86DLL = "libXxf86vm.so.1";
+		public const string XF86DLL = "libXxf86vm.so";
 		
 		[StructLayout(LayoutKind.Sequential)]
 		public struct XF86VidModeModeInfo

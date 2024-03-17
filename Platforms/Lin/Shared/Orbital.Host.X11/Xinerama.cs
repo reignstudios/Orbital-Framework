@@ -8,7 +8,7 @@ namespace Orbital.Host.X11
 {
 	public unsafe static class Xinerama
 	{
-		public const string XineramaDLL = "libXinerama.so.1";
+		public const string XineramaDLL = "libXinerama.so";
 		
 		[StructLayout(LayoutKind.Sequential)]
 		public struct XineramaScreenInfo

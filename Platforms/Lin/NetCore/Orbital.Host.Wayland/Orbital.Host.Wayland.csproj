@@ -11,8 +11,23 @@
     <Compile Include="..\..\Shared\Orbital.Host.Wayland\Application.cs">
       <Link>Application.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Wayland\Display.cs">
+      <Link>Display.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Wayland\WaylandClient.cs">
+      <Link>WaylandClient.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Wayland\WaylandCursor.cs">
+      <Link>WaylandCursor.cs</Link>
+    </Compile>
     <Compile Include="..\..\Shared\Orbital.Host.Wayland\Window.cs">
       <Link>Window.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Wayland\XDG_Decoration.cs">
+      <Link>XDG_Decoration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Wayland\XDG_ShellClientProtocol.cs">
+      <Link>XDG_ShellClientProtocol.cs</Link>
     </Compile>
   </ItemGroup>
 

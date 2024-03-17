@@ -20,7 +20,7 @@ namespace Orbital.Host.X11
 {
 	public unsafe static class X11
 	{
-		public const string DLL = "libX11.so.6";
+		public const string DLL = "libX11.so";
 		
 		public const int KeyPress = 2;
 		public const int KeyRelease = 3;

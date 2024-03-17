@@ -25,7 +25,7 @@ namespace Orbital.Host.GTK4
 {
 	public unsafe static class GTK4
 	{
-		public const string lib = "libgtk-4.so.1";
+		public const string lib = "libgtk-4.so";
 		
 		public enum GApplicationFlags
 		{

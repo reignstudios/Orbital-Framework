@@ -24,7 +24,7 @@ namespace Orbital.Host.GTK3
 {
 	public unsafe static class GTK3
 	{
-		public const string lib = "libgtk-3.so.0";
+		public const string lib = "libgtk-3.so";
 
 		public enum GApplicationFlags
 		{
