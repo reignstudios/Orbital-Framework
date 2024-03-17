@@ -2,7 +2,7 @@
 using Orbital.Numerics;
 using System.Runtime.InteropServices;
 
-namespace Orbital.Host.GTK3
+namespace Orbital.Host.GTK4
 {
 	public unsafe sealed class Window : WindowBase
 	{
@@ -36,9 +36,9 @@ namespace Orbital.Host.GTK3
 			fixed (byte* activatePtr = Encoding.ASCII.GetBytes("activate\0"))
 			{
 				ActivateMethod activateFunc = Activate;
-				var callbackHandler = GTK3.g_signal_connect(Application.app, activatePtr, GTK3.G_CALLBACK(activateFunc), &data);
-				GTK3.g_application_activate(Application.app);// fire events now
-				GTK3.g_signal_handler_disconnect(Application.app, callbackHandler);// disable callback
+				var callbackHandler = GTK4.g_signal_connect(Application.app, activatePtr, GTK4.G_CALLBACK(activateFunc), &data);
+				GTK4.g_application_activate(Application.app);// fire events now
+				GTK4.g_signal_handler_disconnect(Application.app, callbackHandler);// disable callback
 				handle = data.handle;
 			}
 
@@ -62,51 +62,49 @@ namespace Orbital.Host.GTK3
 			var data = (CallbackData*)dataPtr;
 			
 			// create window
-			data->handle = GTK3.gtk_application_window_new(app);
-			GTK3.gtk_window_set_default_size(data->handle, data->width, data->height);
+			data->handle = GTK4.gtk_application_window_new(app);
+			GTK4.gtk_window_set_default_size(data->handle, data->width, data->height);
 			
 			// type
 			switch (data->type)
 			{
 				case WindowType.Standard:
-					GTK3.gtk_window_set_type_hint(data->handle, GTK3.GdkWindowTypeHint.GDK_WINDOW_TYPE_HINT_NORMAL);
-					GTK3.gtk_window_set_resizable(data->handle, 1);
+					GTK4.gtk_window_set_resizable(data->handle, 1);
 					break;
 				
-				case WindowType.Tool:
-					GTK3.gtk_window_set_type_hint(data->handle, GTK3.GdkWindowTypeHint.GDK_WINDOW_TYPE_HINT_DIALOG);
-					GTK3.gtk_window_set_resizable(data->handle, 0);
+				case WindowType.Tool:// NOTE: GTK4 has no way to disable minimize button
+					GTK4.gtk_window_set_resizable(data->handle, 0);
 					break;
 				
 				case WindowType.Borderless:
-					GTK3.gtk_window_set_decorated(data->handle, 0);
-					GTK3.gtk_window_set_resizable(data->handle, 0);
+					GTK4.gtk_window_set_decorated(data->handle, 0);
+					GTK4.gtk_window_set_resizable(data->handle, 0);
 					break;
 				
 				case WindowType.Fullscreen:
-					GTK3.gtk_window_set_decorated(data->handle, 0);
-					GTK3.gtk_window_set_resizable(data->handle, 0);
-					GTK3.gtk_window_fullscreen(data->handle);
+					GTK4.gtk_window_set_decorated(data->handle, 0);
+					GTK4.gtk_window_set_resizable(data->handle, 0);
+					GTK4.gtk_window_fullscreen(data->handle);
 					break;
 			}
 			
 			// center window
 			if (data->startupPosition == WindowStartupPosition.CenterScreen)
 			{
-				GTK3.gtk_window_set_position(data->handle, GTK3.GtkWindowPosition.GTK_WIN_POS_CENTER);
+				// NOTE: this is not possible in GTK4
 			}
 			
 			// watch for window close
-			fixed (byte* signalPtr = Encoding.ASCII.GetBytes("delete-event\0"))
+			fixed (byte* signalPtr = Encoding.ASCII.GetBytes("close-request\0"))
 			{
 				WasClosedMethod wasClosedFuncPtr = WasClosed;
-				GTK3.g_signal_connect(data->handle, signalPtr, GTK3.G_CALLBACK(wasClosedFuncPtr), (void*)data->handle);
+				GTK4.g_signal_connect(data->handle, signalPtr, GTK4.G_CALLBACK(wasClosedFuncPtr), (void*)data->handle);
 			}
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		private delegate void WasClosedMethod(IntPtr widget, GTK3.GdkEvent* e, void* dataPtr);
-		private static void WasClosed(IntPtr widget, GTK3.GdkEvent* e, void* dataPtr)
+		private delegate void WasClosedMethod(IntPtr widget, void* dataPtr);
+		private static void WasClosed(IntPtr widget, void* dataPtr)
 		{
 			var handle = (IntPtr)dataPtr;
 			foreach (var window in _windows)
@@ -138,13 +136,13 @@ namespace Orbital.Host.GTK3
 		{
 			fixed (byte* titlePtr = Encoding.ASCII.GetBytes(title + "\0"))
 			{
-				GTK3.gtk_window_set_title(handle, titlePtr);
+				GTK4.gtk_window_set_title(handle, titlePtr);
 			}
 		}
 
 		public override void Show()
 		{
-			GTK3.gtk_widget_show_all(handle);
+			GTK4.gtk_window_present(handle);
 		}
 
 		public override void Close()
@@ -153,8 +151,8 @@ namespace Orbital.Host.GTK3
 			_windows.Remove(this);
 			if (handle != IntPtr.Zero)
 			{
-				GTK3.gtk_window_close(handle);
-				GTK3.gtk_widget_destroy(handle);
+				GTK4.gtk_window_close(handle);
+				GTK4.gtk_window_destroy(handle);
 				handle = IntPtr.Zero;
 			}
 		}
@@ -167,7 +165,7 @@ namespace Orbital.Host.GTK3
 		public override Size2 GetSize()
 		{
 			int width, height;
-			GTK3.gtk_window_get_size(handle, &width, &height);
+			GTK4.gtk_window_get_default_size(handle, &width, &height);
 			return new Size2(width, height);
 		}
 	}

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Host.GTK4\Application.cs">
+        <Link>Application.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Shared\Orbital.Host.GTK4\Display.cs">
+        <Link>Display.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Shared\Orbital.Host.GTK4\GTK4.cs">
+        <Link>GTK4.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Shared\Orbital.Host.GTK4\Window.cs">
+        <Link>Window.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj" />
+    </ItemGroup>
+
+</Project>

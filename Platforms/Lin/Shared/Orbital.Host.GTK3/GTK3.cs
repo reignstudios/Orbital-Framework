@@ -567,6 +567,7 @@ namespace Orbital.Host.GTK3
 			[FieldOffset(0)] public GdkEventPadGroupMode      pad_group_mode;
 		}
 		
+		[StructLayout(LayoutKind.Sequential)]
 		public struct GError
 		{
 			public GQuark       domain;
