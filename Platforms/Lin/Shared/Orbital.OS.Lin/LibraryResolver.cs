@@ -7,10 +7,10 @@ namespace Orbital.OS.Lin
     {
         public static void Init(Assembly assembly)
         {
-            NativeLibrary.SetDllImportResolver(assembly, MapAndLoad);
+            NativeLibrary.SetDllImportResolver(assembly, ResolveLibrary);
         }
         
-        private static IntPtr MapAndLoad(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
+        private static IntPtr ResolveLibrary(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
             // check if lib just loads without additional work
             try
