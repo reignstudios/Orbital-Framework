@@ -12,6 +12,10 @@ namespace Orbital.OS.Lin
         
         private static IntPtr ResolveLibrary(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
+            // check if library name is already version specific
+            string ext = Path.GetExtension(libraryName);
+            if (ext != ".so") return NativeLibrary.Load(libraryName);
+            
             // check if lib just loads without additional work
             try
             {
@@ -57,10 +61,6 @@ namespace Orbital.OS.Lin
                     }
                 }
             }
-            
-            // check if library name is already version specific
-            string ext = Path.GetExtension(libraryName);
-            if (ext != ".so") return NativeLibrary.Load(libraryName);
 			
             // scan for newest version of library
             var highestVersion = new Version(0, 0, 0);
