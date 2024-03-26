@@ -88,8 +88,12 @@ namespace Orbital.OS.Lin
                         }
                         else if (int.TryParse(versionValue, out versionNum))
                         {
-                            highestVersion = new Version(versionNum, 0, 0);
-                            highestVersionValue = versionNum.ToString();
+                            version = new Version(versionNum, 0, 0);
+                            if (version > highestVersion)
+                            {
+                                highestVersion = version;
+                                highestVersionValue = versionValue;
+                            }
                         }
                     }
                 }
