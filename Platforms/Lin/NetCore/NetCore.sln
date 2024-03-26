@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.GTK4", "Orbita
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.GTK4", "Orbital.Host.GTK4\Orbital.Host.GTK4.csproj", "{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.OS.Lin", "Orbital.OS.Lin\Orbital.OS.Lin.csproj", "{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,5 +110,9 @@ Global
 		{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

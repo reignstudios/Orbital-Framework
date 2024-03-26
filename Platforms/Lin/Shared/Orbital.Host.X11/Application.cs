@@ -1,4 +1,7 @@
-﻿namespace Orbital.Host.X11
+﻿using System.Reflection;
+using Orbital.OS.Lin;
+
+namespace Orbital.Host.X11
 {
 	public unsafe static class Application
 	{
@@ -7,6 +10,8 @@
 		
 		public static void Init()
 		{
+			LibraryResolver.Init(Assembly.GetExecutingAssembly());
+			
 			dc = X11.XOpenDisplay(null);
 			if (dc == IntPtr.Zero) throw new Exception("XOpenDisplay failed");
 		}

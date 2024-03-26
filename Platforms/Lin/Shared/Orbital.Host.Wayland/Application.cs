@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using Orbital.OS.Lin;
 
 namespace Orbital.Host.Wayland
 {
@@ -20,6 +22,8 @@ namespace Orbital.Host.Wayland
 		
 		public static void Init()
 		{
+			LibraryResolver.Init(Assembly.GetExecutingAssembly());
+			
 			handle = Orbital_Host_Wayland_Application_Create();
 			if (handle == IntPtr.Zero) throw new Exception("Failed to create");
 

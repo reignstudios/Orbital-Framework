@@ -1,5 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
+using Orbital.OS.Lin;
 
 namespace Orbital.Host.GTK4
 {
@@ -15,6 +17,8 @@ namespace Orbital.Host.GTK4
 		/// <param name="appID">Must be in the 'com.company.product' format</param>
 		public static void Init(string appID)
 		{
+			LibraryResolver.Init(Assembly.GetExecutingAssembly());
+			
 			// create app instance
 			fixed (byte* appIDPtr = Encoding.ASCII.GetBytes(appID + "\0"))
 			{

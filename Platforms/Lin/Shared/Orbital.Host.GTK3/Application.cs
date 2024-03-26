@@ -1,5 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
+using Orbital.OS.Lin;
 
 namespace Orbital.Host.GTK3
 {
@@ -8,13 +10,15 @@ namespace Orbital.Host.GTK3
 		public static IntPtr context { get; private set; }
 		public static IntPtr app { get; private set; }
 		private static bool exit;
-		
+
 		/// <summary>
 		/// Init Application
 		/// </summary>
 		/// <param name="appID">Must be in the 'com.company.product' format</param>
 		public static void Init(string appID)
 		{
+			LibraryResolver.Init(Assembly.GetExecutingAssembly());
+			
 			// create app instance
 			fixed (byte* appIDPtr = Encoding.ASCII.GetBytes(appID + "\0"))
 			{

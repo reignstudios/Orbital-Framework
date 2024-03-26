@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Reflection;
+using Orbital.OS.Lin;
 
 namespace Orbital.Host.Mir
 {
@@ -7,6 +9,8 @@ namespace Orbital.Host.Mir
 	{
 		public static void Init()
 		{
+			LibraryResolver.Init(Assembly.GetExecutingAssembly());
+			
 			// TODO
 		}
 

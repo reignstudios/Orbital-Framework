@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj" />
+      <ProjectReference Include="..\Orbital.OS.Lin\Orbital.OS.Lin.csproj" />
     </ItemGroup>
 
 </Project>
