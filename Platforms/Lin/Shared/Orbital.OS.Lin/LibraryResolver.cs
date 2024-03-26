@@ -24,20 +24,35 @@ namespace Orbital.OS.Lin
             string libPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
             if (string.IsNullOrEmpty(libPath))
             {
-                libPath = "/lib64";
-                if (!Directory.Exists(libPath))
+                if (IntPtr.Size == 8)
                 {
-                    libPath = "/usr/lib64";
+                    libPath = "/lib64";
                     if (!Directory.Exists(libPath))
                     {
-                        libPath = "/lib";
+                        libPath = "/usr/lib64";
                         if (!Directory.Exists(libPath))
                         {
-                            libPath = "/usr/lib";
+                            libPath = "/lib";
                             if (!Directory.Exists(libPath))
                             {
-                                return IntPtr.Zero;
+                                libPath = "/usr/lib";
+                                if (!Directory.Exists(libPath))
+                                {
+                                    return IntPtr.Zero;
+                                }
                             }
+                        }
+                    }
+                }
+                else
+                {
+                    libPath = "/lib";
+                    if (!Directory.Exists(libPath))
+                    {
+                        libPath = "/usr/lib";
+                        if (!Directory.Exists(libPath))
+                        {
+                            return IntPtr.Zero;
                         }
                     }
                 }
