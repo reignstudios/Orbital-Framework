@@ -2,6 +2,11 @@
 #include "Common.h"
 #include "Application.h"
 
+typedef struct Rect
+{
+    int x, y, width, height;
+}Rect;
+
 typedef struct SurfaceBuffer
 {
     int width, height;
@@ -17,8 +22,21 @@ typedef struct SurfaceBuffer
 typedef struct Window
 {
     struct Application* app;
+    int isClosed, isMaximized;
+    int compositeWidth, compositeHeight;
+
+    struct Rect clientRect_Drag_TopBar;
+    struct Rect clientRect_Resize_LeftBar, clientRect_Resize_RightBar, clientRect_Resize_BottomBar, clientRect_Resize_TopBar;
+    struct Rect clientRect_Resize_BottomLeft, clientRect_Resize_BottomRight, clientRect_Resize_TopLeft, clientRect_Resize_TopRight;
+    struct Rect clientRect_ButtonMin, clientRect_ButtonMax, clientRect_ButtonClose;
+
+    struct xdg_toplevel* xdgToplevel;
+    struct xdg_surface* xdgSurface;
     struct wl_surface* surface;
+    struct SurfaceBuffer surfaceBuffer;
+
     struct wl_surface* clientSurface;
+    struct SurfaceBuffer clientSurfaceBuffer;
 
     // mouse
     struct wl_surface* mouseHoverSurface;

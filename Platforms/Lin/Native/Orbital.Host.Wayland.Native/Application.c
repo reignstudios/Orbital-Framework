@@ -53,6 +53,17 @@ void Orbital_Host_Wayland_Application_Shutdown(struct Application* app)
 {
     if (app != NULL)
     {
+        // dispose decoration
+        if (app->decoration != NULL)
+        {
+            zxdg_toplevel_decoration_v1_destroy((struct zxdg_toplevel_decoration_v1*)app->decoration);
+        }
+
+        // disconnect display
+        wl_display_disconnect(app->display);
+
+        // finish
+        app->running = 0;
         free(app);
     }
 }
@@ -85,4 +96,13 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
     app->cursorSurface = wl_compositor_create_surface(app->compositor);
 
     return 1;
+}
+
+void Orbital_Host_Wayland_Application_Run(struct Application* app)
+{
+    app->running = 1;
+    while (app->running)
+    {
+        if (wl_display_dispatch(app->display) < 0) break;
+    }
 }

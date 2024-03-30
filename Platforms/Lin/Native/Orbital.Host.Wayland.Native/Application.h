@@ -3,8 +3,9 @@
 
 typedef struct Application
 {
-    int useClientDecorations;
     struct wl_display* display;
+    int running;
+    int useClientDecorations;
 
     // cursor
     struct wl_cursor_theme* cursorTheme;

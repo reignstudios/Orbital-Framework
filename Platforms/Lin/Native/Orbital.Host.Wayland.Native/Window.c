@@ -4,11 +4,6 @@
 #define DECORATIONS_TOPBAR_SIZE 32
 #define DECORATIONS_BUTTON_SIZE 32
 
-typedef struct Rect
-{
-    int x, y, width, height;
-}Rect;
-
 Rect CreateRect(int x, int y, int width, int height)
 {
     Rect rect;
@@ -66,32 +61,36 @@ void BlitRect(uint32_t* pixels, int pixelWidth, int pixelBufferSize, int x, int 
 
 void DrawButtons(struct Window* window)
 {
+    uint32_t* pixels = window->surfaceBuffer.pixels;
+    int pixelWidth = window->surfaceBuffer.width;
+    int pixelBufferSize = window->surfaceBuffer.size;
+
     int x = window->compositeWidth - (24 + 4);
     Rect rect = window->clientRect_ButtonClose;
-    BlitRect(window->surfaceBuffer.pixels, rect.x, rect.y, rect.width, rect.height, ToColor(255, 0, 0, 255));
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 3, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 2
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 5, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 3
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 18, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 17, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 2
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 19, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 3
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(255, 0, 0, 255));
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 3, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 5, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 18, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 17, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 3
 
     x -= 24 + 4;
     rect = window->clientRect_ButtonMax;
-    BlitRect(window->surfaceBuffer.pixels, rect.x, rect.y, rect.width, rect.height, ToColor(0, 255, 0, 255));
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// bottom
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 4, 1, 0, 16, ToColor(0, 0, 0, 255));// top
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 5, 1, 0, 16, ToColor(0, 0, 0, 255));// top 2
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 6, 1, 0, 16, ToColor(0, 0, 0, 255));// top 3
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// left
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 19, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// right
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 255, 0, 255));
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// bottom
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 0, 16, ToColor(0, 0, 0, 255));// top
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 5, 1, 0, 16, ToColor(0, 0, 0, 255));// top 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 6, 1, 0, 16, ToColor(0, 0, 0, 255));// top 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// left
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// right
 
     x -= 24 + 4;
     rect = window->clientRect_ButtonMin;
-    BlitRect(window->surfaceBuffer.pixels, rect.x, rect.y, rect.width, rect.height, ToColor(0, 0, 255, 255));
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// line
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 19, 1, 0, 16, ToColor(0, 0, 0, 255));// line 2
-    BlitLine(window->surfaceBuffer.pixels, rect.x + 4, rect.y + 18, 1, 0, 16, ToColor(0, 0, 0, 255));// line 3
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 0, 255, 255));
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// line
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 19, 1, 0, 16, ToColor(0, 0, 0, 255));// line 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 18, 1, 0, 16, ToColor(0, 0, 0, 255));// line 3
 }
 
 void SetMousePos(struct Window* window, wl_fixed_t x, wl_fixed_t y)
@@ -152,8 +151,8 @@ void pointer_leave(void *data, struct wl_pointer *pointer, uint32_t serial, stru
 
 void pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
 {
-    Application* app = (Application*)data;
-    SetMousePos(app, x, y);
+    struct Window* window = (struct Window*)data;
+    SetMousePos(window, x, y);
 }
 
 void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
@@ -168,73 +167,77 @@ void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uin
             if (state == WL_POINTER_BUTTON_STATE_RELEASED)
             {
                 // buttons
-                if (WithinRect(window->clientRect_ButtonClose, mouseX, mouseY))
+                if (WithinRect(window->clientRect_ButtonClose, window->mouseX, window->mouseY))
                 {
-                    running = 0;
+                    window->isClosed = 1;
                 }
-                else if (WithinRect(window->clientRect_ButtonMax, mouseX, mouseY))
+                else if (WithinRect(window->clientRect_ButtonMax, window->mouseX, window->mouseY))
                 {
                     if (!window->isMaximized)
                     {
-                        xdg_toplevel_set_maximized(window->xdg_toplevel);
-                        //xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
+                        xdg_toplevel_set_maximized(window->xdgToplevel);
                     }
                     else
                     {
-                        xdg_toplevel_unset_maximized(window->xdg_toplevel);
-                        //xdg_toplevel_unset_fullscreen(window->xdg_toplevel);
+                        xdg_toplevel_unset_maximized(window->xdgToplevel);
                     }
                 }
-                else if (WithinRect(window->clientRect_ButtonMin, mouseX, mouseY))
+                else if (WithinRect(window->clientRect_ButtonMin, window->mouseX, window->mouseY))
                 {
-                    xdg_toplevel_set_minimized(window->xdg_toplevel);
+                    xdg_toplevel_set_minimized(window->xdgToplevel);
                 }
             }
             else if (state == WL_POINTER_BUTTON_STATE_PRESSED)
             {
+                int mouseX = window->mouseX;
+                int mouseY = window->mouseY;
+                struct wl_seat* seat = window->app->seat;
+
                 // drag
                 if
-                        (
-                        !WithinRect(window->clientRect_ButtonClose, mouseX, mouseY) && !WithinRect(window->clientRect_ButtonMax, mouseX, mouseY) && !WithinRect(window->clientRect_ButtonMin, mouseX, mouseY) &&
-                        !WithinRect(window->clientRect_Resize_BottomBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_TopBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_LeftBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_RightBar, mouseX, mouseY) &&
-                        !WithinRect(window->clientRect_Resize_TopLeft, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_TopRight, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_BottomLeft, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_BottomRight, mouseX, mouseY)
-                        )
+                (
+                    !WithinRect(window->clientRect_ButtonClose, mouseX, mouseY) && !WithinRect(window->clientRect_ButtonMax, mouseX, mouseY) && !WithinRect(window->clientRect_ButtonMin, mouseX, mouseY) &&
+                    !WithinRect(window->clientRect_Resize_BottomBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_TopBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_LeftBar, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_RightBar, mouseX, mouseY) &&
+                    !WithinRect(window->clientRect_Resize_TopLeft, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_TopRight, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_BottomLeft, mouseX, mouseY) && !WithinRect(window->clientRect_Resize_BottomRight, mouseX, mouseY)
+                )
                 {
-                    if (WithinRect(window->clientRect_Drag_TopBar, mouseX, mouseY)) xdg_toplevel_move(window->xdg_toplevel, seat, serial);
+                    if (WithinRect(window->clientRect_Drag_TopBar, mouseX, mouseY)) xdg_toplevel_move(window->xdgToplevel, seat, serial);
                 }
-                    // resize corners
+
+                // resize corners
                 else if (WithinRect(window->clientRect_Resize_TopLeft, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP_LEFT);
                 }
                 else if (WithinRect(window->clientRect_Resize_TopRight, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP_RIGHT);
                 }
                 else if (WithinRect(window->clientRect_Resize_BottomLeft, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_LEFT);
                 }
                 else if (WithinRect(window->clientRect_Resize_BottomRight, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT);
                 }
-                    // resize edges
+
+                // resize edges
                 else if (WithinRect(window->clientRect_Resize_BottomBar, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);
                 }
                 else if (WithinRect(window->clientRect_Resize_TopBar, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_TOP);
                 }
                 else if (WithinRect(window->clientRect_Resize_LeftBar, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_LEFT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_LEFT);
                 }
                 else if (WithinRect(window->clientRect_Resize_RightBar, mouseX, mouseY))
                 {
-                    xdg_toplevel_resize(window->xdg_toplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
+                    xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_RIGHT);
                 }
             }
         }
@@ -263,6 +266,9 @@ void seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
     }*/
 }
 
+// ==========================================================
+// Window
+// ==========================================================
 struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app)
 {
     struct Window* window = calloc(0, sizeof(Window));
@@ -274,6 +280,28 @@ void Orbital_Host_Wayland_Window_Shutdown(struct Window* window)
 {
     if (window != NULL)
     {
+        // dispose client surface buffer
+        if (window->app->useClientDecorations)
+        {
+            munmap(window->clientSurfaceBuffer.pixels, window->clientSurfaceBuffer.size);
+            wl_shm_pool_destroy(window->clientSurfaceBuffer.pool);
+            wl_buffer_destroy(window->clientSurfaceBuffer.buffer);
+        }
+
+        // dispose surface buffer
+        munmap(window->surfaceBuffer.pixels, window->surfaceBuffer.size);
+        wl_shm_pool_destroy(window->surfaceBuffer.pool);
+        wl_buffer_destroy(window->surfaceBuffer.buffer);
+
+        // dipose xdg surfaces
+        xdg_toplevel_destroy(window->xdgToplevel);
+        xdg_surface_destroy(window->xdgSurface);
+
+        // dispose surfaces
+        if (window->app->useClientDecorations) wl_surface_destroy(window->clientSurface);
+        wl_surface_destroy(window->surface);
+
+        // finish
         free(window);
     }
 }
