@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Runtime.InteropServices;
 using System.Reflection;
 using Orbital.OS.Lin;
@@ -13,15 +14,21 @@ namespace Orbital.Host.Wayland
 		private static extern IntPtr Orbital_Host_Wayland_Application_Create();
 		
 		[DllImport(lib, ExactSpelling = true)]
+		private static extern int Orbital_Host_Wayland_Application_Init(IntPtr app);
+		
+		[DllImport(lib, ExactSpelling = true)]
 		private static extern void Orbital_Host_Wayland_Application_Shutdown(IntPtr app);
 		
 		[DllImport(lib, ExactSpelling = true)]
-		private static extern int Orbital_Host_Wayland_Application_Init(IntPtr app);
+		private static extern void Orbital_Host_Wayland_Application_Run(IntPtr app);
 		
 		public static IntPtr handle { get; private set; }
+		internal static byte[] appIDData;
+		private static bool exit;
 		
-		public static void Init()
+		public static void Init(string appID)
 		{
+			appIDData = Encoding.ASCII.GetBytes(appID);
 			LibraryResolver.Init(Assembly.GetExecutingAssembly());
 			
 			handle = Orbital_Host_Wayland_Application_Create();
@@ -44,7 +51,7 @@ namespace Orbital.Host.Wayland
 
 		public static void Run()
 		{
-			// TODO
+			Orbital_Host_Wayland_Application_Run(handle);
 		}
 
 		public static void Run(Window window)
@@ -59,7 +66,8 @@ namespace Orbital.Host.Wayland
 
 		public static void Exit()
 		{
-			// TODO
+			exit = true;
+			Shutdown();
 		}
 	}
 }

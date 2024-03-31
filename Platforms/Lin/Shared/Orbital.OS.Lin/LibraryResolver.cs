@@ -16,10 +16,19 @@ namespace Orbital.OS.Lin
             string ext = Path.GetExtension(libraryName);
             if (ext != ".so") return NativeLibrary.Load(libraryName);
             
-            // check if lib just loads without additional work
+            // try to load lib without additional work
             try
             {
                 var lib = NativeLibrary.Load(libraryName);
+                if (lib != IntPtr.Zero) return lib;
+            }
+            catch {}
+            
+            // try to load lib with our full path
+            try
+            {
+                string fullPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), libraryName);
+                var lib = NativeLibrary.Load(fullPath);
                 if (lib != IntPtr.Zero) return lib;
             }
             catch {}

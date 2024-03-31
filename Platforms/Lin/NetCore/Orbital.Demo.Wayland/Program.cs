@@ -8,13 +8,14 @@ namespace Orbital.Demo.Wayland
         private static void Main(string[] args)
         {
             // init app and window
-            Application.Init();
+            Application.Init("org.ReignStudios.Orbital");
             var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
             window.SetTitle("Demo: Wayland");
             window.Show();
             
             // run app till quit
-            Application.Run(window);
+            //Application.Run(window);
+            Application.Run();
             Application.Shutdown();
         }
     }
