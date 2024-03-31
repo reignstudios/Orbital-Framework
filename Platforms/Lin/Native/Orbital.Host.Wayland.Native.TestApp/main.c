@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "Window.h"
 #include "Application.h"
 
 int main()
@@ -25,7 +24,6 @@ int main()
 
     // run
     Orbital_Host_Wayland_Application_Run(app);
-    //while (1) sleep(1);
 
     // shutdown
     Orbital_Host_Wayland_Window_Dispose(window);

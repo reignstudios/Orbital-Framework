@@ -278,6 +278,7 @@ void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t seri
             if (WithinRect(window->clientRect_ButtonClose, window->mouseX, window->mouseY))
             {
                 window->isClosed = 1;
+
             }
             else if (WithinRect(window->clientRect_ButtonMax, window->mouseX, window->mouseY))
             {
@@ -485,6 +486,9 @@ struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app)
     return window;
 }
 
+struct xdg_surface_listener xdg_surface_listener = {.configure = xdg_surface_handle_configure};
+struct xdg_toplevel_listener xdg_toplevel_listener = {.configure_bounds = xdg_toplevelconfigure_bounds, .configure = xdg_toplevel_handle_configure, .close = xdg_toplevel_handle_close};
+struct zxdg_toplevel_decoration_v1_listener decoration_listener = {.configure = decoration_configure};
 int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID)
 {
     // configure buffers
@@ -496,11 +500,9 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
     window->surface = wl_compositor_create_surface(window->app->compositor);
 
     window->xdgSurface = xdg_wm_base_get_xdg_surface(window->app->wmBase, window->surface);
-    struct xdg_surface_listener xdg_surface_listener = {.configure = xdg_surface_handle_configure};
     xdg_surface_add_listener(window->xdgSurface, &xdg_surface_listener, window);
 
     window->xdgToplevel = xdg_surface_get_toplevel(window->xdgSurface);
-    struct xdg_toplevel_listener xdg_toplevel_listener = {.configure_bounds = xdg_toplevelconfigure_bounds, .configure = xdg_toplevel_handle_configure, .close = xdg_toplevel_handle_close};
     xdg_toplevel_add_listener(window->xdgToplevel, &xdg_toplevel_listener, window);
     xdg_toplevel_set_app_id(window->xdgToplevel, appID);
     xdg_toplevel_set_min_size(window->xdgToplevel, 100, 100);// window should never go below 100
@@ -509,7 +511,6 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
     if (!window->app->useClientDecorations && window->app->decorationManager != NULL)
     {
         window->decoration = zxdg_decoration_manager_v1_get_toplevel_decoration(window->app->decorationManager, window->xdgToplevel);
-        static const struct zxdg_toplevel_decoration_v1_listener decoration_listener = {.configure = decoration_configure};
         zxdg_toplevel_decoration_v1_add_listener(window->decoration, &decoration_listener, window);
     }
 

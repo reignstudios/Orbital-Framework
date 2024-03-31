@@ -38,7 +38,6 @@ namespace Orbital.Host.Wayland
 
 		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			//System.Threading.Thread.Sleep(20 * 1000);
 			handle = Orbital_Host_Wayland_Window_Create(Application.handle);
 			fixed (byte* appIDPtr = Application.appIDData)
 			{

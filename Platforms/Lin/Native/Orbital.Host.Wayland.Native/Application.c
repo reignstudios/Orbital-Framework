@@ -44,7 +44,7 @@ void registry_remove_object(void *data, struct wl_registry *registry, uint32_t n
 void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y)
 {
     struct Application* app = (struct Application*)data;
-    for (int i = 0; app->windowCount; ++i)
+    for (int i = 0; i != app->windowCount; ++i)
     {
         window_pointer_enter(app->windows[i], pointer, serial, surface, x, y);
     }
@@ -53,7 +53,7 @@ void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial, stru
 void pointer_leave(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface)
 {
     struct Application* app = (struct Application*)data;
-    for (int i = 0; app->windowCount; ++i)
+    for (int i = 0; i != app->windowCount; ++i)
     {
         window_pointer_leave(app->windows[i], pointer, serial, surface);
     }
@@ -62,7 +62,7 @@ void pointer_leave(void *data, struct wl_pointer *pointer, uint32_t serial, stru
 void pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
 {
     struct Application* app = (struct Application*)data;
-    for (int i = 0; app->windowCount; ++i)
+    for (int i = 0; i != app->windowCount; ++i)
     {
         window_pointer_motion(app->windows[i], pointer, time, x, y);
     }
@@ -71,7 +71,7 @@ void pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time, wl_fi
 void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
 {
     struct Application* app = (struct Application*)data;
-    for (int i = 0; app->windowCount; ++i)
+    for (int i = 0; i != app->windowCount; ++i)
     {
         window_pointer_button(app->windows[i], pointer, serial, time, button, state);
     }
@@ -80,12 +80,13 @@ void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uin
 void pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
 {
     struct Application* app = (struct Application*)data;
-    for (int i = 0; app->windowCount; ++i)
+    for (int i = 0; i != app->windowCount; ++i)
     {
         window_pointer_axis(app->windows[i], pointer, time, axis, value);
     }
 }
 
+struct wl_pointer_listener pointer_listener = {&pointer_enter, &pointer_leave, &pointer_motion, &pointer_button, &pointer_axis};
 void seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
 {
     struct Application* app = (struct Application*)data;
@@ -93,7 +94,6 @@ void seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
     if (capabilities & WL_SEAT_CAPABILITY_POINTER)
     {
         app->pointer = wl_seat_get_pointer(app->seat);
-        struct wl_pointer_listener pointer_listener = {&pointer_enter, &pointer_leave, &pointer_motion, &pointer_button, &pointer_axis};
         wl_pointer_add_listener(app->pointer, &pointer_listener, data);
     }
 
@@ -117,6 +117,9 @@ struct Application* Orbital_Host_Wayland_Application_Create()
     return calloc(1, sizeof(Application));
 }
 
+struct wl_registry_listener registry_listener = {&registry_add_object, &registry_remove_object};
+struct wl_seat_listener seat_listener = {&seat_capabilities};
+struct xdg_wm_base_listener xdg_wm_base_listener = {.ping = xdg_wm_base_ping};
 int Orbital_Host_Wayland_Application_Init(struct Application* app)
 {
     // get display
@@ -129,7 +132,6 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
 
     // que registry
     struct wl_registry *registry = wl_display_get_registry(app->display);
-    struct wl_registry_listener registry_listener = {&registry_add_object, &registry_remove_object};
     wl_registry_add_listener(registry, &registry_listener, app);
     wl_display_roundtrip(app->display);
 
@@ -147,13 +149,12 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
     app->cursorSurface = wl_compositor_create_surface(app->compositor);
 
     // add seat listener
-    struct wl_seat_listener seat_listener = {&seat_capabilities};
     wl_seat_add_listener(app->seat, &seat_listener, app);
 
     // add window manager base listener
-    struct xdg_wm_base_listener xdg_wm_base_listener = {.ping = xdg_wm_base_ping};
     xdg_wm_base_add_listener(app->wmBase, &xdg_wm_base_listener, app);
 
+    wl_display_flush(app->display);
     return 1;
 }
 
@@ -167,11 +168,34 @@ void Orbital_Host_Wayland_Application_Shutdown(struct Application* app)
     free(app);
 }
 
+void HandleClosedWindows(struct Application* app)
+{
+    for (int i = 0; i < app->windowCount; ++i)
+    {
+        if (app->windows[i]->isClosed)
+        {
+            // shift buffer down
+            for (int i2 = i; i2 < app->windowCount - 1; ++i2)
+            {
+                for (int i3 = i2 + 1; i3 < app->windowCount; ++i3)
+                {
+                    app->windows[i2] = app->windows[i3];
+                }
+            }
+
+            // decrease size
+            --app->windowCount;
+            app->windows = (struct Window**)realloc(app->windows, app->windowCount);
+        }
+    }
+}
+
 void Orbital_Host_Wayland_Application_Run(struct Application* app)
 {
     app->running = 1;
-    while (app->running)
+    while (app->running && app->windowCount != 0)
     {
         if (wl_display_dispatch(app->display) < 0) break;
+        HandleClosedWindows(app);
     }
 }
