@@ -527,16 +527,6 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
         DrawButtons(window);
     }
 
-    // commit surface buffers
-    if (window->app->useClientDecorations)
-    {
-        wl_surface_damage(window->clientSurface, 0, 0, window->clientSurfaceBuffer.width, window->clientSurfaceBuffer.height);
-        wl_surface_commit(window->clientSurface);
-    }
-    wl_surface_damage(window->surface, 0, 0, window->surfaceBuffer.width, window->surfaceBuffer.height);
-    wl_surface_commit(window->surface);
-    wl_display_flush(window->app->display);
-
     return 1;
 }
 
@@ -574,4 +564,28 @@ void Orbital_Host_Wayland_Window_Dispose(struct Window* window)
 void Orbital_Host_Wayland_Window_SetTitle(struct Window* window, char* title)
 {
     xdg_toplevel_set_title(window->xdgToplevel, title);
+}
+
+void Orbital_Host_Wayland_Window_Show(struct Window* window)
+{
+    // commit surface buffers
+    if (window->app->useClientDecorations)
+    {
+        wl_surface_damage(window->clientSurface, 0, 0, window->clientSurfaceBuffer.width, window->clientSurfaceBuffer.height);
+        wl_surface_commit(window->clientSurface);
+    }
+    wl_surface_damage(window->surface, 0, 0, window->surfaceBuffer.width, window->surfaceBuffer.height);
+    wl_surface_commit(window->surface);
+    wl_display_flush(window->app->display);
+}
+
+void Orbital_Host_Wayland_Window_GetSize(struct Window* window, int* width, int* height)
+{
+    *width = window->width;
+    *height = window->height;
+}
+
+int Orbital_Host_Wayland_Window_IsClosed(struct Window* window)
+{
+    return window->isClosed;
 }

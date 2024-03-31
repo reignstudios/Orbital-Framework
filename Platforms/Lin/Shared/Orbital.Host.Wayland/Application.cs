@@ -22,13 +22,16 @@ namespace Orbital.Host.Wayland
 		[DllImport(lib, ExactSpelling = true)]
 		private static extern void Orbital_Host_Wayland_Application_Run(IntPtr app);
 		
+		[DllImport(lib, ExactSpelling = true)]
+		private static extern int Orbital_Host_Wayland_Application_RunEvents(IntPtr app);
+		
 		public static IntPtr handle { get; private set; }
 		internal static byte[] appIDData;
 		private static bool exit;
 		
 		public static void Init(string appID)
 		{
-			appIDData = Encoding.ASCII.GetBytes(appID);
+			appIDData = Encoding.ASCII.GetBytes(appID + "\0");
 			LibraryResolver.Init(Assembly.GetExecutingAssembly());
 			
 			handle = Orbital_Host_Wayland_Application_Create();
@@ -42,6 +45,13 @@ namespace Orbital.Host.Wayland
 
 		public static void Shutdown()
 		{
+			// close all windows
+			for (int i = Window._windows.Count - 1; i >= 0; --i)
+			{
+				Window._windows[i].Close();
+			}
+			
+			// shutdown app
 			if (handle != IntPtr.Zero)
 			{
 				Orbital_Host_Wayland_Application_Shutdown(handle);
@@ -56,12 +66,15 @@ namespace Orbital.Host.Wayland
 
 		public static void Run(Window window)
 		{
-			// TODO
+			while (!exit && !window.IsClosed())
+			{
+				if (Orbital_Host_Wayland_Application_RunEvents(handle) < 0) break;
+			}
 		}
 
 		public static void RunEvents()
 		{
-			// TODO
+			Orbital_Host_Wayland_Application_RunEvents(handle);
 		}
 
 		public static void Exit()

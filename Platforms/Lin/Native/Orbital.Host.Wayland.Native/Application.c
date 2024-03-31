@@ -168,7 +168,7 @@ void Orbital_Host_Wayland_Application_Shutdown(struct Application* app)
     free(app);
 }
 
-void HandleClosedWindows(struct Application* app)
+void ProcessClosedWindows(struct Application* app)
 {
     for (int i = 0; i < app->windowCount; ++i)
     {
@@ -196,6 +196,14 @@ void Orbital_Host_Wayland_Application_Run(struct Application* app)
     while (app->running && app->windowCount != 0)
     {
         if (wl_display_dispatch(app->display) < 0) break;
-        HandleClosedWindows(app);
+        ProcessClosedWindows(app);
     }
+    ProcessClosedWindows(app);// ensure any cleanup
+}
+
+int Orbital_Host_Wayland_Application_RunEvents(struct Application* app)
+{
+    int result = wl_display_dispatch(app->display);
+    ProcessClosedWindows(app);
+    return result;
 }

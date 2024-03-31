@@ -20,11 +20,19 @@ namespace Orbital.Host.Wayland
 		[DllImport(Application.lib, ExactSpelling = true)]
 		private static extern void Orbital_Host_Wayland_Window_SetTitle(IntPtr window, byte* title);
 		
-		private static List<Window> _windows = new List<Window>();
+		[DllImport(Application.lib, ExactSpelling = true)]
+		private static extern void Orbital_Host_Wayland_Window_Show(IntPtr window);
+		
+		[DllImport(Application.lib, ExactSpelling = true)]
+		private static extern void Orbital_Host_Wayland_Window_GetSize(IntPtr window, int* width, int* height);
+		
+		[DllImport(Application.lib, ExactSpelling = true)]
+		private static extern int Orbital_Host_Wayland_Window_IsClosed(IntPtr window);
+		
+		internal static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
 
 		public IntPtr handle { get; private set; }
-		private bool isClosed;
 
 		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
@@ -68,7 +76,7 @@ namespace Orbital.Host.Wayland
 
 		public override void SetTitle(string title)
 		{
-			var titleData = Encoding.UTF8.GetBytes(title);
+			var titleData = Encoding.UTF8.GetBytes(title + "\0");
 			fixed (byte* titlePtr = titleData)
 			{
 				Orbital_Host_Wayland_Window_SetTitle(handle, titlePtr);
@@ -77,7 +85,7 @@ namespace Orbital.Host.Wayland
 
 		public override void Show()
 		{
-			// TODO
+			Orbital_Host_Wayland_Window_Show(handle);
 		}
 
 		public override void Close()
@@ -92,13 +100,14 @@ namespace Orbital.Host.Wayland
 
 		public override bool IsClosed()
 		{
-			return isClosed;
+			return Orbital_Host_Wayland_Window_IsClosed(handle) != 0;
 		}
 
 		public override Size2 GetSize()
 		{
-			// TODO
-			return new Size2();
+			Size2 result;
+			Orbital_Host_Wayland_Window_GetSize(handle, &result.width, &result.height);
+			return result;
 		}
 	}
 }

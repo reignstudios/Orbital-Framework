@@ -14,8 +14,7 @@ namespace Orbital.Demo.Wayland
             window.Show();
             
             // run app till quit
-            //Application.Run(window);
-            Application.Run();
+            Application.Run(window);
             Application.Shutdown();
         }
     }
