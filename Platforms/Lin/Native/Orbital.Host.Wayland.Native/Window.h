@@ -64,3 +64,5 @@ struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app);
 int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID);
 void Orbital_Host_Wayland_Window_Dispose(struct Window* window);
 void Orbital_Host_Wayland_Window_SetTitle(struct Window* window, char* title);
+void Orbital_Host_Wayland_Window_Show(struct Window* window);
+int Orbital_Host_Wayland_Window_IsClosed(struct Window* window);

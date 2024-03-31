@@ -14,7 +14,8 @@ add_library(Orbital_Host_Wayland_Native_Shared SHARED
         Window.h
         Display.c
         Display.h
-        Common.h)
+        Common.h
+        Display.h)
 set_property(TARGET Orbital_Host_Wayland_Native_Shared PROPERTY OUTPUT_NAME Orbital_Host_Wayland_Native)
 
 add_library(Orbital_Host_Wayland_Native_Static STATIC

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "Application.h"
+#include "Display.h"
 
 int main()
 {
@@ -21,6 +22,16 @@ int main()
         return 0;
     }
     Orbital_Host_Wayland_Window_SetTitle(window, "Test Window");
+    Orbital_Host_Wayland_Window_Show(window);
+
+    // get displays
+    struct Screen screen;
+    Orbital_Host_Wayland_Display_GetPrimaryDisplay(app, &screen);
+
+    int screenCount;
+    Orbital_Host_Wayland_Display_GetDisplayCount(app, &screenCount);
+    struct Screen* screens = malloc(screenCount * sizeof(struct Screen));
+    Orbital_Host_Wayland_Display_GetDisplays(app, &screens);
 
     // run
     Orbital_Host_Wayland_Application_Run(app);
