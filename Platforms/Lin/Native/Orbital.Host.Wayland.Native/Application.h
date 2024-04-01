@@ -38,10 +38,11 @@ typedef struct Application
     struct wl_output* output;
     struct xdg_wm_base* wmBase;
     struct zxdg_decoration_manager_v1* decorationManager;
+    struct wp_content_type_v1* contentType;
 }Application;
 
 struct Application* Orbital_Host_Wayland_Application_Create();
-int Orbital_Host_Wayland_Application_Init(struct Application* app);
+int Orbital_Host_Wayland_Application_Init(struct Application* app, enum wp_content_type_v1_type type);
 void Orbital_Host_Wayland_Application_Shutdown(struct Application* app);
 void Orbital_Host_Wayland_Application_Run(struct Application* app);
 int Orbital_Host_Wayland_Application_RunEvents(struct Application* app);

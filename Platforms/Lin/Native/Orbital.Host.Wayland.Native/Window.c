@@ -3,7 +3,6 @@
 
 #define DECORATIONS_BAR_SIZE 8
 #define DECORATIONS_TOPBAR_SIZE 32
-#define DECORATIONS_BUTTON_SIZE 32
 
 Rect CreateRect(int x, int y, int width, int height)
 {
@@ -65,33 +64,34 @@ void DrawButtons(struct Window* window)
     uint32_t* pixels = window->surfaceBuffer.pixels;
     int pixelWidth = window->surfaceBuffer.width;
     int pixelBufferSize = window->surfaceBuffer.size;
+    uint32_t blackColor = ToColor(0, 0, 0, 255);
 
     int x = window->compositeWidth - (24 + 4);
     Rect rect = window->clientRect_ButtonClose;
     BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(255, 0, 0, 255));
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 3, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 2
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 5, rect.y + 4, 1, 1, 16, ToColor(0, 0, 0, 255));// cross-right 3
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 18, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 17, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 2
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, -1, 1, 16, ToColor(0, 0, 0, 255));// cross-left 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 1, 16, blackColor);// cross-right
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 3, rect.y + 4, 1, 1, 16, blackColor);// cross-right 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 5, rect.y + 4, 1, 1, 16, blackColor);// cross-right 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 18, rect.y + 4, -1, 1, 16, blackColor);// cross-left
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 17, rect.y + 4, -1, 1, 16, blackColor);// cross-left 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, -1, 1, 16, blackColor);// cross-left 3
 
     x -= 24 + 4;
     rect = window->clientRect_ButtonMax;
     BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 255, 0, 255));
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// bottom
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 0, 16, ToColor(0, 0, 0, 255));// top
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 5, 1, 0, 16, ToColor(0, 0, 0, 255));// top 2
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 6, 1, 0, 16, ToColor(0, 0, 0, 255));// top 3
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// left
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, 0, 1, 16, ToColor(0, 0, 0, 255));// right
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, blackColor);// bottom
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 0, 16, blackColor);// top
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 5, 1, 0, 16, blackColor);// top 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 6, 1, 0, 16, blackColor);// top 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 0, 1, 16, blackColor);// left
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, 0, 1, 16, blackColor);// right
 
     x -= 24 + 4;
     rect = window->clientRect_ButtonMin;
     BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 0, 255, 255));
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, ToColor(0, 0, 0, 255));// line
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 19, 1, 0, 16, ToColor(0, 0, 0, 255));// line 2
-    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 18, 1, 0, 16, ToColor(0, 0, 0, 255));// line 3
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, blackColor);// line
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 19, 1, 0, 16, blackColor);// line 2
+    BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 18, 1, 0, 16, blackColor);// line 3
 }
 
 int CreateSurfaceBuffer(struct wl_shm* shm, struct SurfaceBuffer* buffer, struct wl_surface* surface, char* name, uint32_t color)

@@ -36,7 +36,13 @@ void registry_add_object(void *data, struct wl_registry *registry, uint32_t name
     // required for SSD
     else if (strcmp(interface, zxdg_decoration_manager_v1_interface.name) == 0)
     {
-        app->decorationManager = wl_registry_bind(registry, name, &zxdg_decoration_manager_v1_interface, 1);
+        app->decorationManager = (struct zxdg_decoration_manager_v1*)wl_registry_bind(registry, name, &zxdg_decoration_manager_v1_interface, 1);
+    }
+
+    // content type
+    else if (strcmp(interface, wp_content_type_v1_interface.name) == 0)
+    {
+        app->contentType = (struct wp_content_type_v1*)wl_registry_bind(registry, name, &wp_content_type_v1_interface, 1);
     }
 }
 
@@ -168,7 +174,7 @@ struct wl_registry_listener registry_listener = {.global = &registry_add_object,
 struct wl_seat_listener seat_listener = {.capabilities = &seat_capabilities};
 struct wl_output_listener output_listener = {.geometry = screen_geometry, .mode = &screen_mode, .done = &screen_done, .scale = screen_scale};
 struct xdg_wm_base_listener xdg_wm_base_listener = {.ping = xdg_wm_base_ping};
-int Orbital_Host_Wayland_Application_Init(struct Application* app)
+int Orbital_Host_Wayland_Application_Init(struct Application* app, enum wp_content_type_v1_type type)
 {
     // get display
     app->display = wl_display_connect(NULL);
@@ -204,6 +210,12 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
 
     // add window manager base listener
     xdg_wm_base_add_listener(app->wmBase, &xdg_wm_base_listener, app);
+
+    // content type
+    if (app->contentType != NULL)
+    {
+        wp_content_type_v1_set_content_type(app->contentType, type);
+    }
 
     // finish
     wl_display_flush(app->display);

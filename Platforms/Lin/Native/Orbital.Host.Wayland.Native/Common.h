@@ -9,14 +9,19 @@
 #include <fcntl.h>
 #include <errno.h>
 
+// wayland
 #include <wayland-util.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
 #include <wayland-client.h>
 //#include <wayland-egl.h>
 #include <wayland-cursor.h>
+
+// wayland protocals
 #include "xdg-shell-client-protocol.h"
 #include "xdg-decoration-unstable-v1.h"
+#include "content-type-v1.h"
+
 #include <linux/input.h>
 #include <math.h>
 

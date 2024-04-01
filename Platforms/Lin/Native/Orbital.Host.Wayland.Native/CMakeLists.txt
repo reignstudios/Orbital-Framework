@@ -9,6 +9,7 @@ set(CMAKE_C_COMPILER /bin/gcc)
 add_library(Orbital_Host_Wayland_Native_Shared SHARED
         xdg-shell-client-protocol.c
         xdg-decoration-unstable-v1.c
+        content-type-v1.c
         Application.c
         Window.c
         Window.h
@@ -21,6 +22,7 @@ set_property(TARGET Orbital_Host_Wayland_Native_Shared PROPERTY OUTPUT_NAME Orbi
 add_library(Orbital_Host_Wayland_Native_Static STATIC
         xdg-shell-client-protocol.c
         xdg-decoration-unstable-v1.c
+        content-type-v1.c
         Application.c
         Window.c
         Window.h
