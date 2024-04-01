@@ -313,7 +313,7 @@ void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t seri
                     xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM_RIGHT);
                 }
 
-                    // resize edges
+                // resize edges
                 else if (WithinRect(window->clientRect_Resize_BottomBar, mouseX, mouseY))
                 {
                     xdg_toplevel_resize(window->xdgToplevel, seat, serial, XDG_TOPLEVEL_RESIZE_EDGE_BOTTOM);

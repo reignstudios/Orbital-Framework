@@ -127,7 +127,7 @@ void screen_mode(void *data, struct wl_output *wl_output, uint32_t flags, int32_
     if (app->screenCaptureDone)
     {
         app->screenCaptureDone = 0;
-        app->windowCount = 0;
+        app->screenCount = 0;
         if (app->screens != NULL)
         {
             free(app->screens);
