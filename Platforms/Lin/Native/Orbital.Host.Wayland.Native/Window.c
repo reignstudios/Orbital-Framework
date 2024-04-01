@@ -475,18 +475,10 @@ struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app)
     struct Window* window = calloc(1, sizeof(Window));
     window->app = app;
 
-    // copy app windows to new list
-    struct Window** currentWindows = app->windows;
-    app->windows = (struct Window**)malloc((app->windowCount + 1) * sizeof(struct Window*));
-    for (int i = 0; i != app->windowCount; ++i)
-    {
-        app->windows[i] = currentWindows[i];
-    }
+    // add window to app list
+    if (app->windows == NULL) app->windows = (struct Window**)malloc((app->windowCount + 1) * sizeof(struct Window*));
+    else app->windows = (struct Window**)realloc(app->windows, (app->windowCount + 1) * sizeof(struct Window*));
 
-    // free old window list
-    if (currentWindows != NULL) free(currentWindows);
-
-    // add new window
     app->windows[app->windowCount] = window;
     app->windowCount++;
 
