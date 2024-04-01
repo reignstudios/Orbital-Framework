@@ -2,7 +2,7 @@
 #include "Application.h"
 
 #define DECORATIONS_BAR_SIZE 8
-#define DECORATIONS_TOPBAR_SIZE 32
+#define DECORATIONS_TOPBAR_SIZE 38
 
 Rect CreateRect(int x, int y, int width, int height)
 {
@@ -66,9 +66,8 @@ void DrawButtons(struct Window* window)
     int pixelBufferSize = window->surfaceBuffer.size;
     uint32_t blackColor = ToColor(0, 0, 0, 255);
 
-    int x = window->compositeWidth - (24 + 4);
     Rect rect = window->clientRect_ButtonClose;
-    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(255, 0, 0, 255));
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(200, 0, 0, 255));
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 1, 16, blackColor);// cross-right
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 3, rect.y + 4, 1, 1, 16, blackColor);// cross-right 2
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 5, rect.y + 4, 1, 1, 16, blackColor);// cross-right 3
@@ -76,9 +75,8 @@ void DrawButtons(struct Window* window)
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 17, rect.y + 4, -1, 1, 16, blackColor);// cross-left 2
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, -1, 1, 16, blackColor);// cross-left 3
 
-    x -= 24 + 4;
     rect = window->clientRect_ButtonMax;
-    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 255, 0, 255));
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(200, 200, 200, 255));
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, blackColor);// bottom
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 1, 0, 16, blackColor);// top
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 5, 1, 0, 16, blackColor);// top 2
@@ -86,9 +84,8 @@ void DrawButtons(struct Window* window)
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 4, 0, 1, 16, blackColor);// left
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 19, rect.y + 4, 0, 1, 16, blackColor);// right
 
-    x -= 24 + 4;
     rect = window->clientRect_ButtonMin;
-    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(0, 0, 255, 255));
+    BlitRect(pixels, pixelWidth, pixelBufferSize, rect.x, rect.y, rect.width, rect.height, ToColor(200, 200, 200, 255));
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 20, 1, 0, 16, blackColor);// line
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 19, 1, 0, 16, blackColor);// line 2
     BlitLine(pixels, pixelWidth, pixelBufferSize, rect.x + 4, rect.y + 18, 1, 0, 16, blackColor);// line 3
@@ -179,12 +176,13 @@ void SetWindowSize(struct Window* window, int width, int height)
         window->clientRect_Resize_BottomLeft = CreateRect(0, window->compositeHeight - DECORATIONS_BAR_SIZE, DECORATIONS_BAR_SIZE, DECORATIONS_BAR_SIZE);
         window->clientRect_Resize_BottomRight = CreateRect(window->compositeWidth - DECORATIONS_BAR_SIZE, window->compositeHeight - DECORATIONS_BAR_SIZE, DECORATIONS_BAR_SIZE, DECORATIONS_BAR_SIZE);
 
-        int x = window->compositeWidth - (24 + 4);
-        window->clientRect_ButtonClose = CreateRect(x, 4, 24, 24);
+        int x = window->compositeWidth - (24 + 8);
+        int y = 8;
+        window->clientRect_ButtonClose = CreateRect(x, y, 24, 24);
         x -= 24 + 4;
-        window->clientRect_ButtonMax = CreateRect(x, 4, 24, 24);
+        window->clientRect_ButtonMax = CreateRect(x, y, 24, 24);
         x -= 24 + 4;
-        window->clientRect_ButtonMin = CreateRect(x, 4, 24, 24);
+        window->clientRect_ButtonMin = CreateRect(x, y, 24, 24);
     }
     else
     {
