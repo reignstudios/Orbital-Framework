@@ -8,6 +8,15 @@ typedef struct Rect
     int x, y, width, height;
 }Rect;
 
+enum WindowType
+{
+    WindowType_Standard,
+    WindowType_Tool,
+    WindowType_Borderless,
+    WindowType_Fullscreen,
+    ENUM_BIT
+};
+
 typedef struct SurfaceBuffer
 {
     int width, height;
@@ -23,6 +32,8 @@ typedef struct SurfaceBuffer
 typedef struct Window
 {
     struct Application* app;
+    enum WindowType type;
+    int useClientDecorations;
     int isClosed, isMaximized;
     int width, height;
     int compositeWidth, compositeHeight;
@@ -61,7 +72,7 @@ void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t seri
 void window_pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value);
 
 struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app);
-int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID);
+int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type);
 void Orbital_Host_Wayland_Window_Dispose(struct Window* window);
 void Orbital_Host_Wayland_Window_SetTitle(struct Window* window, char* title);
 void Orbital_Host_Wayland_Window_Show(struct Window* window);

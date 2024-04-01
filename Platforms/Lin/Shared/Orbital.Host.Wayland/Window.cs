@@ -12,7 +12,7 @@ namespace Orbital.Host.Wayland
 		private static extern IntPtr Orbital_Host_Wayland_Window_Create(IntPtr app);
 		
 		[DllImport(Application.lib, ExactSpelling = true)]
-		private static extern int Orbital_Host_Wayland_Window_Init(IntPtr window, int width, int height, byte* appID);
+		private static extern int Orbital_Host_Wayland_Window_Init(IntPtr window, int width, int height, byte* appID, WindowType type);
 		
 		[DllImport(Application.lib, ExactSpelling = true)]
 		private static extern void Orbital_Host_Wayland_Window_Dispose(IntPtr window);
@@ -49,7 +49,7 @@ namespace Orbital.Host.Wayland
 			handle = Orbital_Host_Wayland_Window_Create(Application.handle);
 			fixed (byte* appIDPtr = Application.appIDData)
 			{
-				if (Orbital_Host_Wayland_Window_Init(handle, width, height, appIDPtr) == 0)
+				if (Orbital_Host_Wayland_Window_Init(handle, width, height, appIDPtr, type) == 0)
 				{
 					throw new Exception("Failed: Orbital_Host_Wayland_Window_Init");
 				}

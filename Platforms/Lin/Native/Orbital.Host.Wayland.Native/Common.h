@@ -25,4 +25,4 @@
 #include <linux/input.h>
 #include <math.h>
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define ENUM_BIT INT_MAX// ensures enums compile as 32-bit regardess of C compiler
