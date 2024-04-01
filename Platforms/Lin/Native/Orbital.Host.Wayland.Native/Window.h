@@ -38,6 +38,10 @@ typedef struct Window
     int width, height;
     int compositeWidth, compositeHeight;
 
+    // content type
+    enum wp_content_type_v1_type contentTypeType;
+    struct wp_content_type_v1* contentType;
+
     // primary surface data
     struct xdg_toplevel* xdgToplevel;
     struct xdg_surface* xdgSurface;
@@ -72,7 +76,7 @@ void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t seri
 void window_pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value);
 
 struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app);
-int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type);
+int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type, enum wp_content_type_v1_type contentType);
 void Orbital_Host_Wayland_Window_Dispose(struct Window* window);
 void Orbital_Host_Wayland_Window_SetTitle(struct Window* window, char* title);
 void Orbital_Host_Wayland_Window_Show(struct Window* window);

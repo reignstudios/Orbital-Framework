@@ -11,6 +11,11 @@ namespace Orbital.Host.API
 		public bool boarderlessIsSplash;
 	}
 	
+	public struct WindowDesc_Wayland
+	{
+		public Wayland.WindowContentType contentType;
+	}
+	
 	public struct WindowDesc_GTK3
 	{
 		public bool boarderlessIsSplash;
@@ -22,6 +27,7 @@ namespace Orbital.Host.API
 		public WindowType type;
 		public WindowStartupPosition startupPosition;
 		public WindowDesc_X11 x11;
+		public WindowDesc_Wayland wayland;
 		public WindowDesc_GTK3 gtk3;
 	}
 	
@@ -41,7 +47,7 @@ namespace Orbital.Host.API
 					break;
 				
 				case ApplicationAPI.Wayland:
-					window = new Wayland.Window(desc.width, desc.height, desc.type, desc.startupPosition);
+					window = new Wayland.Window(desc.width, desc.height, desc.type, desc.startupPosition, desc.wayland.contentType);
 					break;
 				
 				case ApplicationAPI.GTK3:

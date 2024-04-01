@@ -16,7 +16,7 @@ int main()
 
     // init window
     struct Window* window = Orbital_Host_Wayland_Window_Create(app);
-    if (!Orbital_Host_Wayland_Window_Init(window, 320, 240, "com.Reign-Studios.Orbital"))
+    if (!Orbital_Host_Wayland_Window_Init(window, 320, 240, "com.Reign-Studios.Orbital", WindowType_Standard, WP_CONTENT_TYPE_V1_TYPE_NONE))
     {
         printf("Failed: Orbital_Host_Wayland_Window_Init");
         return 0;

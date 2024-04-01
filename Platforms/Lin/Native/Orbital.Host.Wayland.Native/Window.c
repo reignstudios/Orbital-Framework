@@ -488,7 +488,7 @@ struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app)
 struct xdg_surface_listener xdg_surface_listener = {.configure = xdg_surface_handle_configure};
 struct xdg_toplevel_listener xdg_toplevel_listener = {.configure_bounds = xdg_toplevelconfigure_bounds, .configure = xdg_toplevel_handle_configure, .close = xdg_toplevel_handle_close};
 struct zxdg_toplevel_decoration_v1_listener decoration_listener = {.configure = decoration_configure};
-int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type)
+int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type, enum wp_content_type_v1_type contentTypeType)
 {
     window->type = type;
     window->useClientDecorations = window->app->useClientDecorations && (type == WindowType_Standard || type == WindowType_Tool);
@@ -529,6 +529,15 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
         DrawButtons(window);
     }
 
+    // content type
+    window->contentTypeType = contentTypeType;
+    if (window->app->contentTypeManager != NULL)
+    {
+        if (!window->useClientDecorations) window->contentType = wp_content_type_manager_v1_get_surface_content_type(window->app->contentTypeManager, window->surface);
+        else window->contentType = wp_content_type_manager_v1_get_surface_content_type(window->app->contentTypeManager, window->clientSurface);
+        wp_content_type_v1_set_content_type(window->contentType, contentTypeType);
+    }
+
     return 1;
 }
 
@@ -558,6 +567,9 @@ void Orbital_Host_Wayland_Window_Dispose(struct Window* window)
 
     // dispose decoration
     if (window->decoration != NULL) zxdg_toplevel_decoration_v1_destroy(window->decoration);
+
+    // content type
+    if (window->contentType != NULL) wp_content_type_v1_destroy(window->contentType);
 
     // finish
     free(window);

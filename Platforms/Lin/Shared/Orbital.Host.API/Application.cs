@@ -14,17 +14,11 @@ namespace Orbital.Host.API
 		GTK3 = 4,
 		GTK4 = 8
 	}
-
-	public struct ApplicationDesc_Wayland
-	{
-		public Wayland.ApplicationType type;
-	}
 	
 	public struct ApplicationDesc
 	{
 		public ApplicationAPI supportedAPIs;
 		public string appID;
-		public ApplicationDesc_Wayland wayland;
 	}
 	
 	public static class Application
@@ -33,10 +27,20 @@ namespace Orbital.Host.API
 		
 		public static void Init(ApplicationDesc desc)
 		{
-			// check if session in Gnome3 or higher
-			bool isGnome = false;
 			string session = Environment.GetEnvironmentVariable("DESKTOP_SESSION");
-			if (!string.IsNullOrEmpty(session) && session.StartsWith("gnome"))
+			if (session != null) Console.WriteLine("Desktop Session type: " + session);
+			
+			string sessionType = Environment.GetEnvironmentVariable("XDG_SESSION_TYPE");
+			bool isWaylandSession = false;
+			if (sessionType != null)
+			{
+				Console.WriteLine("XDG Session type: " + sessionType);
+				isWaylandSession = sessionType.StartsWith("wayland");
+			}
+			
+			// check if session in Gnome3 or higher
+			bool isGnome3Plus = false;
+			try
 			{
 				using (var process = new Process())
 				{
@@ -46,6 +50,7 @@ namespace Orbital.Host.API
 					process.Start();
 					process.WaitForExit();
 					string result = process.StandardOutput.ReadLine();
+					Console.WriteLine("Gnome Shell version: " + result);
 					var values = result.Split(' ');
 					if (values.Length >= 3 && values[0] == "GNOME" && values[1] == "Shell")
 					{
@@ -53,17 +58,20 @@ namespace Orbital.Host.API
 						int majorVersion;
 						if (int.TryParse(version[0].ToString(), out majorVersion))
 						{
-							isGnome = majorVersion >= 3;
+							isGnome3Plus = majorVersion >= 3;
 						}
 					}
 				}
 			}
+			catch {}
+			Console.WriteLine("Is Gnome3+: " + isGnome3Plus.ToString());
 
 			// choose GTK if gnome is being used
 			bool supportsGTK3 = (desc.supportedAPIs & ApplicationAPI.GTK3) != 0;
 			bool supportsGTK4 = (desc.supportedAPIs & ApplicationAPI.GTK4) != 0;
-			if (isGnome && (supportsGTK3 || supportsGTK4))
+			if (isGnome3Plus && isWaylandSession && (supportsGTK3 || supportsGTK4))
 			{
+				// try gtk4
 				if (supportsGTK4)
 				{
 					try
@@ -79,6 +87,7 @@ namespace Orbital.Host.API
 					}
 				}
 				
+				// try gkt3
 				if (supportsGTK3)
 				{
 					try
@@ -96,29 +105,35 @@ namespace Orbital.Host.API
 			}
 			
 			// try wayland
-			try
+			if ((desc.supportedAPIs & ApplicationAPI.Wayland) != 0)
 			{
-				Wayland.Application.Init(desc.appID, desc.wayland.type);
-				api = ApplicationAPI.Wayland;
-				return;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("Wayland not available");
-				Wayland.Application.Shutdown();
+				try
+				{
+					Wayland.Application.Init(desc.appID);
+					api = ApplicationAPI.Wayland;
+					return;
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine("Wayland not available");
+					Wayland.Application.Shutdown();
+				}
 			}
 			
 			// try x11
-			try
+			if ((desc.supportedAPIs & ApplicationAPI.X11) != 0)
 			{
-				X11.Application.Init();
-				api = ApplicationAPI.X11;
-				return;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine("X11 not available");
-				X11.Application.Shutdown();
+				try
+				{
+					X11.Application.Init();
+					api = ApplicationAPI.X11;
+					return;
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine("X11 not available");
+					X11.Application.Shutdown();
+				}
 			}
 
 			throw new Exception("Failed to init any available API");

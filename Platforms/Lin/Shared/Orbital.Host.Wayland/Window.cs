@@ -6,13 +6,43 @@ using Orbital.Numerics;
 
 namespace Orbital.Host.Wayland
 {
+	public enum WindowContentType
+	{
+		/// <summary>
+		/// The content type none means that either the application has no
+		/// data about the content type, or that the content doesn't fit
+		/// into one of the other categories.
+		/// </summary>
+		None,
+		
+		/// <summary>
+		/// The content type photo describes content derived from digital
+		/// still pictures and may be presented with minimal processing.
+		/// </summary>
+		Photo,
+		
+		/// <summary>
+		/// The content type video describes a video or animation and may
+		/// be presented with more accurate timing to avoid stutter. Where
+		/// scaling is needed, scaling methods more appropriate for video
+		/// may be used.
+		/// </summary>
+		Video,
+		
+		/// <summary>
+		/// The content type game describes a running game. Its content
+		/// may be presented with reduced latency.
+		/// </summary>
+		Game
+	}
+	
 	public unsafe sealed class Window : WindowBase
 	{
 		[DllImport(Application.lib, ExactSpelling = true)]
 		private static extern IntPtr Orbital_Host_Wayland_Window_Create(IntPtr app);
 		
 		[DllImport(Application.lib, ExactSpelling = true)]
-		private static extern int Orbital_Host_Wayland_Window_Init(IntPtr window, int width, int height, byte* appID, WindowType type);
+		private static extern int Orbital_Host_Wayland_Window_Init(IntPtr window, int width, int height, byte* appID, WindowType type, WindowContentType contentTypeType);
 		
 		[DllImport(Application.lib, ExactSpelling = true)]
 		private static extern void Orbital_Host_Wayland_Window_Dispose(IntPtr window);
@@ -34,22 +64,22 @@ namespace Orbital.Host.Wayland
 
 		public IntPtr handle { get; private set; }
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
 		{
-			Init(size.width, size.height, type, startupPosition);
+			Init(size.width, size.height, type, startupPosition, contentType);
 		}
 
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
 		{
-			Init(width, height, type, startupPosition);
+			Init(width, height, type, startupPosition, contentType);
 		}
 
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
 		{
 			handle = Orbital_Host_Wayland_Window_Create(Application.handle);
 			fixed (byte* appIDPtr = Application.appIDData)
 			{
-				if (Orbital_Host_Wayland_Window_Init(handle, width, height, appIDPtr, type) == 0)
+				if (Orbital_Host_Wayland_Window_Init(handle, width, height, appIDPtr, type, contentType) == 0)
 				{
 					throw new Exception("Failed: Orbital_Host_Wayland_Window_Init");
 				}
