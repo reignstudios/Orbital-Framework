@@ -12,17 +12,17 @@ namespace Orbital.Host.GTK4
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
+		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(size.width, size.height, type, startupPosition, borderlessIsSplash);
+			Init(size.width, size.height, type, startupPosition);
 		}
 
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
+		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
-			Init(width, height, type, startupPosition, borderlessIsSplash);
+			Init(width, height, type, startupPosition);
 		}
 
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
+		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			var data = new CallbackData()
 			{

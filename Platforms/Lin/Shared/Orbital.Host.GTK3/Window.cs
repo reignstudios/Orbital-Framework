@@ -29,7 +29,8 @@ namespace Orbital.Host.GTK3
 				width = width,
 				height = height,
 				type = type,
-				startupPosition = startupPosition
+				startupPosition = startupPosition,
+				borderlessIsSplash = borderlessIsSplash
 			};
 			
 			// create window
@@ -52,6 +53,7 @@ namespace Orbital.Host.GTK3
 			public int width, height;
 			public WindowType type;
 			public WindowStartupPosition startupPosition;
+			public bool borderlessIsSplash;
 		}
 
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -79,6 +81,7 @@ namespace Orbital.Host.GTK3
 					break;
 				
 				case WindowType.Borderless:
+					if (data->borderlessIsSplash) GTK3.gtk_window_set_type_hint(data->handle, GTK3.GdkWindowTypeHint.GDK_WINDOW_TYPE_HINT_SPLASHSCREEN);
 					GTK3.gtk_window_set_decorated(data->handle, 0);
 					GTK3.gtk_window_set_resizable(data->handle, 0);
 					break;

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Host.API\Application.cs">
+        <Link>Application.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Shared\Orbital.Host.API\Display.cs">
+        <Link>Display.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Shared\Orbital.Host.API\Window.cs">
+        <Link>Window.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj" />
+      <ProjectReference Include="..\Orbital.Host.GTK3\Orbital.Host.GTK3.csproj" />
+      <ProjectReference Include="..\Orbital.Host.GTK4\Orbital.Host.GTK4.csproj" />
+      <ProjectReference Include="..\Orbital.Host.Wayland\Orbital.Host.Wayland.csproj" />
+      <ProjectReference Include="..\Orbital.Host.X11\Orbital.Host.X11.csproj" />
+    </ItemGroup>
+
+</Project>
