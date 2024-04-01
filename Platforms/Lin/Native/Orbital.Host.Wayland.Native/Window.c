@@ -533,6 +533,7 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
     window->contentTypeType = contentTypeType;
     if (window->app->contentTypeManager != NULL)
     {
+        printf("Orbital.Wayland Window ContentType set: %d\n", contentTypeType);
         if (!window->useClientDecorations) window->contentType = wp_content_type_manager_v1_get_surface_content_type(window->app->contentTypeManager, window->surface);
         else window->contentType = wp_content_type_manager_v1_get_surface_content_type(window->app->contentTypeManager, window->clientSurface);
         wp_content_type_v1_set_content_type(window->contentType, contentTypeType);

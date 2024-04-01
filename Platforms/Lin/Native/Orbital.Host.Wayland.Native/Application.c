@@ -180,7 +180,7 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
     app->display = wl_display_connect(NULL);
     if(!app->display)
     {
-        printf("Cannot connect to Wayland server");
+        printf("Cannot connect to Wayland server\n");
         return 0;
     }
 

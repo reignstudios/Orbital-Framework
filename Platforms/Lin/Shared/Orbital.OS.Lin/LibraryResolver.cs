@@ -108,11 +108,14 @@ namespace Orbital.OS.Lin
                 }
             }
 
-            // add highest version to library
-            libraryName += "." + highestVersionValue;
-            
-            // finish
-            return NativeLibrary.Load(libraryName);
+            // load highest version to library
+            try
+            {
+                return NativeLibrary.Load(libraryName + "." + highestVersionValue);
+            }
+            catch {}
+
+            throw new Exception("Failed to load or resolve library: " + libraryName);
         }
     }
 }

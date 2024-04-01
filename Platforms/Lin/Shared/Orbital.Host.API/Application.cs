@@ -28,13 +28,13 @@ namespace Orbital.Host.API
 		public static void Init(ApplicationDesc desc)
 		{
 			string session = Environment.GetEnvironmentVariable("DESKTOP_SESSION");
-			if (session != null) Console.WriteLine("Desktop Session type: " + session);
+			if (session != null) Console.WriteLine("Orbital.Host.API: Desktop Session type: " + session);
 			
 			string sessionType = Environment.GetEnvironmentVariable("XDG_SESSION_TYPE");
 			bool isWaylandSession = false;
 			if (sessionType != null)
 			{
-				Console.WriteLine("XDG Session type: " + sessionType);
+				Console.WriteLine("Orbital.Host.API: XDG Session type: " + sessionType);
 				isWaylandSession = sessionType.StartsWith("wayland");
 			}
 			
@@ -50,7 +50,7 @@ namespace Orbital.Host.API
 					process.Start();
 					process.WaitForExit();
 					string result = process.StandardOutput.ReadLine();
-					Console.WriteLine("Gnome Shell version: " + result);
+					Console.WriteLine("Orbital.Host.API: Gnome Shell version: " + result);
 					var values = result.Split(' ');
 					if (values.Length >= 3 && values[0] == "GNOME" && values[1] == "Shell")
 					{
@@ -64,7 +64,7 @@ namespace Orbital.Host.API
 				}
 			}
 			catch {}
-			Console.WriteLine("Is Gnome3+: " + isGnome3Plus.ToString());
+			Console.WriteLine("Orbital.Host.API: Is Gnome3+: " + isGnome3Plus.ToString());
 
 			// choose GTK if gnome is being used
 			bool supportsGTK3 = (desc.supportedAPIs & ApplicationAPI.GTK3) != 0;
@@ -82,7 +82,7 @@ namespace Orbital.Host.API
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine("GTK4 not available");
+						Console.WriteLine("Orbital.Host.API: GTK4 not available");
 						GTK4.Application.Shutdown();
 					}
 				}
@@ -98,7 +98,7 @@ namespace Orbital.Host.API
 					}
 					catch (Exception e)
 					{
-						Console.WriteLine("GTK3 not available");
+						Console.WriteLine("Orbital.Host.API: GTK3 not available");
 						GTK3.Application.Shutdown();
 					}
 				}
@@ -115,7 +115,7 @@ namespace Orbital.Host.API
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine("Wayland not available");
+					Console.WriteLine("Orbital.Host.API: Wayland not available");
 					Wayland.Application.Shutdown();
 				}
 			}
@@ -131,7 +131,7 @@ namespace Orbital.Host.API
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine("X11 not available");
+					Console.WriteLine("Orbital.Host.API: X11 not available");
 					X11.Application.Shutdown();
 				}
 			}
