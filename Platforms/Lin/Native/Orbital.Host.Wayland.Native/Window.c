@@ -4,6 +4,8 @@
 #define DECORATIONS_BAR_SIZE 8
 #define DECORATIONS_TOPBAR_SIZE 38
 
+#define WINDOW_MIN_SIZE 100
+
 Rect CreateRect(int x, int y, int width, int height)
 {
     Rect rect;
@@ -426,7 +428,7 @@ void xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *xdg_toplevel
     // resize window
     if (activated || resizing || maximized || fullscreen || currentMaximized != window->isMaximized)
     {
-        if (width >= 100 && height >= 100 && (window->compositeWidth != width || window->compositeHeight != height))
+        if (width >= 1 && height >= 1 && (window->compositeWidth != width || window->compositeHeight != height))
         {
             int clientWidth = width;
             int clientHeight = height;
@@ -507,7 +509,19 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
     window->xdgToplevel = xdg_surface_get_toplevel(window->xdgSurface);
     xdg_toplevel_add_listener(window->xdgToplevel, &xdg_toplevel_listener, window);
     xdg_toplevel_set_app_id(window->xdgToplevel, appID);
-    xdg_toplevel_set_min_size(window->xdgToplevel, 100, 100);// window should never go below 100
+    if (type == WindowType_Fullscreen)
+    {
+        xdg_toplevel_set_fullscreen(window->xdgToplevel, window->app->output);
+    }
+    else if (type == WindowType_Tool || type == WindowType_Borderless)
+    {
+        xdg_toplevel_set_min_size(window->xdgToplevel, width, height);
+        xdg_toplevel_set_max_size(window->xdgToplevel, width, height);
+    }
+    else
+    {
+        xdg_toplevel_set_min_size(window->xdgToplevel, WINDOW_MIN_SIZE, WINDOW_MIN_SIZE);// default window should never go below this size
+    }
 
     // get server-side decorations
     if (!window->useClientDecorations && window->app->decorationManager != NULL)
