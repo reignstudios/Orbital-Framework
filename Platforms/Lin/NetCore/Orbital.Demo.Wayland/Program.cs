@@ -9,7 +9,7 @@ namespace Orbital.Demo.Wayland
         {
             // init app and window
             Application.Init("org.ReignStudios.Orbital");
-            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, WindowContentType.None);
+            var window = new Window(320, 240, WindowType.Borderless, WindowStartupPosition.CenterScreen, WindowContentType.None);
             window.SetTitle("Demo: Wayland");
             window.Show();
             

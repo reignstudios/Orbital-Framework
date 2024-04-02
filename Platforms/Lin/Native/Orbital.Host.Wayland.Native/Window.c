@@ -509,19 +509,6 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
     window->xdgToplevel = xdg_surface_get_toplevel(window->xdgSurface);
     xdg_toplevel_add_listener(window->xdgToplevel, &xdg_toplevel_listener, window);
     xdg_toplevel_set_app_id(window->xdgToplevel, appID);
-    if (type == WindowType_Fullscreen)
-    {
-        xdg_toplevel_set_fullscreen(window->xdgToplevel, window->app->output);
-    }
-    else if (type == WindowType_Tool || type == WindowType_Borderless)
-    {
-        xdg_toplevel_set_min_size(window->xdgToplevel, width, height);
-        xdg_toplevel_set_max_size(window->xdgToplevel, width, height);
-    }
-    else
-    {
-        xdg_toplevel_set_min_size(window->xdgToplevel, WINDOW_MIN_SIZE, WINDOW_MIN_SIZE);// default window should never go below this size
-    }
 
     // get server-side decorations
     if (!window->useClientDecorations && window->app->decorationManager != NULL)
@@ -541,6 +528,27 @@ int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int heigh
         wl_subsurface_set_position(window->clientSubSurface, DECORATIONS_BAR_SIZE, DECORATIONS_TOPBAR_SIZE);
         if (CreateSurfaceBuffer(window->app->shm, &window->clientSurfaceBuffer, window->clientSurface, "Orbital_Wayland_ClientSurface", ToColor(255, 255, 255, 255)) != 1) return 0;
         DrawButtons(window);
+    }
+
+    // config window settings
+    if (type == WindowType_Fullscreen)
+    {
+        xdg_toplevel_set_fullscreen(window->xdgToplevel, window->app->output);
+    }
+    else if (type == WindowType_Standard)
+    {
+        xdg_toplevel_set_min_size(window->xdgToplevel, WINDOW_MIN_SIZE, WINDOW_MIN_SIZE);// default window should never go below this size
+    }
+
+    if (type == WindowType_Fullscreen || type == WindowType_Borderless)
+    {
+        zxdg_toplevel_decoration_v1_set_mode(window->decoration, ZXDG_TOPLEVEL_DECORATION_V1_MODE_CLIENT_SIDE);
+    }
+
+    if (type == WindowType_Tool || type == WindowType_Borderless)
+    {
+        xdg_toplevel_set_min_size(window->xdgToplevel, width, height);
+        xdg_toplevel_set_max_size(window->xdgToplevel, width, height);
     }
 
     // content type
