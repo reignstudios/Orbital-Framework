@@ -3,7 +3,7 @@
 // ==========================================================
 // Wayland callbacks
 // ==========================================================
-void registry_add_object(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
+void registry_add_object_callback(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version)
 {
     Application* app = (Application*)data;
     if (!strcmp(interface,wl_compositor_interface.name))
@@ -46,58 +46,58 @@ void registry_add_object(void *data, struct wl_registry *registry, uint32_t name
     }
 }
 
-void registry_remove_object(void *data, struct wl_registry *registry, uint32_t name)
+void registry_remove_object_callback(void *data, struct wl_registry *registry, uint32_t name)
 {
     // do nothing...
 }
 
-void pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y)
+void pointer_enter_callback(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y)
 {
     struct Application* app = (struct Application*)data;
     for (int i = 0; i != app->windowCount; ++i)
     {
-        window_pointer_enter(app->windows[i], pointer, serial, surface, x, y);
+        window_pointer_enter_callback(app->windows[i], pointer, serial, surface, x, y);
     }
 }
 
-void pointer_leave(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface)
+void pointer_leave_callback(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface)
 {
     struct Application* app = (struct Application*)data;
     for (int i = 0; i != app->windowCount; ++i)
     {
-        window_pointer_leave(app->windows[i], pointer, serial, surface);
+        window_pointer_leave_callback(app->windows[i], pointer, serial, surface);
     }
 }
 
-void pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
+void pointer_motion_callback(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
 {
     struct Application* app = (struct Application*)data;
     for (int i = 0; i != app->windowCount; ++i)
     {
-        window_pointer_motion(app->windows[i], pointer, time, x, y);
+        window_pointer_motion_callback(app->windows[i], pointer, time, x, y);
     }
 }
 
-void pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
+void pointer_button_callback(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
 {
     struct Application* app = (struct Application*)data;
     for (int i = 0; i != app->windowCount; ++i)
     {
-        window_pointer_button(app->windows[i], pointer, serial, time, button, state);
+        window_pointer_button_callback(app->windows[i], pointer, serial, time, button, state);
     }
 }
 
-void pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
+void pointer_axis_callback(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
 {
     struct Application* app = (struct Application*)data;
     for (int i = 0; i != app->windowCount; ++i)
     {
-        window_pointer_axis(app->windows[i], pointer, time, axis, value);
+        window_pointer_axis_callback(app->windows[i], pointer, time, axis, value);
     }
 }
 
-struct wl_pointer_listener pointer_listener = {&pointer_enter, &pointer_leave, &pointer_motion, &pointer_button, &pointer_axis};
-void seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
+struct wl_pointer_listener pointer_listener = {&pointer_enter_callback, &pointer_leave_callback, &pointer_motion_callback, &pointer_button_callback, &pointer_axis_callback};
+void seat_capabilities_callback(void *data, struct wl_seat *seat, uint32_t capabilities)
 {
     struct Application* app = (struct Application*)data;
 
@@ -114,12 +114,12 @@ void seat_capabilities(void *data, struct wl_seat *seat, uint32_t capabilities)
     }
 }
 
-void screen_geometry(void *data, struct wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform)
+void output_geometry_callback(void *data, struct wl_output *wl_output, int32_t x, int32_t y, int32_t physical_width, int32_t physical_height, int32_t subpixel, const char *make, const char *model, int32_t transform)
 {
     // do nothing...
 }
 
-void screen_mode(void *data, struct wl_output *wl_output, uint32_t flags, int32_t width, int32_t height, int32_t refresh)
+void output_mode_callback(void *data, struct wl_output *wl_output, uint32_t flags, int32_t width, int32_t height, int32_t refresh)
 {
     struct Application* app = (struct Application*)data;
 
@@ -146,18 +146,18 @@ void screen_mode(void *data, struct wl_output *wl_output, uint32_t flags, int32_
     app->screens[app->screenCount - 1] = screen;
 }
 
-void screen_done(void *data, struct wl_output *wl_output)
+void output_done_callback(void *data, struct wl_output *wl_output)
 {
     struct Application* app = (struct Application*)data;
     app->screenCaptureDone = 1;
 }
 
-void screen_scale(void *data, struct wl_output *wl_output, int32_t factor)
+void output_scale_callback(void *data, struct wl_output *wl_output, int32_t factor)
 {
     // do nothing...
 }
 
-void xdg_wm_base_ping(void *data, struct xdg_wm_base *base, uint32_t serial)
+void wm_base_ping_callback(void *data, struct xdg_wm_base *base, uint32_t serial)
 {
     xdg_wm_base_pong(base, serial);
 }
@@ -170,10 +170,10 @@ struct Application* Orbital_Host_Wayland_Application_Create()
     return calloc(1, sizeof(Application));
 }
 
-struct wl_registry_listener registry_listener = {.global = &registry_add_object, .global_remove = &registry_remove_object};
-struct wl_seat_listener seat_listener = {.capabilities = &seat_capabilities};
-struct wl_output_listener output_listener = {.geometry = screen_geometry, .mode = &screen_mode, .done = &screen_done, .scale = screen_scale};
-struct xdg_wm_base_listener xdg_wm_base_listener = {.ping = xdg_wm_base_ping};
+struct wl_registry_listener registry_listener = {.global = &registry_add_object_callback, .global_remove = &registry_remove_object_callback};
+struct wl_seat_listener seat_listener = {.capabilities = &seat_capabilities_callback};
+struct wl_output_listener output_listener = {.geometry = output_geometry_callback, .mode = &output_mode_callback, .done = &output_done_callback, .scale = output_scale_callback};
+struct xdg_wm_base_listener xdg_wm_base_listener = {.ping = wm_base_ping_callback};
 int Orbital_Host_Wayland_Application_Init(struct Application* app)
 {
     // get display

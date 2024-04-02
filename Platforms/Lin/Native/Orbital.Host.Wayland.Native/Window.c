@@ -239,7 +239,7 @@ void SetCursor(struct Window* window, struct wl_pointer *pointer, uint32_t seria
 // ==========================================================
 // Wayland callbacks
 // ==========================================================
-void window_pointer_enter(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y)
+void window_pointer_enter_callback(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface, wl_fixed_t x, wl_fixed_t y)
 {
     struct Window* window = (struct Window*)data;
     if (surface == window->surface || surface == window->clientSurface)
@@ -251,7 +251,7 @@ void window_pointer_enter(void *data, struct wl_pointer *pointer, uint32_t seria
     }
 }
 
-void window_pointer_leave(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface)
+void window_pointer_leave_callback(void *data, struct wl_pointer *pointer, uint32_t serial, struct wl_surface *surface)
 {
     struct Window* window = (struct Window*)data;
     if (surface == window->surface || surface == window->clientSurface)
@@ -261,7 +261,7 @@ void window_pointer_leave(void *data, struct wl_pointer *pointer, uint32_t seria
     }
 }
 
-void window_pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
+void window_pointer_motion_callback(void *data, struct wl_pointer *pointer, uint32_t time, wl_fixed_t x, wl_fixed_t y)
 {
     struct Window* window = (struct Window*)data;
     if (window->mouseHoverSurface == window->surface || window->mouseHoverSurface == window->clientSurface)
@@ -270,7 +270,7 @@ void window_pointer_motion(void *data, struct wl_pointer *pointer, uint32_t time
     }
 }
 
-void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
+void window_pointer_button_callback(void *data, struct wl_pointer *pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state)
 {
     struct Window* window = (struct Window*)data;
     if (!window->useClientDecorations || window->mouseHoverSurface != window->surface) return;
@@ -363,12 +363,12 @@ void window_pointer_button(void *data, struct wl_pointer *pointer, uint32_t seri
     }
 }
 
-void window_pointer_axis(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
+void window_pointer_axis_callback(void *data, struct wl_pointer *pointer, uint32_t time, uint32_t axis, wl_fixed_t value)
 {
     // TODO
 }
 
-void xdg_surface_handle_configure(void *data, struct xdg_surface *xdg_surface, uint32_t serial)
+void surface_configure_callback(void *data, struct xdg_surface *xdg_surface, uint32_t serial)
 {
     xdg_surface_ack_configure(xdg_surface, serial);
 
@@ -379,12 +379,12 @@ void xdg_surface_handle_configure(void *data, struct xdg_surface *xdg_surface, u
     wl_display_flush(window->app->display);
 }
 
-void xdg_toplevelconfigure_bounds(void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height)
+void toplevel_bounds_callback(void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height)
 {
     // do nothing...
 }
 
-void xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height, struct wl_array *states)
+void toplevel_configure_callback(void *data, struct xdg_toplevel *xdg_toplevel, int32_t width, int32_t height, struct wl_array *states)
 {
     struct Window* window = (struct Window*)data;
 
@@ -456,13 +456,13 @@ void xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *xdg_toplevel
     }
 }
 
-void xdg_toplevel_handle_close(void *data, struct xdg_toplevel *xdg_toplevel)
+void toplevel_close_callback(void *data, struct xdg_toplevel *xdg_toplevel)
 {
     struct Window* window = (struct Window*)data;
     window->isClosed = 1;
 }
 
-void decoration_configure(void *data, struct zxdg_toplevel_decoration_v1 *decoration, enum zxdg_toplevel_decoration_v1_mode mode)
+void toplevel_decoration_configure_callback(void *data, struct zxdg_toplevel_decoration_v1 *decoration, enum zxdg_toplevel_decoration_v1_mode mode)
 {
     printf("Orbital.Wayland DecorationMode: %d\n", mode);
     struct Window* window = (struct Window*)data;
@@ -487,9 +487,9 @@ struct Window* Orbital_Host_Wayland_Window_Create(struct Application* app)
     return window;
 }
 
-struct xdg_surface_listener xdg_surface_listener = {.configure = xdg_surface_handle_configure};
-struct xdg_toplevel_listener xdg_toplevel_listener = {.configure_bounds = xdg_toplevelconfigure_bounds, .configure = xdg_toplevel_handle_configure, .close = xdg_toplevel_handle_close};
-struct zxdg_toplevel_decoration_v1_listener decoration_listener = {.configure = decoration_configure};
+struct xdg_surface_listener xdg_surface_listener = {.configure = surface_configure_callback};
+struct xdg_toplevel_listener xdg_toplevel_listener = {.configure_bounds = toplevel_bounds_callback, .configure = toplevel_configure_callback, .close = toplevel_close_callback};
+struct zxdg_toplevel_decoration_v1_listener decoration_listener = {.configure = toplevel_decoration_configure_callback};
 int Orbital_Host_Wayland_Window_Init(struct Window* window, int width, int height, char* appID, enum WindowType type, enum wp_content_type_v1_type contentTypeType)
 {
     window->type = type;
