@@ -3,51 +3,50 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.X11", "Orbital.Host.X11\Orbital.Host.X11.csproj", "{7F8CF1FE-E035-42C7-B83A-BF5C2AC82AAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.X11", "Orbital.Host.X11\Orbital.Host.X11.csproj", "{7F8CF1FE-E035-42C7-B83A-BF5C2AC82AAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Video", "..\..\Portable\NetCore\Orbital.Video\Orbital.Video.csproj", "{F8F89F13-868B-4EC8-835E-56745D90CDD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Video", "..\..\Portable\NetCore\Orbital.Video\Orbital.Video.csproj", "{F8F89F13-868B-4EC8-835E-56745D90CDD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Numerics", "..\..\Portable\NetCore\Orbital.Numerics\Orbital.Numerics.csproj", "{3A144FDC-952C-44B2-A80B-E882C49F7346}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Numerics", "..\..\Portable\NetCore\Orbital.Numerics\Orbital.Numerics.csproj", "{3A144FDC-952C-44B2-A80B-E882C49F7346}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking", "..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj", "{B0520595-3602-44BE-AF2B-6F8A27E6FEE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking", "..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj", "{B0520595-3602-44BE-AF2B-6F8A27E6FEE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.Sockets", "..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{CEE1D3FA-AD19-496F-B738-11C89104D504}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.Sockets", "..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj", "{CEE1D3FA-AD19-496F-B738-11C89104D504}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Networking.NamedPipes", "..\..\Portable\NetCore\Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{32A23421-53D4-4FE6-BF62-FD6CA491841C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.NamedPipes", "..\..\Portable\NetCore\Orbital.Networking.NamedPipes\Orbital.Networking.NamedPipes.csproj", "{32A23421-53D4-4FE6-BF62-FD6CA491841C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.IO", "..\..\Portable\NetCore\Orbital.IO\Orbital.IO.csproj", "{F4855AAC-971C-4507-9D45-CCE23E5B8BE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.IO", "..\..\Portable\NetCore\Orbital.IO\Orbital.IO.csproj", "{F4855AAC-971C-4507-9D45-CCE23E5B8BE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host", "..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj", "{128C9C2D-98C3-419C-B17D-1D3B47AD270B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host", "..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj", "{128C9C2D-98C3-419C-B17D-1D3B47AD270B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Wayland", "Orbital.Host.Wayland\Orbital.Host.Wayland.csproj", "{E69FD527-13BE-4590-B47F-79BDD0C22776}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Wayland", "Orbital.Host.Wayland\Orbital.Host.Wayland.csproj", "{E69FD527-13BE-4590-B47F-79BDD0C22776}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.Mir", "Orbital.Host.Mir\Orbital.Host.Mir.csproj", "{FDDC0480-DC89-4EFF-99B2-67165389E598}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.Mir", "Orbital.Host.Mir\Orbital.Host.Mir.csproj", "{FDDC0480-DC89-4EFF-99B2-67165389E598}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.X11", "Orbital.Demo.X11\Orbital.Demo.X11.csproj", "{125F79D7-BCCC-4D92-9818-609CED3A1C4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.X11", "Orbital.Demo.X11\Orbital.Demo.X11.csproj", "{125F79D7-BCCC-4D92-9818-609CED3A1C4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Wayland", "Orbital.Demo.Wayland\Orbital.Demo.Wayland.csproj", "{354AF67C-BD7B-4772-BC58-9556E22FCD96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.GTK3", "Orbital.Host.GTK3\Orbital.Host.GTK3.csproj", "{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.GTK3", "Orbital.Host.GTK3\Orbital.Host.GTK3.csproj", "{2264FFAD-0E52-4F4A-84FF-4E119CDFDE46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.GTK3", "Orbital.Demo.GTK3\Orbital.Demo.GTK3.csproj", "{D0DB0A3D-FD07-446F-8467-D659B0E15606}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.GTK3", "Orbital.Demo.GTK3\Orbital.Demo.GTK3.csproj", "{D0DB0A3D-FD07-446F-8467-D659B0E15606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.GTK4", "Orbital.Demo.GTK4\Orbital.Demo.GTK4.csproj", "{CCB7AFE6-9D93-4236-A0E9-FB87D2F88F92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Demo.GTK4", "Orbital.Demo.GTK4\Orbital.Demo.GTK4.csproj", "{CCB7AFE6-9D93-4236-A0E9-FB87D2F88F92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.GTK4", "Orbital.Host.GTK4\Orbital.Host.GTK4.csproj", "{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.GTK4", "Orbital.Host.GTK4\Orbital.Host.GTK4.csproj", "{94F3C672-10B0-41CF-8E82-A7DF8AC8B20E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.OS.Lin", "Orbital.OS.Lin\Orbital.OS.Lin.csproj", "{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.OS.Lin", "Orbital.OS.Lin\Orbital.OS.Lin.csproj", "{8EC04BA8-34CE-47F2-9A47-CF51F79F246A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Host.API", "Orbital.Host.API\Orbital.Host.API.csproj", "{AEFF4033-CEEA-45F5-94C6-BF041ACDFD48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Host.API", "Orbital.Host.API\Orbital.Host.API.csproj", "{AEFF4033-CEEA-45F5-94C6-BF041ACDFD48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.API", "Orbital.Demo.API\Orbital.Demo.API.csproj", "{0D8B3157-90E0-466D-A0FB-6DFBBBD83715}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Mir", "Orbital.Demo.Mir\Orbital.Demo.Mir.csproj", "{0B2DE98F-965A-4AB0-BD92-FD245EE18447}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7F8CF1FE-E035-42C7-B83A-BF5C2AC82AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -126,5 +125,12 @@ Global
 		{0D8B3157-90E0-466D-A0FB-6DFBBBD83715}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D8B3157-90E0-466D-A0FB-6DFBBBD83715}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D8B3157-90E0-466D-A0FB-6DFBBBD83715}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B2DE98F-965A-4AB0-BD92-FD245EE18447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B2DE98F-965A-4AB0-BD92-FD245EE18447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B2DE98F-965A-4AB0-BD92-FD245EE18447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B2DE98F-965A-4AB0-BD92-FD245EE18447}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

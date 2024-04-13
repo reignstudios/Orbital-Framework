@@ -1,20 +1,21 @@
 ﻿using Orbital.Host;
-using Orbital.Host.Cocoa;
+using Orbital.Host.Mir;
 
-namespace Orbital.Demo.Cocoa
+namespace Orbital.Demo.Mir
 {
-    static class Program
-    {
-        private static void Main(string[] args)
-        {
-            // init app and window
-            var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Mac");
-            window.Show();
-            
-            // run app till quit
-            application.Run();
-        }
-    }
+	static class Program
+	{
+		private static void Main(string[] args)
+		{
+			// init app and window
+			Application.Init("org.ReignStudios.Orbital");
+			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
+			window.SetTitle("Demo: Mir");
+			window.Show();
+
+			// run app till quit
+			Application.Run(window);
+			Application.Shutdown();
+		}
+	}
 }

@@ -11,6 +11,8 @@
     <Compile Include="..\..\Shared\Orbital.Host.Mir\Application.cs">
       <Link>Application.cs</Link>
     </Compile>
+    <Compile Include="..\..\Shared\Orbital.Host.Mir\Display.cs" Link="Display.cs" />
+    <Compile Include="..\..\Shared\Orbital.Host.Mir\MirClient.cs" Link="MirClient.cs" />
     <Compile Include="..\..\Shared\Orbital.Host.Mir\Window.cs">
       <Link>Window.cs</Link>
     </Compile>
