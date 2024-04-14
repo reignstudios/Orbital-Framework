@@ -27,6 +27,7 @@ namespace Orbital.Host.Mir
 
 		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
+			Console.WriteLine("Reign.Orbital.Mir: Creating window");
 			MirWindowSpec spec = MirClient.mir_create_normal_window_spec(Application.connection, Application.primaryDisplay.display.width, Application.primaryDisplay.display.height);
 			try
 			{
@@ -71,33 +72,17 @@ namespace Orbital.Host.Mir
 		private static void MirWindowEventCallback(MirWindow mirWindow, MirEvent e, void* context)
 		{
 			var callbackData = (CallbackData*)context;
-			lock (_windows)
+			MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
+			switch (eventType)
 			{
-				// find window instance
-				Window window = null;
-				foreach (var w in _windows)
-				{
-					if (w.handle == mirWindow)
-					{
-						window = w;
-						break;
-					}
-				}
-				if (window == null) return;
+				case MirClient.MirEventType.mir_event_type_orientation:
+				case MirClient.MirEventType.mir_event_type_resize:
+					callbackData->repaint = true;
+					break;
 
-				// process event
-				MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
-				switch (eventType)
-				{
-					case MirClient.MirEventType.mir_event_type_orientation:
-					case MirClient.MirEventType.mir_event_type_resize:
-						callbackData->repaint = true;
-						break;
-
-					case MirClient.MirEventType.mir_event_type_close_window:
-						callbackData->isClosed = true;
-						break;
-				}
+				case MirClient.MirEventType.mir_event_type_close_window:
+					callbackData->isClosed = true;
+					break;
 			}
 		}
 
@@ -118,7 +103,7 @@ namespace Orbital.Host.Mir
 
 		public override void SetTitle(string title)
 		{
-			// TODO
+			// Not supported...
 		}
 
 		public override void Show()

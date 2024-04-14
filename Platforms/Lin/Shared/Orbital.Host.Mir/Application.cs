@@ -21,6 +21,7 @@ namespace Orbital.Host.Mir
 			LibraryResolver.Init(Assembly.GetExecutingAssembly());
 
 			// connect to display server
+			Console.WriteLine("Reign.Orbital.Mir: Connecting to Mir display server");
 			byte[] appName = Encoding.UTF8.GetBytes(appID + "\0");
 			fixed (byte* appNamePtr = appName) connection = MirClient.mir_connect_sync(null, appNamePtr);
 			if (MirClient.mir_connection_is_valid(connection) == 0)
@@ -31,6 +32,7 @@ namespace Orbital.Host.Mir
 			}
 
 			// validate RGBA8 format exists
+			Console.WriteLine("Reign.Orbital.Mir: Finding primary display buffer format");
 			bool hasFormat_abgr = false;
 			bool hasFormat_xbgr = false;
 			bool hasFormat_argb = false;
@@ -76,10 +78,14 @@ namespace Orbital.Host.Mir
 			{
 				throw new Exception("No valid 32-bit format found");
 			}
+
+			Console.WriteLine("Reign.Orbital.Mir: Selected primary display pixel format: " + primaryDisplayPixelFormat.ToString());
 		}
 
 		public static void Shutdown()
 		{
+			Console.WriteLine("Reign.Orbital.Mir: Shutting down Mir");
+
 			// close all windows
 			for (int i = Window._windows.Count - 1; i >= 0; --i)
 			{
@@ -122,6 +128,7 @@ namespace Orbital.Host.Mir
 
 		public static void Run()
 		{
+			Console.WriteLine("Reign.Orbital.Mir: Run");
 			while (!exit && Window._windows.Count != 0)
 			{
 				lock (Window._windows)
@@ -137,6 +144,7 @@ namespace Orbital.Host.Mir
 
 		public static void Run(Window window)
 		{
+			Console.WriteLine("Reign.Orbital.Mir: Run(Window window)");
 			while (!exit && !window.IsClosed())
 			{
 				lock (Window._windows)
