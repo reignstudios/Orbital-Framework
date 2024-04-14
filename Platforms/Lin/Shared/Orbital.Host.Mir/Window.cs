@@ -42,12 +42,12 @@ namespace Orbital.Host.Mir
 				MirClient.mir_window_spec_set_buffer_usage(spec, MirClient.MirBufferUsage.mir_buffer_usage_software);
 
 				// create window
-				MirWindow window = MirClient.mir_create_window_sync(spec);
-				if (window == MirWindow.Zero) throw new Exception("Failed to create Window");
+				handle = MirClient.mir_create_window_sync(spec);
+				if (handle == MirWindow.Zero) throw new Exception("Failed to create Window");
 
 				// get buffer and set swap
-				MirBufferStream bs = MirClient.mir_window_get_buffer_stream(window);
-				MirClient.mir_buffer_stream_set_swapinterval(bs, 0);// TODO: should swap be set to 1 instead of 0 ??
+				bufferStream = MirClient.mir_window_get_buffer_stream(handle);
+				MirClient.mir_buffer_stream_set_swapinterval(bufferStream, 0);// TODO: should swap be set to 1 instead of 0 ??
 
 				// listen to events
 				mirWindowEventCallback = new MirWindowEventCallbackMethod(MirWindowEventCallback);// we keep this ref in memory like this so GC doesn't delete it
@@ -56,7 +56,7 @@ namespace Orbital.Host.Mir
 				*callbackData = new CallbackData();// clear memory
 				callbackData->handle = handle;
 				callbackData->repaint = true;// make sure window is repainted after create
-				MirClient.mir_window_set_event_handler(window, mirWindowEventCallbackPtr, callbackData);
+				MirClient.mir_window_set_event_handler(handle, mirWindowEventCallbackPtr, callbackData);
 
 				// track window
 				lock (_windows) _windows.Add(this);
@@ -72,11 +72,10 @@ namespace Orbital.Host.Mir
 		private static void MirWindowEventCallback(MirWindow mirWindow, MirEvent e, void* context)
 		{
 			var callbackData = (CallbackData*)context;
-
-			// find window instance
-			Window window = null;
 			lock (_windows)
 			{
+				// find window instance
+				Window window = null;
 				foreach (var w in _windows)
 				{
 					if (w.handle == mirWindow)
@@ -86,11 +85,8 @@ namespace Orbital.Host.Mir
 					}
 				}
 				if (window == null) return;
-			}
 
-			// process event
-			lock (window)
-			{
+				// process event
 				MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
 				switch (eventType)
 				{
