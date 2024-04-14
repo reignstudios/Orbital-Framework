@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using Orbital.OS.Lin;
 
 using MirConnection = System.IntPtr;
@@ -97,6 +98,8 @@ namespace Orbital.Host.Mir
 		{
 			if (window.callbackData->repaint)
 			{
+				window.callbackData->repaint = false;
+
 				// get buffer
 				MirClient.MirGraphicsRegion backbuffer;
 				MirClient.mir_buffer_stream_get_graphics_region(window.bufferStream, &backbuffer);
@@ -115,10 +118,6 @@ namespace Orbital.Host.Mir
 				// swap buffer
 				MirClient.mir_buffer_stream_swap_buffers_sync(window.bufferStream);
 			}
-
-			// reset states
-			window.callbackData->repaint = false;
-			window.callbackData->resized = false;
 		}
 
 		public static void Run()
@@ -132,6 +131,7 @@ namespace Orbital.Host.Mir
 						UpdateWindow(w);
 					}
 				}
+				Thread.Sleep(1);
 			}
 		}
 
@@ -146,6 +146,7 @@ namespace Orbital.Host.Mir
 						UpdateWindow(w);
 					}
 				}
+				Thread.Sleep(1);
 			}
 		}
 

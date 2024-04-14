@@ -21,7 +21,6 @@ namespace Orbital.Host.Mir
 		{
 			public MirWindow handle;
 			public bool repaint;
-			public bool resized;
 			public bool isClosed;
 		}
 		internal CallbackData* callbackData;
@@ -90,8 +89,8 @@ namespace Orbital.Host.Mir
 				MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
 				switch (eventType)
 				{
+					case MirClient.MirEventType.mir_event_type_orientation:
 					case MirClient.MirEventType.mir_event_type_resize:
-						callbackData->resized = true;
 						callbackData->repaint = true;
 						break;
 
