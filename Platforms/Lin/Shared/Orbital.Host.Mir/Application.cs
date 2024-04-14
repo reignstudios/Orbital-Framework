@@ -11,10 +11,11 @@ namespace Orbital.Host.Mir
 	public unsafe static class Application
 	{
 		public static MirConnection connection { get; private set; }
+		private static bool exit;
+
 		public static DisplayEx primaryDisplay { get; private set; }
 		public static MirClient.MirPixelFormat primaryDisplayPixelFormat { get; private set; }
 		private static bool primaryDisplayPixelFormat_isABGR;
-		private static bool exit;
 
 		public static void Init(string appID)
 		{
@@ -100,7 +101,7 @@ namespace Orbital.Host.Mir
 			}
 		}
 
-		private static void UpdateWindow(Window window)
+		private static bool UpdateWindow(Window window)
 		{
 			if (window.callbackData->repaint)
 			{
@@ -123,7 +124,10 @@ namespace Orbital.Host.Mir
 
 				// swap buffer
 				MirClient.mir_buffer_stream_swap_buffers_sync(window.bufferStream);
+				return true;// true if buffer updated
 			}
+
+			return false;// false if buffer not updated
 		}
 
 		public static void Run()
@@ -131,11 +135,18 @@ namespace Orbital.Host.Mir
 			Console.WriteLine("Reign.Orbital.Mir: Run");
 			while (!exit && Window._windows.Count != 0)
 			{
+				bool bufferUpdated = false;
 				foreach (var w in Window._windows)
 				{
-					UpdateWindow(w);
+					if (UpdateWindow(w)) bufferUpdated = true;
 				}
-				Thread.Sleep(1);
+
+				// if no buffers updated, rest thread
+				if (!bufferUpdated)
+				{
+					if (primaryDisplay.refreshRate > 0) Thread.Sleep((int)(1000 / primaryDisplay.refreshRate));
+					else Thread.Sleep(1);
+				}
 			}
 		}
 
@@ -144,11 +155,18 @@ namespace Orbital.Host.Mir
 			Console.WriteLine("Reign.Orbital.Mir: Run(Window window)");
 			while (!exit && !window.IsClosed())
 			{
+				bool bufferUpdated = false;
 				foreach (var w in Window._windows)
 				{
-					UpdateWindow(w);
+					if (UpdateWindow(w)) bufferUpdated = true;
 				}
-				Thread.Sleep(1);
+
+				// if no buffers updated, rest thread
+				if (!bufferUpdated)
+				{
+					if (primaryDisplay.refreshRate > 0) Thread.Sleep((int)(1000 / primaryDisplay.refreshRate));
+					else Thread.Sleep(1);
+				}
 			}
 		}
 

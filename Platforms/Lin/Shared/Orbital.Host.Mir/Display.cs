@@ -8,6 +8,7 @@ namespace Orbital.Host.Mir
 	public struct DisplayEx
 	{
 		public Display display;
+		public double refreshRate;
 		public MirClient.MirPixelFormat[] formats;
 	}
 
@@ -139,10 +140,11 @@ namespace Orbital.Host.Mir
 					result.formats[i] = MirClient.mir_output_get_pixel_format(output, (size_t)i);
 				}
 
-				// get display size
+				// get display size & refresh rate
 				MirOutputMode mode = MirClient.mir_output_get_current_mode(output);
 				result.display.width = MirClient.mir_output_mode_get_width(mode);
 				result.display.height = MirClient.mir_output_mode_get_height(mode);
+				result.refreshRate = MirClient.mir_output_mode_get_refresh_rate(mode);
 			}
 			finally
 			{
@@ -190,10 +192,11 @@ namespace Orbital.Host.Mir
 						displays[i].formats[f] = MirClient.mir_output_get_pixel_format(output, (size_t)f);
 					}
 
-					// get size
+					// get size & refresh rate
 					MirOutputMode mode = MirClient.mir_output_get_current_mode(output);
 					displays[i].display.width = MirClient.mir_output_mode_get_width(mode);
 					displays[i].display.height = MirClient.mir_output_mode_get_height(mode);
+					displays[i].refreshRate = MirClient.mir_output_mode_get_refresh_rate(mode);
 				}
 			}
 			finally

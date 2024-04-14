@@ -144,6 +144,10 @@ namespace Orbital.Host.Mir
 		public static extern int mir_output_mode_get_height(MirOutputMode mode);
 
 		[SuppressUnmanagedCodeSecurity]
+		[DllImport(lib, EntryPoint = "mir_output_mode_get_refresh_rate", ExactSpelling = true)]
+		public static extern double mir_output_mode_get_refresh_rate(MirOutputMode mode);
+
+		[SuppressUnmanagedCodeSecurity]
 		[DllImport(lib, EntryPoint = "mir_create_normal_window_spec", ExactSpelling = true)]
 		public static extern MirWindowSpec mir_create_normal_window_spec(MirConnection connection, int width, int height);
 

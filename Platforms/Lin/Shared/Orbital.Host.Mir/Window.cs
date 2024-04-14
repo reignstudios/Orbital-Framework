@@ -47,7 +47,7 @@ namespace Orbital.Host.Mir
 
 				// get buffer and set swap
 				bufferStream = MirClient.mir_window_get_buffer_stream(handle);
-				MirClient.mir_buffer_stream_set_swapinterval(bufferStream, 0);// TODO: should swap be set to 1 instead of 0 ??
+				MirClient.mir_buffer_stream_set_swapinterval(bufferStream, 1);// vsync
 
 				// listen to events
 				mirWindowEventCallback = new MirWindowEventCallbackMethod(MirWindowEventCallback);// we keep this ref in memory like this so GC doesn't delete it
