@@ -59,7 +59,7 @@ namespace Orbital.Host.Mir
 				MirClient.mir_window_set_event_handler(handle, mirWindowEventCallbackPtr, callbackData);
 
 				// track window
-				lock (_windows) _windows.Add(this);
+				_windows.Add(this);
 			}
 			finally
 			{
@@ -113,7 +113,7 @@ namespace Orbital.Host.Mir
 
 		public override void Close()
 		{
-			lock (_windows) _windows.Remove(this);
+			_windows.Remove(this);
 
 			if (handle != MirWindow.Zero)
 			{

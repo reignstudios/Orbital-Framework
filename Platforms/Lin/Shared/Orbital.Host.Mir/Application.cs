@@ -131,12 +131,9 @@ namespace Orbital.Host.Mir
 			Console.WriteLine("Reign.Orbital.Mir: Run");
 			while (!exit && Window._windows.Count != 0)
 			{
-				lock (Window._windows)
+				foreach (var w in Window._windows)
 				{
-					foreach (var w in Window._windows)
-					{
-						UpdateWindow(w);
-					}
+					UpdateWindow(w);
 				}
 				Thread.Sleep(1);
 			}
@@ -147,12 +144,9 @@ namespace Orbital.Host.Mir
 			Console.WriteLine("Reign.Orbital.Mir: Run(Window window)");
 			while (!exit && !window.IsClosed())
 			{
-				lock (Window._windows)
+				foreach (var w in Window._windows)
 				{
-					foreach (var w in Window._windows)
-					{
-						UpdateWindow(w);
-					}
+					UpdateWindow(w);
 				}
 				Thread.Sleep(1);
 			}
@@ -160,12 +154,9 @@ namespace Orbital.Host.Mir
 
 		public static void RunEvents()
 		{
-			lock (Window._windows)
+			foreach (var w in Window._windows)
 			{
-				foreach (var w in Window._windows)
-				{
-					UpdateWindow(w);
-				}
+				UpdateWindow(w);
 			}
 		}
 
