@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=OrbitalDemoMir
+Exec=dotnet <path-to>/Orbital.Demo.Mir.dll
+Type=Application
+Icon=firefox
+Categories=WebBrowser;
+StartupNotify=true

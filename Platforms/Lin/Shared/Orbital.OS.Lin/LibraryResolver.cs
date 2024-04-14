@@ -61,44 +61,6 @@ namespace Orbital.OS.Lin
 			}
             catch {}
 
-			// resolve lib path
-			/*string libPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
-            if (string.IsNullOrEmpty(libPath))
-            {
-                if (IntPtr.Size == 8)
-                {
-                    libPath = "/lib64";
-                    if (!Directory.Exists(libPath))
-                    {
-                        libPath = "/usr/lib64";
-                        if (!Directory.Exists(libPath))
-                        {
-                            libPath = "/lib";
-                            if (!Directory.Exists(libPath))
-                            {
-                                libPath = "/usr/lib";
-                                if (!Directory.Exists(libPath))
-                                {
-                                    return IntPtr.Zero;
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    libPath = "/lib";
-                    if (!Directory.Exists(libPath))
-                    {
-                        libPath = "/usr/lib";
-                        if (!Directory.Exists(libPath))
-                        {
-                            return IntPtr.Zero;
-                        }
-                    }
-                }
-            }*/
-
 			// try to load from system defined path
 			string libPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
 			if (!string.IsNullOrEmpty(libPath))
@@ -134,51 +96,6 @@ namespace Orbital.OS.Lin
 				if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
 			}
 
-			// scan for newest version of library
-			/*var highestVersion = new Version(0, 0, 0);
-            string highestVersionValue = "0";
-            var files = Directory.GetFiles(libPath);
-            foreach (var file in files)
-            {
-                string filename = Path.GetFileName(file);
-                if (filename.StartsWith(libraryName))
-                {
-                    ext = Path.GetExtension(filename);
-                    if (ext != ".so")
-                    {
-                        int length = libraryName.Length + 1;
-                        string versionValue = filename.Substring(length, filename.Length - length);
-                        Version version;
-                        int versionNum;
-                        if (Version.TryParse(versionValue, out version))
-                        {
-                            if (version > highestVersion)
-                            {
-                                highestVersion = version;
-                                highestVersionValue = version.ToString();
-                            }
-                        }
-                        else if (int.TryParse(versionValue, out versionNum))
-                        {
-                            version = new Version(versionNum, 0, 0);
-                            if (version > highestVersion)
-                            {
-                                highestVersion = version;
-                                highestVersionValue = versionValue;
-                            }
-                        }
-                    }
-                }
-            }*/
-
-
-			/*// load highest version to library
-			try
-            {
-                return NativeLibrary.Load(libraryName + "." + highestVersionValue);
-            }
-            catch {}*/
-
             throw new Exception("Failed to load or resolve library: " + libraryName);
         }
 
@@ -188,41 +105,45 @@ namespace Orbital.OS.Lin
 			var highestVersion = new Version(0, 0, 0);
 			string highestVersionValue = "0";
             bool success = false;
-			var files = Directory.GetFiles(libPath);
-			foreach (var file in files)
+			try
 			{
-				string filename = Path.GetFileName(file);
-				if (filename.StartsWith(libraryName))
+				var files = Directory.GetFiles(libPath);
+				foreach (var file in files)
 				{
-					string ext = Path.GetExtension(filename);
-					if (ext != ".so")
+					string filename = Path.GetFileName(file);
+					if (filename.StartsWith(libraryName))
 					{
-						int length = libraryName.Length + 1;
-						string versionValue = filename.Substring(length, filename.Length - length);
-						Version version;
-						int versionNum;
-						if (Version.TryParse(versionValue, out version))
+						string ext = Path.GetExtension(filename);
+						if (ext != ".so")
 						{
-							success = true;
-							if (version > highestVersion)
+							int length = libraryName.Length + 1;
+							string versionValue = filename.Substring(length, filename.Length - length);
+							Version version;
+							int versionNum;
+							if (Version.TryParse(versionValue, out version))
 							{
-								highestVersion = version;
-								highestVersionValue = version.ToString();
+								success = true;
+								if (version > highestVersion)
+								{
+									highestVersion = version;
+									highestVersionValue = version.ToString();
+								}
 							}
-						}
-						else if (int.TryParse(versionValue, out versionNum))
-						{
-							success = true;
-							version = new Version(versionNum, 0, 0);
-							if (version > highestVersion)
+							else if (int.TryParse(versionValue, out versionNum))
 							{
-								highestVersion = version;
-								highestVersionValue = versionValue;
+								success = true;
+								version = new Version(versionNum, 0, 0);
+								if (version > highestVersion)
+								{
+									highestVersion = version;
+									highestVersionValue = versionValue;
+								}
 							}
 						}
 					}
 				}
 			}
+			catch {}
 
 			// try to load library
 			if (success)
@@ -238,15 +159,19 @@ namespace Orbital.OS.Lin
 						return true;
 					}
 				}
-				catch { }
+				catch {}
 			}
 
 			// scan sub-folders
-			var folders = Directory.GetDirectories(libPath);
-			foreach (var folder in folders)
+			try
 			{
-				if (ScanForLibNameRecursive(libraryName, folder, out result)) return true;
+				var folders = Directory.GetDirectories(libPath);
+				foreach (var folder in folders)
+				{
+					if (ScanForLibNameRecursive(libraryName, folder, out result)) return true;
+				}
 			}
+			catch {}
 
 			// fail
 			result = IntPtr.Zero;

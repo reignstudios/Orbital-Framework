@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\Shared\Orbital.Demo.Mir\OrbitalDemoMir.desktop" Link="OrbitalDemoMir.desktop" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Orbital.Host.Mir\Orbital.Host.Mir.csproj" />
   </ItemGroup>
 
