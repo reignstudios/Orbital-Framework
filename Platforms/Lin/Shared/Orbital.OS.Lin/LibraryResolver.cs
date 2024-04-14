@@ -16,8 +16,10 @@ namespace Orbital.OS.Lin
         
         private static IntPtr ResolveLibrary(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
-            // check if library already loaded
-            if (loadedLibraries.ContainsKey(libraryName))
+			IntPtr result;
+
+			// check if library already loaded
+			if (loadedLibraries.ContainsKey(libraryName))
 			{
 				return loadedLibraries[libraryName];
 			}
@@ -26,7 +28,7 @@ namespace Orbital.OS.Lin
             string ext = Path.GetExtension(libraryName);
             if (ext != ".so")
             {
-				IntPtr result = NativeLibrary.Load(libraryName);
+				result = NativeLibrary.Load(libraryName);
                 if (result != IntPtr.Zero)
                 {
 				    loadedLibraries.Add(libraryName, result);
@@ -37,7 +39,7 @@ namespace Orbital.OS.Lin
             // try to load lib without additional work
             try
             {
-                var result = NativeLibrary.Load(libraryName);
+                result = NativeLibrary.Load(libraryName);
 				if (result != IntPtr.Zero)
 				{
 					loadedLibraries.Add(libraryName, result);
@@ -50,7 +52,7 @@ namespace Orbital.OS.Lin
             try
             {
                 string fullPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), libraryName);
-                var result = NativeLibrary.Load(fullPath);
+                result = NativeLibrary.Load(fullPath);
 				if (result != IntPtr.Zero)
 				{
 					loadedLibraries.Add(libraryName, result);
@@ -101,51 +103,35 @@ namespace Orbital.OS.Lin
 			string libPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
 			if (!string.IsNullOrEmpty(libPath))
 			{
-                if (ScanForLibNameRecursive(libraryName, libPath, out var result)) return result;
+                if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
 			}
 				
 			// try to load by Linux standard paths
             if (IntPtr.Size == 8)
 			{
-				IntPtr result;
 				libPath = "/lib64";
 				if (Directory.Exists(libPath))
 				{
 					if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-
-					libPath = "/usr/lib64";
-					if (Directory.Exists(libPath))
-					{
-						if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-
-						libPath = "/lib";
-						if (Directory.Exists(libPath))
-						{
-							if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-
-							libPath = "/usr/lib";
-							if (Directory.Exists(libPath))
-							{
-								if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-							}
-						}
-					}
 				}
-			}
-			else
-			{
-				IntPtr result;
-				libPath = "/lib";
+
+				libPath = "/usr/lib64";
 				if (Directory.Exists(libPath))
 				{
 					if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-
-					libPath = "/usr/lib";
-					if (Directory.Exists(libPath))
-					{
-						if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
-					}
 				}
+			}
+
+			libPath = "/lib";
+			if (Directory.Exists(libPath))
+			{
+				if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
+			}
+
+			libPath = "/usr/lib";
+			if (Directory.Exists(libPath))
+			{
+				if (ScanForLibNameRecursive(libraryName, libPath, out result)) return result;
 			}
 
 			// scan for newest version of library
@@ -244,6 +230,7 @@ namespace Orbital.OS.Lin
 				try
 				{
 					string path = Path.Combine(libPath, libraryName + "." + highestVersionValue);
+					Console.WriteLine("Found lib: " + path);
 					result = NativeLibrary.Load(path);
 					if (result != IntPtr.Zero)
 					{
