@@ -95,10 +95,8 @@ namespace Orbital.Host.Mir
 
 		private static void UpdateWindow(Window window)
 		{
-			if (window.callbackData->resized)
+			if (window.callbackData->repaint)
 			{
-				window.callbackData->resized = false;
-
 				// get buffer
 				MirClient.MirGraphicsRegion backbuffer;
 				MirClient.mir_buffer_stream_get_graphics_region(window.bufferStream, &backbuffer);
@@ -117,15 +115,22 @@ namespace Orbital.Host.Mir
 				// swap buffer
 				MirClient.mir_buffer_stream_swap_buffers_sync(window.bufferStream);
 			}
+
+			// reset states
+			window.callbackData->repaint = false;
+			window.callbackData->resized = false;
 		}
 
 		public static void Run()
 		{
 			while (!exit && Window._windows.Count != 0)
 			{
-				foreach (var window in Window.windows)
+				lock (Window._windows)
 				{
-					UpdateWindow(window);
+					foreach (var w in Window._windows)
+					{
+						UpdateWindow(w);
+					}
 				}
 			}
 		}
@@ -134,18 +139,24 @@ namespace Orbital.Host.Mir
 		{
 			while (!exit && !window.IsClosed())
 			{
-				foreach (var w in Window._windows)
+				lock (Window._windows)
 				{
-					UpdateWindow(w);
+					foreach (var w in Window._windows)
+					{
+						UpdateWindow(w);
+					}
 				}
 			}
 		}
 
 		public static void RunEvents()
 		{
-			foreach (var window in Window._windows)
+			lock (Window._windows)
 			{
-				UpdateWindow(window);
+				foreach (var w in Window._windows)
+				{
+					UpdateWindow(w);
+				}
 			}
 		}
 

@@ -19,8 +19,10 @@ namespace Orbital.Host.Mir
 
 		internal struct CallbackData
 		{
-			public bool isClosed;
+			public MirWindow handle;
+			public bool repaint;
 			public bool resized;
+			public bool isClosed;
 		}
 		internal CallbackData* callbackData;
 
@@ -48,13 +50,16 @@ namespace Orbital.Host.Mir
 				MirClient.mir_buffer_stream_set_swapinterval(bs, 0);// TODO: should swap be set to 1 instead of 0 ??
 
 				// listen to events
-				var mirWindowEventCallback = new MirWindowEventCallbackMethod(MirWindowEventCallback);// we keep this in memory verbose like this so GC doesn't delete it
+				mirWindowEventCallback = new MirWindowEventCallbackMethod(MirWindowEventCallback);// we keep this ref in memory like this so GC doesn't delete it
 				var mirWindowEventCallbackPtr = Marshal.GetFunctionPointerForDelegate(mirWindowEventCallback);
 				callbackData = (CallbackData*)Marshal.AllocHGlobal(Marshal.SizeOf<CallbackData>());
+				*callbackData = new CallbackData();// clear memory
+				callbackData->handle = handle;
+				callbackData->repaint = true;// make sure window is repainted after create
 				MirClient.mir_window_set_event_handler(window, mirWindowEventCallbackPtr, callbackData);
 
 				// track window
-				_windows.Add(this);
+				lock (_windows) _windows.Add(this);
 			}
 			finally
 			{
@@ -63,14 +68,41 @@ namespace Orbital.Host.Mir
 		}
 
 		private delegate void MirWindowEventCallbackMethod(MirWindow window, MirEvent e, void* context);
-		private static void MirWindowEventCallback(MirWindow window, MirEvent e, void* context)
+		private MirWindowEventCallbackMethod mirWindowEventCallback;
+		private static void MirWindowEventCallback(MirWindow mirWindow, MirEvent e, void* context)
 		{
 			var callbackData = (CallbackData*)context;
-			MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
-			switch (eventType)
+
+			// find window instance
+			Window window = null;
+			lock (_windows)
 			{
-				case MirClient.MirEventType.mir_event_type_resize: callbackData->resized = true; break;
-				case MirClient.MirEventType.mir_event_type_close_window: callbackData->isClosed = true; break;
+				foreach (var w in _windows)
+				{
+					if (w.handle == mirWindow)
+					{
+						window = w;
+						break;
+					}
+				}
+				if (window == null) return;
+			}
+
+			// process event
+			lock (window)
+			{
+				MirClient.MirEventType eventType = MirClient.mir_event_get_type(e);
+				switch (eventType)
+				{
+					case MirClient.MirEventType.mir_event_type_resize:
+						callbackData->resized = true;
+						callbackData->repaint = true;
+						break;
+
+					case MirClient.MirEventType.mir_event_type_close_window:
+						callbackData->isClosed = true;
+						break;
+				}
 			}
 		}
 
@@ -101,7 +133,7 @@ namespace Orbital.Host.Mir
 
 		public override void Close()
 		{
-			_windows.Remove(this);
+			lock (_windows) _windows.Remove(this);
 
 			if (handle != MirWindow.Zero)
 			{

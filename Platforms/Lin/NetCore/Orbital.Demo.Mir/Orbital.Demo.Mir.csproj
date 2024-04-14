@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\..\Shared\Orbital.Demo.Mir\ReadMe.txt" Link="ReadMe.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\..\Shared\Orbital.Demo.Mir\OrbitalDemoMir.desktop" Link="OrbitalDemoMir.desktop" />
   </ItemGroup>
 
