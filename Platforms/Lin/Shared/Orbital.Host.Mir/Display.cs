@@ -132,7 +132,7 @@ namespace Orbital.Host.Mir
 				MirOutput output = FindPrimaryOutput(displayConfig);
 				if (output == MirOutput.Zero) throw new Exception("No active outputs found");
 
-				// validate RGBA8 format exists
+				// get display formats
 				int pixelFormatCount = MirClient.mir_output_get_num_pixel_formats(output);
 				result.formats = new MirClient.MirPixelFormat[pixelFormatCount];
 				for (int i = 0; i < pixelFormatCount; i++)
@@ -184,7 +184,7 @@ namespace Orbital.Host.Mir
 						displays[i].display.isPrimary = false;
 					}
 
-					// validate RGBA8 format exists
+					// get display formats
 					int pixelFormatCount = MirClient.mir_output_get_num_pixel_formats(output);
 					displays[i].formats = new MirClient.MirPixelFormat[pixelFormatCount];
 					for (int f = 0; f < pixelFormatCount; f++)
