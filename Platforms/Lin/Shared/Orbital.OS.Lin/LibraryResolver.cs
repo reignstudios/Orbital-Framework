@@ -96,12 +96,15 @@ namespace Orbital.OS.Lin
                     }
                 }
             }*/
+
+			// try to load from system defined path
 			string libPath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
 			if (!string.IsNullOrEmpty(libPath))
 			{
                 if (ScanForLibNameRecursive(libraryName, libPath, out var result)) return result;
 			}
 				
+			// try to load by Linux standard paths
             if (IntPtr.Size == 8)
 			{
 				IntPtr result;
@@ -240,9 +243,13 @@ namespace Orbital.OS.Lin
 			{
 				try
 				{
-					result = NativeLibrary.Load(libraryName + "." + highestVersionValue);
-					loadedLibraries.Add(libraryName, result);
-					return true;
+					string path = Path.Combine(libPath, libraryName + "." + highestVersionValue);
+					result = NativeLibrary.Load(path);
+					if (result != IntPtr.Zero)
+					{
+						loadedLibraries.Add(libraryName, result);
+						return true;
+					}
 				}
 				catch { }
 			}
