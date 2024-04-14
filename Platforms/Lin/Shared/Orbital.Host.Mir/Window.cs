@@ -25,7 +25,7 @@ namespace Orbital.Host.Mir
 		}
 		internal CallbackData* callbackData;
 
-		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(string title)
 		{
 			Console.WriteLine("Reign.Orbital.Mir: Creating window");
 			MirWindowSpec spec = MirClient.mir_create_normal_window_spec(Application.connection, Application.primaryDisplay.display.width, Application.primaryDisplay.display.height);
