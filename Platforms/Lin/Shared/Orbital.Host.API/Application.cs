@@ -11,8 +11,9 @@ namespace Orbital.Host.API
 	{
 		X11 = 1,
 		Wayland = 2,
-		GTK3 = 4,
-		GTK4 = 8
+		Mir = 4,
+		GTK3 = 8,
+		GTK4 = 16
 	}
 	
 	public struct ApplicationDesc

@@ -38,17 +38,7 @@ namespace Orbital.Host.Win
 			wndProcDelegatePtr = Marshal.GetFunctionPointerForDelegate<WndProcDelegate>(wndProcDelegate);
 		}
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			// register window class
 			var wcex = new User32.WNDCLASSEXA();
@@ -108,9 +98,11 @@ namespace Orbital.Host.Win
 					break;
 			}
 
-			byte* title = stackalloc byte[1];
-			title[0] = 0;
-			hWnd = User32.CreateWindowExA(0, (LPCSTR)atom, (LPCSTR)title, windowStyle, x, y, width, height, HWND.Zero, HMENU.Zero, Application.hInstance, IntPtr.Zero);
+			byte[] encodedTitle = Encoding.Default.GetBytes(title + '\0');
+			fixed (byte* encodedTitlePtr = encodedTitle)
+			{
+				hWnd = User32.CreateWindowExA(0, (LPCSTR)atom, (LPCSTR)encodedTitlePtr, windowStyle, x, y, width, height, HWND.Zero, HMENU.Zero, Application.hInstance, IntPtr.Zero);
+			}
 			if (hWnd == HWND.Zero) throw new Exception("CreateWindowExA failed");
 
 			// adjust working area / client size and position
@@ -141,6 +133,10 @@ namespace Orbital.Host.Win
 				if (User32.SetWindowPos(hWnd, HWND.Zero, x, y, width, height, flags) == 0) throw new Exception("SetWindowPos failed");
 			}
 
+			// show
+			User32.ShowWindow(hWnd, Application.nCmdShow);
+			User32.UpdateWindow(hWnd);
+
 			// track window
 			_windows.Add(this);
 		}
@@ -160,20 +156,14 @@ namespace Orbital.Host.Win
 			return this;
 		}
 
-		public override void SetTitle(string title)
+		/*public void SetTitle(string title)// KEEP: for ref this can set title after creation
 		{
 			byte[] encodedTitle = Encoding.Default.GetBytes(title + '\0');
 			fixed (byte* encodedTitlePtr = encodedTitle)
 			{
 				User32.SetWindowTextA(hWnd, (LPCSTR)encodedTitlePtr);
 			}
-		}
-
-		public override void Show()
-		{
-			User32.ShowWindow(hWnd, Application.nCmdShow);
-			User32.UpdateWindow(hWnd);
-		}
+		}*/
 
 		public override void Close()
 		{

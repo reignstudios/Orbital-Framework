@@ -64,17 +64,7 @@ namespace Orbital.Host.Wayland
 
 		public IntPtr handle { get; private set; }
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
-		{
-			Init(size.width, size.height, type, startupPosition, contentType);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
-		{
-			Init(width, height, type, startupPosition, contentType);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition, WindowContentType contentType)
 		{
 			handle = Orbital_Host_Wayland_Window_Create(Application.handle);
 			fixed (byte* appIDPtr = Application.appIDData)
@@ -84,6 +74,16 @@ namespace Orbital.Host.Wayland
 					throw new Exception("Failed: Orbital_Host_Wayland_Window_Init");
 				}
 			}
+
+			// set title
+			var titleData = Encoding.UTF8.GetBytes(title + "\0");
+			fixed (byte* titlePtr = titleData)
+			{
+				Orbital_Host_Wayland_Window_SetTitle(handle, titlePtr);
+			}
+
+			// show
+			Orbital_Host_Wayland_Window_Show(handle);
 
 			// track window
 			_windows.Add(this);
@@ -102,20 +102,6 @@ namespace Orbital.Host.Wayland
 		public override object GetManagedHandle()
 		{
 			return this;
-		}
-
-		public override void SetTitle(string title)
-		{
-			var titleData = Encoding.UTF8.GetBytes(title + "\0");
-			fixed (byte* titlePtr = titleData)
-			{
-				Orbital_Host_Wayland_Window_SetTitle(handle, titlePtr);
-			}
-		}
-
-		public override void Show()
-		{
-			Orbital_Host_Wayland_Window_Show(handle);
 		}
 
 		public override void Close()

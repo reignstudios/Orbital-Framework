@@ -9,9 +9,7 @@ namespace Orbital.Demo.GTK4
         {
             // init app and window
             Application.Init("org.ReignStudios.Orbital");
-            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: GTK4");
-            window.Show();
+            var window = new Window("Demo: GTK4", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
             
             // run app till quit
             Application.Run(window);

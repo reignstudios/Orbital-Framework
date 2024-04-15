@@ -11,9 +11,7 @@ namespace Orbital.Demo.WPF
 		{
 			// init app and window
 			Application.Init();
-			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-			window.SetTitle("Demo: WPF");
-			window.Show();
+			var window = new Window("Demo: WPF", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 
 			// TODO: run rendering example
 

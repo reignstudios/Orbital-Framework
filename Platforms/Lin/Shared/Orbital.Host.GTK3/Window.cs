@@ -12,17 +12,7 @@ namespace Orbital.Host.GTK3
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
-		{
-			Init(size.width, size.height, type, startupPosition, borderlessIsSplash);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
-		{
-			Init(width, height, type, startupPosition, borderlessIsSplash);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
 			var data = new CallbackData()
 			{
@@ -42,6 +32,15 @@ namespace Orbital.Host.GTK3
 				GTK3.g_signal_handler_disconnect(Application.app, callbackHandler);// disable callback
 				handle = data.handle;
 			}
+
+			// set title
+			fixed (byte* titlePtr = Encoding.ASCII.GetBytes(title + "\0"))
+			{
+				GTK3.gtk_window_set_title(handle, titlePtr);
+			}
+
+			// show
+			GTK3.gtk_widget_show_all(handle);
 
 			// track window
 			_windows.Add(this);
@@ -135,19 +134,6 @@ namespace Orbital.Host.GTK3
 		public override object GetManagedHandle()
 		{
 			return this;
-		}
-
-		public override void SetTitle(string title)
-		{
-			fixed (byte* titlePtr = Encoding.ASCII.GetBytes(title + "\0"))
-			{
-				GTK3.gtk_window_set_title(handle, titlePtr);
-			}
-		}
-
-		public override void Show()
-		{
-			GTK3.gtk_widget_show_all(handle);
 		}
 
 		public override void Close()

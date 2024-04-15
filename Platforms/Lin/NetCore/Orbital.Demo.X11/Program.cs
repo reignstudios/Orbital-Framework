@@ -9,9 +9,7 @@ namespace Orbital.Demo.X11
         {
             // init app and window
             Application.Init();
-            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, false);
-            window.SetTitle("Demo: X11");
-            window.Show();
+            var window = new Window("Demo: X11", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, false);
             
             // run app till quit
             Application.Run(window);

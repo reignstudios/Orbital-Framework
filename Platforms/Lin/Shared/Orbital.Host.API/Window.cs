@@ -23,6 +23,7 @@ namespace Orbital.Host.API
 	
 	public struct WindowDesc
 	{
+		public string title;
 		public int width, height;
 		public WindowType type;
 		public WindowStartupPosition startupPosition;
@@ -43,19 +44,23 @@ namespace Orbital.Host.API
 			switch (Application.api)
 			{
 				case ApplicationAPI.X11:
-					window = new X11.Window(desc.width, desc.height, desc.type, desc.startupPosition, desc.x11.boarderlessIsSplash);
+					window = new X11.Window(desc.title, desc.width, desc.height, desc.type, desc.startupPosition, desc.x11.boarderlessIsSplash);
 					break;
 				
 				case ApplicationAPI.Wayland:
-					window = new Wayland.Window(desc.width, desc.height, desc.type, desc.startupPosition, desc.wayland.contentType);
+					window = new Wayland.Window(desc.title, desc.width, desc.height, desc.type, desc.startupPosition, desc.wayland.contentType);
 					break;
-				
+
+				case ApplicationAPI.Mir:
+					window = new Mir.Window(desc.title);
+					break;
+
 				case ApplicationAPI.GTK3:
-					window = new GTK3.Window(desc.width, desc.height, desc.type, desc.startupPosition, desc.gtk3.boarderlessIsSplash);
+					window = new GTK3.Window(desc.title, desc.width, desc.height, desc.type, desc.startupPosition, desc.gtk3.boarderlessIsSplash);
 					break;
 				
 				case ApplicationAPI.GTK4:
-					window = new GTK4.Window(desc.width, desc.height, desc.type, desc.startupPosition);
+					window = new GTK4.Window(desc.title, desc.width, desc.height, desc.type, desc.startupPosition);
 					break;
 			}
 
@@ -76,16 +81,6 @@ namespace Orbital.Host.API
 		public override object GetManagedHandle()
 		{
 			return this;
-		}
-
-		public override void SetTitle(string title)
-		{
-			window.SetTitle(title);
-		}
-
-		public override void Show()
-		{
-			window.Show();
 		}
 
 		public override void Close()

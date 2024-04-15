@@ -12,17 +12,7 @@ namespace Orbital.Host.GTK4
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			var data = new CallbackData()
 			{
@@ -41,6 +31,15 @@ namespace Orbital.Host.GTK4
 				GTK4.g_signal_handler_disconnect(Application.app, callbackHandler);// disable callback
 				handle = data.handle;
 			}
+
+			// set title
+			fixed (byte* titlePtr = Encoding.ASCII.GetBytes(title + "\0"))
+			{
+				GTK4.gtk_window_set_title(handle, titlePtr);
+			}
+
+			// show
+			GTK4.gtk_window_present(handle);
 
 			// track window
 			_windows.Add(this);
@@ -130,19 +129,6 @@ namespace Orbital.Host.GTK4
 		public override object GetManagedHandle()
 		{
 			return this;
-		}
-
-		public override void SetTitle(string title)
-		{
-			fixed (byte* titlePtr = Encoding.ASCII.GetBytes(title + "\0"))
-			{
-				GTK4.gtk_window_set_title(handle, titlePtr);
-			}
-		}
-
-		public override void Show()
-		{
-			GTK4.gtk_window_present(handle);
 		}
 
 		public override void Close()

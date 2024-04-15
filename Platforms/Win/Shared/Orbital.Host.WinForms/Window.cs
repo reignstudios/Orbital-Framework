@@ -14,20 +14,10 @@ namespace Orbital.Host.WinForms
 			this.form = form;
 		}
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			form = new Form();
-			Init(size.width, size.height, type, startupPosition);
-		}
 
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			form = new Form();
-			Init(width, height, type, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
 			// set form type
 			switch (type)
 			{
@@ -72,6 +62,10 @@ namespace Orbital.Host.WinForms
 						break;
 				}
 			}
+
+			// finish
+			form.Text = title;
+			form.Show();
 		}
 
 		public override void Dispose()
@@ -87,16 +81,6 @@ namespace Orbital.Host.WinForms
 		public override object GetManagedHandle()
 		{
 			return form;
-		}
-
-		public override void SetTitle(string title)
-		{
-			form.Text = title;
-		}
-
-		public override void Show()
-		{
-			form.Show();
 		}
 
 		public override void Close()

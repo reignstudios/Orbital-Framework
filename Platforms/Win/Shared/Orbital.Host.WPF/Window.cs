@@ -13,17 +13,7 @@ namespace Orbital.Host.WPF
 		private IntPtr handle;
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition)
 		{
 			window = new WPFWindow();
 
@@ -76,6 +66,10 @@ namespace Orbital.Host.WPF
 
 			// watch for close event
 			window.Closed += Window_Closed;
+
+			// finish
+			window.Title = title;
+			window.Show();
 		}
 
 		private unsafe void SetSize(int width, int height)
@@ -121,16 +115,6 @@ namespace Orbital.Host.WPF
 		public override object GetManagedHandle()
 		{
 			return window;
-		}
-
-		public override void SetTitle(string title)
-		{
-			window.Title = title;
-		}
-
-		public override void Show()
-		{
-			window.Show();
 		}
 
 		public override void Close()

@@ -60,8 +60,6 @@ namespace Orbital.Host
 		/// </summary>
 		public abstract object GetManagedHandle();
 
-		public virtual void SetTitle(string title) { }
-		public virtual void Show() { }
 		public virtual void Close() { }
 		public virtual bool IsClosed() => false;
 		public abstract Size2 GetSize();

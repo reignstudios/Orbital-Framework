@@ -13,9 +13,7 @@ namespace Orbital.Demo.Win
 			
 			// init app and window
 			Application.Init();
-			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-			window.SetTitle("Demo: Win");
-			window.Show();
+			var window = new Window("Demo: Win", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 
 			/*// run example
 			using (var example = new Example(window))

@@ -18,14 +18,13 @@ namespace Orbital.Demo.API
             // init window
             var windowDesc = new WindowDesc()
             {
-                width = 320,
+                title = "Demo: API: " + Application.api,
+				width = 320,
                 height = 240,
                 type = WindowType.Tool,
                 startupPosition = WindowStartupPosition.CenterScreen
             };
             var window = new Window(windowDesc);
-            window.SetTitle("Demo: API: " + Application.api);
-            window.Show();
             
             // run app till quit
             Application.Run(window);

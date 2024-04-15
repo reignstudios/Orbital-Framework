@@ -101,16 +101,6 @@ namespace Orbital.Host.Mir
 			return this;
 		}
 
-		public override void SetTitle(string title)
-		{
-			// Not supported...
-		}
-
-		public override void Show()
-		{
-			// TODO
-		}
-
 		public override void Close()
 		{
 			_windows.Remove(this);

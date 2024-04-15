@@ -21,6 +21,7 @@
       <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Host\Orbital.Host.csproj" />
       <ProjectReference Include="..\Orbital.Host.GTK3\Orbital.Host.GTK3.csproj" />
       <ProjectReference Include="..\Orbital.Host.GTK4\Orbital.Host.GTK4.csproj" />
+      <ProjectReference Include="..\Orbital.Host.Mir\Orbital.Host.Mir.csproj" />
       <ProjectReference Include="..\Orbital.Host.Wayland\Orbital.Host.Wayland.csproj" />
       <ProjectReference Include="..\Orbital.Host.X11\Orbital.Host.X11.csproj" />
     </ItemGroup>

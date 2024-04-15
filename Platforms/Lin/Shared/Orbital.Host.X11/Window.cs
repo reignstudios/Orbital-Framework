@@ -3,7 +3,7 @@ using Orbital.Numerics;
 
 namespace Orbital.Host.X11
 {
-	public sealed class Window : WindowBase
+	public unsafe sealed class Window : WindowBase
 	{
 		internal static List<Window> _windows = new List<Window>();
 		public static IReadOnlyList<Window> windows => _windows;
@@ -11,17 +11,7 @@ namespace Orbital.Host.X11
 		public IntPtr handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
-		{
-			Init(size.width, size.height, type, startupPosition, borderlessIsSplash);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
-		{
-			Init(width, height, type, startupPosition, borderlessIsSplash);
-		}
-
-		private unsafe static IntPtr XInternAtom(string atomName)
+		private static IntPtr XInternAtom(string atomName)
 		{
 			fixed (byte* ptr = Encoding.ASCII.GetBytes(atomName))
 			{
@@ -29,7 +19,7 @@ namespace Orbital.Host.X11
 			}
 		}
 
-		private unsafe void Init(int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition, bool borderlessIsSplash)
 		{
 			int x = 100, y = 50;
 			if (type == WindowType.Fullscreen)
@@ -108,6 +98,15 @@ namespace Orbital.Host.X11
 				X11.XMoveWindow(Application.dc, handle, (display.width - width) / 2, (display.height - height) / 2);
 			}
 
+			// set title
+			fixed (byte* ptr = Encoding.ASCII.GetBytes(title))
+			{
+				X11.XStoreName(Application.dc, handle, ptr);
+			}
+
+			// show
+			X11.XMapWindow(Application.dc, handle);
+
 			// track window
 			_windows.Add(this);
 		}
@@ -127,19 +126,6 @@ namespace Orbital.Host.X11
 			return this;
 		}
 
-		public unsafe override void SetTitle(string title)
-		{
-			fixed (byte* ptr = Encoding.ASCII.GetBytes(title))
-			{
-				X11.XStoreName(Application.dc, handle, ptr);
-			}
-		}
-
-		public override void Show()
-		{
-			X11.XMapWindow(Application.dc, handle);
-		}
-
 		public override void Close()
 		{
 			isClosed = true;
@@ -156,7 +142,7 @@ namespace Orbital.Host.X11
 			return isClosed;
 		}
 
-		public unsafe override Size2 GetSize()
+		public override Size2 GetSize()
 		{
 			X11.XWindowAttributes a;
 			if (X11.XGetWindowAttributes(Application.dc, handle, &a) != 0) return new Size2(a.width, a.height);
