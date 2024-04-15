@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5235FBD92B08A6F00024608A /* libHost.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libHost.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		5235FBD92B08A6F00024608A /* libOrbital.Host.Cocoa.Native.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libOrbital.Host.Cocoa.Native.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		5235FBDC2B08A6F00024608A /* Application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Application.h; sourceTree = "<group>"; };
 		5235FBDE2B08A6F00024608A /* Application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Application.m; sourceTree = "<group>"; };
 		5235FBE52B08AEB40024608A /* Window.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Window.h; sourceTree = "<group>"; };
@@ -38,7 +38,7 @@
 		5235FBD02B08A6F00024608A = {
 			isa = PBXGroup;
 			children = (
-				5235FBDB2B08A6F00024608A /* Host */,
+				5235FBDB2B08A6F00024608A /* Orbital.Host.Cocoa.Native */,
 				5235FBDA2B08A6F00024608A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,12 +46,12 @@
 		5235FBDA2B08A6F00024608A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5235FBD92B08A6F00024608A /* libHost.dylib */,
+				5235FBD92B08A6F00024608A /* libOrbital.Host.Cocoa.Native.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		5235FBDB2B08A6F00024608A /* Host */ = {
+		5235FBDB2B08A6F00024608A /* Orbital.Host.Cocoa.Native */ = {
 			isa = PBXGroup;
 			children = (
 				5235FBDC2B08A6F00024608A /* Application.h */,
@@ -62,7 +62,7 @@
 				524DEF0D2B1EB02E00126CA3 /* Display.h */,
 				524DEF0E2B1EB04A00126CA3 /* Display.m */,
 			);
-			path = Host;
+			path = Orbital.Host.Cocoa.Native;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -79,9 +79,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		5235FBD82B08A6F00024608A /* Host */ = {
+		5235FBD82B08A6F00024608A /* Orbital.Host.Cocoa.Native */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5235FBE22B08A6F00024608A /* Build configuration list for PBXNativeTarget "Host" */;
+			buildConfigurationList = 5235FBE22B08A6F00024608A /* Build configuration list for PBXNativeTarget "Orbital.Host.Cocoa.Native" */;
 			buildPhases = (
 				5235FBD52B08A6F00024608A /* Headers */,
 				5235FBD62B08A6F00024608A /* Sources */,
@@ -91,9 +91,9 @@
 			);
 			dependencies = (
 			);
-			name = Host;
+			name = Orbital.Host.Cocoa.Native;
 			productName = Host;
-			productReference = 5235FBD92B08A6F00024608A /* libHost.dylib */;
+			productReference = 5235FBD92B08A6F00024608A /* libOrbital.Host.Cocoa.Native.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
@@ -110,7 +110,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 5235FBD42B08A6F00024608A /* Build configuration list for PBXProject "Host" */;
+			buildConfigurationList = 5235FBD42B08A6F00024608A /* Build configuration list for PBXProject "Orbital.Host.Cocoa.Native" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -123,7 +123,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5235FBD82B08A6F00024608A /* Host */,
+				5235FBD82B08A6F00024608A /* Orbital.Host.Cocoa.Native */,
 			);
 		};
 /* End PBXProject section */
@@ -286,7 +286,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5235FBD42B08A6F00024608A /* Build configuration list for PBXProject "Host" */ = {
+		5235FBD42B08A6F00024608A /* Build configuration list for PBXProject "Orbital.Host.Cocoa.Native" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5235FBE02B08A6F00024608A /* Debug */,
@@ -295,7 +295,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5235FBE22B08A6F00024608A /* Build configuration list for PBXNativeTarget "Host" */ = {
+		5235FBE22B08A6F00024608A /* Build configuration list for PBXNativeTarget "Orbital.Host.Cocoa.Native" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5235FBE32B08A6F00024608A /* Debug */,

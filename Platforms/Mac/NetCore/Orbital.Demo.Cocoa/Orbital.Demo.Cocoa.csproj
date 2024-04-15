@@ -18,4 +18,8 @@
       </Compile>
     </ItemGroup>
 
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="cp &quot;$(ProjectDir)../../Native/Orbital.Host.Cocoa.Native/DerivedData/Orbital.Host.Cocoa.Native/Build/Products/Debug/libOrbital.Host.Cocoa.Native.dylib&quot; &quot;$(TargetDir)libOrbital.Host.Cocoa.Native.dylib&quot;" />
+    </Target>
+
 </Project>
