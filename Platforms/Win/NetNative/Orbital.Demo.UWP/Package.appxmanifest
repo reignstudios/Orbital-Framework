@@ -31,7 +31,7 @@
     <Application Id="App"
       Executable="$targetnametoken$.exe" EntryPoint="Orbital.Demo.UWP.App">
       <uap:VisualElements
-        DisplayName="Orbital.Demo.UWP"
+        DisplayName="Demo: UWP"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="Orbital.Demo.UWP"

@@ -8,7 +8,7 @@ namespace Orbital.Demo.UWP
 	{
 		static void Main(string[] args)
 		{
-			Application.Init(320, 240, true);
+			Application.Init(320, 240, false);
 		}
 	}
 }
