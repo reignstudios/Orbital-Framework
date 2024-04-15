@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DE2AB676-B977-4FD5-BC3D-F09A01256E4B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Orbital.Numerics</RootNamespace>
+    <AssemblyName>Orbital.Numerics</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.22621.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.20348.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
+    <PlatformTarget>ARM</PlatformTarget>
+    <OutputPath>bin\ARM\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM64'">
+    <PlatformTarget>ARM64</PlatformTarget>
+    <OutputPath>bin\ARM64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>;2008</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\AffineTransform3.cs">
+      <Link>AffineTransform3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound2.cs">
+      <Link>Bound2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Bound3.cs">
+      <Link>Bound3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3.cs">
+      <Link>Color3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color3F.cs">
+      <Link>Color3F.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4.cs">
+      <Link>Color4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Color4F.cs">
+      <Link>Color4F.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Frustum3.cs">
+      <Link>Frustum3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line2.cs">
+      <Link>Line2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Line3.cs">
+      <Link>Line3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2.cs">
+      <Link>Mat2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat2x3.cs">
+      <Link>Mat2x3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3.cs">
+      <Link>Mat3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat3x2.cs">
+      <Link>Mat3x2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Mat4.cs">
+      <Link>Mat4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\MathTools.cs">
+      <Link>MathTools.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Plane3.cs">
+      <Link>Plane3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point2.cs">
+      <Link>Point2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Point3.cs">
+      <Link>Point3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Quat.cs">
+      <Link>Quat.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray2.cs">
+      <Link>Ray2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Ray3.cs">
+      <Link>Ray3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect2.cs">
+      <Link>Rect2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Rect3.cs">
+      <Link>Rect3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\RigidTransform3.cs">
+      <Link>RigidTransform3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size2.cs">
+      <Link>Size2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size3.cs">
+      <Link>Size3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Size4.cs">
+      <Link>Size4.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere2.cs">
+      <Link>Sphere2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Sphere3.cs">
+      <Link>Sphere3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Triangle3.cs">
+      <Link>Triangle3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec2.cs">
+      <Link>Vec2.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec3.cs">
+      <Link>Vec3.cs</Link>
+    </Compile>
+    <Compile Include="..\..\..\Shared\Orbital.Numerics\Vec4.cs">
+      <Link>Vec4.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Properties\Orbital.Numerics.rd.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
+      <Version>6.2.14</Version>
+    </PackageReference>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
+    <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
