@@ -1,7 +1,7 @@
 #import "Window.h"
 
 @implementation Window
-- (void)initWindow:(int)width :(int)height :(WindowType)type :(bool)fullscreenOverlay :(WindowStartupPosition)startupPosition
+- (void)initWindow:(int)width :(int)height :(WindowType)type :(WindowStartupPosition)startupPosition :(bool)fullscreenIsOverlay
 {
     // create window
     window = [NSWindow new];
@@ -39,7 +39,7 @@
     // set window position
     if (type == WindowType_Fullscreen)
     {
-        if (fullscreenOverlay)
+        if (fullscreenIsOverlay)
         {
             window.level = NSStatusWindowLevel;
             NSRect screenFrame = [NSScreen.mainScreen frame];
@@ -87,9 +87,9 @@ void Orbital_Host_Window_Dispose(Window* window)
     [window release];
 }
 
-void Orbital_Host_Window_Init(Window* window, int width, int height, WindowType type, int fullscreenOverlay, WindowStartupPosition startupPosition)
+void Orbital_Host_Window_Init(Window* window, int width, int height, WindowType type, WindowStartupPosition startupPosition, int fullscreenIsOverlay)
 {
-    [window initWindow :width :height :type :(fullscreenOverlay != 0 ? true : false) :startupPosition];
+    [window initWindow :width :height :type :startupPosition :(fullscreenIsOverlay != 0 ? true : false)];
 }
 
 void Orbital_Host_Window_SetTitle(Window* window, unichar* title, int titleLength)

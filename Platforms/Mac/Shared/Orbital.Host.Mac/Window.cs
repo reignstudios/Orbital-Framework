@@ -33,27 +33,7 @@ namespace Orbital.Host.Mac
 		public NSWindow handle { get; private set; }
 		private bool isClosed;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, false, startupPosition);
-		}
-
-		public Window(Size2 size, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, fullscreenOverlay, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, false, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, fullscreenOverlay, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition, bool fullscreenIsOverlay)
 		{
 			handle = new NSWindow();
 			handle.BackingType = NSBackingStore.Buffered;
@@ -90,7 +70,7 @@ namespace Orbital.Host.Mac
 			// set window position
 			if (type == WindowType.Fullscreen)
 			{
-				if (fullscreenOverlay)
+				if (fullscreenIsOverlay)
 				{
 					handle.Level = NSWindowLevel.Status;
 					var screenFrame = NSScreen.MainScreen.Frame;
@@ -117,6 +97,12 @@ namespace Orbital.Host.Mac
 				}
 			}
 
+			// set title
+			handle.Title = title;
+
+			// show
+			handle.MakeKeyAndOrderFront(null);
+
 			// track window
 			_windows.Add(this);
 		}
@@ -134,16 +120,6 @@ namespace Orbital.Host.Mac
 		public override object GetManagedHandle()
 		{
 			return handle;
-		}
-
-		public override void SetTitle(string title)
-		{
-			handle.Title = title;
-		}
-
-		public override void Show()
-		{
-			handle.MakeKeyAndOrderFront(null);
 		}
 
 		public override void Close()

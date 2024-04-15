@@ -6,19 +6,19 @@ using Orbital.Numerics;
 
 namespace Orbital.Host.Cocoa
 {
-	public sealed class Window : WindowBase
+	public unsafe sealed class Window : WindowBase
 	{
 		[DllImport(Native.lib)]
 		private static extern IntPtr Orbital_Host_Window_Create();
 
 		[DllImport(Native.lib)]
-		private static extern void Orbital_Host_Window_Init(IntPtr window, int width, int height, WindowType type, int fullscreenOverlay, WindowStartupPosition center);
+		private static extern void Orbital_Host_Window_Init(IntPtr window, int width, int height, WindowType type, WindowStartupPosition center, int fullscreenIsOverlay);
 
 		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Dispose(IntPtr window);
 
 		[DllImport(Native.lib)]
-		private static extern unsafe void Orbital_Host_Window_SetTitle(IntPtr window, char* title, int titleLength);
+		private static extern void Orbital_Host_Window_SetTitle(IntPtr window, char* title, int titleLength);
 
 		[DllImport(Native.lib)]
 		private static extern void Orbital_Host_Window_Show(IntPtr window);
@@ -44,37 +44,27 @@ namespace Orbital.Host.Cocoa
 		private NativeClosedCallbackDef NativeClosedCallback;
 		private IntPtr NativeClosedCallbackFuncPtr;
 
-		public Window(Size2 size, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, false, startupPosition);
-		}
-
-		public Window(Size2 size, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
-		{
-			Init(size.width, size.height, type, fullscreenOverlay, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, false, startupPosition);
-		}
-
-		public Window(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
-		{
-			Init(width, height, type, fullscreenOverlay, startupPosition);
-		}
-
-		private void Init(int width, int height, WindowType type, bool fullscreenOverlay, WindowStartupPosition startupPosition)
+		public Window(string title, int width, int height, WindowType type, WindowStartupPosition startupPosition, bool fullscreenIsOverlay)
 		{
 			// create and init native window
 			handle = Orbital_Host_Window_Create();
-			Orbital_Host_Window_Init(handle, width, height, type, fullscreenOverlay ? 1 : 0, startupPosition);
+			Orbital_Host_Window_Init(handle, width, height, type, startupPosition, fullscreenIsOverlay ? 1 : 0);
 
 			// bind window closed callback
 			NativeClosedCallback = NativeClosed;
 			NativeClosedCallbackFuncPtr = Marshal.GetFunctionPointerForDelegate(NativeClosedCallback);
 			Orbital_Host_Window_SetWindowClosedCallback(handle, NativeClosedCallbackFuncPtr);
 
+			// set title
+			fixed (char* titlePtr = title)
+			{
+				Orbital_Host_Window_SetTitle(handle, titlePtr, title.Length);
+			}
+
+			// show
+			Orbital_Host_Window_Show(handle);
+
+			// track window
 			_windows.Add(this);
 		}
 
@@ -101,19 +91,6 @@ namespace Orbital.Host.Cocoa
 		public override object GetManagedHandle()
 		{
 			return this;
-		}
-
-		public override unsafe void SetTitle(string title)
-		{
-			fixed (char* titlePtr = title)
-			{
-				Orbital_Host_Window_SetTitle(handle, titlePtr, title.Length);
-			}
-		}
-
-		public override void Show()
-		{
-			Orbital_Host_Window_Show(handle);
 		}
 
 		public override void Close()

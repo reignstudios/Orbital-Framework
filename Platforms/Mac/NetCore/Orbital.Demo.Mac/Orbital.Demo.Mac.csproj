@@ -5,6 +5,7 @@
         <TargetFramework>net8.0-macos</TargetFramework>
         <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
         <RootNamespace>Orbital.Demo.Xamarin</RootNamespace>
+        <ApplicationId>com.Orbital.Mac</ApplicationId>
     </PropertyGroup>
 
     <ItemGroup>

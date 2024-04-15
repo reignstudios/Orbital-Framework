@@ -9,9 +9,7 @@ namespace Orbital.Demo.Cocoa
         {
             // init app and window
             Application.Init();
-            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Cocoa");
-            window.Show();
+            var window = new Window("Demo: Cocoa", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, false);
             
             // run app till quit
             Application.Run(window);

@@ -23,7 +23,7 @@ typedef void (*WindowClosedCallbackMethod)(void);
     @public WindowClosedCallbackMethod WindowClosedCallback;
 }
 
-- (void)initWindow:(int)width :(int)height :(WindowType)type :(bool)fullscreenOverlay :(WindowStartupPosition)startupPosition;
+- (void)initWindow:(int)width :(int)height :(WindowType)type :(WindowStartupPosition)startupPosition :(bool)fullscreenOverlay;
 
 // NSWindowDelegate methods
 - (void)windowWillClose:(NSNotification*)notification;

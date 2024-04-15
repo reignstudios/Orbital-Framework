@@ -10,9 +10,7 @@ namespace Orbital.Demo.Microsoft
         {
             // init app and window
             Application.Init();
-            var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Mac");
-            window.Show();
+            var window = new Window("Demo: Mac", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, false);
             
             // run app till quit
             Application.Run(window);
