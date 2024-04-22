@@ -9,7 +9,7 @@ using Orbital.Input.API;
 
 namespace Orbital.Demo
 {
-	public sealed class Example : IDisposable
+	/*public sealed class Example : IDisposable
 	{
 		private WindowBase window;
 
@@ -91,52 +91,52 @@ namespace Orbital.Demo
 			instance.Update();
 
 			// print raw device input
-			/*foreach (var device in instance.devices)
-			{
-				if (!device.connected) continue;
+			//foreach (var device in instance.devices)
+			//{
+			//	if (!device.connected) continue;
 
-				// buttons
-				for (int i = 0; i != device.buttons.Length; ++i)
-				{
-					var button = device.buttons[i];
-					if (button.down) Console.WriteLine("Button: " + i.ToString());
-				}
+			//	// buttons
+			//	for (int i = 0; i != device.buttons.Length; ++i)
+			//	{
+			//		var button = device.buttons[i];
+			//		if (button.down) Console.WriteLine("Button: " + i.ToString());
+			//	}
 
-				// POV
-				for (int i = 0; i != device.povDirections.Length; ++i)
-				{
-					uint pov = device.povDirections[i];
-					if (pov != uint.MaxValue) Console.WriteLine("POV: " + i.ToString() + " " + pov.ToString());
-				}
+			//	// POV
+			//	for (int i = 0; i != device.povDirections.Length; ++i)
+			//	{
+			//		uint pov = device.povDirections[i];
+			//		if (pov != uint.MaxValue) Console.WriteLine("POV: " + i.ToString() + " " + pov.ToString());
+			//	}
 
-				// axes 1D
-				for (int i = 0; i != device.axes1D.Length; ++i)
-				{
-					var axis = device.axes1D[i];
-					if (axis.value != 0) Console.WriteLine("Axis1D: " + i.ToString() + " " + axis.value.ToString());
-				}
+			//	// axes 1D
+			//	for (int i = 0; i != device.axes1D.Length; ++i)
+			//	{
+			//		var axis = device.axes1D[i];
+			//		if (axis.value != 0) Console.WriteLine("Axis1D: " + i.ToString() + " " + axis.value.ToString());
+			//	}
 
-				// axes 2D
-				for (int i = 0; i != device.axes2D.Length; ++i)
-				{
-					var axis = device.axes2D[i];
-					if (axis.value.Length() > 0) Console.WriteLine("Axis2D: " + i.ToString() + " " + axis.value.ToString());
-				}
+			//	// axes 2D
+			//	for (int i = 0; i != device.axes2D.Length; ++i)
+			//	{
+			//		var axis = device.axes2D[i];
+			//		if (axis.value.Length() > 0) Console.WriteLine("Axis2D: " + i.ToString() + " " + axis.value.ToString());
+			//	}
 
-				// axes 3D
-				for (int i = 0; i != device.axes3D.Length; ++i)
-				{
-					var axis = device.axes3D[i];
-					if (axis.value.Length() > 0) Console.WriteLine("Axis3D: " + i.ToString() + " " + axis.value.ToString());
-				}
+			//	// axes 3D
+			//	for (int i = 0; i != device.axes3D.Length; ++i)
+			//	{
+			//		var axis = device.axes3D[i];
+			//		if (axis.value.Length() > 0) Console.WriteLine("Axis3D: " + i.ToString() + " " + axis.value.ToString());
+			//	}
 
-				// sliders
-				for (int i = 0; i != device.sliders.Length; ++i)
-				{
-					var slider = device.sliders[i];
-					if (slider.value != 0) Console.WriteLine("Slider: " + i.ToString() + " " + slider.value.ToString());
-				}
-			}*/
+			//	// sliders
+			//	for (int i = 0; i != device.sliders.Length; ++i)
+			//	{
+			//		var slider = device.sliders[i];
+			//		if (slider.value != 0) Console.WriteLine("Slider: " + i.ToString() + " " + slider.value.ToString());
+			//	}
+			//}
 
 			// print gamepad input
 			foreach (var gamepad in instance.gamepads)
@@ -187,5 +187,5 @@ namespace Orbital.Demo
 			// keep within 60fps
 			System.Threading.Thread.Sleep(1000 / 60);
 		}
-	}
+	}*/
 }

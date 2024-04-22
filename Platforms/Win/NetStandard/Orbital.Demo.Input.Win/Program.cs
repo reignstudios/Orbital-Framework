@@ -16,7 +16,7 @@ namespace Orbital.Demo.Input.Win
 	{
 		static void Main(string[] args)
 		{
-			// init app and window
+			/*// init app and window
 			Application.Init(Marshal.GetHINSTANCE(typeof(Application).Module));
 			var window = new Window(320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 			window.SetTitle("Demo.Input: Win");
@@ -43,7 +43,7 @@ namespace Orbital.Demo.Input.Win
 				}
 			}
 
-			Application.Shutdown();
+			Application.Shutdown();*/
 		}
 	}
 }
