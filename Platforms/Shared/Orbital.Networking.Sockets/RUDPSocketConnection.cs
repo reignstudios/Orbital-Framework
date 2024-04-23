@@ -7,33 +7,10 @@ using System.Threading;
 
 namespace Orbital.Networking.Sockets
 {
-	enum RUDPPacketType : byte
-	{
-		Send,
-		Recieved
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	struct RUPDPacketHeader
-	{
-		public uint id;
-		public uint dataSize;
-		public RUDPPacketType type;
-
-		public RUPDPacketHeader(uint id, uint dataSize, RUDPPacketType type)
-		{
-			this.id = id;
-			this.dataSize = dataSize;
-			this.type = type;
-		}
-	}
-
 	public class RUDPSocketConnection : Socket, INetworkDataSender, IDisposable
 	{
 		class BufferPool
 		{
-			public const int defaultDataSize = 256;
-
 			public class Pool
 			{
 				public bool inUse;
@@ -79,39 +56,43 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public UDPSocket socket { get; private set; }
+		public RUDPSocket socket { get; private set; }
+		public UDPSocket udpSocket { get; private set; }
 		private Guid connectionTestID;
 		private bool isConnected;
 		private Timer tryToConnectTimer;
-		private BufferPool bufferPool;
+
 		private uint nextPacketID;
+		private BufferPool bufferPool;
 		private Dictionary<uint, BufferPool.Pool> sendingBuffers;
 
 		public delegate void ConnectedCallbackMethod(RUDPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
 
-		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int size);
+		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int offset, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
-		public RUDPSocketConnection(IPAddress remoteAddress, IPAddress localAddress, int port, int receiveBufferSize, bool async)
+		public RUDPSocketConnection(RUDPSocket socket, IPAddress remoteAddress, IPAddress localAddress, int port, int receiveBufferSize, bool async)
 		: base(remoteAddress, port)
 		{
+			this.socket = socket;
+
 			sendingBuffers = new Dictionary<uint, BufferPool.Pool>();
 			bufferPool = new BufferPool();
 
-			socket = new UDPSocket(remoteAddress, localAddress, port, false, receiveBufferSize, async:async);
-			socket.DataRecievedCallback += Socket_DataRecievedCallback;
-			socket.DisconnectedCallback += Socket_DisconnectedCallback;
+			udpSocket = new UDPSocket(remoteAddress, localAddress, port, false, receiveBufferSize, async:async);
+			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
+			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
 		}
 
 		public override void Dispose()
 		{
-			if (socket != null)
+			if (udpSocket != null)
 			{
-				socket.DataRecievedCallback -= Socket_DataRecievedCallback;
-				socket.DisconnectedCallback -= Socket_DisconnectedCallback;
-				socket.Dispose();
-				socket = null;
+				udpSocket.DataRecievedCallback -= Socket_DataRecievedCallback;
+				udpSocket.DisconnectedCallback -= Socket_DisconnectedCallback;
+				udpSocket.Dispose();
+				udpSocket = null;
 			}
 		}
 
@@ -120,7 +101,7 @@ namespace Orbital.Networking.Sockets
 		/// </summary>
 		public void Connect()
 		{
-			socket.Join(true);
+			udpSocket.Join(true);
 			tryToConnectTimer = new Timer(TryToConnectCallback, null, 0, 500);
 		}
 
@@ -141,6 +122,8 @@ namespace Orbital.Networking.Sockets
 		private unsafe void Socket_DataRecievedCallback(UDPSocket socket, byte[] data, int size)
 		{
 			int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
+			if (size < headerSize) return;// make sure packet is at least the size of the header
+
 			int dataRead = 0;
 			fixed (byte* dataPtr = data)
 			{
@@ -148,17 +131,14 @@ namespace Orbital.Networking.Sockets
 				byte* dataPtrOffset = dataPtr;
 				while (dataRead < size)
 				{
-					// make sure packet is at least the size of the header
-					if (size < headerSize) return;
-
 					// read header
 					var header = (RUPDPacketHeader*)dataPtrOffset;
-					dataRead += Marshal.SizeOf<RUPDPacketHeader>();
+					dataRead += headerSize;
 
 					// validate expected data size
 					if (size < headerSize + header->dataSize) return;
 
-					// check if this is a connection validation communication
+					/*// check if this is a connection validation communication
 					if (header->id == uint.MaxValue && size == headerSize + Marshal.SizeOf<Guid>())
 					{
 						if (header->type == RUDPPacketType.Recieved)// check if this is a connection validation response
@@ -183,14 +163,14 @@ namespace Orbital.Networking.Sockets
 					}
 
 					// only read packet data if connected
-					else if (isConnected)
+					else if (isConnected)*/
 					{
 						if (header->type == RUDPPacketType.Send)
 						{
-							DataRecievedCallback?.Invoke(this, data, size);
-							SendInternalPacket(header->id, null, 0, RUDPPacketType.Recieved);// respond packet recieved to sender
+							DataRecievedCallback?.Invoke(this, data, dataRead, header->dataSize);// TODO: this should NOT invoke if data was already recieved (keep track of this based on GUID of fixed buffer size)
+							SendInternalPacket(header->id, null, 0, RUDPPacketType.SendWasRecieved);// respond packet recieved to sender
 						}
-						else if (header->type == RUDPPacketType.Recieved)
+						else if (header->type == RUDPPacketType.SendWasRecieved)
 						{
 							// remove recieved packets
 							if (sendingBuffers.ContainsKey(header->id))
@@ -202,7 +182,7 @@ namespace Orbital.Networking.Sockets
 					}
 
 					// offset read data
-					dataRead += headerSize + (int)header->dataSize;
+					dataRead += headerSize + header->dataSize;
 					dataPtrOffset += headerSize + header->dataSize;// offset data pointer
 				}
 			}
@@ -226,7 +206,7 @@ namespace Orbital.Networking.Sockets
 			var pool = bufferPool.GetAvaliable(headerSize + dataSize);
 
 			// copy header & data into packet-data
-			var header = new RUPDPacketHeader(id, (uint)dataSize, type);
+			var header = new RUPDPacketHeader(id, dataSize, type);
 			fixed (byte* packetDataPtr = pool.data)
 			{
 				Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
@@ -234,7 +214,7 @@ namespace Orbital.Networking.Sockets
 			}
 
 			// send packet
-			socket.Send(pool.data, 0, pool.usedDataSize);
+			udpSocket.Send(pool.data, 0, pool.usedDataSize);
 
 			// make pool as no longer used
 			pool.inUse = false;
@@ -251,7 +231,7 @@ namespace Orbital.Networking.Sockets
 			// copy header & data into pool
 			unsafe
 			{
-				var header = new RUPDPacketHeader(nextPacketID, (uint)size, RUDPPacketType.Send);
+				var header = new RUPDPacketHeader(nextPacketID, size, RUDPPacketType.Send);
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);
@@ -260,7 +240,7 @@ namespace Orbital.Networking.Sockets
 			}
 
 			// send packet
-			int bytesSent = socket.Send(pool.data, offset, size);
+			int bytesSent = udpSocket.Send(pool.data, offset, size);
 
 			// increment packet
 			++nextPacketID;
