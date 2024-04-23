@@ -182,33 +182,30 @@ namespace Orbital.Networking.Sockets
 		}
 
 		public delegate void SendFilePercentCallbackMethod(int percent);
-		public long SendFile(string filename, SendFilePercentCallbackMethod callback = null)
+		public long SendStream(Stream stream, SendFilePercentCallbackMethod callback = null)
 		{
 			try
 			{
 				var buffer = new byte[1024 * 8];
-				using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+				long fileSize = stream.Length, fileSent = 0;
+				int read = 0, lastPercent = 0;
+				do
 				{
-					long fileSize = stream.Length, fileSent = 0;
-					int read = 0, lastPercent = 0;
-					do
+					read = stream.Read(buffer, 0, buffer.Length);
+					if (read > 0)
 					{
-						read = stream.Read(buffer, 0, buffer.Length);
-						if (read > 0)
+						nativeSocket.Send(buffer, 0, read, SocketFlags.None);
+						if (callback != null)
 						{
-							nativeSocket.Send(buffer, 0, read, SocketFlags.None);
-							if (callback != null)
-							{
-								fileSent += read;
-								int percent = (int)((fileSent / (float)fileSize) * 100);
-								if (lastPercent != percent) callback(percent);
-								lastPercent = percent;
-							}
+							fileSent += read;
+							int percent = (int)((fileSent / (float)fileSize) * 100);
+							if (lastPercent != percent) callback(percent);
+							lastPercent = percent;
 						}
-					} while (read > 0);
+					}
+				} while (read > 0);
 
-					return fileSent;
-				}
+				return fileSent;
 			}
 			catch (Exception e)
 			{
