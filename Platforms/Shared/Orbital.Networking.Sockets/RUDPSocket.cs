@@ -170,6 +170,7 @@ namespace Orbital.Networking.Sockets
 			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, receiveBufferSize, async:async);
 			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
 			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
+			udpSocket.Join(true);
 		}
 
 		public unsafe void Connect(IPAddress remoteAddress)
@@ -182,7 +183,15 @@ namespace Orbital.Networking.Sockets
 				var pool = bufferPool.GetAvaliable(headerSize);
 				
 				// copy header & data into packet-data
-				var addressID = new Guid(remoteAddress.GetAddressBytes());
+				var addressBytes = remoteAddress.GetAddressBytes();
+				if (addressBytes.Length < 16)
+				{
+					var newBytes = new byte[16];
+					Array.Copy(addressBytes, newBytes, addressBytes.Length);
+					addressBytes = newBytes;
+				}
+				
+				var addressID = new Guid(addressBytes);
 				var header = new RUPDPacketHeader(nextConnectingPacketID, addressID, port, headerSize, RUDPPacketType.ConnectionRequest);
 				fixed (byte* packetDataPtr = pool.data)
 				{
@@ -204,7 +213,30 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		private void ConnectWaitCallback(object state)
+		private static IPAddress AddressIDToAddress(Guid addressID)
+		{
+			var bytes = addressID.ToByteArray();
+			bool isIPV6 = false;
+			for (int i = 4; i < 16; ++i)
+			{
+				if (bytes[i] != 0)
+				{
+					isIPV6 = true;
+					break;
+				}
+			}
+
+			if (!isIPV6)
+			{
+				var newBytes = new byte[4];
+				Array.Copy(bytes, newBytes, newBytes.Length);
+				bytes = newBytes;
+			}
+
+			return new IPAddress(bytes);
+		}
+
+		private unsafe void ConnectWaitCallback(object state)
 		{
 			lock (this)
 			{
@@ -221,7 +253,13 @@ namespace Orbital.Networking.Sockets
 					}
 					else
 					{
-						udpSocket.Send(pool.data, 0, pool.usedDataSize);
+						fixed (byte* dataPtr = pool.data)
+						{
+							var header = (RUPDPacketHeader*)dataPtr;
+							var remoteAddress = AddressIDToAddress(header->addressID);
+							var remoteEndPoint = new IPEndPoint(remoteAddress, header->port);
+							udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
+						}
 					}
 				}
 
@@ -280,7 +318,7 @@ namespace Orbital.Networking.Sockets
 							// add connection
 							if (!connectionExist && isValidRequest)
 							{
-								var remoteAddress = new IPAddress(header->addressID.ToByteArray());
+								var remoteAddress = AddressIDToAddress(header->addressID);
 								var connection = new RUDPSocketConnection(this, remoteAddress, header->addressID, header->port);
 								connections.Add(connection);
 							}
@@ -316,7 +354,7 @@ namespace Orbital.Networking.Sockets
 							// add connection
 							if (!connectionExist)
 							{
-								var remoteAddress = new IPAddress(header->addressID.ToByteArray());
+								var remoteAddress = AddressIDToAddress(header->addressID);
 								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->addressID, header->port);
 								connections.Add(madeConnection);
 							}
@@ -350,7 +388,7 @@ namespace Orbital.Networking.Sockets
 						}
 
 						// fire connection failed callback
-						var address = new IPAddress(header->addressID.ToByteArray());
+						var address = AddressIDToAddress(header->addressID);
 						ConnectedCallback?.Invoke(this, null, false, "Failed to connect for: " + address.ToString());
 					}
 					else if (header->type == RUDPPacketType.Send)

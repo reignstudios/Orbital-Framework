@@ -20,6 +20,7 @@ namespace Orbital.Demo.Networking
 			if (string.IsNullOrEmpty(result) || result != "y" && result != "n")
 			{
 				Console.WriteLine("Invalid argument");
+				Console.ReadLine();
 				return;
 			}
 			bool isServer = result == "y";
@@ -34,21 +35,22 @@ namespace Orbital.Demo.Networking
 				address = IPAddress.Loopback;
 			}
 
-			if (address == null && IPAddress.TryParse(result, out address))
+			if (address == null && !IPAddress.TryParse(result, out address))
 			{
 				Console.WriteLine("Invalid address");
+				Console.ReadLine();
 				return;
 			}
 
 			// connect
-			var socket = new RUDPSocket(IPAddress.Loopback, 8080, 1024);
+			var socket = new RUDPSocket(IPAddress.Any, 8080, 1024);
 			socket.ListenDisconnectedErrorCallback += Socket_ListenDisconnectedErrorCallback;
 			socket.ConnectedCallback += Socket_ConnectedCallback;
 			socket.Listen(1);
 			if (!isServer) socket.Connect(address);
 
 			// messaging
-			Console.WriteLine("Type Messages after you have a connection...");
+			Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
 			string message = null;
 			while (true)
 			{
