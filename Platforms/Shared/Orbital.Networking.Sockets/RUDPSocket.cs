@@ -193,6 +193,7 @@ namespace Orbital.Networking.Sockets
 				
 				var addressID = new Guid(addressBytes);
 				var header = new RUPDPacketHeader(nextConnectingPacketID, addressID, port, 0, RUDPPacketType.ConnectionRequest);
+				header.id = uint.MaxValue;
 				fixed (byte* packetDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
