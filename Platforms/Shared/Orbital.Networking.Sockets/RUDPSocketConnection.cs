@@ -20,6 +20,9 @@ namespace Orbital.Networking.Sockets
 		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int offset, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
+		public delegate void DisconnectedCallbackMethod(RUDPSocketConnection connection);
+		public event DisconnectedCallbackMethod DisconnectedCallback;
+
 		public RUDPSocketConnection(RUDPSocket socket, IPAddress remoteAddress, Guid remoteAddressID, int port)
 		: base(remoteAddress, port)
 		{
@@ -32,6 +35,9 @@ namespace Orbital.Networking.Sockets
 		{
 			isConnected = false;
 			base.Dispose();
+			DataRecievedCallback = null;
+			DisconnectedCallback = null;
+			DisconnectedCallback?.Invoke(this);
 		}
 
 		internal void FireDataRecievedCallback(byte[] data, int offset, int size)
@@ -56,28 +62,6 @@ namespace Orbital.Networking.Sockets
 			return isConnected;
 		}
 
-		private unsafe void SendInternalPacket(uint id, byte* data, int dataSize, RUDPPacketType type)
-		{
-			int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
-
-			// get avaliable pool
-			var pool = socket.bufferPool.GetAvaliable(headerSize + dataSize);
-
-			// copy header & data into packet-data
-			var header = new RUPDPacketHeader(id, addressID, port, dataSize, type);
-			fixed (byte* packetDataPtr = pool.data)
-			{
-				Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
-				if (data != null) Buffer.MemoryCopy(data, packetDataPtr + headerSize, dataSize, dataSize);
-			}
-
-			// send packet
-			socket.udpSocket.Send(pool.data, 0, pool.usedDataSize);
-
-			// make pool as no longer used
-			pool.inUse = false;
-		}
-
 		private unsafe int SendPacket(byte* buffer, int offset, int size)
 		{
 			lock (this)
@@ -92,7 +76,7 @@ namespace Orbital.Networking.Sockets
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);
-					Buffer.MemoryCopy(buffer, poolDataPtr + headerSize, size, size);
+					if (buffer != null && size != 0) Buffer.MemoryCopy(buffer, poolDataPtr + headerSize, size, size);
 				}
 
 				// send packet
