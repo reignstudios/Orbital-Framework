@@ -346,7 +346,6 @@ namespace Orbital.Networking.Sockets
 						}
 
 						// respond connection request was recieved
-						if (isDisposed) return;
 						try
 						{
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
@@ -434,6 +433,16 @@ namespace Orbital.Networking.Sockets
 								}
 							}
 						}
+
+						// respond connection request was recieved
+						try
+						{
+							header->type = RUDPPacketType.SendResponse;
+							header->targetAddressID = header->senderAddressID;// target is now sender
+							header->senderAddressID = senderAddressID;// sender is now us
+							socket.Send(data, 0, size);
+						}
+						catch { }
 					}
 					else if (header->type == RUDPPacketType.SendResponse)
 					{
