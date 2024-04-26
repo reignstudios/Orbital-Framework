@@ -7,12 +7,13 @@ using System.Threading;
 
 namespace Orbital.Networking.Sockets
 {
-	public class RUDPSocketConnection : Socket, INetworkDataSender
+	public sealed class RUDPSocketConnection : Socket, INetworkDataSender
 	{
 		public RUDPSocket socket { get; private set; }
+		public IPEndPoint endPoint { get; private set; }
 		public readonly Guid addressID;
 		private bool isConnected;
-		private Timer tryToConnectTimer;
+		private Timer tryToSendTimer;
 
 		private uint nextPacketID;
 		private Dictionary<uint, RUDPBufferPool.Pool> sendingBuffers;
@@ -27,22 +28,31 @@ namespace Orbital.Networking.Sockets
 		: base(remoteAddress, port)
 		{
 			this.socket = socket;
+			endPoint = new IPEndPoint(remoteAddress, port);
 			addressID = remoteAddressID;
 			sendingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();
+			tryToSendTimer = new Timer(SendWaitCallbackTimer, null, 0, 500);
 		}
 
 		public override void Dispose()
 		{
-			isConnected = false;
 			base.Dispose();
+			isConnected = false;
+
+			if (tryToSendTimer != null)
+			{
+				tryToSendTimer.Dispose();
+				tryToSendTimer = null;
+			}
+
 			DataRecievedCallback = null;
-			DisconnectedCallback = null;
 			DisconnectedCallback?.Invoke(this);
+			DisconnectedCallback = null;
 		}
 
 		internal void FireDataRecievedCallback(byte[] data, int offset, int size)
 		{
-			DataRecievedCallback?.Invoke(this, data, offset, size);
+			DataRecievedCallback?.Invoke(this, data, offset, size);// TODO: keep track if duplicate packets already recieved and ignore them
 		}
 
 		internal void DataSentResponse(uint id)
@@ -60,6 +70,28 @@ namespace Orbital.Networking.Sockets
 		public override bool IsConnected()
 		{
 			return isConnected;
+		}
+
+		private unsafe void SendWaitCallbackTimer(object state)
+		{
+			lock (this)
+			{
+				foreach (var buffer in sendingBuffers)// TODO: guarantee packet order (only send next)
+				{
+					var pool = buffer.Value;
+					fixed (byte* dataPtr = pool.data)
+					{
+						var header = (RUPDPacketHeader*)dataPtr;
+
+						// try sending data again
+						try
+						{
+							socket.udpSocket.Send(pool.data, 0, header->dataSize, endPoint);
+						}
+						catch { }
+					}
+				}
+			}
 		}
 
 		private unsafe int SendPacket(byte* buffer, int offset, int size)
@@ -83,7 +115,7 @@ namespace Orbital.Networking.Sockets
 				int bytesSent;
 				try
 				{
-					bytesSent = socket.udpSocket.Send(pool.data, offset, size);
+					bytesSent = socket.udpSocket.Send(pool.data, offset, size, endPoint);// TODO: guarantee packet order (only send now if nothing in que)
 				}
 				catch (Exception e)
 				{

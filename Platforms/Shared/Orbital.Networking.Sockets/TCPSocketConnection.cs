@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Orbital.Networking.Sockets
 {
-	public class TCPSocketConnection : INetworkDataSender, IDisposable
+	public sealed class TCPSocketConnection : INetworkDataSender, IDisposable
 	{
 		public delegate void DataRecievedCallbackMethod(TCPSocketConnection connection, byte[] data, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;

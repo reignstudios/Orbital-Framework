@@ -92,7 +92,9 @@ namespace Orbital.Networking.Sockets
 	public class RUDPSocket : Socket
 	{
 		public UDPSocket udpSocket { get; private set; }// TODO: this should be singular socket for all traffic and connections just use this with their remote address
-		public List<RUDPSocketConnection> connections { get; private set; }
+
+		private List<RUDPSocketConnection> _connections;
+		public IReadOnlyList<RUDPSocketConnection> connections => _connections;
 
 		private bool listenCalled;
 		private Timer tryToConnectTimer;
@@ -150,13 +152,13 @@ namespace Orbital.Networking.Sockets
 					udpSocket = null;
 				}
 
-				if (connections != null)
+				if (_connections != null)
 				{
-					foreach (var connection in connections)
+					foreach (var connection in _connections)
 					{
 						connection.Dispose();
 					}
-					connections = null;
+					_connections = null;
 				}
 
 				connectingBuffers = null;
@@ -164,7 +166,7 @@ namespace Orbital.Networking.Sockets
 			base.Dispose();
 		}
 
-		private static IPAddress AddressIDToAddress(Guid addressID)
+		internal static IPAddress AddressIDToAddress(Guid addressID)// TODO: this can be optimized to reduce allocs
 		{
 			var bytes = addressID.ToByteArray();
 			bool isIPV6 = false;
@@ -187,7 +189,7 @@ namespace Orbital.Networking.Sockets
 			return new IPAddress(bytes);
 		}
 
-		private static Guid AddressToAddressID(IPAddress address)
+		internal static Guid AddressToAddressID(IPAddress address)
 		{
 			var aadressBytes = address.GetAddressBytes();
 			if (aadressBytes.Length < 16)
@@ -204,7 +206,7 @@ namespace Orbital.Networking.Sockets
 			if (listenCalled) throw new Exception("Listen already called");
 			listenCalled = true;
 
-			connections = new List<RUDPSocketConnection>(maxConnections);
+			_connections = new List<RUDPSocketConnection>(maxConnections);
 			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, receiveBufferSize, async:async);
 			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
 			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
@@ -265,11 +267,15 @@ namespace Orbital.Networking.Sockets
 							var header = (RUPDPacketHeader*)dataPtr;
 
 							// create endpoint
-							var remoteAddress = AddressIDToAddress(header->senderAddressID);
+							var remoteAddress = AddressIDToAddress(header->targetAddressID);
 							var remoteEndPoint = new IPEndPoint(remoteAddress, header->port);
 
 							// send connection request
-							udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
+							try
+							{
+								udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
+							}
+							catch { }
 						}
 					}
 				}
@@ -318,7 +324,7 @@ namespace Orbital.Networking.Sockets
 
 							// check if connection already exists
 							bool connectionExist = false;
-							foreach (var connection in connections)
+							foreach (var connection in _connections)
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
@@ -335,7 +341,7 @@ namespace Orbital.Networking.Sockets
 							{
 								var remoteAddress = AddressIDToAddress(header->senderAddressID);
 								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
-								connections.Add(madeConnection);
+								_connections.Add(madeConnection);
 							}
 						}
 
@@ -365,7 +371,7 @@ namespace Orbital.Networking.Sockets
 
 							// check if connection already exists
 							bool connectionExist = false;
-							foreach (var connection in connections)
+							foreach (var connection in _connections)
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
@@ -379,7 +385,7 @@ namespace Orbital.Networking.Sockets
 							{
 								var remoteAddress = AddressIDToAddress(header->senderAddressID);
 								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
-								connections.Add(madeConnection);
+								_connections.Add(madeConnection);
 							}
 
 							// remove connecting buffer
@@ -419,7 +425,7 @@ namespace Orbital.Networking.Sockets
 						lock (this)
 						{
 							if (isDisposed) return;
-							foreach (var connection in connections)
+							foreach (var connection in _connections)
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
@@ -434,7 +440,7 @@ namespace Orbital.Networking.Sockets
 						lock (this)
 						{
 							if (isDisposed) return;
-							foreach (var connection in connections)
+							foreach (var connection in _connections)
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
@@ -457,13 +463,13 @@ namespace Orbital.Networking.Sockets
 		{
 			lock (this)
 			{
-				if (connections != null)
+				if (_connections != null)
 				{
-					foreach (var connection in connections)
+					foreach (var connection in _connections)
 					{
 						connection.Dispose();
 					}
-					connections = null;
+					_connections = null;
 				}
 			}
 
@@ -472,7 +478,7 @@ namespace Orbital.Networking.Sockets
 
 		public override bool IsConnected()
 		{
-			lock (this) return !isDisposed && connections != null && connections.Count != 0;
+			lock (this) return !isDisposed && _connections != null && _connections.Count != 0;
 		}
 	}
 }
