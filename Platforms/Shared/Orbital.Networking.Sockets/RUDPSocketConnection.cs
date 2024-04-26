@@ -72,7 +72,7 @@ namespace Orbital.Networking.Sockets
 				var pool = socket.bufferPool.GetAvaliable(headerSize + size);
 
 				// copy header & data into pool
-				var header = new RUPDPacketHeader(nextPacketID, addressID, port, size, RUDPPacketType.Send);
+				var header = new RUPDPacketHeader(nextPacketID, socket.senderAddressID, addressID, port, size, RUDPPacketType.Send);
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);

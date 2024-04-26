@@ -25,29 +25,51 @@ namespace Orbital.Demo.Networking
 			}
 			bool isServer = result == "y";
 
-			// get address
-			Console.WriteLine("Enter IP Address...");
+			// get local address
+			Console.WriteLine("Enter your IP Address...");
 			result = Console.ReadLine();
-			IPAddress address = null;
+			IPAddress localAddress = null;
 			if (string.IsNullOrEmpty(result))
 			{
-				Console.WriteLine("Using Any");
-				address = IPAddress.Any;
-			}
-
-			if (address == null && !IPAddress.TryParse(result, out address))
-			{
-				Console.WriteLine("Invalid address");
+				Console.WriteLine("Invalid ip");
 				Console.ReadLine();
 				return;
 			}
 
+			if (!IPAddress.TryParse(result, out localAddress))
+			{
+				Console.WriteLine("Invalid local address");
+				Console.ReadLine();
+				return;
+			}
+
+			// get server address
+			IPAddress serverAddress = null;
+			if (!isServer)
+			{
+				Console.WriteLine("Enter server IP Address...");
+				result = Console.ReadLine();
+				if (string.IsNullOrEmpty(result))
+				{
+					Console.WriteLine("Invalid ip");
+					Console.ReadLine();
+					return;
+				}
+
+				if (!IPAddress.TryParse(result, out serverAddress))
+				{
+					Console.WriteLine("Invalid server address");
+					Console.ReadLine();
+					return;
+				}
+			}
+
 			// connect
-			var socket = new RUDPSocket(IPAddress.Any, 8080, 1024);
+			var socket = new RUDPSocket(IPAddress.Any, localAddress, 8080, 1024);
 			socket.ListenDisconnectedErrorCallback += Socket_ListenDisconnectedErrorCallback;
 			socket.ConnectedCallback += Socket_ConnectedCallback;
 			socket.Listen(1);
-			if (!isServer) socket.Connect(address);
+			if (!isServer) socket.Connect(serverAddress);
 
 			// messaging
 			Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");

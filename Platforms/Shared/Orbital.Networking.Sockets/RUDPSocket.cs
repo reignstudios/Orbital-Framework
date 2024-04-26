@@ -21,14 +21,15 @@ namespace Orbital.Networking.Sockets
 	{
 		public RUDPPacketType type;
 		public uint id;
-		public Guid addressID;
+		public Guid senderAddressID, targetAddressID;
 		public int port;
 		public int dataSize;
 
-		public RUPDPacketHeader(uint id, Guid addressID, int port, int dataSize, RUDPPacketType type)
+		public RUPDPacketHeader(uint id, Guid senderAddressID, Guid targetAddressID, int port, int dataSize, RUDPPacketType type)
 		{
 			this.id = id;
-			this.addressID = addressID;
+			this.senderAddressID = senderAddressID;
+			this.targetAddressID = targetAddressID;
 			this.port = port;
 			this.dataSize = dataSize;
 			this.type = type;
@@ -94,10 +95,10 @@ namespace Orbital.Networking.Sockets
 		public List<RUDPSocketConnection> connections { get; private set; }
 
 		private bool listenCalled;
-		private Guid connectionValidationID;
 		private Timer tryToConnectTimer;
 
-		private readonly IPAddress listenAddress;
+		internal readonly IPAddress listenAddress, senderAddress;
+		internal readonly Guid listenAddressID, senderAddressID;
 		private readonly int port;
 		private readonly int receiveBufferSize;
 		private readonly bool async;
@@ -112,10 +113,13 @@ namespace Orbital.Networking.Sockets
 		public delegate void ConnectedCallbackMethod(RUDPSocket sender, RUDPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
 
-		public RUDPSocket(IPAddress listenAddress, int port, int receiveBufferSize, bool async = true)
+		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int receiveBufferSize, bool async = true)
 		: base(listenAddress, port)
 		{
 			this.listenAddress = listenAddress;
+			this.senderAddress = senderAddress;
+			this.listenAddressID = AddressToAddressID(listenAddress);
+			this.senderAddressID = AddressToAddressID(senderAddress);
 			this.port = port;
 			this.receiveBufferSize = receiveBufferSize;
 			this.async = async;
@@ -160,60 +164,6 @@ namespace Orbital.Networking.Sockets
 			base.Dispose();
 		}
 
-		public void Listen(int maxConnections)
-		{
-			if (listenCalled) throw new Exception("Listen already called");
-			listenCalled = true;
-
-			connectionValidationID = Guid.NewGuid();
-			connections = new List<RUDPSocketConnection>(maxConnections);
-			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, receiveBufferSize, async:async);
-			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
-			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
-			udpSocket.Join(true);
-		}
-
-		public unsafe void Connect(IPAddress remoteAddress)
-		{
-			if (!listenCalled) throw new Exception("Listen must be called first");
-			lock (this)
-			{
-				// get avaliable pool
-				int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
-				var pool = bufferPool.GetAvaliable(headerSize);
-				
-				// copy header & data into packet-data
-				var addressBytes = remoteAddress.GetAddressBytes();
-				if (addressBytes.Length < 16)
-				{
-					var newBytes = new byte[16];
-					Array.Copy(addressBytes, newBytes, addressBytes.Length);
-					addressBytes = newBytes;
-				}
-				
-				var addressID = new Guid(addressBytes);
-				var header = new RUPDPacketHeader(nextConnectingPacketID, addressID, port, 0, RUDPPacketType.ConnectionRequest);
-				header.id = uint.MaxValue;
-				fixed (byte* packetDataPtr = pool.data)
-				{
-					Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
-				}
-
-				// add to connecting buffers
-				connectingBuffers.Add(nextConnectingPacketID, pool);
-
-				// increase next packet ID
-				nextConnectingPacketID++;
-				if (nextConnectingPacketID == uint.MaxValue) nextConnectingPacketID = 0;// max-value is reserved for connection tests
-			}
-
-			// start timer if needed
-			if (tryToConnectTimer == null)
-			{
-				tryToConnectTimer = new Timer(ConnectWaitCallback, null, 0, 500);
-			}
-		}
-
 		private static IPAddress AddressIDToAddress(Guid addressID)
 		{
 			var bytes = addressID.ToByteArray();
@@ -237,6 +187,62 @@ namespace Orbital.Networking.Sockets
 			return new IPAddress(bytes);
 		}
 
+		private static Guid AddressToAddressID(IPAddress address)
+		{
+			var aadressBytes = address.GetAddressBytes();
+			if (aadressBytes.Length < 16)
+			{
+				var newBytes = new byte[16];
+				Array.Copy(aadressBytes, newBytes, aadressBytes.Length);
+				aadressBytes = newBytes;
+			}
+			return new Guid(aadressBytes);
+		}
+
+		public void Listen(int maxConnections)
+		{
+			if (listenCalled) throw new Exception("Listen already called");
+			listenCalled = true;
+
+			connections = new List<RUDPSocketConnection>(maxConnections);
+			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, receiveBufferSize, async:async);
+			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
+			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
+			udpSocket.Join(true);
+		}
+
+		public unsafe void Connect(IPAddress remoteAddress)
+		{
+			if (!listenCalled) throw new Exception("Listen must be called first");
+			lock (this)
+			{
+				// get avaliable pool
+				int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
+				var pool = bufferPool.GetAvaliable(headerSize);
+				
+				// copy header & data into packet-data
+				var remoteAddressID = AddressToAddressID(remoteAddress);
+				var header = new RUPDPacketHeader(nextConnectingPacketID, senderAddressID, remoteAddressID, port, 0, RUDPPacketType.ConnectionRequest);
+				fixed (byte* packetDataPtr = pool.data)
+				{
+					Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
+				}
+
+				// add to connecting buffers
+				connectingBuffers.Add(nextConnectingPacketID, pool);
+
+				// increase next packet ID
+				nextConnectingPacketID++;
+				if (nextConnectingPacketID == uint.MaxValue) nextConnectingPacketID = 0;
+			}
+
+			// start timer if needed
+			if (tryToConnectTimer == null)
+			{
+				tryToConnectTimer = new Timer(ConnectWaitCallback, null, 0, 500);
+			}
+		}
+
 		private unsafe void ConnectWaitCallback(object state)
 		{
 			lock (this)
@@ -257,8 +263,12 @@ namespace Orbital.Networking.Sockets
 						fixed (byte* dataPtr = pool.data)
 						{
 							var header = (RUPDPacketHeader*)dataPtr;
-							var remoteAddress = AddressIDToAddress(header->addressID);
+
+							// create endpoint
+							var remoteAddress = AddressIDToAddress(header->senderAddressID);
 							var remoteEndPoint = new IPEndPoint(remoteAddress, header->port);
+
+							// send connection request
 							udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
 						}
 					}
@@ -292,12 +302,16 @@ namespace Orbital.Networking.Sockets
 					dataRead += headerSize;
 
 					// validate expected data size
-					if (size < headerSize + header->dataSize) return;
+					if (size < headerSize + header->dataSize) goto CONTINUE_READ;
+
+					// validate target
+					if (header->targetAddressID != senderAddressID || header->port != port) goto CONTINUE_READ;
 
 					// process packet
-					if (header->type == RUDPPacketType.ConnectionRequest && header->id == uint.MaxValue)
+					if (header->type == RUDPPacketType.ConnectionRequest)
 					{
 						bool isValidRequest = false;
+						RUDPSocketConnection madeConnection = null;
 						lock (this)
 						{
 							if (isDisposed) return;
@@ -306,7 +320,7 @@ namespace Orbital.Networking.Sockets
 							bool connectionExist = false;
 							foreach (var connection in connections)
 							{
-								if (connection.addressID == header->addressID)
+								if (connection.addressID == header->senderAddressID)
 								{
 									connectionExist = true;
 									break;
@@ -314,14 +328,14 @@ namespace Orbital.Networking.Sockets
 							}
 
 							// check if request is valid
-							isValidRequest = header->addressID != Guid.Empty && header->port > 0;
+							isValidRequest = header->senderAddressID != Guid.Empty;
 
 							// add connection
 							if (!connectionExist && isValidRequest)
 							{
-								var remoteAddress = AddressIDToAddress(header->addressID);
-								var connection = new RUDPSocketConnection(this, remoteAddress, header->addressID, header->port);
-								connections.Add(connection);
+								var remoteAddress = AddressIDToAddress(header->senderAddressID);
+								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
+								connections.Add(madeConnection);
 							}
 						}
 
@@ -330,11 +344,19 @@ namespace Orbital.Networking.Sockets
 						try
 						{
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
+							header->targetAddressID = header->senderAddressID;// target is now sender
+							header->senderAddressID = senderAddressID;// sender is now us
 							socket.Send(data, 0, size);
 						}
 						catch { }
+
+						// fire connection made callback
+						if (madeConnection != null && ConnectedCallback != null)
+						{
+							ConnectedCallback(this, madeConnection, true, null);
+						}
 					}
-					else if (header->type == RUDPPacketType.ConnectionResponse_Success && header->id == uint.MaxValue)
+					else if (header->type == RUDPPacketType.ConnectionResponse_Success)
 					{
 						RUDPSocketConnection madeConnection = null;
 						lock (this)
@@ -345,7 +367,7 @@ namespace Orbital.Networking.Sockets
 							bool connectionExist = false;
 							foreach (var connection in connections)
 							{
-								if (connection.addressID == header->addressID)
+								if (connection.addressID == header->senderAddressID)
 								{
 									connectionExist = true;
 									break;
@@ -355,8 +377,8 @@ namespace Orbital.Networking.Sockets
 							// add connection
 							if (!connectionExist)
 							{
-								var remoteAddress = AddressIDToAddress(header->addressID);
-								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->addressID, header->port);
+								var remoteAddress = AddressIDToAddress(header->senderAddressID);
+								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
 								connections.Add(madeConnection);
 							}
 
@@ -374,7 +396,7 @@ namespace Orbital.Networking.Sockets
 							ConnectedCallback(this, madeConnection, true, null);
 						}
 					}
-					else if (header->type == RUDPPacketType.ConnectionResponse_Rejected && header->id == uint.MaxValue)
+					else if (header->type == RUDPPacketType.ConnectionResponse_Rejected)
 					{
 						lock (this)
 						{
@@ -389,7 +411,7 @@ namespace Orbital.Networking.Sockets
 						}
 
 						// fire connection failed callback
-						var address = AddressIDToAddress(header->addressID);
+						var address = AddressIDToAddress(header->senderAddressID);
 						ConnectedCallback?.Invoke(this, null, false, "Failed to connect for: " + address.ToString());
 					}
 					else if (header->type == RUDPPacketType.Send)
@@ -399,7 +421,7 @@ namespace Orbital.Networking.Sockets
 							if (isDisposed) return;
 							foreach (var connection in connections)
 							{
-								if (connection.addressID == header->addressID && connection.port == header->port)
+								if (connection.addressID == header->senderAddressID)
 								{
 									connection.FireDataRecievedCallback(data, dataRead, header->dataSize);
 									break;
@@ -414,7 +436,7 @@ namespace Orbital.Networking.Sockets
 							if (isDisposed) return;
 							foreach (var connection in connections)
 							{
-								if (connection.addressID == header->addressID && connection.port == header->port)
+								if (connection.addressID == header->senderAddressID)
 								{
 									connection.DataSentResponse(header->id);
 									break;
@@ -424,6 +446,7 @@ namespace Orbital.Networking.Sockets
 					}
 
 					// offset read data
+					CONTINUE_READ:;
 					dataRead += header->dataSize;
 					dataPtrOffset += headerSize + header->dataSize;// offset data pointer
 				}
