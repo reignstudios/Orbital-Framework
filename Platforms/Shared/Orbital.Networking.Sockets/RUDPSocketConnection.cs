@@ -121,12 +121,14 @@ namespace Orbital.Networking.Sockets
 					throw e;
 				}
 
+				// add packet to sending pool
+				sendingBuffers.Add(nextPacketID, pool);
+
 				// increment packet
 				++nextPacketID;
 				if (nextPacketID == uint.MaxValue) nextPacketID = 0;// max-value is reserved for connection tests
 
 				// return how many bytes sent
-				sendingBuffers.Add(nextPacketID, pool);
 				return bytesSent;
 			}
 		}
