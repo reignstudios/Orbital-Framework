@@ -351,7 +351,7 @@ namespace Orbital.Networking.Sockets
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, 0, size);
+							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize);
 						}
 						catch { }
 
@@ -440,7 +440,7 @@ namespace Orbital.Networking.Sockets
 							header->type = RUDPPacketType.SendResponse;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, 0, size);
+							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize);
 						}
 						catch { }
 					}

@@ -81,12 +81,10 @@ namespace Orbital.Networking.Sockets
 					var pool = buffer.Value;
 					fixed (byte* dataPtr = pool.data)
 					{
-						var header = (RUPDPacketHeader*)dataPtr;
-
 						// try sending data again
 						try
 						{
-							socket.udpSocket.Send(pool.data, 0, header->dataSize, endPoint);
+							socket.udpSocket.Send(pool.data, 0, pool.usedDataSize, endPoint);
 						}
 						catch { }
 					}
@@ -115,7 +113,7 @@ namespace Orbital.Networking.Sockets
 				int bytesSent;
 				try
 				{
-					bytesSent = socket.udpSocket.Send(pool.data, offset, size, endPoint);// TODO: guarantee packet order (only send now if nothing in que)
+					bytesSent = socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);// TODO: guarantee packet order (only send now if nothing in que)
 				}
 				catch (Exception e)
 				{
