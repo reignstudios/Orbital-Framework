@@ -31,8 +31,8 @@ namespace Orbital.Demo.Networking
 			IPAddress address = null;
 			if (string.IsNullOrEmpty(result))
 			{
-				Console.WriteLine("Using localhost");
-				address = IPAddress.Loopback;
+				Console.WriteLine("Using Any");
+				address = IPAddress.Any;
 			}
 
 			if (address == null && !IPAddress.TryParse(result, out address))
