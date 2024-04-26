@@ -15,7 +15,11 @@ namespace Orbital.Networking.Sockets
 			this.port = port;
 		}
 
-		public abstract void Dispose();
+		public virtual void Dispose()
+		{
+			isDisposed = true;
+		}
+
 		public abstract bool IsConnected();
     }
 }
