@@ -43,7 +43,7 @@ namespace Orbital.Networking.Sockets
 			public bool inUse;
 			public byte[] data;
 			public int usedDataSize;
-			public DateTime usedTime;
+			public DateTime usedAtTime;
 
 			public Pool(int size)
 			{
@@ -82,7 +82,7 @@ namespace Orbital.Networking.Sockets
 				// mark pool as being used & its set its used size
 				pool.usedDataSize = size;
 				pool.inUse = true;
-				pool.usedTime = DateTime.Now;
+				pool.usedAtTime = DateTime.Now;
 			}
 
 			return pool;
@@ -255,7 +255,7 @@ namespace Orbital.Networking.Sockets
 				foreach (var buffer in connectingBuffers)
 				{
 					var pool = buffer.Value;
-					if (!pool.inUse || (pool.usedTime - now).TotalSeconds >= 10)
+					if (!pool.inUse || (pool.usedAtTime - now).TotalSeconds >= 10)
 					{
 						if (finishedIDs == null) finishedIDs = new List<uint>();
 						finishedIDs.Add(buffer.Key);
@@ -488,6 +488,11 @@ namespace Orbital.Networking.Sockets
 		public override bool IsConnected()
 		{
 			lock (this) return !isDisposed && _connections != null && _connections.Count != 0;
+		}
+
+		internal void RemoveConnection(RUDPSocketConnection connection)
+		{
+			lock (this) _connections.Remove(connection);
 		}
 	}
 }

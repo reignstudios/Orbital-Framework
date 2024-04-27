@@ -4,6 +4,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using static Orbital.Networking.Sockets.RUDPBufferPool;
 
 namespace Orbital.Networking.Sockets
 {
@@ -44,7 +45,9 @@ namespace Orbital.Networking.Sockets
 				tryToSendTimer.Dispose();
 				tryToSendTimer = null;
 			}
+			sendingBuffers = null;
 
+			socket.RemoveConnection(this);
 			DataRecievedCallback = null;
 			DisconnectedCallback?.Invoke(this);
 			DisconnectedCallback = null;
@@ -74,22 +77,34 @@ namespace Orbital.Networking.Sockets
 
 		private unsafe void SendWaitCallbackTimer(object state)
 		{
+			bool isDisconnected = false;
 			lock (this)
 			{
+				var now = DateTime.Now;
 				foreach (var buffer in sendingBuffers)// TODO: guarantee packet order (only send next)
 				{
 					var pool = buffer.Value;
-					fixed (byte* dataPtr = pool.data)
+					if ((pool.usedAtTime - now).TotalSeconds >= 60)
 					{
-						// try sending data again
-						try
+						isDisconnected = true;
+						break;
+					}
+					else
+					{
+						fixed (byte* dataPtr = pool.data)
 						{
-							socket.udpSocket.Send(pool.data, 0, pool.usedDataSize, endPoint);
+							// try sending data again
+							try
+							{
+								socket.udpSocket.Send(pool.data, 0, pool.usedDataSize, endPoint);
+							}
+							catch { }
 						}
-						catch { }
 					}
 				}
 			}
+
+			if (isDisconnected) Dispose();
 		}
 
 		private unsafe int SendPacket(byte* buffer, int offset, int size)
