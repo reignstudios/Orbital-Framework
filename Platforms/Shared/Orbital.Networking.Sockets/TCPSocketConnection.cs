@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using NativeSocket = System.Net.Sockets.Socket;
 using System.IO;
 using System.Text;
+using System.Runtime.InteropServices;
 
 namespace Orbital.Networking.Sockets
 {
@@ -27,6 +28,7 @@ namespace Orbital.Networking.Sockets
 
 		private const int receiveBufferSize = 1024;
 		private readonly byte[] receiveBuffer;
+		private byte[] sendBuffer;
 
 		public TCPSocketConnection(TCPSocket socket, NativeSocket nativeSocket, IPAddress address, int port, IPAddress localAddress, bool async)
 		{
@@ -142,6 +144,35 @@ namespace Orbital.Networking.Sockets
 		public bool IsConnected()
 		{
 			lock (this) return isConnected && IsConnected(nativeSocket);
+		}
+
+		public unsafe int Send(byte* buffer, int size)
+		{
+			try
+			{
+				// validate send buffer is correct size
+				if (sendBuffer == null) sendBuffer = new byte[size];
+				else if (sendBuffer.Length < size) Array.Resize(ref sendBuffer, size);
+
+				// send
+				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
+				return nativeSocket.Send(sendBuffer, size, SocketFlags.None);
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose();
+				throw e;
+			}
+		}
+
+		public unsafe int Send(byte* buffer, int offset, int size)
+		{
+			return Send(buffer + offset, size);
+		}
+
+		public unsafe int Send<T>(T* data) where T : unmanaged
+		{
+			return Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
 		public int Send(byte[] buffer)

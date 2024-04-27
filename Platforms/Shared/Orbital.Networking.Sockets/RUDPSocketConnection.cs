@@ -58,7 +58,7 @@ namespace Orbital.Networking.Sockets
 			DisconnectedCallback = null;
 		}
 
-		internal unsafe void FireDataRecievedCallback(RUPDPacketHeader* header, byte[] data, int offset, int size)
+		internal unsafe void FireDataRecievedCallback(RUDPPacketHeader* header, byte[] data, int offset, int size)
 		{
 			if (lastReceivedPacketID != header->id)
 			{
@@ -86,7 +86,7 @@ namespace Orbital.Networking.Sockets
 					{
 						fixed (byte* data = sendingBuffers[0].data)
 						{
-							var header = (RUPDPacketHeader*)data;
+							var header = (RUDPPacketHeader*)data;
 							sendingPacketID = header->id;
 						}
 					}
@@ -150,13 +150,13 @@ namespace Orbital.Networking.Sockets
 			lock (this)
 			{
 				if (isDisposed) return 0;
-				int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
+				int headerSize = Marshal.SizeOf<RUDPPacketHeader>();
 
 				// get avaliable pool
 				var pool = socket.bufferPool.GetAvaliable(headerSize + size);
 
 				// copy header & data into pool
-				var header = new RUPDPacketHeader(nextPacketID, socket.senderAddressID, addressID, port, size, RUDPPacketType.Send);
+				var header = new RUDPPacketHeader(nextPacketID, socket.senderAddressID, addressID, port, size, RUDPPacketType.Send);
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);
@@ -208,6 +208,11 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
+		public unsafe int Send<T>(T* data) where T : unmanaged
+		{
+			return Send((byte*)data, Marshal.SizeOf<T>());
+		}
+
 		public unsafe int Send(byte[] buffer)
 		{
 			lock (this)
@@ -228,11 +233,6 @@ namespace Orbital.Networking.Sockets
 		{
 			byte[] data = encoding.GetBytes(text);
 			return Send(data);
-		}
-
-		public unsafe int Send<T>(T* data) where T : struct
-		{
-			return Send((byte*)data, Marshal.SizeOf<T>());
 		}
 	}
 }

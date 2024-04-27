@@ -17,7 +17,7 @@ namespace Orbital.Networking.Sockets
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
-	struct RUPDPacketHeader
+	struct RUDPPacketHeader
 	{
 		public RUDPPacketType type;
 		public uint id;
@@ -25,7 +25,7 @@ namespace Orbital.Networking.Sockets
 		public int port;
 		public int dataSize;
 
-		public RUPDPacketHeader(uint id, Guid senderAddressID, Guid targetAddressID, int port, int dataSize, RUDPPacketType type)
+		public RUDPPacketHeader(uint id, Guid senderAddressID, Guid targetAddressID, int port, int dataSize, RUDPPacketType type)
 		{
 			this.id = id;
 			this.senderAddressID = senderAddressID;
@@ -102,8 +102,7 @@ namespace Orbital.Networking.Sockets
 		internal readonly IPAddress listenAddress, senderAddress;
 		internal readonly Guid listenAddressID, senderAddressID;
 		private readonly int port;
-		private readonly int receiveBufferSize;
-		private readonly bool async;
+		private readonly int maxBufferSize;
 
 		internal RUDPBufferPool bufferPool;
 		private Dictionary<uint, RUDPBufferPool.Pool> connectingBuffers;
@@ -115,7 +114,7 @@ namespace Orbital.Networking.Sockets
 		public delegate void ConnectedCallbackMethod(RUDPSocket sender, RUDPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
 
-		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int receiveBufferSize, bool async = true)
+		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize)
 		: base(listenAddress, port)
 		{
 			this.listenAddress = listenAddress;
@@ -123,8 +122,7 @@ namespace Orbital.Networking.Sockets
 			this.listenAddressID = AddressToAddressID(listenAddress);
 			this.senderAddressID = AddressToAddressID(senderAddress);
 			this.port = port;
-			this.receiveBufferSize = receiveBufferSize;
-			this.async = async;
+			this.maxBufferSize = Math.Max(maxBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
 
 			bufferPool = new RUDPBufferPool();
 			connectingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();
@@ -207,7 +205,7 @@ namespace Orbital.Networking.Sockets
 			listenCalled = true;
 
 			_connections = new List<RUDPSocketConnection>(maxConnections);
-			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, receiveBufferSize, async:async);
+			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, maxBufferSize);
 			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
 			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
 			udpSocket.Join(true);
@@ -219,12 +217,12 @@ namespace Orbital.Networking.Sockets
 			lock (this)
 			{
 				// get avaliable pool
-				int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
+				int headerSize = Marshal.SizeOf<RUDPPacketHeader>();
 				var pool = bufferPool.GetAvaliable(headerSize);
 				
 				// copy header & data into packet-data
 				var remoteAddressID = AddressToAddressID(remoteAddress);
-				var header = new RUPDPacketHeader(nextConnectingPacketID, senderAddressID, remoteAddressID, port, 0, RUDPPacketType.ConnectionRequest);
+				var header = new RUDPPacketHeader(nextConnectingPacketID, senderAddressID, remoteAddressID, port, 0, RUDPPacketType.ConnectionRequest);
 				fixed (byte* packetDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, packetDataPtr, headerSize, headerSize);
@@ -264,7 +262,7 @@ namespace Orbital.Networking.Sockets
 					{
 						fixed (byte* dataPtr = pool.data)
 						{
-							var header = (RUPDPacketHeader*)dataPtr;
+							var header = (RUDPPacketHeader*)dataPtr;
 
 							// create endpoint
 							var remoteAddress = AddressIDToAddress(header->targetAddressID);
@@ -293,7 +291,7 @@ namespace Orbital.Networking.Sockets
 
 		private unsafe void Socket_DataRecievedCallback(UDPSocket socket, byte[] data, int size)
 		{
-			int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
+			int headerSize = Marshal.SizeOf<RUDPPacketHeader>();
 			if (size < headerSize) return;// make sure packet is at least the size of the header
 
 			int dataRead = 0;
@@ -304,7 +302,7 @@ namespace Orbital.Networking.Sockets
 				while (dataRead < size)
 				{
 					// read header
-					var header = (RUPDPacketHeader*)dataPtrOffset;
+					var header = (RUDPPacketHeader*)dataPtrOffset;
 					dataRead += headerSize;
 
 					// validate expected data size

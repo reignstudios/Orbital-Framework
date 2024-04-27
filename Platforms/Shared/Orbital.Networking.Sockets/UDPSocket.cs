@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using NativeSocket = System.Net.Sockets.Socket;
 
@@ -20,10 +21,10 @@ namespace Orbital.Networking.Sockets
 		private bool isConnected;
 		public readonly bool isMulticast;
 
-		protected readonly byte[] receiveBuffer;
+		protected readonly byte[] sendBuffer, receiveBuffer;
 		protected bool recieveData, async;
 
-		public UDPSocket(IPAddress remoteAddress, IPAddress localAddress, int port, bool isMulticast, int receiveBufferSize, bool async = true)
+		public UDPSocket(IPAddress remoteAddress, IPAddress localAddress, int port, bool isMulticast, int maxBufferSize, bool async = true)
 		: base(remoteAddress, port)
 		{
 			this.localAddress = localAddress;
@@ -32,7 +33,9 @@ namespace Orbital.Networking.Sockets
 
 			remoteEndPoint = new IPEndPoint(remoteAddress, port);
 			localEndPoint = new IPEndPoint(localAddress, port);
-			if (receiveBufferSize > 0) receiveBuffer = new byte[receiveBufferSize];
+
+			sendBuffer = new byte[maxBufferSize];
+			receiveBuffer = new byte[maxBufferSize];
 		}
 
 		/// <summary>
@@ -148,6 +151,48 @@ namespace Orbital.Networking.Sockets
 			}
 
 			if (disconnected || !IsConnected()) Dispose();
+		}
+
+		public unsafe int Send(byte* buffer, int size)
+		{
+			return Send(buffer, size, remoteEndPoint);
+		}
+
+		public unsafe int Send(byte* buffer, int size, EndPoint endpoint)
+		{
+			lock (this)
+			{
+				try
+				{
+					fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
+					return udpSocket.SendTo(sendBuffer, size, SocketFlags.None, endpoint);
+				}
+				catch (Exception e)
+				{
+					if (!IsConnected()) Dispose();
+					throw e;
+				}
+			}
+		}
+
+		public unsafe int Send(byte* buffer, int offset, int size)
+		{
+			return Send(buffer + offset, size);
+		}
+
+		public unsafe int Send(byte* buffer, int offset, int size, EndPoint endpoint)
+		{
+			return Send(buffer + offset, size, endpoint);
+		}
+
+		public unsafe int Send<T>(T* data) where T : unmanaged
+		{
+			return Send((byte*)data, Marshal.SizeOf<T>());
+		}
+
+		public unsafe int Send<T>(T* data, EndPoint endpoint) where T : unmanaged
+		{
+			return Send((byte*)data, Marshal.SizeOf<T>(), endpoint);
 		}
 
 		public int Send(byte[] buffer)
