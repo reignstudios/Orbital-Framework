@@ -492,7 +492,10 @@ namespace Orbital.Networking.Sockets
 
 		internal void RemoveConnection(RUDPSocketConnection connection)
 		{
-			lock (this) _connections.Remove(connection);
+			lock (this)
+			{
+				if (!isDisposed) _connections.Remove(connection);
+			}
 		}
 	}
 }

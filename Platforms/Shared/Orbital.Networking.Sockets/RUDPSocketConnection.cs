@@ -66,16 +66,26 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		internal void DataSentResponse(uint id)
+		internal unsafe void DataSentResponse(uint id)
 		{
 			lock (this)
 			{
 				if (isDisposed) return;
 				if (sendingPacketID == id && senderingBuffersLength > 0)
 				{
+					// release pool
 					sendingBuffers[0].inUse = false;
+
+					// remove first
 					senderingBuffersLength--;
 					for (int i = 0; i != senderingBuffersLength; ++i) sendingBuffers[i] = sendingBuffers[i + 1];// shift buffer down
+
+					// next sending packet waiting
+					fixed (byte* data = sendingBuffers[0].data)
+					{
+						var header = (RUPDPacketHeader*)data;
+						sendingPacketID = header->id;
+					}
 				}
 			}
 		}
