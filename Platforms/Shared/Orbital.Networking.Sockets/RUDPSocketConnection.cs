@@ -4,7 +4,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using static Orbital.Networking.Sockets.RUDPBufferPool;
 
 namespace Orbital.Networking.Sockets
 {
@@ -16,8 +15,9 @@ namespace Orbital.Networking.Sockets
 		private bool isConnected;
 		private Timer tryToSendTimer;
 
-		private uint nextPacketID;
-		private Dictionary<uint, RUDPBufferPool.Pool> sendingBuffers;
+		private uint sendingPacketID, lastReceivedID;
+		private RUDPBufferPool.Pool[] sendingBuffers;
+		private int senderingBuffersLength;
 
 		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int offset, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
@@ -31,8 +31,10 @@ namespace Orbital.Networking.Sockets
 			this.socket = socket;
 			endPoint = new IPEndPoint(remoteAddress, port);
 			addressID = remoteAddressID;
-			sendingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();
-			tryToSendTimer = new Timer(SendWaitCallbackTimer, null, 0, 500);
+
+			lastReceivedID = uint.MaxValue;
+			sendingBuffers = new RUDPBufferPool.Pool[100];
+			tryToSendTimer = new Timer(SendWaitCallbackTimer, null, 0, 100);
 		}
 
 		public override void Dispose()
@@ -45,7 +47,9 @@ namespace Orbital.Networking.Sockets
 				tryToSendTimer.Dispose();
 				tryToSendTimer = null;
 			}
+
 			sendingBuffers = null;
+			senderingBuffersLength = 0;
 
 			socket.RemoveConnection(this);
 			DataRecievedCallback = null;
@@ -53,19 +57,25 @@ namespace Orbital.Networking.Sockets
 			DisconnectedCallback = null;
 		}
 
-		internal void FireDataRecievedCallback(byte[] data, int offset, int size)
+		internal unsafe void FireDataRecievedCallback(RUPDPacketHeader* header, byte[] data, int offset, int size)
 		{
-			DataRecievedCallback?.Invoke(this, data, offset, size);// TODO: keep track if duplicate packets already recieved and ignore them
+			if (lastReceivedID != header->id)
+			{
+				DataRecievedCallback?.Invoke(this, data, offset, size);
+				lastReceivedID = header->id;
+			}
 		}
 
 		internal void DataSentResponse(uint id)
 		{
 			lock (this)
 			{
-				if (sendingBuffers.ContainsKey(id))
+				if (isDisposed) return;
+				if (sendingPacketID == id && senderingBuffersLength > 0)
 				{
-					sendingBuffers[id].inUse = false;
-					sendingBuffers.Remove(id);
+					sendingBuffers[0].inUse = false;
+					senderingBuffersLength--;
+					for (int i = 0; i != senderingBuffersLength; ++i) sendingBuffers[i] = sendingBuffers[i + 1];// shift buffer down
 				}
 			}
 		}
@@ -80,26 +90,25 @@ namespace Orbital.Networking.Sockets
 			bool isDisconnected = false;
 			lock (this)
 			{
+				if (isDisposed) return;
+				if (senderingBuffersLength == 0) return;
+
 				var now = DateTime.Now;
-				foreach (var buffer in sendingBuffers)// TODO: guarantee packet order (only send next)
+				var pool = sendingBuffers[0];
+				if ((pool.usedAtTime - now).TotalSeconds >= 60)
 				{
-					var pool = buffer.Value;
-					if ((pool.usedAtTime - now).TotalSeconds >= 60)
+					isDisconnected = true;
+				}
+				else
+				{
+					fixed (byte* dataPtr = pool.data)
 					{
-						isDisconnected = true;
-						break;
-					}
-					else
-					{
-						fixed (byte* dataPtr = pool.data)
+						// try sending data again
+						try
 						{
-							// try sending data again
-							try
-							{
-								socket.udpSocket.Send(pool.data, 0, pool.usedDataSize, endPoint);
-							}
-							catch { }
+							socket.udpSocket.Send(pool.data, 0, pool.usedDataSize, endPoint);
 						}
+						catch { }
 					}
 				}
 			}
@@ -109,15 +118,27 @@ namespace Orbital.Networking.Sockets
 
 		private unsafe int SendPacket(byte* buffer, int offset, int size)
 		{
+			// check if buffer is full, if so block until space avaliable
+			while (true)
+			{
+				lock (this)
+				{
+					if (isDisposed) return 0;
+					if (senderingBuffersLength < sendingBuffers.Length) break;
+				}
+			}
+
+			// continue sending
 			lock (this)
 			{
+				if (isDisposed) return 0;
 				int headerSize = Marshal.SizeOf<RUPDPacketHeader>();
 
 				// get avaliable pool
 				var pool = socket.bufferPool.GetAvaliable(headerSize + size);
 
 				// copy header & data into pool
-				var header = new RUPDPacketHeader(nextPacketID, socket.senderAddressID, addressID, port, size, RUDPPacketType.Send);
+				var header = new RUPDPacketHeader(sendingPacketID, socket.senderAddressID, addressID, port, size, RUDPPacketType.Send);
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);
@@ -125,23 +146,27 @@ namespace Orbital.Networking.Sockets
 				}
 
 				// send packet
-				int bytesSent;
-				try
+				int bytesSent = 0;
+				if (senderingBuffersLength == 0)// only send now if nothing in que
 				{
-					bytesSent = socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);// TODO: guarantee packet order (only send now if nothing in que)
-				}
-				catch (Exception e)
-				{
-					pool.inUse = false;
-					throw e;
+					try
+					{
+						bytesSent = socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
+					}
+					catch (Exception e)
+					{
+						pool.inUse = false;
+						throw e;
+					}
 				}
 
 				// add packet to sending pool
-				sendingBuffers.Add(nextPacketID, pool);
+				sendingBuffers[senderingBuffersLength] = pool;
+				senderingBuffersLength++;
 
 				// increment packet
-				++nextPacketID;
-				if (nextPacketID == uint.MaxValue) nextPacketID = 0;// max-value is reserved for connection tests
+				++sendingPacketID;
+				if (sendingPacketID == uint.MaxValue) sendingPacketID = 0;
 
 				// return how many bytes sent
 				return bytesSent;

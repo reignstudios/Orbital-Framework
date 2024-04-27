@@ -91,7 +91,7 @@ namespace Orbital.Networking.Sockets
 
 	public class RUDPSocket : Socket
 	{
-		public UDPSocket udpSocket { get; private set; }// TODO: this should be singular socket for all traffic and connections just use this with their remote address
+		public UDPSocket udpSocket { get; private set; }
 
 		private List<RUDPSocketConnection> _connections;
 		public IReadOnlyList<RUDPSocketConnection> connections => _connections;
@@ -166,7 +166,7 @@ namespace Orbital.Networking.Sockets
 			base.Dispose();
 		}
 
-		internal static IPAddress AddressIDToAddress(Guid addressID)// TODO: this can be optimized to reduce allocs
+		internal unsafe static IPAddress AddressIDToAddress(Guid addressID)
 		{
 			var bytes = addressID.ToByteArray();
 			bool isIPV6 = false;
@@ -428,7 +428,7 @@ namespace Orbital.Networking.Sockets
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
-									connection.FireDataRecievedCallback(data, dataRead, header->dataSize);
+									connection.FireDataRecievedCallback(header, data, dataRead, header->dataSize);
 									break;
 								}
 							}
