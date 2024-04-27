@@ -255,7 +255,7 @@ namespace Orbital.Networking.Sockets
 				foreach (var buffer in connectingBuffers)
 				{
 					var pool = buffer.Value;
-					if (!pool.inUse || (pool.usedAtTime - now).TotalSeconds >= 10)
+					if (!pool.inUse || (now - pool.usedAtTime).TotalSeconds >= 10)
 					{
 						if (finishedIDs == null) finishedIDs = new List<uint>();
 						finishedIDs.Add(buffer.Key);
