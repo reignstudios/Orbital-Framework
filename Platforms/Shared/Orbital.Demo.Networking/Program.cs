@@ -14,9 +14,20 @@ namespace Orbital.Demo.Networking
 	{
 		static void Main(string[] args)
 		{
+			// use TCP?
+			Console.WriteLine("Use TCP? (y/n)");
+			string result = Console.ReadLine();
+			if (string.IsNullOrEmpty(result) || result != "y" && result != "n")
+			{
+				Console.WriteLine("Invalid argument");
+				Console.ReadLine();
+				return;
+			}
+			bool useTCP = result == "y";
+
 			// is server?
 			Console.WriteLine("Is Server? (y/n)");
-			string result = Console.ReadLine();
+			result = Console.ReadLine();
 			if (string.IsNullOrEmpty(result) || result != "y" && result != "n")
 			{
 				Console.WriteLine("Invalid argument");
@@ -64,49 +75,129 @@ namespace Orbital.Demo.Networking
 				}
 			}
 
-			// connect
-			var socket = new RUDPSocket(IPAddress.Any, localAddress, 8080, 1024);
-			socket.ListenDisconnectedErrorCallback += Socket_ListenDisconnectedErrorCallback;
-			socket.ConnectedCallback += Socket_ConnectedCallback;
-			socket.Listen(1);
-			if (!isServer) socket.Connect(serverAddress);
-
-			// messaging
-			Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
-			string message = null;
-			while (true)
+			// run messaging demo
+			if (useTCP)
 			{
-				message = Console.ReadLine();
-				if (message == "q") break;
-				foreach (var connection in socket.connections)
+				// connect
+				if (isServer)
 				{
-					connection.Send(message, Encoding.ASCII);
+					using (var tcpSocketServer = new TCPSocketServer(localAddress, 8080, sendTimeout:60, receiveTimeout:60))
+					{
+						tcpSocketServer.ListenDisconnectedErrorCallback += TCPSocket_ListenDisconnectedErrorCallback;
+						tcpSocketServer.ConnectedCallback += TCPSocket_ConnectedCallback;
+						tcpSocketServer.Listen(16);
+						//if (!isServer) tcpSocket.Connect(serverAddress);
+
+						// messaging
+						Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
+						string message = null;
+						while (true)
+						{
+							message = Console.ReadLine();
+							if (message == "q") break;
+							foreach (var connection in tcpSocketServer.connections)
+							{
+								connection.Send(message, Encoding.ASCII);
+							}
+						}
+					}
+				}
+				else
+				{
+					using (var tcpSocketClient = new TCPSocketClient(serverAddress, localAddress, 8080, sendTimeout:60, receiveTimeout:60))
+					{
+						tcpSocketClient.ConnectedCallback += TCPSocket_ConnectedCallback;
+						tcpSocketClient.Connect();
+
+						// messaging
+						Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
+						string message = null;
+						while (true)
+						{
+							message = Console.ReadLine();
+							if (message == "q") break;
+							foreach (var connection in tcpSocketClient.connections)
+							{
+								connection.Send(message, Encoding.ASCII);
+							}
+						}
+					}
 				}
 			}
+			else
+			{
+				// connect
+				using (var rudpSocket = new RUDPSocket(IPAddress.Any, localAddress, 8080, 1024))
+				{
+					rudpSocket.ListenDisconnectedErrorCallback += RUDPSocket_ListenDisconnectedErrorCallback;
+					rudpSocket.ConnectedCallback += RUDPSocket_ConnectedCallback;
+					rudpSocket.Listen(16);
+					if (!isServer) rudpSocket.Connect(serverAddress);
 
-			// shutdown
-			socket.Dispose();
+					// messaging
+					Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
+					string message = null;
+					while (true)
+					{
+						message = Console.ReadLine();
+						if (message == "q") break;
+						foreach (var connection in rudpSocket.connections)
+						{
+							connection.Send(message, Encoding.ASCII);
+						}
+					}
+				}
+			}
 		}
 
-		private static void Socket_ListenDisconnectedErrorCallback(RUDPSocket sender, string message)
+		// =======================
+		// TCP
+		// =======================
+		private static void TCPSocket_ListenDisconnectedErrorCallback(TCPSocketServer sender, string message)
 		{
 			Console.WriteLine("ERROR: " + message);
 		}
 
-		private static void Socket_ConnectedCallback(RUDPSocket sender, RUDPSocketConnection connection, bool success, string message)
+		private static void TCPSocket_ConnectedCallback(TCPSocket socket, TCPSocketConnection connection, bool success, string message)
 		{
 			Console.WriteLine("Connected: " + connection.address.ToString());
-			connection.DataRecievedCallback += Connection_DataRecievedCallback;
-			connection.DisconnectedCallback += Connection_DisconnectedCallback;
+			connection.DataRecievedCallback += TCPConnection_DataRecievedCallback;
+			connection.DisconnectedCallback += TCPConnection_DisconnectedCallback;
 		}
 
-		private static void Connection_DataRecievedCallback(RUDPSocketConnection connection, byte[] data, int offset, int size)
+		private static void TCPConnection_DataRecievedCallback(TCPSocketConnection connection, byte[] data, int size)
+		{
+			string message = Encoding.ASCII.GetString(data, 0, size);
+			Console.WriteLine(string.Format("Message From:({0}) {1}", connection.address, message));
+		}
+
+		private static void TCPConnection_DisconnectedCallback(TCPSocketConnection connection)
+		{
+			Console.WriteLine("Diconnected: " + connection.address.ToString());
+		}
+
+		// =======================
+		// RUDP
+		// =======================
+		private static void RUDPSocket_ListenDisconnectedErrorCallback(RUDPSocket sender, string message)
+		{
+			Console.WriteLine("ERROR: " + message);
+		}
+
+		private static void RUDPSocket_ConnectedCallback(RUDPSocket sender, RUDPSocketConnection connection, bool success, string message)
+		{
+			Console.WriteLine("Connected: " + connection.address.ToString());
+			connection.DataRecievedCallback += RUDPConnection_DataRecievedCallback;
+			connection.DisconnectedCallback += RUDPConnection_DisconnectedCallback;
+		}
+
+		private static void RUDPConnection_DataRecievedCallback(RUDPSocketConnection connection, byte[] data, int offset, int size)
 		{
 			string message = Encoding.ASCII.GetString(data, offset, size);
 			Console.WriteLine(string.Format("Message From:({0}) {1}", connection.address, message));
 		}
 
-		private static void Connection_DisconnectedCallback(RUDPSocketConnection connection)
+		private static void RUDPConnection_DisconnectedCallback(RUDPSocketConnection connection)
 		{
 			Console.WriteLine("Diconnected: " + connection.address.ToString());
 		}
