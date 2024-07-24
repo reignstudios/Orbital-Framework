@@ -98,7 +98,7 @@ namespace Orbital.Networking.Sockets
 				{
 					if (!success && connection != null)
 					{
-						connection.Dispose();
+						connection.Dispose(message);
 						connection = null;
 					}
 				}
@@ -126,7 +126,7 @@ namespace Orbital.Networking.Sockets
 					}
 				}
 
-				if (disconnected) connection.Dispose();
+				if (disconnected) connection.Dispose("Disconnected while trying to connect");
 			}
 		}
 
