@@ -15,7 +15,7 @@ namespace Orbital.Networking.Sockets
 		public delegate void DataRecievedCallbackMethod(TCPSocketConnection connection, byte[] data, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
-		public delegate void DisconnectedCallbackMethod(TCPSocketConnection connection);
+		public delegate void DisconnectedCallbackMethod(TCPSocketConnection connection, string message);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
 
 		private NativeSocket nativeSocket;
@@ -45,25 +45,16 @@ namespace Orbital.Networking.Sockets
 
 		internal static void Dispose(NativeSocket socket)
 		{
-			// NOTE: Keep for reference.
-			// Don't invoke these.
-			// If the remote socket closes before the local one does it can prevent Windows from releasing the socket for reuse.
-			// Close then Dispose seems to release socket correctly without these.
-            /*try
-            {
-                if (IsConnected(socket))
-				{
-					socket.Shutdown(SocketShutdown.Both);
-					socket.Disconnect(false);
-				}
-            }
-            catch { }*/
-
             socket.Close();
             socket.Dispose();
 		}
 
 		public void Dispose()
+		{
+			Dispose((string)null);
+		}
+
+		public void Dispose(string message)
 		{
 			bool wasConnected;
 			lock (this)
@@ -79,7 +70,7 @@ namespace Orbital.Networking.Sockets
 			}
 
 			socket.RemoveConnection(this);
-			if (wasConnected) DisconnectedCallback?.Invoke(this);
+			if (wasConnected) DisconnectedCallback?.Invoke(this, message);
 			DataRecievedCallback = null;
 			DisconnectedCallback = null;
 		}
@@ -133,7 +124,7 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			if (disconnected || !IsConnected()) Dispose();
+			if (disconnected || !IsConnected()) Dispose("Disconnected");
 		}
 
 		internal static bool IsConnected(NativeSocket socket)
@@ -160,7 +151,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -183,7 +174,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -196,7 +187,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -240,7 +231,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}

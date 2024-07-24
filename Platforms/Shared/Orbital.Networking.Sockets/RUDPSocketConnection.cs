@@ -22,7 +22,7 @@ namespace Orbital.Networking.Sockets
 		public delegate void DataRecievedCallbackMethod(RUDPSocketConnection connection, byte[] data, int offset, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
-		public delegate void DisconnectedCallbackMethod(RUDPSocketConnection connection);
+		public delegate void DisconnectedCallbackMethod(RUDPSocketConnection connection, string message);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
 
 		public RUDPSocketConnection(RUDPSocket socket, IPAddress remoteAddress, Guid remoteAddressID, int port)
@@ -40,6 +40,11 @@ namespace Orbital.Networking.Sockets
 
 		public override void Dispose()
 		{
+			Dispose(null);
+		}
+
+		public void Dispose(string message)
+		{
 			base.Dispose();
 			isConnected = false;
 
@@ -54,7 +59,7 @@ namespace Orbital.Networking.Sockets
 
 			socket.RemoveConnection(this);
 			DataRecievedCallback = null;
-			DisconnectedCallback?.Invoke(this);
+			DisconnectedCallback?.Invoke(this, message);
 			DisconnectedCallback = null;
 		}
 
@@ -131,7 +136,7 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			if (isDisconnected) Dispose();
+			if (isDisconnected) Dispose("Disconnected");
 		}
 
 		private unsafe int SendPacket(byte* buffer, int offset, int size)

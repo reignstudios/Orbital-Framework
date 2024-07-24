@@ -466,7 +466,7 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		private void Socket_DisconnectedCallback(UDPSocket socket)
+		private void Socket_DisconnectedCallback(UDPSocket socket, string message)
 		{
 			lock (this)
 			{
@@ -474,13 +474,13 @@ namespace Orbital.Networking.Sockets
 				{
 					foreach (var connection in _connections)
 					{
-						connection.Dispose();
+						connection.Dispose(message);
 					}
 					_connections = null;
 				}
 			}
 
-			ListenDisconnectedErrorCallback?.Invoke(this, null);
+			ListenDisconnectedErrorCallback?.Invoke(this, message);
 		}
 
 		public override bool IsConnected()

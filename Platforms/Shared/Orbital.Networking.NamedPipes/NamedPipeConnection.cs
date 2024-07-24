@@ -10,7 +10,7 @@ namespace Orbital.Networking.NamedPipes
 		public delegate void DataRecievedCallbackMethod(NamedPipeConnection connection, byte[] data, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
-		public delegate void DisconnectedCallbackMethod(NamedPipeConnection connection);
+		public delegate void DisconnectedCallbackMethod(NamedPipeConnection connection, string message);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
 
 		private PipeStream nativePipe;
@@ -33,6 +33,11 @@ namespace Orbital.Networking.NamedPipes
 
 		public void Dispose()
 		{
+			Dispose(null);
+		}
+
+		public void Dispose(string message)
+		{
 			bool wasConnected;
 			lock (this)
 			{
@@ -47,7 +52,7 @@ namespace Orbital.Networking.NamedPipes
 			}
 
 			pipe.RemoveConnection(this);
-			if (wasConnected) DisconnectedCallback?.Invoke(this);
+			if (wasConnected) DisconnectedCallback?.Invoke(this, message);
 			DataRecievedCallback = null;
 			DisconnectedCallback = null;
 		}
@@ -102,7 +107,7 @@ namespace Orbital.Networking.NamedPipes
 				}
 			}
 
-			if (disconnected || !IsConnected()) Dispose();
+			if (disconnected || !IsConnected()) Dispose("Disconnected");
 		}
 
 		public bool IsConnected()
@@ -120,7 +125,7 @@ namespace Orbital.Networking.NamedPipes
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -134,7 +139,7 @@ namespace Orbital.Networking.NamedPipes
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}

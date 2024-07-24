@@ -12,7 +12,7 @@ namespace Orbital.Networking.Sockets
 		public delegate void DataRecievedCallbackMethod(UDPSocket socket, byte[] data, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
-		public delegate void DisconnectedCallbackMethod(UDPSocket socket);
+		public delegate void DisconnectedCallbackMethod(UDPSocket socket, string message);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
 
 		protected NativeSocket udpSocket;
@@ -84,7 +84,12 @@ namespace Orbital.Networking.Sockets
 
 		public override void Dispose()
 		{
-			isDisposed = true;
+			Dispose(null);
+		}
+
+		public void Dispose(string message)
+		{
+			base.Dispose();
 
 			bool wasConnected;
 			lock (this)
@@ -100,7 +105,7 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			if (wasConnected) DisconnectedCallback?.Invoke(this);
+			if (wasConnected) DisconnectedCallback?.Invoke(this, message);
 			DataRecievedCallback = null;
 			DisconnectedCallback = null;
 		}
@@ -150,7 +155,7 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			if (disconnected || !IsConnected()) Dispose();
+			if (disconnected || !IsConnected()) Dispose("Disposed");
 		}
 
 		public unsafe int Send(byte* buffer, int size)
@@ -169,7 +174,7 @@ namespace Orbital.Networking.Sockets
 				}
 				catch (Exception e)
 				{
-					if (!IsConnected()) Dispose();
+					if (!IsConnected()) Dispose(e.Message);
 					throw e;
 				}
 			}
@@ -203,7 +208,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -216,7 +221,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -229,7 +234,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -242,7 +247,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}
@@ -262,7 +267,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				if (!IsConnected()) Dispose();
+				if (!IsConnected()) Dispose(e.Message);
 				throw e;
 			}
 		}

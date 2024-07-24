@@ -168,12 +168,12 @@ namespace Orbital.Demo.Networking
 		private static void TCPConnection_DataRecievedCallback(TCPSocketConnection connection, byte[] data, int size)
 		{
 			string message = Encoding.ASCII.GetString(data, 0, size);
-			Console.WriteLine(string.Format("Message From:({0}) {1}", connection.address, message));
+			Console.WriteLine(string.Format("Message From:({0}) '{1}'", connection.address, message));
 		}
 
-		private static void TCPConnection_DisconnectedCallback(TCPSocketConnection connection)
+		private static void TCPConnection_DisconnectedCallback(TCPSocketConnection connection, string message)
 		{
-			Console.WriteLine("Diconnected: " + connection.address.ToString());
+			Console.WriteLine(string.Format("Diconnected: {0} '{1}'", connection.address, message));
 		}
 
 		// =======================
@@ -197,9 +197,9 @@ namespace Orbital.Demo.Networking
 			Console.WriteLine(string.Format("Message From:({0}) {1}", connection.address, message));
 		}
 
-		private static void RUDPConnection_DisconnectedCallback(RUDPSocketConnection connection)
+		private static void RUDPConnection_DisconnectedCallback(RUDPSocketConnection connection, string message)
 		{
-			Console.WriteLine("Diconnected: " + connection.address.ToString());
+			Console.WriteLine(string.Format("Diconnected: {0} '{1}'", connection.address, message));
 		}
 	}
 }
