@@ -12,7 +12,7 @@ namespace Orbital.Networking.Sockets
 		private NativeSocket tcpListenSocket;
 		private int sendTimeout, receiveTimeout;
 
-		public delegate void ListenDisconnectedErrorCallbackMethod(TCPSocketServer sender, string message);
+		public delegate void ListenDisconnectedErrorCallbackMethod(TCPSocketServer socket, string message);
 		public event ListenDisconnectedErrorCallbackMethod ListenDisconnectedErrorCallback;
 
 		public TCPSocketServer(IPAddress listenAddress, int port, int sendTimeout = -1, int receiveTimeout = -1, bool async = true)
