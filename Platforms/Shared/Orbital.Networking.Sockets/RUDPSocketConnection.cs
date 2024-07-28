@@ -118,7 +118,7 @@ namespace Orbital.Networking.Sockets
 
 				var now = DateTime.Now;
 				var pool = sendingBuffers[0];
-				if ((now - pool.usedAtTime).TotalSeconds >= 60)
+				if (socket.timeout >= 0 && (now - pool.usedAtTime).TotalSeconds >= socket.timeout)
 				{
 					isDisconnected = true;
 				}

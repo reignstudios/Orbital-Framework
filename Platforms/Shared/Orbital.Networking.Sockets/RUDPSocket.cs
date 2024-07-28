@@ -103,6 +103,7 @@ namespace Orbital.Networking.Sockets
 		internal readonly Guid listenAddressID, senderAddressID;
 		private readonly int port;
 		private readonly int maxBufferSize;
+		internal readonly int timeout;
 
 		internal RUDPBufferPool bufferPool;
 		private Dictionary<uint, RUDPBufferPool.Pool> connectingBuffers;
@@ -114,7 +115,15 @@ namespace Orbital.Networking.Sockets
 		public delegate void ConnectedCallbackMethod(RUDPSocket socket, RUDPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
 
-		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="listenAddress">Address to listen for connection requests on</param>
+		/// <param name="senderAddress">Address we are sending from (this must be a public address a reciever can responsd to)</param>
+		/// <param name="port">Port all traffic is sent over</param>
+		/// <param name="maxBufferSize">Max size a package can be</param>
+		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
+		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize, int timeout = -1)
 		: base(listenAddress, port)
 		{
 			this.listenAddress = listenAddress;
@@ -123,6 +132,7 @@ namespace Orbital.Networking.Sockets
 			this.senderAddressID = AddressToAddressID(senderAddress);
 			this.port = port;
 			this.maxBufferSize = Math.Max(maxBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
+			this.timeout = timeout;
 
 			bufferPool = new RUDPBufferPool();
 			connectingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();

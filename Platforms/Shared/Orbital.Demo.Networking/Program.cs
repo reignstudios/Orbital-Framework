@@ -81,7 +81,7 @@ namespace Orbital.Demo.Networking
 				// connect
 				if (isServer)
 				{
-					using (var tcpSocketServer = new TCPSocketServer(localAddress, 8080, sendTimeout:60, receiveTimeout:60))
+					using (var tcpSocketServer = new TCPSocketServer(localAddress, 8080, timeout:60))
 					{
 						tcpSocketServer.ListenDisconnectedErrorCallback += TCPSocket_ListenDisconnectedErrorCallback;
 						tcpSocketServer.ConnectedCallback += TCPSocket_ConnectedCallback;

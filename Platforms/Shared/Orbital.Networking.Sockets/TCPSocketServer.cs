@@ -10,20 +10,22 @@ namespace Orbital.Networking.Sockets
     {
 		private bool isListening;
 		private NativeSocket tcpListenSocket;
-		private int sendTimeout, receiveTimeout;
+		private readonly int timeout;
 
 		public delegate void ListenDisconnectedErrorCallbackMethod(TCPSocketServer socket, string message);
 		public event ListenDisconnectedErrorCallbackMethod ListenDisconnectedErrorCallback;
 
-		public TCPSocketServer(IPAddress listenAddress, int port, int sendTimeout = -1, int receiveTimeout = -1, bool async = true)
+		/// <summary>
+		/// TCPSocketServer
+		/// </summary>
+		/// <param name="listenAddress">Address to listen for connection requests on</param>
+		/// <param name="port">Port all traffic is sent over</param>
+		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
+		/// <param name="async">Use async methods</param>
+		public TCPSocketServer(IPAddress listenAddress, int port, int timeout = -1, bool async = true)
 		: base(listenAddress, port, async)
 		{
-			this.sendTimeout = sendTimeout;
-			this.receiveTimeout = receiveTimeout;
-			if (sendTimeout >= 0 || receiveTimeout >= 0)
-			{
-				if (sendTimeout < 0 || receiveTimeout < 0) throw new ArgumentException("'sendTimeout' and 'receiveTimeout' must both be >= 0 if either is");
-			}
+			this.timeout = timeout;
 		}
 
 		public override void Dispose()
@@ -98,9 +100,12 @@ namespace Orbital.Networking.Sockets
 				try
 				{
 					socket = tcpListenSocket.EndAccept(ar);
-					if (sendTimeout >= 0 || receiveTimeout >= 0) socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
-					if (sendTimeout >= 0) socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, sendTimeout);
-					if (receiveTimeout >= 0) socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, receiveTimeout);
+					if (timeout >= 0)
+					{
+						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
+						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout * 1000);
+						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout * 1000);
+					}
 					var remoteEndPoint = socket.RemoteEndPoint as IPEndPoint;
 					var localEndPoint = socket.LocalEndPoint as IPEndPoint;
 					if (remoteEndPoint == null) remoteEndPoint = new IPEndPoint(IPAddress.None, port);
