@@ -108,10 +108,10 @@ namespace Orbital.Networking.Sockets
 		private Dictionary<uint, RUDPBufferPool.Pool> connectingBuffers;
 		private uint nextConnectingPacketID;
 
-		public delegate void ListenDisconnectedErrorCallbackMethod(RUDPSocket sender, string message);
+		public delegate void ListenDisconnectedErrorCallbackMethod(RUDPSocket socket, string message);
 		public event ListenDisconnectedErrorCallbackMethod ListenDisconnectedErrorCallback;
 
-		public delegate void ConnectedCallbackMethod(RUDPSocket sender, RUDPSocketConnection connection, bool success, string message);
+		public delegate void ConnectedCallbackMethod(RUDPSocket socket, RUDPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
 
 		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize)
