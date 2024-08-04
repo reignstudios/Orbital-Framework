@@ -213,6 +213,11 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
+		public unsafe int Send<T>(T data) where T : unmanaged
+		{
+			return Send((byte*)&data, Marshal.SizeOf<T>());
+		}
+
 		public unsafe int Send<T>(T* data) where T : unmanaged
 		{
 			return Send((byte*)data, Marshal.SizeOf<T>());

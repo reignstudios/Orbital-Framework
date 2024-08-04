@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Orbital.Networking.NamedPipes
@@ -20,6 +22,7 @@ namespace Orbital.Networking.NamedPipes
 
 		internal const int receiveBufferSize = 1024;
 		private readonly byte[] receiveBuffer;
+		private byte[] sendBuffer;
 
 		public NamedPipeConnection(NamedPipe pipe, PipeStream nativePipe, string name)
 		{
@@ -113,6 +116,40 @@ namespace Orbital.Networking.NamedPipes
 		public bool IsConnected()
 		{
 			lock (this) return isConnected && nativePipe != null && nativePipe.IsConnected;
+		}
+
+		public unsafe void Send(byte* buffer, int size)
+		{
+			try
+			{
+				// validate send buffer is correct size
+				if (sendBuffer == null) sendBuffer = new byte[size];
+				else if (sendBuffer.Length < size) Array.Resize(ref sendBuffer, size);
+
+				// send
+				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
+				nativePipe.Write(sendBuffer, 0, size);
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose(e.Message);
+				throw e;
+			}
+		}
+
+		public unsafe void Send(byte* buffer, int offset, int size)
+		{
+			Send(buffer + offset, size);
+		}
+
+		public unsafe void Send<T>(T data) where T : unmanaged
+		{
+			Send((byte*)&data, Marshal.SizeOf<T>());
+		}
+
+		public unsafe void Send<T>(T* data) where T : unmanaged
+		{
+			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
 		public int Send(byte[] buffer)
