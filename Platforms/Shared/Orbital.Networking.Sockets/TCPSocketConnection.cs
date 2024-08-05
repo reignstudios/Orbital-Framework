@@ -184,6 +184,19 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
+		public int Send(byte[] buffer, int size)
+		{
+			try
+			{
+				return nativeSocket.Send(buffer, 0, size, SocketFlags.None);
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose(e.Message);
+				throw e;
+			}
+		}
+		
 		public int Send(byte[] buffer, int offset, int size)
 		{
 			try

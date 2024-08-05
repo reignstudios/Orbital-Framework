@@ -197,19 +197,19 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public unsafe int Send(byte* buffer, int length)
+		public unsafe int Send(byte* buffer, int size)
 		{
 			lock (this)
 			{
-				return SendPacket(buffer, 0, length);
+				return SendPacket(buffer, 0, size);
 			}
 		}
 
-		public unsafe int Send(byte* buffer, int offset, int length)
+		public unsafe int Send(byte* buffer, int offset, int size)
 		{
 			lock (this)
 			{
-				return SendPacket(buffer, offset, length);
+				return SendPacket(buffer, offset, size);
 			}
 		}
 
@@ -231,6 +231,14 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
+		public unsafe int Send(byte[] buffer, int size)
+		{
+			lock (this)
+			{
+				fixed (byte* bufferPtr = buffer) return SendPacket(bufferPtr, 0, size);
+			}
+		}
+		
 		public unsafe int Send(byte[] buffer, int offset, int size)
 		{
 			lock (this)

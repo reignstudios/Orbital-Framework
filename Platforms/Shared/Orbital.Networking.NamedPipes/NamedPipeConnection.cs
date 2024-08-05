@@ -167,6 +167,20 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 
+		public int Send(byte[] buffer, int size)
+		{
+			try
+			{
+				nativePipe.Write(buffer, 0, size);
+				return size;
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose(e.Message);
+				throw e;
+			}
+		}
+		
 		public int Send(byte[] buffer, int offset, int size)
 		{
 			try
