@@ -1,20 +1,19 @@
 ﻿using Orbital.Host;
-using Orbital.Host.Cocoa;
+using Orbital.Host.X11;
 
-namespace Orbital.Demo.Cocoa
+namespace Orbital.Demo.X11
 {
     static class Program
     {
         private static void Main(string[] args)
         {
             // init app and window
-            var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Mac");
-            window.Show();
+            Application.Init();
+            var window = new Window("Demo: X11", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, false);
             
             // run app till quit
-            application.Run();
+            Application.Run(window);
+            Application.Shutdown();
         }
     }
 }

@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Demo.Wayland\Program.cs" Link="Program.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Orbital.Host.Wayland\Orbital.Host.Wayland.csproj" />
     </ItemGroup>
 

@@ -1,20 +1,19 @@
 ﻿using Orbital.Host;
-using Orbital.Host.Cocoa;
+using Orbital.Host.Wayland;
 
-namespace Orbital.Demo.Cocoa
+namespace Orbital.Demo.Wayland
 {
     static class Program
     {
         private static void Main(string[] args)
         {
             // init app and window
-            var application = new Application();
-            var window = new Window(0, 0, 320, 240, WindowSizeType.WorkingArea, WindowType.Tool, WindowStartupPosition.CenterScreen);
-            window.SetTitle("Demo: Mac");
-            window.Show();
+            Application.Init("org.ReignStudios.Orbital");
+            var window = new Window("Demo: Wayland", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen, WindowContentType.None);
             
             // run app till quit
-            application.Run();
+            Application.Run(window);
+            Application.Shutdown();
         }
     }
 }
