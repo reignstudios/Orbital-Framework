@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Include="..\..\Shared\Orbital.Demo.GTK4\Program.cs" Link="Program.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Orbital.Host.GTK4\Orbital.Host.GTK4.csproj" />
     </ItemGroup>
 
