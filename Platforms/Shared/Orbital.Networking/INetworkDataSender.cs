@@ -4,10 +4,15 @@ using System.Text;
 
 namespace Orbital.Networking
 {
-	public interface INetworkDataSender
+	public unsafe interface INetworkDataSender
 	{
-		int Send(byte[] buffer);
-		int Send(byte[] buffer, int offset, int size);
-		int Send(string text, Encoding encoding);
+		void Send(byte* data, int size);
+		void Send(byte* data, int offset, int size);
+		void Send(byte[] data);
+		void Send(byte[] data, int size);
+		void Send(byte[] data, int offset, int size);
+		void Send<T>(T data) where T : unmanaged;
+		void Send<T>(T* data) where T : unmanaged;
+		void Send(string text, Encoding encoding);
 	}
 }

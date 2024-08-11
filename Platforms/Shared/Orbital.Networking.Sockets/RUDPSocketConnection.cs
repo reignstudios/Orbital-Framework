@@ -139,14 +139,14 @@ namespace Orbital.Networking.Sockets
 			if (isDisconnected) Dispose("Disconnected");
 		}
 
-		private unsafe int SendPacket(byte* buffer, int offset, int size)
+		private unsafe void SendPacket(byte* buffer, int offset, int size)
 		{
 			// check if buffer is full, if so block until space avaliable
 			while (true)
 			{
 				lock (this)
 				{
-					if (isDisposed) return 0;
+					if (isDisposed) return;
 					if (senderingBuffersLength < sendingBuffers.Length) break;
 				}
 			}
@@ -154,7 +154,7 @@ namespace Orbital.Networking.Sockets
 			// continue sending
 			lock (this)
 			{
-				if (isDisposed) return 0;
+				if (isDisposed) return;
 				int headerSize = Marshal.SizeOf<RUDPPacketHeader>();
 
 				// get avaliable pool
@@ -174,7 +174,7 @@ namespace Orbital.Networking.Sockets
 				{
 					try
 					{
-						bytesSent = socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
+						socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
 						sendingPacketID = nextPacketID;
 					}
 					catch (Exception e)
@@ -191,66 +191,48 @@ namespace Orbital.Networking.Sockets
 				// increment packet
 				++nextPacketID;
 				if (nextPacketID == uint.MaxValue) nextPacketID = 0;
-
-				// return how many bytes sent
-				return bytesSent;
 			}
 		}
 
-		public unsafe int Send(byte* buffer, int size)
+		public unsafe void Send(byte* buffer, int size)
 		{
-			lock (this)
-			{
-				return SendPacket(buffer, 0, size);
-			}
+			SendPacket(buffer, 0, size);
 		}
 
-		public unsafe int Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* buffer, int offset, int size)
 		{
-			lock (this)
-			{
-				return SendPacket(buffer, offset, size);
-			}
+			SendPacket(buffer, offset, size);
 		}
 
-		public unsafe int Send<T>(T data) where T : unmanaged
+		public unsafe void Send<T>(T data) where T : unmanaged
 		{
-			return Send((byte*)&data, Marshal.SizeOf<T>());
+			Send((byte*)&data, Marshal.SizeOf<T>());
 		}
 
-		public unsafe int Send<T>(T* data) where T : unmanaged
+		public unsafe void Send<T>(T* data) where T : unmanaged
 		{
-			return Send((byte*)data, Marshal.SizeOf<T>());
+			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public unsafe int Send(byte[] buffer)
+		public unsafe void Send(byte[] buffer)
 		{
-			lock (this)
-			{
-				fixed (byte* bufferPtr = buffer) return SendPacket(bufferPtr, 0, buffer.Length);
-			}
+			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, 0, buffer.Length);
 		}
 
-		public unsafe int Send(byte[] buffer, int size)
+		public unsafe void Send(byte[] buffer, int size)
 		{
-			lock (this)
-			{
-				fixed (byte* bufferPtr = buffer) return SendPacket(bufferPtr, 0, size);
-			}
+			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, 0, size);
 		}
 		
-		public unsafe int Send(byte[] buffer, int offset, int size)
+		public unsafe void Send(byte[] buffer, int offset, int size)
 		{
-			lock (this)
-			{
-				fixed (byte* bufferPtr = buffer) return SendPacket(bufferPtr, offset, size);
-			}
+			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, offset, size);
 		}
 
-		public int Send(string text, Encoding encoding)
+		public void Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			return Send(data);
+			Send(data);
 		}
 	}
 }

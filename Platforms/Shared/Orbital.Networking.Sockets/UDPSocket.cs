@@ -158,19 +158,23 @@ namespace Orbital.Networking.Sockets
 			if (disconnected || !IsConnected()) Dispose("Disposed");
 		}
 
-		public unsafe int Send(byte* buffer, int size)
+		public unsafe void Send(byte* buffer, int size)
 		{
-			return Send(buffer, size, remoteEndPoint);
+			Send(buffer, size, remoteEndPoint);
 		}
 
-		public unsafe int Send(byte* buffer, int size, EndPoint endpoint)
+		public unsafe void Send(byte* buffer, int size, EndPoint endpoint)
 		{
 			lock (this)
 			{
 				try
 				{
 					fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
-					return udpSocket.SendTo(sendBuffer, size, SocketFlags.None, endpoint);
+					int sent = 0;
+					do
+					{
+						sent += udpSocket.SendTo(sendBuffer, size, SocketFlags.None, endpoint);
+					} while (sent < size);
 				}
 				catch (Exception e)
 				{
@@ -180,31 +184,60 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public unsafe int Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* buffer, int offset, int size)
 		{
-			return Send(buffer + offset, size);
+			Send(buffer + offset, size, remoteEndPoint);
 		}
 
-		public unsafe int Send(byte* buffer, int offset, int size, EndPoint endpoint)
+		public unsafe void Send(byte* buffer, int offset, int size, EndPoint endpoint)
 		{
-			return Send(buffer + offset, size, endpoint);
+			Send(buffer + offset, size, endpoint);
 		}
 
-		public unsafe int Send<T>(T* data) where T : unmanaged
+		public unsafe void Send<T>(T* data) where T : unmanaged
 		{
-			return Send((byte*)data, Marshal.SizeOf<T>());
+			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public unsafe int Send<T>(T* data, EndPoint endpoint) where T : unmanaged
+		public unsafe void Send<T>(T* data, EndPoint endpoint) where T : unmanaged
 		{
-			return Send((byte*)data, Marshal.SizeOf<T>(), endpoint);
+			Send((byte*)data, Marshal.SizeOf<T>(), endpoint);
 		}
 
-		public int Send(byte[] buffer)
+		public void Send(byte[] data)
+		{
+			Send(data, 0, data.Length, remoteEndPoint);
+		}
+
+		public void Send(byte[] data, EndPoint endpoint)
+		{
+			Send(data, 0, data.Length, endpoint);
+		}
+
+		public void Send(byte[] data, int size)
+		{
+			Send(data, 0, size, remoteEndPoint);
+		}
+
+		public void Send(byte[] data, int size, EndPoint endpoint)
+		{
+			Send(data, 0, size, endpoint);
+		}
+
+		public void Send(byte[] data, int offset, int size)
+		{
+			Send(data, offset, size, remoteEndPoint);
+		}
+
+		public void Send(byte[] data, int offset, int size, EndPoint endpoint)
 		{
 			try
 			{
-				return udpSocket.SendTo(buffer, SocketFlags.None, remoteEndPoint);
+				int sent = 0;
+				do
+				{
+					sent += udpSocket.SendTo(data, offset, size, SocketFlags.None, endpoint);
+				} while (sent < size);
 			}
 			catch (Exception e)
 			{
@@ -213,75 +246,10 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public int Send(byte[] buffer, EndPoint endpoint)
-		{
-			try
-			{
-				return udpSocket.SendTo(buffer, SocketFlags.None, endpoint);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
-		}
-
-		public int Send(byte[] buffer, int size)
-		{
-			try
-			{
-				return udpSocket.SendTo(buffer, size, SocketFlags.None, remoteEndPoint);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
-		}
-
-		public int Send(byte[] buffer, int size, EndPoint endpoint)
-		{
-			try
-			{
-				return udpSocket.SendTo(buffer, size, SocketFlags.None, endpoint);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
-		}
-
-		public int Send(byte[] buffer, int offset, int size)
-		{
-			try
-			{
-				return udpSocket.SendTo(buffer, offset, size, SocketFlags.None, remoteEndPoint);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
-		}
-
-		public int Send(byte[] buffer, int offset, int size, EndPoint endpoint)
-		{
-			try
-			{
-				return udpSocket.SendTo(buffer, offset, size, SocketFlags.None, endpoint);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
-		}
-
-		public int Send(string text, Encoding encoding)
+		public void Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			return Send(data);
+			Send(data);
 		}
 
 		public int Recieve(byte[] recieveBuffer)

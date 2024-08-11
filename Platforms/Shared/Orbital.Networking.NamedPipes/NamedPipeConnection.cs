@@ -152,13 +152,11 @@ namespace Orbital.Networking.NamedPipes
 			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public int Send(byte[] buffer)
+		public void Send(byte[] buffer)
 		{
 			try
 			{
-				int size = buffer.Length;
-				nativePipe.Write(buffer, 0, size);
-				return size;
+				nativePipe.Write(buffer, 0, buffer.Length);
 			}
 			catch (Exception e)
 			{
@@ -167,12 +165,11 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 
-		public int Send(byte[] buffer, int size)
+		public void Send(byte[] buffer, int size)
 		{
 			try
 			{
 				nativePipe.Write(buffer, 0, size);
-				return size;
 			}
 			catch (Exception e)
 			{
@@ -181,12 +178,11 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 		
-		public int Send(byte[] buffer, int offset, int size)
+		public void Send(byte[] buffer, int offset, int size)
 		{
 			try
 			{
 				nativePipe.Write(buffer, offset, size);
-				return size;
 			}
 			catch (Exception e)
 			{
@@ -195,10 +191,10 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 
-		public int Send(string text, Encoding encoding)
+		public void Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			return Send(data);
+			Send(data);
 		}
 	}
 }
