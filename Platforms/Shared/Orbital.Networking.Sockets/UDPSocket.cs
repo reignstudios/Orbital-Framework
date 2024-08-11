@@ -158,18 +158,18 @@ namespace Orbital.Networking.Sockets
 			if (disconnected || !IsConnected()) Dispose("Disposed");
 		}
 
-		public unsafe void Send(byte* buffer, int size)
+		public unsafe void Send(byte* data, int size)
 		{
-			Send(buffer, size, remoteEndPoint);
+			Send(data, size, remoteEndPoint);
 		}
 
-		public unsafe void Send(byte* buffer, int size, EndPoint endpoint)
+		public unsafe void Send(byte* data, int size, EndPoint endpoint)
 		{
 			lock (this)
 			{
 				try
 				{
-					fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
+					fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(data, sendBufferPtr, size, size);
 					int sent = 0;
 					do
 					{
@@ -184,19 +184,29 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public unsafe void Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* data, int offset, int size)
 		{
-			Send(buffer + offset, size, remoteEndPoint);
+			Send(data + offset, size, remoteEndPoint);
 		}
 
-		public unsafe void Send(byte* buffer, int offset, int size, EndPoint endpoint)
+		public unsafe void Send(byte* data, int offset, int size, EndPoint endpoint)
 		{
-			Send(buffer + offset, size, endpoint);
+			Send(data + offset, size, endpoint);
+		}
+		
+		public unsafe void Send<T>(T data) where T : unmanaged
+		{
+			Send((byte*)&data, Marshal.SizeOf<T>(), remoteEndPoint);
+		}
+
+		public unsafe void Send<T>(T data, EndPoint endpoint) where T : unmanaged
+		{
+			Send((byte*)&data, Marshal.SizeOf<T>(), endpoint);
 		}
 
 		public unsafe void Send<T>(T* data) where T : unmanaged
 		{
-			Send((byte*)data, Marshal.SizeOf<T>());
+			Send((byte*)data, Marshal.SizeOf<T>(), remoteEndPoint);
 		}
 
 		public unsafe void Send<T>(T* data, EndPoint endpoint) where T : unmanaged

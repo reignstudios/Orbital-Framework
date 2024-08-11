@@ -139,7 +139,7 @@ namespace Orbital.Networking.Sockets
 			if (isDisconnected) Dispose("Disconnected");
 		}
 
-		private unsafe void SendPacket(byte* buffer, int offset, int size)
+		private unsafe void SendPacket(byte* data, int offset, int size)
 		{
 			// check if buffer is full, if so block until space avaliable
 			while (true)
@@ -165,7 +165,7 @@ namespace Orbital.Networking.Sockets
 				fixed (byte* poolDataPtr = pool.data)
 				{
 					Buffer.MemoryCopy(&header, poolDataPtr, headerSize, headerSize);
-					if (buffer != null && size != 0) Buffer.MemoryCopy(buffer, poolDataPtr + headerSize, size, size);
+					if (data != null && size != 0) Buffer.MemoryCopy(data, poolDataPtr + headerSize, size, size);
 				}
 
 				// send packet
@@ -194,14 +194,14 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public unsafe void Send(byte* buffer, int size)
+		public unsafe void Send(byte* data, int size)
 		{
-			SendPacket(buffer, 0, size);
+			SendPacket(data, 0, size);
 		}
 
-		public unsafe void Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* data, int offset, int size)
 		{
-			SendPacket(buffer, offset, size);
+			SendPacket(data, offset, size);
 		}
 
 		public unsafe void Send<T>(T data) where T : unmanaged
@@ -214,19 +214,19 @@ namespace Orbital.Networking.Sockets
 			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public unsafe void Send(byte[] buffer)
+		public unsafe void Send(byte[] data)
 		{
-			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, 0, buffer.Length);
+			fixed (byte* dataPtr = data) SendPacket(dataPtr, 0, data.Length);
 		}
 
-		public unsafe void Send(byte[] buffer, int size)
+		public unsafe void Send(byte[] data, int size)
 		{
-			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, 0, size);
+			fixed (byte* dataPtr = data) SendPacket(dataPtr, 0, size);
 		}
 		
-		public unsafe void Send(byte[] buffer, int offset, int size)
+		public unsafe void Send(byte[] data, int offset, int size)
 		{
-			fixed (byte* bufferPtr = buffer) SendPacket(bufferPtr, offset, size);
+			fixed (byte* dataPtr = data) SendPacket(dataPtr, offset, size);
 		}
 
 		public void Send(string text, Encoding encoding)

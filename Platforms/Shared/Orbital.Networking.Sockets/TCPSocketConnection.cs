@@ -139,7 +139,7 @@ namespace Orbital.Networking.Sockets
 			lock (this) return isConnected && IsConnected(nativeSocket);
 		}
 
-		public unsafe int Send(byte* buffer, int size)
+		public unsafe void Send(byte* data, int size)
 		{
 			try
 			{
@@ -148,8 +148,12 @@ namespace Orbital.Networking.Sockets
 				else if (sendBuffer.Length < size) Array.Resize(ref sendBuffer, size);
 
 				// send
-				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
-				return nativeSocket.Send(sendBuffer, size, SocketFlags.None);
+				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(data, sendBufferPtr, size, size);
+				int sent = 0;
+				do
+				{
+					sent += nativeSocket.Send(sendBuffer, size, SocketFlags.None);
+				} while (sent < size);
 			}
 			catch (Exception e)
 			{
@@ -158,52 +162,40 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public unsafe int Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* data, int offset, int size)
 		{
-			return Send(buffer + offset, size);
+			Send(data + offset, size);
 		}
 
-		public unsafe int Send<T>(T data) where T : unmanaged
+		public unsafe void Send<T>(T data) where T : unmanaged
 		{
-			return Send((byte*)&data, Marshal.SizeOf<T>());
+			Send((byte*)&data, Marshal.SizeOf<T>());
 		}
 
-		public unsafe int Send<T>(T* data) where T : unmanaged
+		public unsafe void Send<T>(T* data) where T : unmanaged
 		{
-			return Send((byte*)data, Marshal.SizeOf<T>());
+			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public int Send(byte[] buffer)
+		public void Send(byte[] data)
 		{
-			try
-			{
-				return nativeSocket.Send(buffer, SocketFlags.None);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
+			Send(data, 0, data.Length);
 		}
 
-		public int Send(byte[] buffer, int size)
+		public void Send(byte[] data, int size)
 		{
-			try
-			{
-				return nativeSocket.Send(buffer, 0, size, SocketFlags.None);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
+			Send(data, 0, size);
 		}
 		
-		public int Send(byte[] buffer, int offset, int size)
+		public void Send(byte[] data, int offset, int size)
 		{
 			try
 			{
-				return nativeSocket.Send(buffer, offset, size, SocketFlags.None);
+				int sent = 0;
+				do
+				{
+					sent += nativeSocket.Send(data, offset, size, SocketFlags.None);
+				} while (sent < size);
 			}
 			catch (Exception e)
 			{
@@ -212,15 +204,10 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public int Send(string text, Encoding encoding)
+		public void Send(string text, Encoding encoding)
 		{
 			byte[] data = encoding.GetBytes(text);
-			int sent = 0;
-			do
-			{
-				sent += Send(data, sent, data.Length - sent);
-			} while (sent < data.Length);
-			return data.Length;
+			Send(data);
 		}
 
 		public delegate void SendFilePercentCallbackMethod(int percent);
@@ -236,14 +223,18 @@ namespace Orbital.Networking.Sockets
 					read = stream.Read(buffer, 0, buffer.Length);
 					if (read > 0)
 					{
-						nativeSocket.Send(buffer, 0, read, SocketFlags.None);
-						if (callback != null)
+						int sent = 0;
+						do
 						{
-							fileSent += read;
-							int percent = (int)((fileSent / (float)fileSize) * 100);
-							if (lastPercent != percent) callback(percent);
-							lastPercent = percent;
-						}
+							sent += nativeSocket.Send(buffer, 0, read, SocketFlags.None);
+							if (callback != null)
+							{
+								fileSent += sent;
+								int percent = (int)((fileSent / (float)fileSize) * 100);
+								if (lastPercent != percent) callback(percent);
+								lastPercent = percent;
+							}
+						} while (sent < read);
 					}
 				} while (read > 0);
 

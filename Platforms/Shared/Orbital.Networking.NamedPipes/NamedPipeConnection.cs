@@ -118,7 +118,7 @@ namespace Orbital.Networking.NamedPipes
 			lock (this) return isConnected && nativePipe != null && nativePipe.IsConnected;
 		}
 
-		public unsafe void Send(byte* buffer, int size)
+		public unsafe void Send(byte* data, int size)
 		{
 			try
 			{
@@ -127,7 +127,7 @@ namespace Orbital.Networking.NamedPipes
 				else if (sendBuffer.Length < size) Array.Resize(ref sendBuffer, size);
 
 				// send
-				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(buffer, sendBufferPtr, size, size);
+				fixed (byte* sendBufferPtr = sendBuffer) Buffer.MemoryCopy(data, sendBufferPtr, size, size);
 				nativePipe.Write(sendBuffer, 0, size);
 			}
 			catch (Exception e)
@@ -137,9 +137,9 @@ namespace Orbital.Networking.NamedPipes
 			}
 		}
 
-		public unsafe void Send(byte* buffer, int offset, int size)
+		public unsafe void Send(byte* data, int offset, int size)
 		{
-			Send(buffer + offset, size);
+			Send(data + offset, size);
 		}
 
 		public unsafe void Send<T>(T data) where T : unmanaged
@@ -152,37 +152,21 @@ namespace Orbital.Networking.NamedPipes
 			Send((byte*)data, Marshal.SizeOf<T>());
 		}
 
-		public void Send(byte[] buffer)
+		public void Send(byte[] data)
 		{
-			try
-			{
-				nativePipe.Write(buffer, 0, buffer.Length);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
+			Send(data, 0, data.Length);
 		}
 
-		public void Send(byte[] buffer, int size)
+		public void Send(byte[] data, int size)
 		{
-			try
-			{
-				nativePipe.Write(buffer, 0, size);
-			}
-			catch (Exception e)
-			{
-				if (!IsConnected()) Dispose(e.Message);
-				throw e;
-			}
+			Send(data, 0, size);
 		}
 		
-		public void Send(byte[] buffer, int offset, int size)
+		public void Send(byte[] data, int offset, int size)
 		{
 			try
 			{
-				nativePipe.Write(buffer, offset, size);
+				nativePipe.Write(data, offset, size);
 			}
 			catch (Exception e)
 			{
