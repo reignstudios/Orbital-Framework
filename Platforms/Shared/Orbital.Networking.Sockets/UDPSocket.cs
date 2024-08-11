@@ -17,7 +17,7 @@ namespace Orbital.Networking.Sockets
 
 		protected NativeSocket udpSocket;
 		protected EndPoint remoteEndPoint, localEndPoint;
-		private IPAddress localAddress;
+		protected readonly IPAddress localAddress;
 		private bool isConnected;
 		public readonly bool isMulticast;
 
@@ -218,6 +218,32 @@ namespace Orbital.Networking.Sockets
 			try
 			{
 				return udpSocket.SendTo(buffer, SocketFlags.None, endpoint);
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose(e.Message);
+				throw e;
+			}
+		}
+
+		public int Send(byte[] buffer, int size)
+		{
+			try
+			{
+				return udpSocket.SendTo(buffer, size, SocketFlags.None, remoteEndPoint);
+			}
+			catch (Exception e)
+			{
+				if (!IsConnected()) Dispose(e.Message);
+				throw e;
+			}
+		}
+
+		public int Send(byte[] buffer, int size, EndPoint endpoint)
+		{
+			try
+			{
+				return udpSocket.SendTo(buffer, size, SocketFlags.None, endpoint);
 			}
 			catch (Exception e)
 			{

@@ -23,6 +23,7 @@ namespace Orbital.Networking.Sockets
 		public readonly IPAddress address;
 		public readonly int port;
 		private readonly bool async;
+		public readonly IPEndPoint endPoint;
 		public readonly PhysicalAddress physicalAddress;
 		private bool isConnected;
 
@@ -38,6 +39,7 @@ namespace Orbital.Networking.Sockets
 			this.port = port;
 			this.async = async;
 
+			endPoint = new IPEndPoint(address, port);
 			physicalAddress = SocketUtils.GetMacAddress(localAddress);
 			if (async) receiveBuffer = new byte[receiveBufferSize];
 			isConnected = true;
