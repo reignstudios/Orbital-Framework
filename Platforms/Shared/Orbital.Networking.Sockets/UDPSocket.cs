@@ -16,23 +16,24 @@ namespace Orbital.Networking.Sockets
 		public event DisconnectedCallbackMethod DisconnectedCallback;
 
 		protected NativeSocket udpSocket;
-		protected EndPoint remoteEndPoint, localEndPoint;
-		protected readonly IPAddress localAddress;
-		private bool isConnected;
+		public IPAddress remoteAddress => address;
+		public IPEndPoint remoteEndPoint => endPoint;
+		public readonly IPAddress localAddress;
+		public readonly IPEndPoint localEndPoint;
 		public readonly bool isMulticast;
+		public readonly bool async;
+		private bool isConnected;
 
 		protected readonly byte[] sendBuffer, receiveBuffer;
-		protected bool recieveData, async;
+		protected bool recieveData;
 
 		public UDPSocket(IPAddress remoteAddress, IPAddress localAddress, int port, bool isMulticast, int maxBufferSize, bool async = true)
 		: base(remoteAddress, port)
 		{
 			this.localAddress = localAddress;
+			localEndPoint = new IPEndPoint(localAddress, port);
 			this.isMulticast = isMulticast;
 			this.async = async;
-
-			remoteEndPoint = new IPEndPoint(remoteAddress, port);
-			localEndPoint = new IPEndPoint(localAddress, port);
 
 			sendBuffer = new byte[maxBufferSize];
 			receiveBuffer = new byte[maxBufferSize];
@@ -71,7 +72,8 @@ namespace Orbital.Networking.Sockets
 				{
 					try
 					{
-						udpSocket.BeginReceiveFrom(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, ref remoteEndPoint, RecieveDataCallback, null);
+						var remoteEndPointRef = (EndPoint)remoteEndPoint;
+						udpSocket.BeginReceiveFrom(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, ref remoteEndPointRef, RecieveDataCallback, null);
 					}
 					catch (Exception e)
 					{
@@ -126,7 +128,8 @@ namespace Orbital.Networking.Sockets
 				// handle failed reads
 				try
 				{
-					bytesRead = udpSocket.EndReceiveFrom(ar, ref remoteEndPoint);
+					var remoteEndPointRef = (EndPoint)remoteEndPoint;
+					bytesRead = udpSocket.EndReceiveFrom(ar, ref remoteEndPointRef);
 				}
 				catch
 				{
@@ -146,7 +149,8 @@ namespace Orbital.Networking.Sockets
 				{
 					try
 					{
-						udpSocket.BeginReceiveFrom(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, ref remoteEndPoint, RecieveDataCallback, null);
+						var remoteEndPointRef = (EndPoint)remoteEndPoint;
+						udpSocket.BeginReceiveFrom(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, ref remoteEndPointRef, RecieveDataCallback, null);
 					}
 					catch
 					{

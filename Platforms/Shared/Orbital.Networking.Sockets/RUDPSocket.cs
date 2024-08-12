@@ -99,10 +99,12 @@ namespace Orbital.Networking.Sockets
 		private bool listenCalled;
 		private Timer tryToConnectTimer;
 
-		internal readonly IPAddress listenAddress, senderAddress;
-		internal readonly Guid listenAddressID, senderAddressID;
-		private readonly int port;
-		private readonly int maxBufferSize;
+		public IPAddress listenAddress => address;
+		public Guid listenAddressID => addressID;
+		public readonly IPAddress senderAddress;
+		public readonly Guid senderAddressID;
+		public readonly int port;
+		public readonly int maxBufferSize;
 		internal readonly int timeout;
 
 		internal RUDPBufferPool bufferPool;
@@ -126,9 +128,7 @@ namespace Orbital.Networking.Sockets
 		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize, int timeout = -1)
 		: base(listenAddress, port)
 		{
-			this.listenAddress = listenAddress;
 			this.senderAddress = senderAddress;
-			this.listenAddressID = AddressToAddressID(listenAddress);
 			this.senderAddressID = AddressToAddressID(senderAddress);
 			this.port = port;
 			this.maxBufferSize = Math.Max(maxBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
@@ -172,41 +172,6 @@ namespace Orbital.Networking.Sockets
 				connectingBuffers = null;
 			}
 			base.Dispose();
-		}
-
-		internal unsafe static IPAddress AddressIDToAddress(Guid addressID)
-		{
-			var bytes = addressID.ToByteArray();
-			bool isIPV6 = false;
-			for (int i = 4; i < 16; ++i)
-			{
-				if (bytes[i] != 0)
-				{
-					isIPV6 = true;
-					break;
-				}
-			}
-
-			if (!isIPV6)
-			{
-				var newBytes = new byte[4];
-				Array.Copy(bytes, newBytes, newBytes.Length);
-				bytes = newBytes;
-			}
-
-			return new IPAddress(bytes);
-		}
-
-		internal static Guid AddressToAddressID(IPAddress address)
-		{
-			var aadressBytes = address.GetAddressBytes();
-			if (aadressBytes.Length < 16)
-			{
-				var newBytes = new byte[16];
-				Array.Copy(aadressBytes, newBytes, aadressBytes.Length);
-				aadressBytes = newBytes;
-			}
-			return new Guid(aadressBytes);
 		}
 
 		public void Listen(int maxConnections)

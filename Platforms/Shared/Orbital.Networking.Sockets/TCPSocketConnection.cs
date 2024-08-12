@@ -21,8 +21,9 @@ namespace Orbital.Networking.Sockets
 		private NativeSocket nativeSocket;
 		public readonly TCPSocket socket;
 		public readonly IPAddress address;
+		public readonly Guid addressID;
 		public readonly int port;
-		private readonly bool async;
+		public readonly bool async;
 		public readonly IPEndPoint endPoint;
 		public readonly PhysicalAddress physicalAddress;
 		private bool isConnected;
@@ -36,6 +37,7 @@ namespace Orbital.Networking.Sockets
 			this.socket = socket;
 			this.nativeSocket = nativeSocket;
 			this.address = address;
+			addressID = Socket.AddressToAddressID(address);
 			this.port = port;
 			this.async = async;
 

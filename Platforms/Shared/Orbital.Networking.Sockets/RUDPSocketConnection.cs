@@ -10,8 +10,6 @@ namespace Orbital.Networking.Sockets
 	public sealed class RUDPSocketConnection : Socket, INetworkDataSender
 	{
 		public RUDPSocket socket { get; private set; }
-		public IPEndPoint endPoint { get; private set; }
-		public readonly Guid addressID;
 		private bool isConnected;
 		private Timer tryToSendTimer;
 
@@ -29,9 +27,6 @@ namespace Orbital.Networking.Sockets
 		: base(remoteAddress, port)
 		{
 			this.socket = socket;
-			endPoint = new IPEndPoint(remoteAddress, port);
-			addressID = remoteAddressID;
-
 			sendingPacketID = uint.MaxValue;
 			lastReceivedPacketID = uint.MaxValue;
 			sendingBuffers = new RUDPBufferPool.Pool[100];
