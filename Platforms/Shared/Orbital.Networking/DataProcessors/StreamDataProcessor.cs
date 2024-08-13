@@ -25,12 +25,13 @@ namespace Orbital.Networking.DataProcessors
 		/// Process incomming data stream
 		/// </summary>
 		/// <param name="data">Data of stream</param>
+		/// <param name="offset">Offset into data</param>
 		/// <param name="size">Size in Data object to read</param>
-		public void Process(byte[] data, int size)
+		public void Process(byte[] data, int offset, int size)
 		{
 			if (done) throw new Exception("Cant call 'Process' after 'FinishedCallback' has fired");
 
-			stream.Write(data, 0, size);
+			stream.Write(data, offset, size);
 			offset += size;
 			if (offset == this.size)
 			{

@@ -5,11 +5,11 @@ namespace Orbital.Networking.DataProcessors
 {
 	public class MessageDataProcessor : DataProcessor
 	{
-		public delegate void MessageRecievedCallbackMethod(byte[] messageData);
+		public delegate void MessageRecievedCallbackMethod(byte[] data, int size);
 		public event MessageRecievedCallbackMethod MessageRecievedCallback;
 		
 		private int messageDataOffset, messageSizeDataOffset;
-		private byte[] messageData, messageSizeData;
+		private byte[] processingData, messageData, messageSizeData;
 		private int messageSize;
 
 		public MessageDataProcessor()
@@ -42,8 +42,21 @@ namespace Orbital.Networking.DataProcessors
 		/// Process incomming data stream
 		/// </summary>
 		/// <param name="data">Data of stream</param>
+		/// <param name="offset">Offset into data</param>
 		/// <param name="size">Size in Data object to read</param>
-		public void Process(byte[] data, int size)
+		public void Process(byte[] data, int offset, int size)
+		{
+			if (processingData == null) processingData = new byte[size];
+			else if (processingData.Length < size) Array.Resize(ref processingData, size);
+			
+			// copy data into message process buffing
+			Array.Copy(data, offset, processingData, 0, size);
+			
+			// process data
+			Process(size);
+		}
+
+		private void Process(int size)
 		{
 			// check if this is a new message
 			int messageSizeRead = 0;
@@ -53,12 +66,12 @@ namespace Orbital.Networking.DataProcessors
 				int dstOffset = messageSizeDataOffset;
 				messageSizeDataOffset += Math.Min(sizeof(int), size) - messageSizeDataOffset;
 				int dstSize = messageSizeDataOffset - dstOffset;
-				Array.Copy(data, 0, messageSizeData, dstOffset, dstSize);
+				Array.Copy(processingData, 0, messageSizeData, dstOffset, dstSize);
 				if (messageSizeDataOffset != sizeof(int)) return;
 				else messageSize = BitConverter.ToInt32(messageSizeData, 0);
 				
 				// resize message buffer
-				Array.Resize(ref messageData, messageSize);
+				if (messageData.Length < messageSize) Array.Resize(ref messageData, messageSize);
 				messageSizeRead = dstSize;
 			}
 
@@ -68,14 +81,14 @@ namespace Orbital.Networking.DataProcessors
 			dataRemainder -= dataRead;
 
 			// copy message data
-			Array.Copy(data, messageSizeRead, messageData, messageDataOffset, dataRead);
+			Array.Copy(processingData, messageSizeRead, messageData, messageDataOffset, dataRead);
 			messageDataOffset += dataRead;
 
 			// check if message finished
 			if (messageDataOffset >= messageSize)
 			{
 				// fire message event
-				MessageRecievedCallback?.Invoke(messageData);
+				MessageRecievedCallback?.Invoke(messageData, messageSize);
 
 				// reset
 				messageDataOffset = 0;
@@ -84,8 +97,8 @@ namespace Orbital.Networking.DataProcessors
 				// process remainder
 				if (dataRemainder != 0)
 				{
-					ShiftBufferDown(data, size - dataRemainder);
-					Process(data, dataRemainder);
+					ShiftBufferDown(processingData, size - dataRemainder);
+					Process(dataRemainder);
 				}
 			}
 		}

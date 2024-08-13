@@ -10,7 +10,8 @@ namespace Orbital.Networking.DataProcessors
 		/// Process incomming data stream
 		/// </summary>
 		/// <param name="data">Data of stream</param>
+		/// <param name="offset">Offset into data</param>
 		/// <param name="size">Size in Data object to read</param>
-		void Process(byte[] data, int size);
+		void Process(byte[] data, int offset, int size);
     }
 }
