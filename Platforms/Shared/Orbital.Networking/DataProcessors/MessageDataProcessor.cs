@@ -88,7 +88,15 @@ namespace Orbital.Networking.DataProcessors
 			if (messageDataOffset >= messageSize)
 			{
 				// fire message event
-				MessageRecievedCallback?.Invoke(messageData, messageSize);
+				try
+				{
+					MessageRecievedCallback?.Invoke(messageData, messageSize);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
 
 				// reset
 				messageDataOffset = 0;
