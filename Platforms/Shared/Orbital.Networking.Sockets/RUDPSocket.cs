@@ -324,7 +324,7 @@ namespace Orbital.Networking.Sockets
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize);
+							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, madeConnection.endPoint);
 						}
 						catch { }
 
@@ -394,6 +394,7 @@ namespace Orbital.Networking.Sockets
 					}
 					else if (header->type == RUDPPacketType.Send)
 					{
+						RUDPSocketConnection sendingConnection = null;
 						lock (this)
 						{
 							if (isDisposed) return;
@@ -401,6 +402,7 @@ namespace Orbital.Networking.Sockets
 							{
 								if (connection.addressID == header->senderAddressID)
 								{
+									sendingConnection = connection;
 									connection.FireDataRecievedCallback(header, data, dataRead, header->dataSize);
 									break;
 								}
@@ -413,7 +415,7 @@ namespace Orbital.Networking.Sockets
 							header->type = RUDPPacketType.SendResponse;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize);
+							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, sendingConnection.endPoint);
 						}
 						catch { }
 					}
