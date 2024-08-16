@@ -48,6 +48,7 @@ namespace Orbital.Networking.Sockets
 				if (isDisposed || nativeSocket != null) throw new Exception("Can only be called once");
 				nativeSocket = new NativeSocket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 				nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);// this allows the endpoint to be reused if Windows fails to close it on app quit
+				nativeSocket.Blocking = true;
 				if (timeout >= 0)
 				{
 					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);

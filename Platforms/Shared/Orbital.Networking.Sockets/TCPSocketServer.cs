@@ -100,6 +100,7 @@ namespace Orbital.Networking.Sockets
 				try
 				{
 					socket = tcpListenSocket.EndAccept(ar);
+					socket.Blocking = true;
 					if (timeout >= 0)
 					{
 						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
