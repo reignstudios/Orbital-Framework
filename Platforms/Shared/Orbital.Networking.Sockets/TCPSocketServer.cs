@@ -104,7 +104,7 @@ namespace Orbital.Networking.Sockets
 					{
 						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
 						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout * 1000);
-						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout * 1000);
+						//socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout * 1000);// not needed
 					}
 					var remoteEndPoint = socket.RemoteEndPoint as IPEndPoint;
 					var localEndPoint = socket.LocalEndPoint as IPEndPoint;

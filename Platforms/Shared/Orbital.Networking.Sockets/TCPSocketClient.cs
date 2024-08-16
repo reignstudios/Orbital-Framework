@@ -51,8 +51,8 @@ namespace Orbital.Networking.Sockets
 				if (timeout >= 0)
 				{
 					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
-					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout);
-					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout);
+					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout * 1000);
+					//nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout * 1000);// not needed
 				}
 				if (!IPAddress.IsLoopback(localAddress) && !IPAddress.Any.Equals(localAddress)) nativeSocket.Bind(new IPEndPoint(localAddress, port));
 				nativeSocket.BeginConnect(new IPEndPoint(address, port), ConnectionCallback, null);
