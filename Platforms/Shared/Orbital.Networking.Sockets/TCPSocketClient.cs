@@ -10,19 +10,14 @@ namespace Orbital.Networking.Sockets
     {
 		public TCPSocketConnection connection {get; private set;}
 		private NativeSocket nativeSocket;
-		private IPAddress localAddress;
-		private int sendTimeout, receiveTimeout;
+		private readonly IPAddress localAddress;
+		private readonly int timeout;
 
-		public TCPSocketClient(IPAddress remoteAddress, IPAddress localAddress, int port, int sendTimeout = -1, int receiveTimeout = -1, bool async = true)
+		public TCPSocketClient(IPAddress remoteAddress, IPAddress localAddress, int port, int timeout = -1, bool async = true)
 		: base(remoteAddress, port, async)
 		{
 			this.localAddress = localAddress;
-			this.sendTimeout = sendTimeout;
-			this.receiveTimeout = receiveTimeout;
-			if (sendTimeout >= 0 || receiveTimeout >= 0)
-			{
-				if (sendTimeout < 0 || receiveTimeout < 0) throw new ArgumentException("'sendTimeout' and 'receiveTimeout' must both be >= 0 if either is");
-			}
+			this.timeout = timeout;
 		}
 
 		public override void Dispose()
@@ -53,9 +48,12 @@ namespace Orbital.Networking.Sockets
 				if (isDisposed || nativeSocket != null) throw new Exception("Can only be called once");
 				nativeSocket = new NativeSocket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 				nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);// this allows the endpoint to be reused if Windows fails to close it on app quit
-				if (sendTimeout >= 0 || receiveTimeout >= 0) nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
-				if (sendTimeout >= 0) nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, sendTimeout);
-				if (receiveTimeout >= 0) nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, receiveTimeout);
+				if (timeout >= 0)
+				{
+					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
+					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout);
+					nativeSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout);
+				}
 				if (!IPAddress.IsLoopback(localAddress) && !IPAddress.Any.Equals(localAddress)) nativeSocket.Bind(new IPEndPoint(localAddress, port));
 				nativeSocket.BeginConnect(new IPEndPoint(address, port), ConnectionCallback, null);
 			}
