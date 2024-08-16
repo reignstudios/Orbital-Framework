@@ -12,6 +12,8 @@ namespace Orbital.Demo.Networking
 {
 	internal class Program
 	{
+		private static MessageDataProcessor messageProcessor;
+
 		static void Main(string[] args)
 		{
 			// use TCP?
@@ -75,6 +77,10 @@ namespace Orbital.Demo.Networking
 				}
 			}
 
+			// create message processor
+			messageProcessor = new MessageDataProcessor();
+			messageProcessor.MessageRecievedCallback += MessageProcessor_MessageRecievedCallback;
+
 			// run messaging demo
 			if (useTCP)
 			{
@@ -86,7 +92,6 @@ namespace Orbital.Demo.Networking
 						tcpSocketServer.ListenDisconnectedErrorCallback += TCPSocket_ListenDisconnectedErrorCallback;
 						tcpSocketServer.ConnectedCallback += TCPSocket_ConnectedCallback;
 						tcpSocketServer.Listen(16);
-						//if (!isServer) tcpSocket.Connect(serverAddress);
 
 						// messaging
 						Console.WriteLine("Type Messages after you have a connection (or 'q' to quit)...");
@@ -151,6 +156,15 @@ namespace Orbital.Demo.Networking
 		}
 
 		// =======================
+		// Message Processor
+		// =======================
+		private static void MessageProcessor_MessageRecievedCallback(byte[] data, int size)
+		{
+			string message = Encoding.ASCII.GetString(data, 0, size);
+			Console.WriteLine(string.Format("Message: '{0}'", message));
+		}
+
+		// =======================
 		// TCP
 		// =======================
 		private static void TCPSocket_ListenDisconnectedErrorCallback(TCPSocketServer sender, string message)
@@ -167,8 +181,8 @@ namespace Orbital.Demo.Networking
 
 		private static void TCPConnection_DataRecievedCallback(TCPSocketConnection connection, byte[] data, int size)
 		{
-			string message = Encoding.ASCII.GetString(data, 0, size);
-			Console.WriteLine(string.Format("Message From:({0}) '{1}'", connection.address, message));
+			Console.WriteLine(string.Format("Data From:({0})", connection.address));
+			messageProcessor.Process(data, 0, size);
 		}
 
 		private static void TCPConnection_DisconnectedCallback(TCPSocketConnection connection, string message)
@@ -193,8 +207,8 @@ namespace Orbital.Demo.Networking
 
 		private static void RUDPConnection_DataRecievedCallback(RUDPSocketConnection connection, byte[] data, int offset, int size)
 		{
-			string message = Encoding.ASCII.GetString(data, offset, size);
-			Console.WriteLine(string.Format("Message From:({0}) {1}", connection.address, message));
+			Console.WriteLine(string.Format("Data From:({0})", connection.address));
+			messageProcessor.Process(data, offset, size);
 		}
 
 		private static void RUDPConnection_DisconnectedCallback(RUDPSocketConnection connection, string message)
