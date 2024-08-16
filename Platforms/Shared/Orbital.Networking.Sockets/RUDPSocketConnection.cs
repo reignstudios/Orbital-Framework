@@ -169,7 +169,17 @@ namespace Orbital.Networking.Sockets
 				{
 					try
 					{
-						socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
+						if (socket.useBurst)
+						{
+							for (int i = 0; i < socket.burstCount; ++i)
+							{
+								socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
+							}
+						}
+						else
+						{
+							socket.udpSocket.Send(pool.data, offset, pool.usedDataSize, endPoint);
+						}
 						sendingPacketID = nextPacketID;
 					}
 					catch (Exception e)

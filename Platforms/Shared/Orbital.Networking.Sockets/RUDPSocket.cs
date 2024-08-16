@@ -106,6 +106,9 @@ namespace Orbital.Networking.Sockets
 		public readonly int port;
 		public readonly int maxBufferSize;
 		internal readonly int timeout;
+		internal readonly bool useBurst;
+		internal readonly int burstCount;
+		private const int burstConnectionCount = 5;
 
 		internal RUDPBufferPool bufferPool;
 		private Dictionary<uint, RUDPBufferPool.Pool> connectingBuffers;
@@ -125,7 +128,7 @@ namespace Orbital.Networking.Sockets
 		/// <param name="port">Port all traffic is sent over</param>
 		/// <param name="maxBufferSize">Max size a package can be</param>
 		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
-		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize, int timeout = -1)
+		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize, int timeout = -1, bool useBurst = true, int burstCount = 3)
 		: base(listenAddress, port)
 		{
 			this.senderAddress = senderAddress;
@@ -133,6 +136,8 @@ namespace Orbital.Networking.Sockets
 			this.port = port;
 			this.maxBufferSize = Math.Max(maxBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
 			this.timeout = timeout;
+			this.useBurst = useBurst;
+			this.burstCount = burstCount;
 
 			bufferPool = new RUDPBufferPool();
 			connectingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();
@@ -246,7 +251,10 @@ namespace Orbital.Networking.Sockets
 							// send connection request
 							try
 							{
-								udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
+								for (int i = 0; i < burstConnectionCount; ++i)
+								{
+									udpSocket.Send(pool.data, 0, pool.usedDataSize, remoteEndPoint);
+								}
 							}
 							catch { }
 						}
@@ -325,9 +333,12 @@ namespace Orbital.Networking.Sockets
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							if (madeConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, madeConnection.endPoint);
-							else if (existingConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, existingConnection.endPoint);
-							else throw new Exception("No responce connection request found");
+							for (int i = 0; i < burstConnectionCount; ++i)
+							{
+								if (madeConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, madeConnection.endPoint);
+								else if (existingConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, existingConnection.endPoint);
+								else throw new Exception("No responce connection request found");
+							}
 						}
 						catch { }
 
@@ -418,7 +429,10 @@ namespace Orbital.Networking.Sockets
 							header->type = RUDPPacketType.SendResponse;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, sendingConnection.endPoint);
+							for (int i = 0; i < burstConnectionCount; ++i)
+							{
+								socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, sendingConnection.endPoint);
+							}
 						}
 						catch { }
 					}
