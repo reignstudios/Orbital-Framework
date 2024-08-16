@@ -290,7 +290,7 @@ namespace Orbital.Networking.Sockets
 					if (header->type == RUDPPacketType.ConnectionRequest)
 					{
 						bool isValidRequest = false;
-						RUDPSocketConnection madeConnection = null;
+						RUDPSocketConnection madeConnection = null, existingConnection = null;
 						lock (this)
 						{
 							if (isDisposed) return;
@@ -302,6 +302,7 @@ namespace Orbital.Networking.Sockets
 								if (connection.addressID == header->senderAddressID)
 								{
 									connectionExist = true;
+									existingConnection = connection;
 									break;
 								}
 							}
@@ -324,7 +325,9 @@ namespace Orbital.Networking.Sockets
 							header->type = isValidRequest ? RUDPPacketType.ConnectionResponse_Success : RUDPPacketType.ConnectionResponse_Rejected;
 							header->targetAddressID = header->senderAddressID;// target is now sender
 							header->senderAddressID = senderAddressID;// sender is now us
-							socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, madeConnection.endPoint);
+							if (madeConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, madeConnection.endPoint);
+							else if (existingConnection != null) socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, existingConnection.endPoint);
+							else throw new Exception("No responce connection request found");
 						}
 						catch { }
 
