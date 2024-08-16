@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Orbital.Networking.Sockets
@@ -44,7 +45,15 @@ namespace Orbital.Networking.Sockets
 		public event ConnectedCallbackMethod ConnectedCallback;
 		protected void FireConnectedCallback(TCPSocket socket, TCPSocketConnection connection, bool success, string message)
 		{
-			ConnectedCallback?.Invoke(socket, connection, success, message);
+			try
+			{
+				ConnectedCallback?.Invoke(socket, connection, success, message);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				System.Diagnostics.Debug.WriteLine(e);
+			}
 		}
 
 		internal virtual void RemoveConnection(TCPSocketConnection connection)

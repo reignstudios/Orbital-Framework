@@ -152,7 +152,18 @@ namespace Orbital.Networking.NamedPipes
 				}
 			}
 
-			if (listenError != null) ListenDisconnectedErrorCallback?.Invoke(this, listenError);
+			if (listenError != null)
+			{
+				try
+				{
+					ListenDisconnectedErrorCallback?.Invoke(this, listenError);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
+			}
 		}
 
 		internal override void RemoveConnection(NamedPipeConnection connection)

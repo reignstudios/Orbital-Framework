@@ -178,7 +178,18 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			if (listenError != null) ListenDisconnectedErrorCallback?.Invoke(this, listenError);
+			if (listenError != null)
+			{
+				try
+				{
+					ListenDisconnectedErrorCallback?.Invoke(this, listenError);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
+			}
 		}
 	}
 }

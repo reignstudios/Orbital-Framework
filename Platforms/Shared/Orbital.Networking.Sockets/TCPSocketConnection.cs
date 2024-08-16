@@ -74,7 +74,18 @@ namespace Orbital.Networking.Sockets
 			}
 
 			socket.RemoveConnection(this);
-			if (wasConnected) DisconnectedCallback?.Invoke(this, message);
+			if (wasConnected)
+			{
+				try
+				{
+					DisconnectedCallback?.Invoke(this, message);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
+			}
 			DataRecievedCallback = null;
 			DisconnectedCallback = null;
 		}
@@ -110,7 +121,18 @@ namespace Orbital.Networking.Sockets
 			}
 
 			// fire data recieved callback
-			if (!disconnected) DataRecievedCallback?.Invoke(this, receiveBuffer, bytesRead);
+			if (!disconnected)
+			{
+				try
+				{
+					DataRecievedCallback?.Invoke(this, receiveBuffer, bytesRead);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
+			}
 
 			// start waiting for more data
 			lock (this)

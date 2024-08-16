@@ -53,8 +53,16 @@ namespace Orbital.Networking.Sockets
 			senderingBuffersLength = 0;
 
 			socket.RemoveConnection(this);
+			try
+			{
+				DisconnectedCallback?.Invoke(this, message);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				System.Diagnostics.Debug.WriteLine(e);
+			}
 			DataRecievedCallback = null;
-			DisconnectedCallback?.Invoke(this, message);
 			DisconnectedCallback = null;
 		}
 
@@ -62,7 +70,15 @@ namespace Orbital.Networking.Sockets
 		{
 			if (lastReceivedPacketID != header->id)
 			{
-				DataRecievedCallback?.Invoke(this, data, offset, size);
+				try
+				{
+					DataRecievedCallback?.Invoke(this, data, offset, size);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					System.Diagnostics.Debug.WriteLine(e);
+				}
 				lastReceivedPacketID = header->id;
 			}
 		}

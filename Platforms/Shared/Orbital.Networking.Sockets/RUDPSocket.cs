@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -345,7 +346,15 @@ namespace Orbital.Networking.Sockets
 						// fire connection made callback
 						if (madeConnection != null && ConnectedCallback != null)
 						{
-							ConnectedCallback(this, madeConnection, true, null);
+							try
+							{
+								ConnectedCallback(this, madeConnection, true, null);
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine(e);
+								System.Diagnostics.Debug.WriteLine(e);
+							}
 						}
 					}
 					else if (header->type == RUDPPacketType.ConnectionResponse_Success)
@@ -385,7 +394,15 @@ namespace Orbital.Networking.Sockets
 						// fire connection made callback
 						if (madeConnection != null && ConnectedCallback != null)
 						{
-							ConnectedCallback(this, madeConnection, true, null);
+							try
+							{
+								ConnectedCallback(this, madeConnection, true, null);
+							}
+							catch (Exception e)
+							{
+								Console.WriteLine(e);
+								System.Diagnostics.Debug.WriteLine(e);
+							}
 						}
 					}
 					else if (header->type == RUDPPacketType.ConnectionResponse_Rejected)
@@ -404,7 +421,15 @@ namespace Orbital.Networking.Sockets
 
 						// fire connection failed callback
 						var address = AddressIDToAddress(header->senderAddressID);
-						ConnectedCallback?.Invoke(this, null, false, "Failed to connect for: " + address.ToString());
+						try
+						{
+							ConnectedCallback?.Invoke(this, null, false, "Failed to connect for: " + address.ToString());
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine(e);
+							System.Diagnostics.Debug.WriteLine(e);
+						}
 					}
 					else if (header->type == RUDPPacketType.Send)
 					{
@@ -474,7 +499,15 @@ namespace Orbital.Networking.Sockets
 				}
 			}
 
-			ListenDisconnectedErrorCallback?.Invoke(this, message);
+			try
+			{
+				ListenDisconnectedErrorCallback?.Invoke(this, message);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				System.Diagnostics.Debug.WriteLine(e);
+			}
 		}
 
 		public override bool IsConnected()
