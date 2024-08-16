@@ -104,7 +104,7 @@ namespace Orbital.Demo.Networking
 				}
 				else
 				{
-					using (var tcpSocketClient = new TCPSocketClient(serverAddress, localAddress, 8080, sendTimeout:60, receiveTimeout:60))
+					using (var tcpSocketClient = new TCPSocketClient(serverAddress, localAddress, 8080, timeout:60))
 					{
 						tcpSocketClient.ConnectedCallback += TCPSocket_ConnectedCallback;
 						tcpSocketClient.Connect();
