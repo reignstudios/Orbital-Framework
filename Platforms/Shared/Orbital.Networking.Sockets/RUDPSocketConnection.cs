@@ -70,6 +70,7 @@ namespace Orbital.Networking.Sockets
 		{
 			if (lastReceivedPacketID != header->id)
 			{
+				lastReceivedPacketID = header->id;
 				try
 				{
 					DataRecievedCallback?.Invoke(this, data, offset, size);
@@ -79,7 +80,6 @@ namespace Orbital.Networking.Sockets
 					Console.WriteLine(e);
 					System.Diagnostics.Debug.WriteLine(e);
 				}
-				lastReceivedPacketID = header->id;
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace Orbital.Networking.Sockets
 
 					// remove first
 					senderingBuffersLength--;
-					for (int i = 0; i != senderingBuffersLength; ++i) sendingBuffers[i] = sendingBuffers[i + 1];// shift buffer down
+					for (int i = 0; i < senderingBuffersLength; ++i) sendingBuffers[i] = sendingBuffers[i + 1];// shift buffer down
 
 					// next sending packet waiting
 					if (senderingBuffersLength != 0)

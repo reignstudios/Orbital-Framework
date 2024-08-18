@@ -341,7 +341,11 @@ namespace Orbital.Networking.Sockets
 								else throw new Exception("No responce connection request found");
 							}
 						}
-						catch { }
+						catch (Exception e)
+						{
+							Console.WriteLine(e);
+							System.Diagnostics.Debug.WriteLine(e);
+						}
 
 						// fire connection made callback
 						if (madeConnection != null && ConnectedCallback != null)
@@ -448,7 +452,7 @@ namespace Orbital.Networking.Sockets
 							}
 						}
 
-						// respond connection request was recieved
+						// respond data was recieved
 						try
 						{
 							header->type = RUDPPacketType.SendResponse;
@@ -459,7 +463,11 @@ namespace Orbital.Networking.Sockets
 								socket.Send(data, dataRead - headerSize, headerSize + header->dataSize, sendingConnection.endPoint);
 							}
 						}
-						catch { }
+						catch (Exception e)
+						{
+							Console.WriteLine(e);
+							System.Diagnostics.Debug.WriteLine(e);
+						}
 					}
 					else if (header->type == RUDPPacketType.SendResponse)
 					{
