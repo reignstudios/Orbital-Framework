@@ -176,7 +176,7 @@ namespace Orbital.Networking.Sockets
 				int sent = 0;
 				do
 				{
-					sent += nativeSocket.Send(sendBuffer, size, SocketFlags.None);
+					sent += nativeSocket.Send(sendBuffer, sent, size - sent, SocketFlags.None);
 				} while (sent < size);
 			}
 			catch (Exception e)
@@ -218,7 +218,7 @@ namespace Orbital.Networking.Sockets
 				int sent = 0;
 				do
 				{
-					sent += nativeSocket.Send(data, offset, size, SocketFlags.None);
+					sent += nativeSocket.Send(data, offset + sent, size - sent, SocketFlags.None);
 				} while (sent < size);
 			}
 			catch (Exception e)

@@ -199,7 +199,7 @@ namespace Orbital.Networking.Sockets
 					int sent = 0;
 					do
 					{
-						sent += udpSocket.SendTo(sendBuffer, size, SocketFlags.None, endpoint);
+						sent += udpSocket.SendTo(sendBuffer, sent, size - sent, SocketFlags.None, endpoint);
 					} while (sent < size);
 				}
 				catch (Exception e)
@@ -272,7 +272,7 @@ namespace Orbital.Networking.Sockets
 				int sent = 0;
 				do
 				{
-					sent += udpSocket.SendTo(data, offset, size, SocketFlags.None, endpoint);
+					sent += udpSocket.SendTo(data, offset + sent, size - sent, SocketFlags.None, endpoint);
 				} while (sent < size);
 			}
 			catch (Exception e)
