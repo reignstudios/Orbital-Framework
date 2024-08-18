@@ -590,76 +590,136 @@ namespace Orbital.Networking.Sockets
 			udpSocket.Send(data, size);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send(byte* data, int size, EndPoint endpoint)
 		{
 			udpSocket.Send(data, size, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send(byte* data, int offset, int size)
 		{
 			udpSocket.Send(data, offset, size);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send(byte* data, int offset, int size, EndPoint endpoint)
 		{
 			udpSocket.Send(data, offset, size, endpoint);
 		}
 		
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send<T>(T data) where T : unmanaged
 		{
 			udpSocket.Send<T>(&data);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send<T>(T data, EndPoint endpoint) where T : unmanaged
 		{
 			udpSocket.Send<T>(&data, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send<T>(T* data) where T : unmanaged
 		{
 			udpSocket.Send<T>(data);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public unsafe void Send<T>(T* data, EndPoint endpoint) where T : unmanaged
 		{
 			udpSocket.Send<T>(data, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data)
 		{
 			udpSocket.Send(data);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data, EndPoint endpoint)
 		{
 			udpSocket.Send(data, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data, int size)
 		{
 			udpSocket.Send(data, size);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data, int size, EndPoint endpoint)
 		{
 			udpSocket.Send(data, size, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data, int offset, int size)
 		{
 			udpSocket.Send(data, offset, size);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(byte[] data, int offset, int size, EndPoint endpoint)
 		{
 			udpSocket.Send(data, offset, size, endpoint);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(string text, Encoding encoding)
 		{
 			udpSocket.Send(text, encoding);
 		}
 
+		/// <summary>
+		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
+		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
+		/// </summary>
 		public void Send(string text, Encoding encoding, EndPoint endpoint)
 		{
 			udpSocket.Send(text, encoding, endpoint);
