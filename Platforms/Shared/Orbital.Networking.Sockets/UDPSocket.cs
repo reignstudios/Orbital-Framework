@@ -288,6 +288,12 @@ namespace Orbital.Networking.Sockets
 			Send(data);
 		}
 
+		public void Send(string text, Encoding encoding, EndPoint endpoint)
+		{
+			byte[] data = encoding.GetBytes(text);
+			Send(data, endpoint);
+		}
+
 		public int Recieve(byte[] recieveBuffer)
 		{
 			if (recieveData) throw new Exception("Socket cannot be async");
