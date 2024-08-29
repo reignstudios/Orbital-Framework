@@ -8,17 +8,16 @@ namespace Orbital.Networking.DataProcessors
 		public delegate void MessageRecievedCallbackMethod(byte[] data, int size);
 		public event MessageRecievedCallbackMethod MessageRecievedCallback;
 		
-		private int messageDataOffset, messageSizeDataOffset;
-		private byte[] processingData, messageData, messageSizeData;
-		private int messageSize;
+		private int messageDataRead, messageSize;
+		private byte[] processingData, messageData;
 
 		public MessageDataProcessor()
 		{
-			messageData = new byte[0];
-			messageSizeData = new byte[sizeof(int)];
+			messageSize = -1;
+			messageData = new byte[sizeof(int)];// need at least enough space to read message size
 		}
 
-		private static void ShiftBufferDown(byte[] data, int offset)
+		public static void ShiftBufferDown(byte[] data, int offset)
 		{
 			for (int i = 0; i != data.Length; ++i)
 			{
@@ -28,7 +27,7 @@ namespace Orbital.Networking.DataProcessors
 			}
 		}
 
-		private static void ShiftBufferUp(byte[] data, int offset)
+		public static void ShiftBufferUp(byte[] data, int offset)
 		{
 			for (int i = (data.Length-1); i != -1; --i)
 			{
@@ -46,6 +45,8 @@ namespace Orbital.Networking.DataProcessors
 		/// <param name="size">Size in Data object to read</param>
 		public void Process(byte[] data, int offset, int size)
 		{
+			if (size <= 0) return;
+
 			if (processingData == null) processingData = new byte[size];
 			else if (processingData.Length < size) Array.Resize(ref processingData, size);
 			
@@ -53,39 +54,41 @@ namespace Orbital.Networking.DataProcessors
 			Array.Copy(data, offset, processingData, 0, size);
 			
 			// process data
-			Process(size);
+			Process(size, 0);
 		}
 
-		private void Process(int size)
+		private void Process(int size, int dataRead)
 		{
+			int read;
+
 			// check if this is a new message
-			int messageSizeRead = 0;
-			if (messageSizeDataOffset < sizeof(int))
+			if (messageSize < 0)
 			{
-				// load message size
-				int dstOffset = messageSizeDataOffset;
-				messageSizeDataOffset += Math.Min(sizeof(int), size) - messageSizeDataOffset;
-				int dstSize = messageSizeDataOffset - dstOffset;
-				Array.Copy(processingData, 0, messageSizeData, dstOffset, dstSize);
-				if (messageSizeDataOffset != sizeof(int)) return;
-				else messageSize = BitConverter.ToInt32(messageSizeData, 0);
-				
-				// resize message buffer
-				if (messageData.Length < messageSize) Array.Resize(ref messageData, messageSize);
-				messageSizeRead = dstSize;
+				// read message size
+				read = Math.Min(sizeof(int) - messageDataRead, size);
+				Array.Copy(processingData, dataRead, messageData, messageDataRead, read);
+				messageDataRead += dataRead;
+				dataRead += read;
+				if (messageDataRead != sizeof(int))
+				{
+					return;// havent recieved message size yet
+				}
+				else
+				{
+					messageDataRead = 0;// reset as this offset should now match actual message size
+					messageSize = BitConverter.ToInt32(messageData, 0);// we now have enough data to get message size
+					if (messageData.Length < messageSize) Array.Resize(ref messageData, messageSize);// resize message buffer if needed
+				}
 			}
 
-			// calculate remaining data to read
-			int dataRemainder = size - messageSizeRead;
-			int dataRead = Math.Min(dataRemainder, messageSize);
-			dataRemainder -= dataRead;
-
 			// copy message data
-			Array.Copy(processingData, messageSizeRead, messageData, messageDataOffset, dataRead);
-			messageDataOffset += dataRead;
+			read = Math.Min(messageSize - messageDataRead, size - dataRead);
+			Array.Copy(processingData, dataRead, messageData, messageDataRead, read);
+			messageDataRead += read;
+			dataRead += read;
 
 			// check if message finished
-			if (messageDataOffset >= messageSize)
+			if (messageDataRead == messageSize)
 			{
 				// fire message event
 				try
@@ -99,15 +102,14 @@ namespace Orbital.Networking.DataProcessors
 				}
 
 				// reset
-				messageDataOffset = 0;
-				messageSizeDataOffset = 0;
+				messageDataRead = 0;
+				messageSize = -1;
+			}
 
-				// process remainder
-				if (dataRemainder != 0)
-				{
-					ShiftBufferDown(processingData, size - dataRemainder);
-					Process(dataRemainder);
-				}
+			// process remainder
+			if (dataRead < size)
+			{
+				Process(size, dataRead);
 			}
 		}
 
