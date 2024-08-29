@@ -67,7 +67,7 @@ namespace Orbital.Networking.DataProcessors
 				// read message size
 				read = Math.Min(sizeof(int) - messageDataRead, size);
 				Array.Copy(processingData, dataRead, messageData, messageDataRead, read);
-				messageDataRead += dataRead;
+				messageDataRead += read;
 				dataRead += read;
 				if (messageDataRead != sizeof(int))
 				{
