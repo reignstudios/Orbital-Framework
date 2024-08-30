@@ -9,7 +9,7 @@ namespace Orbital.Networking.DataProcessors
 		public event MessageRecievedCallbackMethod MessageRecievedCallback;
 		
 		private int messageDataRead, messageSize;
-		private byte[] processingData, messageData;
+		private byte[] messageData;
 
 		public MessageDataProcessor()
 		{
@@ -45,20 +45,6 @@ namespace Orbital.Networking.DataProcessors
 		/// <param name="size">Size in Data object to read</param>
 		public void Process(byte[] data, int offset, int size)
 		{
-			if (size <= 0) return;
-
-			if (processingData == null) processingData = new byte[size];
-			else if (processingData.Length < size) Array.Resize(ref processingData, size);
-			
-			// copy data into message process buffing
-			Array.Copy(data, offset, processingData, 0, size);
-			
-			// process data
-			Process(size, 0);
-		}
-
-		private void Process(int size, int dataRead)
-		{
 			int read;
 
 			// check if this is a new message
@@ -66,9 +52,9 @@ namespace Orbital.Networking.DataProcessors
 			{
 				// read message size
 				read = Math.Min(sizeof(int) - messageDataRead, size);
-				Array.Copy(processingData, dataRead, messageData, messageDataRead, read);
+				Array.Copy(data, offset, messageData, messageDataRead, read);
 				messageDataRead += read;
-				dataRead += read;
+				offset += read;
 				if (messageDataRead != sizeof(int))
 				{
 					return;// havent recieved message size yet
@@ -82,10 +68,10 @@ namespace Orbital.Networking.DataProcessors
 			}
 
 			// copy message data
-			read = Math.Min(messageSize - messageDataRead, size - dataRead);
-			Array.Copy(processingData, dataRead, messageData, messageDataRead, read);
+			read = Math.Min(messageSize - messageDataRead, size - offset);
+			Array.Copy(data, offset, messageData, messageDataRead, read);
 			messageDataRead += read;
-			dataRead += read;
+			offset += read;
 
 			// check if message finished
 			if (messageDataRead == messageSize)
@@ -107,9 +93,9 @@ namespace Orbital.Networking.DataProcessors
 			}
 
 			// process remainder
-			if (dataRead < size)
+			if (offset < size)
 			{
-				Process(size, dataRead);
+				Process(data, offset, size);
 			}
 		}
 
