@@ -189,7 +189,7 @@ namespace Orbital.Demo.Networking
 
 		private static void TCPConnection_DataRecievedCallback(TCPSocketConnection connection, byte[] data, int size)
 		{
-			Console.WriteLine(string.Format("Data From:({0})", connection.address));
+			Console.WriteLine(string.Format("Data From:({0}) Size:{1}", connection.address, size));
 			messageProcessor.Process(data, 0, size);
 		}
 
@@ -215,7 +215,7 @@ namespace Orbital.Demo.Networking
 
 		private static void RUDPConnection_DataRecievedCallback(RUDPSocketConnection connection, byte[] data, int offset, int size)
 		{
-			Console.WriteLine(string.Format("Data From:({0})", connection.address));
+			Console.WriteLine(string.Format("Data From:({0}) Size:{1}", connection.address, size));
 			messageProcessor.Process(data, offset, size);
 		}
 
