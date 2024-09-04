@@ -7,6 +7,7 @@ using System.Net;
 
 using Orbital.Networking.DataProcessors;
 using Orbital.Networking.Sockets;
+using Orbital.Networking;
 
 namespace Orbital.Demo.Networking
 {
@@ -102,9 +103,7 @@ namespace Orbital.Demo.Networking
 							if (message == "q") break;
 							foreach (var connection in tcpSocketServer.connections)
 							{
-								var data = Encoding.ASCII.GetBytes(message);
-								MessageDataProcessor.PrefixMessageData(ref data);
-								connection.Send(data);
+								SendMessage(connection, message);
 							}
 						}
 					}
@@ -125,9 +124,7 @@ namespace Orbital.Demo.Networking
 							if (message == "q") break;
 							foreach (var connection in tcpSocketClient.connections)
 							{
-								var data = Encoding.ASCII.GetBytes(message);
-								MessageDataProcessor.PrefixMessageData(ref data);
-								connection.Send(data);
+								SendMessage(connection, message);
 							}
 						}
 					}
@@ -152,13 +149,18 @@ namespace Orbital.Demo.Networking
 						if (message == "q") break;
 						foreach (var connection in rudpSocket.connections)
 						{
-							var data = Encoding.ASCII.GetBytes(message);
-							MessageDataProcessor.PrefixMessageData(ref data);
-							connection.Send(data);
+							SendMessage(connection, message);
 						}
 					}
 				}
 			}
+		}
+
+		private static void SendMessage(INetworkDataSender sender, string message)
+		{
+			var data = Encoding.ASCII.GetBytes(message);
+			MessageDataProcessor.PrefixMessageData(ref data);
+			sender.Send(data);
 		}
 
 		// =======================
