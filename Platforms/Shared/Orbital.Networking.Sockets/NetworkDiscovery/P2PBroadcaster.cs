@@ -130,7 +130,7 @@ namespace Orbital.Networking.Sockets.NetworkDiscovery
 				}
 			}
 
-			if (e != null) FireDisconnectedCallback(this, e);
+			if (e != null) InvokeDisconnectedCallback(this, e);
 		}
 
 		private void Timer_Elapsed(object sender, ElapsedEventArgs e)

@@ -9,6 +9,19 @@ using System.Threading;
 
 namespace Orbital.Networking.Sockets
 {
+	public enum RUDPMode
+	{
+		/// <summary>
+		/// Send all qued packets at once without waiting, receiver will sort them
+		/// </summary>
+		Blast,
+
+		/// <summary>
+		/// Send each packet only after the last is confirmed recieved
+		/// </summary>
+		Stream
+	}
+
 	enum RUDPPacketType : byte
 	{
 		UnreliableData,
@@ -122,7 +135,9 @@ namespace Orbital.Networking.Sockets
 		public readonly IPAddress senderAddress;
 		public readonly Guid senderAddressID;
 		public readonly int port;
-		public readonly int maxBufferSize;
+		public readonly int receiveBufferSize;
+		public readonly bool async;
+		public readonly RUDPMode mode;
 		internal readonly int timeout;
 		internal readonly bool useBurst;
 		internal readonly int burstCount;
@@ -131,6 +146,9 @@ namespace Orbital.Networking.Sockets
 		internal RUDPBufferPool bufferPool;
 		private Dictionary<uint, RUDPBufferPool.Pool> connectingBuffers;
 		private uint nextConnectingPacketID;
+
+		private float syncTime;
+		private byte[] syncReceiveBuffer;
 
 		public delegate void ListenDisconnectedErrorCallbackMethod(RUDPSocket socket, string message);
 		public event ListenDisconnectedErrorCallbackMethod ListenDisconnectedErrorCallback;
@@ -141,27 +159,33 @@ namespace Orbital.Networking.Sockets
 		public delegate void UnreliableDataRecievedCallbackMethod(byte[] data, int offset, int size);
 		public event UnreliableDataRecievedCallbackMethod UnreliableDataRecievedCallback;
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="listenAddress">Address to listen for connection requests on</param>
-		/// <param name="senderAddress">Address we are sending from (this must be a public address a reciever can responsd to)</param>
-		/// <param name="port">Port all traffic is sent over</param>
-		/// <param name="maxBufferSize">Max size a package can be</param>
-		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
-		public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, int maxBufferSize, int timeout = -1, bool useBurst = true, int burstCount = 3)
+		public delegate void GeneralErrorCallbackMethod(RUDPSocket socket, Exception e);
+		public event GeneralErrorCallbackMethod GeneralErrorCallback;
+
+        /// <summary>
+        /// RUDPSocket
+        /// </summary>
+        /// <param name="listenAddress">Address to listen for connection requests on</param>
+        /// <param name="senderAddress">Address we are sending from (this must be a public address a reciever can responsd to)</param>
+        /// <param name="port">Port all traffic is sent over</param>
+        /// <param name="receiveBufferSize">Buffer size for recieving packet data</param>
+        /// <param name="timeout">Timeout in seconds (default no timeout)</param>
+        public RUDPSocket(IPAddress listenAddress, IPAddress senderAddress, int port, bool async, int receiveBufferSize, RUDPMode mode, int timeout = -1, bool useBurst = true, int burstCount = 3)
 		: base(listenAddress, port)
 		{
 			this.senderAddress = senderAddress;
 			this.senderAddressID = AddressToAddressID(senderAddress);
 			this.port = port;
-			this.maxBufferSize = Math.Max(maxBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
+			this.receiveBufferSize = Math.Max(receiveBufferSize, Marshal.SizeOf<RUDPPacketHeader>());
+			this.async = async;
+			this.mode = mode;
 			this.timeout = timeout;
 			this.useBurst = useBurst;
 			this.burstCount = burstCount;
 
 			bufferPool = new RUDPBufferPool();
 			connectingBuffers = new Dictionary<uint, RUDPBufferPool.Pool>();
+			if (!async) syncReceiveBuffer = new byte[receiveBufferSize];
 		}
 
 		public override void Dispose()
@@ -178,21 +202,21 @@ namespace Orbital.Networking.Sockets
 					tryToConnectTimer = null;
 				}
 
-				if (udpSocket != null)
+				if (_connections != null)// dispose these before you dispose udpSocket so they can send disconnection events
+				{
+					foreach (var connection in _connections)
+					{
+						connection.DisposeInternal(null, false);
+					}
+					_connections = null;
+				}
+
+				if (udpSocket != null)// dispose after connections
 				{
 					udpSocket.DataRecievedCallback -= Socket_DataRecievedCallback;
 					udpSocket.DisconnectedCallback -= Socket_DisconnectedCallback;
 					udpSocket.Dispose();
 					udpSocket = null;
-				}
-
-				if (_connections != null)
-				{
-					foreach (var connection in _connections)
-					{
-						connection.Dispose();
-					}
-					_connections = null;
 				}
 
 				connectingBuffers = null;
@@ -206,10 +230,10 @@ namespace Orbital.Networking.Sockets
 			listenCalled = true;
 
 			_connections = new List<RUDPSocketConnection>(maxConnections);
-			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, maxBufferSize);
+			udpSocket = new UDPSocket(IPAddress.Any, listenAddress, port, false, async, receiveBufferSize);
 			udpSocket.DataRecievedCallback += Socket_DataRecievedCallback;
 			udpSocket.DisconnectedCallback += Socket_DisconnectedCallback;
-			udpSocket.Join(true);
+			udpSocket.Join();
 		}
 
 		public unsafe void Connect(IPAddress remoteAddress)
@@ -238,19 +262,40 @@ namespace Orbital.Networking.Sockets
 			}
 
 			// start timer if needed
-			if (tryToConnectTimer == null)
+			if (async && tryToConnectTimer == null)
 			{
 				tryToConnectTimer = new Timer(ConnectWaitCallback, null, 0, 500);
 			}
 		}
 
+		public void UpdateSync(float deltaTime)
+		{
+			if (async) throw new Exception("Can only be called with async mode off");
+
+			// update waiting connections
+			syncTime += deltaTime;
+			if (syncTime >= .5f)
+			{
+				syncTime %= .5f;
+				ConnectWaitCallback(null);
+			}
+
+			// update connections
+			if (udpSocket.ReceiveSyncReady())
+			{
+				int size = udpSocket.ReceiveSync(syncReceiveBuffer);
+				Socket_DataRecievedCallback(udpSocket, syncReceiveBuffer, size, null);
+			}
+		}
+
 		private unsafe void ConnectWaitCallback(object state)
 		{
+			List<uint> finishedIDs = null;
 			lock (this)
 			{
 				// send connection requests or gather timeouts
-				var now = DateTime.Now;
-				List<uint> finishedIDs = null;
+				var now = new DateTime();
+				if (connectingBuffers.Count != 0) now = DateTime.Now;
 				foreach (var buffer in connectingBuffers)
 				{
 					var pool = buffer.Value;
@@ -291,9 +336,18 @@ namespace Orbital.Networking.Sockets
 					}
 				}
 			}
+			
+			// invoke callbacks
+			if (finishedIDs != null)
+			{
+				foreach (var id in finishedIDs)
+				{
+					ConnectedCallback?.Invoke(this, null, false, "Connection attempt timeout");
+				}
+			}
 		}
 
-		private unsafe void Socket_DataRecievedCallback(UDPSocket socket, byte[] data, int size)
+		private unsafe void Socket_DataRecievedCallback(UDPSocket socket, byte[] data, int size, IPEndPoint endPoint)
 		{
 			if (size <= 0) return;
 
@@ -310,11 +364,11 @@ namespace Orbital.Networking.Sockets
 					if (packetType == RUDPPacketType.UnreliableData)
 					{
 						// read header
-						int headSizeUnreliable = sizeof(RUDPPacketHeader_Unreliable);
-						if (size < headSizeUnreliable) return;// make sure packet is at least the size of the header
+						int headerSizeUnreliable = Marshal.SizeOf<RUDPPacketHeader_Unreliable>();
+						if (size < headerSizeUnreliable) return;// make sure packet is at least the size of the header
 						var headerUnreliable = (RUDPPacketHeader_Unreliable*)dataPtrOffset;
-						dataRead += headSizeUnreliable;
-						dataPtrOffset += headSizeUnreliable;
+						dataRead += headerSizeUnreliable;
+						dataPtrOffset += headerSizeUnreliable;
 
 						// invoke data recieved
 						try
@@ -323,8 +377,7 @@ namespace Orbital.Networking.Sockets
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e);
-							System.Diagnostics.Debug.WriteLine(e);
+							GeneralErrorCallback?.Invoke(this, e);
 						}
 
 						// finish
@@ -373,7 +426,7 @@ namespace Orbital.Networking.Sockets
 							if (!connectionExist && isValidRequest)
 							{
 								var remoteAddress = AddressIDToAddress(header->senderAddressID);
-								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
+								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port, async);
 								_connections.Add(madeConnection);
 							}
 						}
@@ -393,11 +446,10 @@ namespace Orbital.Networking.Sockets
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e);
-							System.Diagnostics.Debug.WriteLine(e);
+							GeneralErrorCallback?.Invoke(this, e);
 						}
 
-						// fire connection made callback
+						// invoke connection made callback
 						if (madeConnection != null && ConnectedCallback != null)
 						{
 							try
@@ -406,8 +458,7 @@ namespace Orbital.Networking.Sockets
 							}
 							catch (Exception e)
 							{
-								Console.WriteLine(e);
-								System.Diagnostics.Debug.WriteLine(e);
+								GeneralErrorCallback?.Invoke(this, e);
 							}
 						}
 					}
@@ -433,7 +484,7 @@ namespace Orbital.Networking.Sockets
 							if (!connectionExist)
 							{
 								var remoteAddress = AddressIDToAddress(header->senderAddressID);
-								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port);
+								madeConnection = new RUDPSocketConnection(this, remoteAddress, header->senderAddressID, header->port, async);
 								_connections.Add(madeConnection);
 							}
 
@@ -445,7 +496,7 @@ namespace Orbital.Networking.Sockets
 							}
 						}
 
-						// fire connection made callback
+						// invoke connection made callback
 						if (madeConnection != null && ConnectedCallback != null)
 						{
 							try
@@ -454,8 +505,7 @@ namespace Orbital.Networking.Sockets
 							}
 							catch (Exception e)
 							{
-								Console.WriteLine(e);
-								System.Diagnostics.Debug.WriteLine(e);
+								GeneralErrorCallback?.Invoke(this, e);
 							}
 						}
 					}
@@ -473,7 +523,7 @@ namespace Orbital.Networking.Sockets
 							}
 						}
 
-						// fire connection failed callback
+						// invoke connection failed callback
 						var address = AddressIDToAddress(header->senderAddressID);
 						try
 						{
@@ -481,8 +531,7 @@ namespace Orbital.Networking.Sockets
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e);
-							System.Diagnostics.Debug.WriteLine(e);
+							GeneralErrorCallback?.Invoke(this, e);
 						}
 					}
 					else if (header->type == RUDPPacketType.Send)
@@ -496,7 +545,7 @@ namespace Orbital.Networking.Sockets
 								if (connection.addressID == header->senderAddressID)
 								{
 									sendingConnection = connection;
-									connection.FireDataRecievedCallback(header, data, dataRead, header->dataSize);
+									connection.InvokeDataRecievedCallback(header, data, dataRead, header->dataSize);
 									break;
 								}
 							}
@@ -515,8 +564,7 @@ namespace Orbital.Networking.Sockets
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e);
-							System.Diagnostics.Debug.WriteLine(e);
+							GeneralErrorCallback?.Invoke(this, e);
 						}
 					}
 					else if (header->type == RUDPPacketType.SendResponse)
@@ -563,8 +611,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
-				System.Diagnostics.Debug.WriteLine(e);
+				GeneralErrorCallback?.Invoke(this, e);
 			}
 		}
 
@@ -575,10 +622,7 @@ namespace Orbital.Networking.Sockets
 
 		internal void RemoveConnection(RUDPSocketConnection connection)
 		{
-			lock (this)
-			{
-				if (!isDisposed) _connections.Remove(connection);
-			}
+			lock (this) _connections.Remove(connection);
 		}
 
 		/// <summary>
@@ -594,9 +638,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public unsafe void Send(byte* data, int size, EndPoint endpoint)
+		public unsafe void Send(byte* data, int size, EndPoint endPoint)
 		{
-			udpSocket.Send(data, size, endpoint);
+			udpSocket.Send(data, size, endPoint);
 		}
 
 		/// <summary>
@@ -612,9 +656,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public unsafe void Send(byte* data, int offset, int size, EndPoint endpoint)
+		public unsafe void Send(byte* data, int offset, int size, EndPoint endPoint)
 		{
-			udpSocket.Send(data, offset, size, endpoint);
+			udpSocket.Send(data, offset, size, endPoint);
 		}
 		
 		/// <summary>
@@ -630,9 +674,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public unsafe void Send<T>(T data, EndPoint endpoint) where T : unmanaged
+		public unsafe void Send<T>(T data, EndPoint endPoint) where T : unmanaged
 		{
-			udpSocket.Send<T>(&data, endpoint);
+			udpSocket.Send<T>(&data, endPoint);
 		}
 
 		/// <summary>
@@ -648,9 +692,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public unsafe void Send<T>(T* data, EndPoint endpoint) where T : unmanaged
+		public unsafe void Send<T>(T* data, EndPoint endPoint) where T : unmanaged
 		{
-			udpSocket.Send<T>(data, endpoint);
+			udpSocket.Send<T>(data, endPoint);
 		}
 
 		/// <summary>
@@ -666,9 +710,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public void Send(byte[] data, EndPoint endpoint)
+		public void Send(byte[] data, EndPoint endPoint)
 		{
-			udpSocket.Send(data, endpoint);
+			udpSocket.Send(data, endPoint);
 		}
 
 		/// <summary>
@@ -684,9 +728,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public void Send(byte[] data, int size, EndPoint endpoint)
+		public void Send(byte[] data, int size, EndPoint endPoint)
 		{
-			udpSocket.Send(data, size, endpoint);
+			udpSocket.Send(data, size, endPoint);
 		}
 
 		/// <summary>
@@ -702,9 +746,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public void Send(byte[] data, int offset, int size, EndPoint endpoint)
+		public void Send(byte[] data, int offset, int size, EndPoint endPoint)
 		{
-			udpSocket.Send(data, offset, size, endpoint);
+			udpSocket.Send(data, offset, size, endPoint);
 		}
 
 		/// <summary>
@@ -720,9 +764,9 @@ namespace Orbital.Networking.Sockets
 		/// Send 'unreliable' data (use RUDPSocketConnection to send reliable data)
 		/// NOTE: This data must be prefixed with 'RUDPPacketHeader_Unreliable' header
 		/// </summary>
-		public void Send(string text, Encoding encoding, EndPoint endpoint)
+		public void Send(string text, Encoding encoding, EndPoint endPoint)
 		{
-			udpSocket.Send(text, encoding, endpoint);
+			udpSocket.Send(text, encoding, endPoint);
 		}
 	}
 }

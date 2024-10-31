@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 using NativeSocket = System.Net.Sockets.Socket;
 
@@ -12,7 +13,11 @@ namespace Orbital.Networking.Sockets
 		private NativeSocket tcpListenSocket;
 		private readonly int timeout;
 
-		public delegate void ListenDisconnectedErrorCallbackMethod(TCPSocketServer socket, string message);
+		private Thread thread;
+		private bool threadAlive, listenAsync;
+
+
+        public delegate void ListenDisconnectedErrorCallbackMethod(TCPSocketServer socket, string message);
 		public event ListenDisconnectedErrorCallbackMethod ListenDisconnectedErrorCallback;
 
 		/// <summary>
@@ -20,37 +25,39 @@ namespace Orbital.Networking.Sockets
 		/// </summary>
 		/// <param name="listenAddress">Address to listen for connection requests on</param>
 		/// <param name="port">Port all traffic is sent over</param>
+		/// <param name="async">Use threads</param>
 		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
-		/// <param name="async">Use async methods</param>
-		public TCPSocketServer(IPAddress listenAddress, int port, int timeout = -1, bool async = true)
+		public TCPSocketServer(IPAddress listenAddress, int port, bool async, bool listenAsync, int timeout = -1)
 		: base(listenAddress, port, async)
 		{
 			this.timeout = timeout;
+			this.listenAsync = listenAsync;
 		}
 
 		public override void Dispose()
 		{
-			isDisposed = true;
-
+			threadAlive = false;
 			lock (this)
 			{
+				base.Dispose();
 				isListening = false;
 
 				if (tcpListenSocket != null)
 				{
 					try
 					{
-						tcpListenSocket.Shutdown(SocketShutdown.Both);
-					}
-					catch { }
+						tcpListenSocket.Close();
+					} catch { }
 
-					tcpListenSocket.Close();
-					tcpListenSocket.Dispose();
+					try
+					{
+						tcpListenSocket.Dispose();
+					} catch { }
+
 					tcpListenSocket = null;
 				}
 			}
 
-			base.Dispose();
 			ListenDisconnectedErrorCallback = null;
 		}
 
@@ -69,127 +76,108 @@ namespace Orbital.Networking.Sockets
 			{
 				if (isDisposed || tcpListenSocket != null) throw new Exception("Can only be called once");
 				tcpListenSocket = new NativeSocket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-				tcpListenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);// this allows the endpoint to be reused if Windows fails to close it on app quit
-				tcpListenSocket.Bind(new IPEndPoint(address, port));
+				tcpListenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);// this allows the endPoint to be reused if app fails to close it on app quit
+                tcpListenSocket.Bind(new IPEndPoint(address, port));
 				tcpListenSocket.Listen(maxConnections);
 				isListening = true;
-				try
+
+				if (listenAsync)
 				{
-					tcpListenSocket.BeginAccept(ConnectionCallback, null);
-				}
-				catch (Exception e)
-				{
-					isListening = false;
-					throw e;
+					thread = new Thread(AsyncThread);
+					thread.IsBackground = true;
+					threadAlive = true;
+					thread.Start();
 				}
 			}
 		}
 
-		private void ConnectionCallback(IAsyncResult ar)
+		/// <summary>
+		/// Accepts a socket connection
+		/// </summary>
+		/// <returns>Connection</returns>
+		public TCPSocketConnection AcceptSync(bool blocking)
 		{
-			NativeSocket socket = null;
-			TCPSocketConnection connection = null;
-			bool success = false;
-			string message = null;
+            if (listenAsync) throw new Exception("Can only be called with listenAsync mode off");
 
-			// connect
-			lock (this)
+			// do not-blocking check
+			if (!blocking)
 			{
-				if (isDisposed) return;
-				
-				try
-				{
-					socket = tcpListenSocket.EndAccept(ar);
-					socket.Blocking = true;
-					if (timeout >= 0)
-					{
-						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
-						socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout * 1000);
-						//socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, timeout * 1000);// not needed
-					}
-					var remoteEndPoint = socket.RemoteEndPoint as IPEndPoint;
-					var localEndPoint = socket.LocalEndPoint as IPEndPoint;
-					if (remoteEndPoint == null) remoteEndPoint = new IPEndPoint(IPAddress.None, port);
-					if (localEndPoint == null) localEndPoint = new IPEndPoint(IPAddress.None, port);
-					connection = new TCPSocketConnection(this, socket, remoteEndPoint.Address, port, localEndPoint.Address, async);
-					_connections.Add(connection);
-					success = true;
-				}
-				catch (SocketException e)
-				{
-					success = false;
-					message = string.Format("socket.EndConnect failed: {0}\n{1}", e.SocketErrorCode, e.Message);
-				}
-				catch (Exception e)
-				{
-					success = false;
-					message = "socket.EndConnect failed: " + e.Message;
-				}
-				finally
-				{
-					if (!success && connection != null)
-					{
-						connection.Dispose();
-						connection = null;
-					}
-				}
+				if (!tcpListenSocket.Poll(0, SelectMode.SelectRead)) return null;
 			}
 
-			// fire connected callback
-			FireConnectedCallback(this, connection, success, message);
+			// connect socket
+            return AcceptSync_Internal(true, true);
+        }
 
-			// start recieving data
-			if (async)
+		private TCPSocketConnection AcceptSync_Internal(bool blocking, bool invokeCallback)
+		{
+			// do not-blocking check
+			if (!blocking)
 			{
-				bool disconnected = false;
-				lock (this)
+				if (!tcpListenSocket.Poll(0, SelectMode.SelectRead)) return null;
+			}
+
+			// connect socket
+            var socket = tcpListenSocket.Accept();
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);// this allows the endPoint to be reused if app fails to close it on app quit
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, false);
+            if (timeout >= 0) socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, timeout * 1000);
+
+            var remoteEndPoint = socket.RemoteEndPoint as IPEndPoint;
+            var localEndPoint = socket.LocalEndPoint as IPEndPoint;
+            if (remoteEndPoint == null) remoteEndPoint = new IPEndPoint(IPAddress.None, port);
+            if (localEndPoint == null) localEndPoint = new IPEndPoint(IPAddress.None, port);
+            lock (this)
+            {
+                if (isDisposed) return null;
+                var connection = new TCPSocketConnection(this, socket, remoteEndPoint.Address, port, localEndPoint.Address, async);
+                _connections.Add(connection);
+                connection.Init();
+				if (invokeCallback) InvokeConnectedCallback(this, connection, true, null);
+				return connection;
+            }
+        }
+
+		private void AsyncThread(object obj)
+		{
+			int failedConnectionCount = 0;
+			while (threadAlive && !isDisposed)
+			{
+				TCPSocketConnection connection = null;
+
+				try
 				{
-					if (success && !isDisposed)
+					connection = AcceptSync_Internal(true, false);
+                    failedConnectionCount = 0;// reset if good connection made
+                }
+				catch (Exception e)
+				{
+					failedConnectionCount++;
+
+					if (connection != null) connection.Dispose();
+					InvokeConnectedCallback(this, connection, false, e.Message);
+
+					if (failedConnectionCount == 5)// if we keep failing to make connections, stop listening
 					{
 						try
 						{
-							connection.InitRecieve();
+							ListenDisconnectedErrorCallback?.Invoke(this, e.Message);
 						}
-						catch
+						catch (Exception e2)
 						{
-							disconnected = true;
+							InvokeGeneralErrorCallback(this, e2);
 						}
+						break;
 					}
+
+					continue;
 				}
 
-				if (disconnected) connection.Dispose();
+				InvokeConnectedCallback(this, connection, true, null);
 			}
 
-			// listen for next connection
-			string listenError = null;
-			lock (this)
-			{
-				if (!isDisposed)
-				{
-					try
-					{
-						tcpListenSocket.BeginAccept(ConnectionCallback, address);
-					}
-					catch (Exception e)
-					{
-						isListening = false;
-						listenError = e.Message;
-					}
-				}
-			}
-
-			if (listenError != null)
-			{
-				try
-				{
-					ListenDisconnectedErrorCallback?.Invoke(this, listenError);
-				}
-				catch (Exception e)
-				{
-					Console.WriteLine(e);
-					System.Diagnostics.Debug.WriteLine(e);
-				}
-			}
+			isListening = false;
+			threadAlive = false;
 		}
 	}
 }

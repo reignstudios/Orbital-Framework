@@ -95,7 +95,7 @@ namespace Orbital.Networking.Sockets.NetworkDiscovery
 				}
 			}
 
-			if (e != null) FireDisconnectedCallback(this, e);
+			if (e != null) InvokeDisconnectedCallback(this, e);
 			else BroadcasterFoundCallback?.Invoke(IPAddress.IsLoopback(endpoint.Address) ? endpoint : remoteEndPoint, remoteMetaData);
 		}
 	}

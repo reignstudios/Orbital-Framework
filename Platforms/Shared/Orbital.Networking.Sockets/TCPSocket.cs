@@ -10,6 +10,9 @@ namespace Orbital.Networking.Sockets
 		public IReadOnlyList<TCPSocketConnection> connections {get {return _connections;}}
 		protected readonly bool async;
 
+		public delegate void GeneralErrorCallbackMethod(TCPSocket socket, Exception e);
+		public event GeneralErrorCallbackMethod GeneralErrorCallback;
+
 		public TCPSocket(IPAddress address, int port, bool async)
 		: base(address, port)
 		{
@@ -17,22 +20,14 @@ namespace Orbital.Networking.Sockets
 			_connections = new List<TCPSocketConnection>();
 		}
 
-		public override void Dispose()
+		public override void Dispose()// NOTE: this should be called in lock in abstracting class
 		{
 			isDisposed = true;
-
-			List<TCPSocketConnection> connectionsObj;
-			lock (this)
+			if (_connections != null)
 			{
-				connectionsObj = _connections;
+				for (int i = _connections.Count - 1; i != -1; --i) _connections[i].Dispose();
 				_connections = null;
 			}
-
-			if (connectionsObj != null)
-			{
-				for (int i = connectionsObj.Count - 1; i != -1; --i) connectionsObj[i].Dispose();
-			}
-
 			ConnectedCallback = null;
 		}
 
@@ -43,7 +38,7 @@ namespace Orbital.Networking.Sockets
 
 		public delegate void ConnectedCallbackMethod(TCPSocket socket, TCPSocketConnection connection, bool success, string message);
 		public event ConnectedCallbackMethod ConnectedCallback;
-		protected void FireConnectedCallback(TCPSocket socket, TCPSocketConnection connection, bool success, string message)
+		protected void InvokeConnectedCallback(TCPSocket socket, TCPSocketConnection connection, bool success, string message)
 		{
 			try
 			{
@@ -51,8 +46,7 @@ namespace Orbital.Networking.Sockets
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
-				System.Diagnostics.Debug.WriteLine(e);
+				GeneralErrorCallback?.Invoke(this, e);
 			}
 		}
 
@@ -62,6 +56,11 @@ namespace Orbital.Networking.Sockets
 			{
 				if (_connections != null) _connections.Remove(connection);
 			}
+		}
+
+		protected void InvokeGeneralErrorCallback(TCPSocket socket, Exception e)
+		{
+			GeneralErrorCallback?.Invoke(socket, e);
 		}
 	}
 }

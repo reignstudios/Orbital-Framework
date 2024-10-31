@@ -2,21 +2,25 @@
 using System.Net.Sockets;
 using System.Net;
 using System.Net.NetworkInformation;
-
-using NativeSocket = System.Net.Sockets.Socket;
 using System.IO;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Threading;
+
+using NativeSocket = System.Net.Sockets.Socket;
 
 namespace Orbital.Networking.Sockets
 {
-	public sealed class TCPSocketConnection : INetworkDataSender, IDisposable
+	public sealed class TCPSocketConnection : INetworkDataSender, INetworkDataReceiver, IDisposable
 	{
 		public delegate void DataRecievedCallbackMethod(TCPSocketConnection connection, byte[] data, int size);
 		public event DataRecievedCallbackMethod DataRecievedCallback;
 
 		public delegate void DisconnectedCallbackMethod(TCPSocketConnection connection, string message);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
+
+		public delegate void GeneralErrorCallbackMethod(TCPSocketConnection connection, Exception e);
+		public event GeneralErrorCallbackMethod GeneralErrorCallback;
 
 		private NativeSocket nativeSocket;
 		public readonly TCPSocket socket;
@@ -32,6 +36,9 @@ namespace Orbital.Networking.Sockets
 		private readonly byte[] receiveBuffer;
 		private byte[] sendBuffer;
 
+		private Thread thread;
+		private bool threadAlive;
+
 		public TCPSocketConnection(TCPSocket socket, NativeSocket nativeSocket, IPAddress address, int port, IPAddress localAddress, bool async)
 		{
 			this.socket = socket;
@@ -44,13 +51,26 @@ namespace Orbital.Networking.Sockets
 			endPoint = new IPEndPoint(address, port);
 			physicalAddress = SocketUtils.GetMacAddress(localAddress);
 			if (async) receiveBuffer = new byte[receiveBufferSize];
+
 			isConnected = true;
 		}
 
 		internal static void Dispose(NativeSocket socket)
 		{
-            socket.Close();
-            socket.Dispose();
+			try
+			{
+				if (socket.Connected) socket.Shutdown(SocketShutdown.Both);
+			} catch { }
+
+			try
+			{
+				socket.Close();
+			} catch { }
+
+			try
+			{
+				socket.Dispose();
+			} catch { }
 		}
 
 		public void Dispose()
@@ -60,6 +80,7 @@ namespace Orbital.Networking.Sockets
 
 		public void Dispose(string message)
 		{
+			threadAlive = false;
 			bool wasConnected;
 			lock (this)
 			{
@@ -82,75 +103,50 @@ namespace Orbital.Networking.Sockets
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine(e);
-					System.Diagnostics.Debug.WriteLine(e);
+					GeneralErrorCallback?.Invoke(this, e);
 				}
 			}
 			DataRecievedCallback = null;
 			DisconnectedCallback = null;
 		}
 
-		internal void InitRecieve()
+		internal void Init()
 		{
-			lock (this)
+			if (async)
 			{
-				if (!nativeSocket.Connected) throw new Exception("Socket not connected for recieving data");
-				nativeSocket.BeginReceive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, RecieveDataCallback, null);
+				thread = new Thread(AsyncThread);
+				thread.IsBackground = true;
+				threadAlive = true;
+				thread.Start();
 			}
 		}
 
-		private void RecieveDataCallback(IAsyncResult ar)
+		private void AsyncThread(object obj)
 		{
-			bool disconnected = false;
-			int bytesRead = 0;
-			lock (this)
+			while (threadAlive && isConnected)
 			{
-				if (!isConnected) return;
-
-				// handle failed reads
+				int size = 0;
 				try
 				{
-					bytesRead = nativeSocket.EndReceive(ar);
-				}
-				catch
-				{
-					disconnected = true;
-				}
-					
-				if (bytesRead <= 0) disconnected = true;
-			}
-
-			// fire data recieved callback
-			if (!disconnected)
-			{
-				try
-				{
-					DataRecievedCallback?.Invoke(this, receiveBuffer, bytesRead);
+					size = nativeSocket.Receive(receiveBuffer);
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine(e);
-					System.Diagnostics.Debug.WriteLine(e);
+					GeneralErrorCallback?.Invoke(this, e);
+					Dispose(e.Message);
 				}
-			}
 
-			// start waiting for more data
-			lock (this)
-			{
-				if (isConnected && !disconnected)
+				try
 				{
-					try
-					{
-						nativeSocket.BeginReceive(receiveBuffer, 0, receiveBuffer.Length, SocketFlags.None, RecieveDataCallback, null);
-					}
-					catch
-					{
-						disconnected = true;
-					}
+					if (size > 0) DataRecievedCallback?.Invoke(this, receiveBuffer, size);
+				}
+				catch (Exception e)
+				{
+					GeneralErrorCallback?.Invoke(this, e);
 				}
 			}
 
-			if (disconnected || !IsConnected()) Dispose("Disconnected");
+			threadAlive = false;
 		}
 
 		internal static bool IsConnected(NativeSocket socket)
@@ -271,10 +267,25 @@ namespace Orbital.Networking.Sockets
 			}
 		}
 
-		public int Recieve(byte[] recieveBuffer)
+		public bool ReceiveSyncReady()
+		{
+			return nativeSocket.Poll(0, SelectMode.SelectRead);
+		}
+
+		public int ReceiveSync(byte[] receiveBuffer)
 		{
 			if (async) throw new Exception("Socket cannot be async");
-			return nativeSocket.Receive(recieveBuffer);
-		}
+			try
+			{
+				int size = nativeSocket.Receive(receiveBuffer);
+				if (size > 0) DataRecievedCallback?.Invoke(this, receiveBuffer, size);
+				return size;
+			}
+            catch (Exception e)
+            {
+                if (!IsConnected()) Dispose(e.Message);
+                throw e;
+            }
+        }
 	}
 }

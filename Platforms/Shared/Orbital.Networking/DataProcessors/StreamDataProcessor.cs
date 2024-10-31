@@ -29,7 +29,7 @@ namespace Orbital.Networking.DataProcessors
 		/// <param name="size">Size in Data object to read</param>
 		public void Process(byte[] data, int offset, int size)
 		{
-			if (done) throw new Exception("Cant call 'Process' after 'FinishedCallback' has fired");
+			if (done) throw new Exception("Cant call 'Process' after 'FinishedCallback' has been invoked");
 
 			stream.Write(data, offset, size);
 			offset += size;

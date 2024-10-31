@@ -48,7 +48,7 @@ namespace Orbital.Networking.Sockets.NetworkDiscovery
 
 		public delegate void DisconnectedCallbackMethod(P2P p2p, Exception e);
 		public event DisconnectedCallbackMethod DisconnectedCallback;
-		protected void FireDisconnectedCallback(P2P p2p, Exception e)
+		protected void InvokeDisconnectedCallback(P2P p2p, Exception e)
 		{
 			disconnected = true;
 			DisconnectedCallback?.Invoke(p2p, e);

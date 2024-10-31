@@ -88,7 +88,7 @@ namespace Orbital.Demo.Networking
 				// connect
 				if (isServer)
 				{
-					using (var tcpSocketServer = new TCPSocketServer(localAddress, 8080, timeout:60))
+					using (var tcpSocketServer = new TCPSocketServer(localAddress, 8080, true, true, timeout:60))
 					{
 						tcpSocketServer.ListenDisconnectedErrorCallback += TCPSocket_ListenDisconnectedErrorCallback;
 						tcpSocketServer.ConnectedCallback += TCPSocket_ConnectedCallback;
@@ -110,7 +110,7 @@ namespace Orbital.Demo.Networking
 				}
 				else
 				{
-					using (var tcpSocketClient = new TCPSocketClient(serverAddress, localAddress, 8080, timeout:60))
+					using (var tcpSocketClient = new TCPSocketClient(serverAddress, localAddress, 8080, true, true, timeout:60))
 					{
 						tcpSocketClient.ConnectedCallback += TCPSocket_ConnectedCallback;
 						tcpSocketClient.Connect();
@@ -133,7 +133,7 @@ namespace Orbital.Demo.Networking
 			else
 			{
 				// connect
-				using (var rudpSocket = new RUDPSocket(IPAddress.Any, localAddress, 8080, 1024))
+				using (var rudpSocket = new RUDPSocket(IPAddress.Any, localAddress, 8080, true, 1024, RUDPMode.Stream))
 				{
 					rudpSocket.ListenDisconnectedErrorCallback += RUDPSocket_ListenDisconnectedErrorCallback;
 					rudpSocket.ConnectedCallback += RUDPSocket_ConnectedCallback;

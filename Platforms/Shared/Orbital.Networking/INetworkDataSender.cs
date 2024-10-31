@@ -15,4 +15,10 @@ namespace Orbital.Networking
 		void Send<T>(T* data) where T : unmanaged;
 		void Send(string text, Encoding encoding);
 	}
+
+	public interface INetworkDataReceiver
+    {
+		bool ReceiveSyncReady();
+        int ReceiveSync(byte[] recieveBuffer);
+    }
 }

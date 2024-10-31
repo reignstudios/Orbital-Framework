@@ -45,16 +45,17 @@ namespace Orbital.Networking.DataProcessors
 		/// <param name="size">Size in Data object to read</param>
 		public void Process(byte[] data, int offset, int size)
 		{
-			int read;
+			int read = 0, chunkRead;
 
 			// check if this is a new message
 			if (messageSize < 0)
 			{
 				// read message size
-				read = Math.Min(sizeof(int) - messageDataRead, size);
-				Array.Copy(data, offset, messageData, messageDataRead, read);
-				messageDataRead += read;
-				offset += read;
+				chunkRead = Math.Min(sizeof(int) - messageDataRead, size);
+				Array.Copy(data, offset, messageData, messageDataRead, chunkRead);
+				messageDataRead += chunkRead;
+				offset += chunkRead;
+				read += chunkRead;
 				if (messageDataRead != sizeof(int))
 				{
 					return;// havent recieved message size yet
@@ -68,15 +69,25 @@ namespace Orbital.Networking.DataProcessors
 			}
 
 			// copy message data
-			read = Math.Min(messageSize - messageDataRead, size - offset);
-			Array.Copy(data, offset, messageData, messageDataRead, read);
-			messageDataRead += read;
-			offset += read;
+			chunkRead = Math.Min(messageSize - messageDataRead, size);
+			Array.Copy(data, offset, messageData, messageDataRead, chunkRead);
+			messageDataRead += chunkRead;
+			offset += chunkRead;
+			read += chunkRead;
 
 			// check if message finished
-			if (messageDataRead == messageSize)
+			if (messageDataRead >= messageSize)
 			{
-				// fire message event
+				// check if something is wrong. just kill the message stream
+				if (messageDataRead > messageSize)
+				{
+					string error = string.Format("MessageDataProcessor read past message size messageDataRead:{0} messageSize:{1}", messageDataRead, messageSize);
+					Console.WriteLine(error);
+					System.Diagnostics.Debug.WriteLine(error);
+					return;
+				}
+
+				// invoke message event
 				try
 				{
 					MessageRecievedCallback?.Invoke(messageData, messageSize);
@@ -93,7 +104,8 @@ namespace Orbital.Networking.DataProcessors
 			}
 
 			// process remainder
-			if (offset < size)
+			size -= read;
+			if (size > 0)
 			{
 				Process(data, offset, size);
 			}
@@ -104,11 +116,21 @@ namespace Orbital.Networking.DataProcessors
 		/// </summary>
 		public static unsafe void PrefixMessageData(ref byte[] messageData)
 		{
-			int messageSize = messageData.Length;
-			int prefixSize = Marshal.SizeOf<int>();
-			Array.Resize<byte>(ref messageData, messageData.Length + prefixSize);
-			ShiftBufferUp(messageData, prefixSize);
-			fixed (byte* messageDataPtr = messageData) Buffer.MemoryCopy(&messageSize, messageDataPtr, prefixSize, prefixSize);
+			Array.Resize<byte>(ref messageData, messageData.Length + sizeof(int));
+			ShiftBufferUp(messageData, sizeof(int));
+			fixed (byte* messageDataPtr = messageData) *(int*)messageDataPtr = messageData.Length;
+		}
+
+		/// <summary>
+		/// Prefixes the message data with its size into another buffer of adequate size
+		/// </summary>
+		public static unsafe void PrefixMessageData(byte[] messageData, int messageDataOffset, int messageDataSize, byte[] messageDataWithPrefix, int messageDataWithPrefixOffset)
+		{
+			int bufferSize = messageDataOffset + messageDataSize;
+			if (messageData.Length < bufferSize) throw new Exception("messageData is to small");
+			if (messageDataWithPrefix.Length + sizeof(int) < bufferSize) throw new Exception("messageDataWithPrefix is to small");
+			fixed (byte* messageDataWithPrefixPtr = messageDataWithPrefix) *(int*)(messageDataWithPrefixPtr + messageDataWithPrefixOffset) = messageDataSize;// set message size
+			Array.Copy(messageData, messageDataOffset, messageDataWithPrefix, messageDataWithPrefixOffset + sizeof(int), messageDataSize);// copy packet data
 		}
 	}
 }
