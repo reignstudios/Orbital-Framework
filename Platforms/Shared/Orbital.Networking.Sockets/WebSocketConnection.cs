@@ -52,7 +52,10 @@ namespace Orbital.Networking.Sockets
 		{
 			try
 			{
-				await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Dispose", CancellationToken.None);
+				using (var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+				{
+					await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Dispose", tokenSource.Token);
+				}
 			} catch { }
 
 			try
@@ -156,7 +159,10 @@ namespace Orbital.Networking.Sockets
 		private async void SendAsync(byte[] data, int offset, int size, uint thisTask)
         {
 			while (waitSendTask != thisTask) await Task.Yield();// ensure data is sent in order
-			await nativeSocket.SendAsync(new ArraySegment<byte>(sendBuffer, offset, size), WebSocketMessageType.Binary, true, CancellationToken.None);
+			using (var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(socket.timeout)))
+			{
+				await nativeSocket.SendAsync(new ArraySegment<byte>(sendBuffer, offset, size), WebSocketMessageType.Binary, true, tokenSource.Token);
+			}
 			waitSendTask++;
 			if (waitSendTask == uint.MaxValue) waitSendTask = 0;
 		}
@@ -248,7 +254,10 @@ namespace Orbital.Networking.Sockets
 						int sent = 0;
 						do
 						{
-							await nativeSocket.SendAsync(new ArraySegment<byte>(buffer, 0, read), WebSocketMessageType.Binary, true, CancellationToken.None);
+							using (var tokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(socket.timeout)))
+							{
+								await nativeSocket.SendAsync(new ArraySegment<byte>(buffer, 0, read), WebSocketMessageType.Binary, true, tokenSource.Token);
+							}
 							sent += read;
 							if (callback != null)
 							{

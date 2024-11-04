@@ -8,6 +8,7 @@ namespace Orbital.Networking.Sockets
     {
 		public readonly string address;
 		protected bool isDisposed;
+		internal readonly int timeout;
 
 		protected List<WebSocketConnection> _connections;
 		public IReadOnlyList<WebSocketConnection> connections {get {return _connections;}}
@@ -15,9 +16,10 @@ namespace Orbital.Networking.Sockets
 		public delegate void GeneralErrorCallbackMethod(WebSocket socket, Exception e);
 		public event GeneralErrorCallbackMethod GeneralErrorCallback;
 
-		public WebSocket(string address)
+		public WebSocket(string address, int timeout)
 		{
 			this.address = address;
+			this.timeout = timeout;
 			_connections = new List<WebSocketConnection>();
 		}
 

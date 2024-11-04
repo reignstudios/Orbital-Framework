@@ -11,7 +11,6 @@ namespace Orbital.Networking.Sockets
         public WebSocketConnection connection {get; private set;}
 		private ClientWebSocket nativeSocket;
 		public readonly bool async;
-		private readonly int timeout;
 
         /// <summary>
         /// WebSocketClient
@@ -20,10 +19,9 @@ namespace Orbital.Networking.Sockets
 		/// <param name="async">Auto handle receive events</param>
 		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
         public WebSocketClient(string remoteAddress, bool async, int timeout = -1)
-		: base(remoteAddress)
+		: base(remoteAddress, timeout)
 		{
 			this.async = async;
-			this.timeout = timeout;
 		}
 
 		public override async void Dispose()
