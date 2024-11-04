@@ -26,6 +26,7 @@ namespace Orbital.Networking.Sockets
         /// <param name="localAddress">Local endPoint we want to connect from</param>
         /// <param name="port">Remote port we want to connect to</param>
         /// <param name="async">Use threads</param>
+		/// <param name="connectAsync">Use threads to make connection</param>
 		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
         /// <param name="bindLocalEndPoint">Bind local endPoint address</param>
         public TCPSocketClient(IPAddress remoteAddress, IPAddress localAddress, int port, bool async, bool connectAsync, int timeout = -1, bool bindLocalEndPoint = false)

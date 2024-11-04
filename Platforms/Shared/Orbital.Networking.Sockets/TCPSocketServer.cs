@@ -26,6 +26,7 @@ namespace Orbital.Networking.Sockets
 		/// <param name="listenAddress">Address to listen for connection requests on</param>
 		/// <param name="port">Port all traffic is sent over</param>
 		/// <param name="async">Use threads</param>
+		/// <param name="listenAsync">Use threads to listen for connections</param>
 		/// <param name="timeout">Timeout in seconds (default no timeout)</param>
 		public TCPSocketServer(IPAddress listenAddress, int port, bool async, bool listenAsync, int timeout = -1)
 		: base(listenAddress, port, async)
