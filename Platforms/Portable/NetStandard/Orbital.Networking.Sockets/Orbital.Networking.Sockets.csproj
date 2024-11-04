@@ -20,6 +20,9 @@
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocketConnection.cs" Link="TCPSocketConnection.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\TCPSocketServer.cs" Link="TCPSocketServer.cs" />
     <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\UDPSocket.cs" Link="UDPSocket.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\WebSocket.cs" Link="WebSocket.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\WebSocketClient.cs" Link="WebSocketClient.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Networking.Sockets\WebSocketConnection.cs" Link="WebSocketConnection.cs" />
   </ItemGroup>
 
   <ItemGroup>
