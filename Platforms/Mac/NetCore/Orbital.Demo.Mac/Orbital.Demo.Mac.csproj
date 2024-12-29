@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0-macos</TargetFramework>
         <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
-        <RootNamespace>Orbital.Demo.Xamarin</RootNamespace>
+        <RootNamespace>Orbital.Demo.Mac</RootNamespace>
         <ApplicationId>com.Orbital.Mac</ApplicationId>
     </PropertyGroup>
 
