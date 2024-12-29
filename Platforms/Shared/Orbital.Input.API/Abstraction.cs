@@ -14,6 +14,9 @@ namespace Orbital.Input.API
 		WindowsGamingInput,
 		XInput,
 		DirectInput
+		#elif MAC
+		Mac,
+		Cocoa
 		#endif
 	}
 
@@ -142,8 +145,11 @@ namespace Orbital.Input.API
 			byte[] libNameEncoded = Encoding.Default.GetBytes(libPath);
 			fixed (byte* libNameEncodedPtr = libNameEncoded)
 			{
+				IntPtr lib;
 				#if WIN
-				IntPtr lib = LoadLibraryA(libNameEncodedPtr);
+				lib = LoadLibraryA(libNameEncodedPtr);
+				#else
+				lib = IntPtr.Zero;
 				#endif
 				return lib != IntPtr.Zero;
 			}
@@ -167,6 +173,7 @@ namespace Orbital.Input.API
 			{
 				switch (api)
 				{
+					#if WIN || WINRT
 					//case AbstractionAPI.WindowsGamingInput:
 					//{
 					//	throw new NotImplementedException();
@@ -203,6 +210,15 @@ namespace Orbital.Input.API
 						}
 					}
 					break;
+					#elif MAC
+					case AbstractionAPI.Mac:
+						// TODO
+						break;
+					
+					case AbstractionAPI.Cocoa:
+						// TODO
+						break;
+					#endif
 				}
 			}
 

@@ -27,11 +27,12 @@ namespace Orbital.Input.API
 
 		public unsafe bool Init()
 		{
+			#if WIN
 			bool ignoreXInputDevices = true;// TODO: only set true if XInput is used
 			instances = new InstanceBase[2];
 			instances[0] = new XInput.Instance(autoConfigureAbstractions);
 			instances[1] = new DirectInput.Instance(ignoreXInputDevices, autoConfigureAbstractions);
-
+			#endif
 			return false;
 		}
 

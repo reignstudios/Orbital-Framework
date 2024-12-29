@@ -25,6 +25,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Cocoa", "Orbit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Mac", "Orbital.Demo.Mac\Orbital.Demo.Mac.csproj", "{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input", "Orbital.Input\Orbital.Input.csproj", "{FC90671C-F52E-42F7-BDA5-7A4BBA3A096E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Primitives", "Orbital.Primitives\Orbital.Primitives.csproj", "{5A9EC305-C67A-424B-B1C5-69F2CB11246F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.Cocoa", "Orbital.Input.Cocoa\Orbital.Input.Cocoa.csproj", "{3D8BDA80-3702-48C4-B186-8F6C296599EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.Mac", "Orbital.Input.Mac\Orbital.Input.Mac.csproj", "{AF4BF108-A9AF-43DD-9729-2E12290DC927}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.API", "Orbital.Input.API\Orbital.Input.API.csproj", "{8CE11496-D734-463F-A401-F24F5CE7F6F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,5 +88,25 @@ Global
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15270F96-BE31-4E5F-A4F2-74EC5CD4EBE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC90671C-F52E-42F7-BDA5-7A4BBA3A096E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC90671C-F52E-42F7-BDA5-7A4BBA3A096E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC90671C-F52E-42F7-BDA5-7A4BBA3A096E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC90671C-F52E-42F7-BDA5-7A4BBA3A096E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A9EC305-C67A-424B-B1C5-69F2CB11246F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A9EC305-C67A-424B-B1C5-69F2CB11246F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A9EC305-C67A-424B-B1C5-69F2CB11246F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A9EC305-C67A-424B-B1C5-69F2CB11246F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D8BDA80-3702-48C4-B186-8F6C296599EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D8BDA80-3702-48C4-B186-8F6C296599EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D8BDA80-3702-48C4-B186-8F6C296599EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D8BDA80-3702-48C4-B186-8F6C296599EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF4BF108-A9AF-43DD-9729-2E12290DC927}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF4BF108-A9AF-43DD-9729-2E12290DC927}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF4BF108-A9AF-43DD-9729-2E12290DC927}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF4BF108-A9AF-43DD-9729-2E12290DC927}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CE11496-D734-463F-A401-F24F5CE7F6F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE11496-D734-463F-A401-F24F5CE7F6F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE11496-D734-463F-A401-F24F5CE7F6F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE11496-D734-463F-A401-F24F5CE7F6F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

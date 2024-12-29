@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\..\Shared\Orbitial.Primitives\ReadOnlyArray.cs">
+        <Link>ReadOnlyArray.cs</Link>
+      </Compile>
+      <Compile Include="..\..\..\Shared\Orbitial.Primitives\ReadOnlyHashSet.cs">
+        <Link>ReadOnlyHashSet.cs</Link>
+      </Compile>
+      <Compile Include="..\..\..\Shared\Orbitial.Primitives\ReadOnlyList.cs">
+        <Link>ReadOnlyList.cs</Link>
+      </Compile>
+    </ItemGroup>
+
+</Project>
