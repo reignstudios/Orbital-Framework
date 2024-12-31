@@ -13,10 +13,12 @@ namespace Orbital.Input.API
 		#if WIN || WINRT
 		WindowsGamingInput,
 		XInput,
-		DirectInput
+		DirectInput,
+		HID
 		#elif MAC
 		Mac,
-		Cocoa
+		Cocoa,
+		HID
 		#endif
 	}
 
@@ -215,13 +217,23 @@ namespace Orbital.Input.API
 					break;
 					#elif MAC
 					case AbstractionAPI.Mac:
+					{
 						throw new NotImplementedException();
-						break;
+					}
+					break;
 					
 					case AbstractionAPI.Cocoa:
+					{
 						throw new NotImplementedException();
-						break;
+					}
+					break;
 					#endif
+
+					case AbstractionAPI.HID:
+					{
+						throw new NotImplementedException();
+					}
+					break;
 				}
 			}
 
