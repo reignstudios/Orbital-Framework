@@ -174,11 +174,11 @@ namespace Orbital.Input.API
 				switch (api)
 				{
 					#if WIN || WINRT
-					//case AbstractionAPI.WindowsGamingInput:
-					//{
-					//	throw new NotImplementedException();
-					//}
-					//break;
+					case AbstractionAPI.WindowsGamingInput:
+					{
+						throw new NotImplementedException();
+					}
+					break;
 
 					case AbstractionAPI.XInput:
 					{
@@ -212,11 +212,11 @@ namespace Orbital.Input.API
 					break;
 					#elif MAC
 					case AbstractionAPI.Mac:
-						// TODO
+						throw new NotImplementedException();
 						break;
 					
 					case AbstractionAPI.Cocoa:
-						// TODO
+						throw new NotImplementedException();
 						break;
 					#endif
 				}

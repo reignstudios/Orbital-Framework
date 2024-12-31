@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Input.API\Abstraction.cs" Link="Abstraction.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input.API\Device.cs" Link="Device.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Input.API\Instance.cs" Link="Instance.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orbital.Input.DirectInput\Orbital.Input.DirectInput.csproj" />
+    <ProjectReference Include="..\Orbital.Input.XInput\Orbital.Input.XInput.csproj" />
+    <ProjectReference Include="..\Orbital.Input\Orbital.Input.csproj" />
+  </ItemGroup>
+
+</Project>

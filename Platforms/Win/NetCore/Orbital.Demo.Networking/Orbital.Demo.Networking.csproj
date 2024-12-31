@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Shared\Orbital.Demo.Networking\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Networking.Sockets\Orbital.Networking.Sockets.csproj" />
+    <ProjectReference Include="..\..\..\Portable\NetCore\Orbital.Networking\Orbital.Networking.csproj" />
+  </ItemGroup>
+
+</Project>

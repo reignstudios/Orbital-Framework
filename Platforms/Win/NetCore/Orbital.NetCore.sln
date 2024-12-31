@@ -37,6 +37,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.Networking.Sockets"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbital.OS.Win", "Orbital.OS.Win\Orbital.OS.Win.csproj", "{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input", "Orbital.Input\Orbital.Input.csproj", "{9A5D5C7E-BB8C-460B-95F1-179F11AB4D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Primitives", "Orbital.Primitives\Orbital.Primitives.csproj", "{ADD63C78-64E3-4413-ABC9-F38889951A75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.API", "Orbital.Input.API\Orbital.Input.API.csproj", "{F13ADD7B-5311-49EA-AC4B-571BABC86B18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.XInput", "Orbital.Input.XInput\Orbital.Input.XInput.csproj", "{6680168C-5431-4BD7-BCE7-56ED16C3EBF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Input.DirectInput", "Orbital.Input.DirectInput\Orbital.Input.DirectInput.csproj", "{8992DFF0-699B-4550-85F7-B75A80ECE6B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbital.Demo.Networking", "Orbital.Demo.Networking\Orbital.Demo.Networking.csproj", "{20121EF9-4BA1-4389-8E24-DEAFA2798AEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +123,30 @@ Global
 		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75E8DAB4-1E25-4046-ADFF-D05DBEC733B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A5D5C7E-BB8C-460B-95F1-179F11AB4D84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A5D5C7E-BB8C-460B-95F1-179F11AB4D84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A5D5C7E-BB8C-460B-95F1-179F11AB4D84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A5D5C7E-BB8C-460B-95F1-179F11AB4D84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADD63C78-64E3-4413-ABC9-F38889951A75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADD63C78-64E3-4413-ABC9-F38889951A75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADD63C78-64E3-4413-ABC9-F38889951A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADD63C78-64E3-4413-ABC9-F38889951A75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F13ADD7B-5311-49EA-AC4B-571BABC86B18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F13ADD7B-5311-49EA-AC4B-571BABC86B18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F13ADD7B-5311-49EA-AC4B-571BABC86B18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F13ADD7B-5311-49EA-AC4B-571BABC86B18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6680168C-5431-4BD7-BCE7-56ED16C3EBF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6680168C-5431-4BD7-BCE7-56ED16C3EBF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6680168C-5431-4BD7-BCE7-56ED16C3EBF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6680168C-5431-4BD7-BCE7-56ED16C3EBF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8992DFF0-699B-4550-85F7-B75A80ECE6B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8992DFF0-699B-4550-85F7-B75A80ECE6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8992DFF0-699B-4550-85F7-B75A80ECE6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8992DFF0-699B-4550-85F7-B75A80ECE6B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20121EF9-4BA1-4389-8E24-DEAFA2798AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20121EF9-4BA1-4389-8E24-DEAFA2798AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20121EF9-4BA1-4389-8E24-DEAFA2798AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20121EF9-4BA1-4389-8E24-DEAFA2798AEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
