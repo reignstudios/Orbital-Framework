@@ -122,6 +122,9 @@ namespace Orbital.Input.API
 				AbstractionAPI.WindowsGamingInput,
 				AbstractionAPI.XInput,
 				AbstractionAPI.DirectInput
+				#elif MAC
+				AbstractionAPI.Mac,
+				AbstractionAPI.Cocoa
 				#endif
 			};
 

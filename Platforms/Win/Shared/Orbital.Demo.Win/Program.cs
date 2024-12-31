@@ -15,7 +15,7 @@ namespace Orbital.Demo.Win
 			Application.Init();
 			var window = new Window("Demo: Win", 320, 240, WindowType.Tool, WindowStartupPosition.CenterScreen);
 
-			/*// run example
+			// run example
 			using (var example = new Example(window))
 			{
 				#if NET_CORE
@@ -34,10 +34,10 @@ namespace Orbital.Demo.Win
 					example.Run();
 					Application.RunEvents();
 				}
-			}*/
+			}
 
-			Application.Run(window);
-			Application.Shutdown();
+			//Application.Run(window);
+			//Application.Shutdown();
 		}
 
 		/*private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

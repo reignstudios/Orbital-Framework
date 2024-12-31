@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Host.WPF\Orbital.Host.WPF.csproj" />
+    <ProjectReference Include="..\Orbital.Input.API\Orbital.Input.API.csproj" />
   </ItemGroup>
 
 </Project>

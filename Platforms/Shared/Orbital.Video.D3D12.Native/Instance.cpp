@@ -20,7 +20,7 @@ extern "C"
 		return (Instance*)calloc(1, sizeof(Instance));
 	}
 
-	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_Init(Instance* handle, FeatureLevel minimumFeatureLevel, int extraDebugging)
+	ORBITAL_EXPORT int Orbital_Video_D3D12_Instance_Init(Instance* handle, FeatureLevel minimumFeatureLevel, int attachDebugger, int extraDebugging)
 	{
 		// get native feature level
 		if (!FeatureLevelToNative(minimumFeatureLevel, &handle->nativeMinFeatureLevel)) return 0;
@@ -28,7 +28,7 @@ extern "C"
 		// enable debugging
 		UINT factoryFlags = 0;
 		#if defined(_DEBUG)
-		if (IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
+		if (attachDebugger && IsDebuggerPresent())// only attach if debugger is present. Otherwise some drivers can have issues
 		{
 			if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&handle->debugController))))
 			{

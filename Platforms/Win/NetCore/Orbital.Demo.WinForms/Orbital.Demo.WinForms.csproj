@@ -9,11 +9,14 @@
 
   <ItemGroup>
     <Compile Include="..\..\..\Shared\Orbital.Demo\Example.cs" Link="Example.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Demo\Example_Input.cs" Link="Example_Input.cs" />
+    <Compile Include="..\..\..\Shared\Orbital.Demo\Example_Video.cs" Link="Example_Video.cs" />
     <Compile Include="..\..\Shared\Orbital.Demo.WinForms\Program.cs" Link="Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Orbital.Host.WinForms\Orbital.Host.WinForms.csproj" />
+    <ProjectReference Include="..\Orbital.Input.API\Orbital.Input.API.csproj" />
     <ProjectReference Include="..\Orbital.Video.API\Orbital.Video.API.csproj" />
   </ItemGroup>
 
