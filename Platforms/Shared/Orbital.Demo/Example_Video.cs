@@ -179,7 +179,7 @@ namespace Orbital.Demo
 			//abstractionDesc.instanceDescD3D12.attachDebugger = true;
 			//abstractionDesc.instanceDescD3D12.extraDebugging = true;
 			abstractionDesc.deviceDescD3D12.window = window;
-			//abstractionDesc.deviceDescD3D12.adapterIndex = 2;
+			//abstractionDesc.deviceDescD3D12.adapterIndex = 1;
 			//abstractionDesc.deviceDescD3D12.vSyncMode = SwapChainVSyncMode.VSyncOff;
 			#if DEBUG
 			abstractionDesc.nativeLibPathD3D12 = Path.Combine(platformPath, @"Native\Orbital.Video.D3D12.Native\bin", libFolderBit, config);

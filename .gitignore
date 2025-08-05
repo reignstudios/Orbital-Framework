@@ -278,4 +278,4 @@ ModelManifest.xml
 *.hs
 *.ds
 *.gs
-TEMP_RESOURCES/*.cs
+DEMO_RESOURCES/*.cs
