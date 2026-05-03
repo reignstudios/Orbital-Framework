@@ -219,11 +219,11 @@ int Orbital_Host_Wayland_Application_Init(struct Application* app)
 
 void Orbital_Host_Wayland_Application_Shutdown(struct Application* app)
 {
-    // disconnect display
-    wl_display_disconnect(app->display);
-
     // interfaces
     if (app->contentTypeManager != NULL) wp_content_type_manager_v1_destroy(app->contentTypeManager);
+
+    // disconnect display
+    wl_display_disconnect(app->display);
 
     // finish
     app->running = 0;

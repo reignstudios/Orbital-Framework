@@ -135,8 +135,6 @@ int CreateSurfaceBuffer(struct wl_shm* shm, struct SurfaceBuffer* buffer, struct
     buffer->pool = wl_shm_create_pool(shm, buffer->fd, buffer->size);
     buffer->buffer = wl_shm_pool_create_buffer(buffer->pool, 0, buffer->width, buffer->height, buffer->stride, WL_SHM_FORMAT_XRGB8888);
     buffer->color = color;
-
-    wl_surface_attach(surface, buffer->buffer, 0, 0);
     return 1;
 }
 
@@ -372,8 +370,11 @@ void surface_configure_callback(void *data, struct xdg_surface *xdg_surface, uin
 {
     xdg_surface_ack_configure(xdg_surface, serial);
 
-    // must commit here
+    // attack window surface buffer here
     struct Window* window = (struct Window*)data;
+    wl_surface_attach(window->surface, window->surfaceBuffer.buffer, 0, 0);
+
+    // must commit here
     if (window->useClientDecorations) wl_surface_commit(window->clientSurface);
     wl_surface_commit(window->surface);
     wl_display_flush(window->app->display);
